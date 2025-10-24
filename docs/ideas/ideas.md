@@ -14,6 +14,7 @@ A plugin for Claude to help with meta tasks.
 ## Agents
 
     - AI docs updater agent that updates the AI docs with the latest information from offical sources. [Example](examples/agents/fetch-docs.md)
+    - Documentation maintanence agent that Validates and fixes markdown syntax, link rot, and outdated information in the documentation. [Example](examples/agents/docs-maint-agent.md)
 
 ## Hooks
 

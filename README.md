@@ -32,6 +32,7 @@ Meta tools for creating skills, agents, hooks, and commands.
 ```
 
 **Features:**
+
 - Four creator skills (skill-creator, agent-creator, hook-creator, command-creator)
 - Interactive `/new-plugin` command
 - References official Claude Code documentation
@@ -49,6 +50,7 @@ Ansible playbook refactoring, role development, testing, and best practices with
 ```
 
 **Features:**
+
 - Comprehensive ansible-best-practices skill
 - Infisical secret management integration
 - State-based playbook patterns
@@ -69,6 +71,7 @@ Proxmox VE cluster management including VM provisioning, templates, VLAN network
 ```
 
 **Features:**
+
 - Comprehensive proxmox-infrastructure skill
 - Cloud-init template creation patterns
 - VLAN-aware bridge configuration
@@ -89,6 +92,7 @@ Python single-file script development using uv and PEP 723 inline metadata.
 ```
 
 **Features:**
+
 - Comprehensive python-uv-scripts skill
 - Script creation patterns and best practices
 - Testing, security, and CI/CD guidance
@@ -107,6 +111,7 @@ NetBox IPAM and PowerDNS integration for automated DNS record management and inf
 ```
 
 **Features:**
+
 - Comprehensive netbox-powerdns-integration skill
 - NetBox API usage and IPAM management
 - DNS naming convention validation
@@ -137,6 +142,7 @@ Or manually:
 ### Template Structure
 
 The plugin template includes:
+
 - Complete plugin.json with placeholders
 - README.md with standard sections
 - Example agent, skill, and hooks

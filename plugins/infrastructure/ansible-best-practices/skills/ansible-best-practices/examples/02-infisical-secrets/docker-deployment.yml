@@ -1,0 +1,211 @@
+---
+# =============================================================================
+# Docker Deployment with Infisical Secrets
+# =============================================================================
+# This playbook demonstrates best practices from Virgo-Core:
+#   - Infisical secrets management (using reusable task)
+#   - Proper error handling with changed_when/failed_when
+#   - Idempotent command execution
+#   - No secrets in logs (no_log: true)
+#   - Fully qualified module names (FQCN)
+#   - Task organization with blocks
+
+- name: Deploy Docker application with secrets from Infisical
+  hosts: docker_hosts
+  become: true
+  gather_facts: true
+
+  vars:
+    app_name: "my-application"
+    app_dir: "/opt/{{ app_name }}"
+    infisical_project_id: "7b832220-24c0-45bc-a5f1-ce9794a31259"
+    infisical_env: "prod"
+    infisical_path: "/doggos-cluster"
+
+  # ==========================================================================
+  # Pre-flight Checks
+  # ==========================================================================
+
+  pre_tasks:
+    - name: Validate required variables
+      ansible.builtin.assert:
+        that:
+          - app_name is defined and app_name | length > 0
+          - app_dir is defined
+          - infisical_project_id is defined
+        fail_msg: "Required variables not set"
+        success_msg: "All required variables present"
+      tags: [always]
+
+    - name: Check if Docker is installed
+      ansible.builtin.command: which docker
+      register: docker_check
+      changed_when: false
+      failed_when: false
+      tags: [always]
+
+    - name: Fail if Docker not installed
+      ansible.builtin.fail:
+        msg: |
+          Docker is not installed on {{ inventory_hostname }}
+          Please install Docker first: sudo apt install docker.io
+      when: docker_check.rc != 0
+      tags: [always]
+
+  # ==========================================================================
+  # Main Tasks
+  # ==========================================================================
+
+  tasks:
+    # ========================================================================
+    # Retrieve Secrets from Infisical
+    # ========================================================================
+
+    - name: Secrets Management Block
+      block:
+        - name: Retrieve database password from Infisical
+          ansible.builtin.include_tasks: ../../tasks/infisical-secret-lookup.yml
+          vars:
+            secret_name: 'DB_PASSWORD'
+            secret_var_name: 'db_password'
+            fallback_env_var: 'DB_PASSWORD'  # Optional fallback
+
+        - name: Retrieve API key from Infisical
+          ansible.builtin.include_tasks: ../../tasks/infisical-secret-lookup.yml
+          vars:
+            secret_name: 'API_KEY'
+            secret_var_name: 'api_key'
+            fallback_env_var: 'API_KEY'
+
+        - name: Retrieve Redis password from Infisical
+          ansible.builtin.include_tasks: ../../tasks/infisical-secret-lookup.yml
+          vars:
+            secret_name: 'REDIS_PASSWORD'
+            secret_var_name: 'redis_password'
+            fallback_env_var: 'REDIS_PASSWORD'
+
+      tags: [secrets, config]
+
+    # ========================================================================
+    # Application Setup
+    # ========================================================================
+
+    - name: Application Deployment Block
+      block:
+        - name: Create application directory
+          ansible.builtin.file:
+            path: "{{ app_dir }}"
+            state: directory
+            owner: root
+            group: root
+            mode: '0755'
+
+        - name: Deploy application configuration
+          ansible.builtin.template:
+            src: app-config.yml.j2
+            dest: "{{ app_dir }}/config.yml"
+            owner: root
+            group: root
+            mode: '0600'  # Secure permissions for config with secrets
+          notify: Restart application
+          no_log: true  # Config contains secrets
+
+        - name: Deploy Docker Compose file
+          ansible.builtin.template:
+            src: docker-compose.yml.j2
+            dest: "{{ app_dir }}/docker-compose.yml"
+            owner: root
+            group: root
+            mode: '0644'
+
+      rescue:
+        - name: Report deployment failure
+          ansible.builtin.fail:
+            msg: "Failed to deploy application configuration"
+
+      tags: [deploy, config]
+
+    # ========================================================================
+    # Docker Operations (with proper idempotency)
+    # ========================================================================
+
+    - name: Docker Management Block
+      block:
+        - name: Check if container is already running
+          ansible.builtin.command: docker ps --filter name={{ app_name }} --format "{{ '{{' }}.Names{{ '}}' }}"
+          register: container_check
+          changed_when: false
+          failed_when: false
+
+        - name: Pull Docker images
+          ansible.builtin.command: docker-compose -f {{ app_dir }}/docker-compose.yml pull
+          args:
+            chdir: "{{ app_dir }}"
+          register: pull_result
+          changed_when: "'Downloaded newer image' in pull_result.stdout"
+          when: container_check.stdout != app_name
+
+        - name: Start Docker containers
+          ansible.builtin.command: docker-compose -f {{ app_dir }}/docker-compose.yml up -d
+          args:
+            chdir: "{{ app_dir }}"
+          register: compose_up
+          changed_when: "'Creating' in compose_up.stderr or 'Starting' in compose_up.stderr"
+          when: container_check.stdout != app_name
+
+        - name: Wait for application to be healthy
+          ansible.builtin.uri:
+            url: "http://localhost:8080/health"
+            status_code: 200
+          register: health_check
+          until: health_check.status == 200
+          retries: 30
+          delay: 10
+          changed_when: false
+
+      rescue:
+        - name: Show container logs on failure
+          ansible.builtin.command: docker-compose -f {{ app_dir }}/docker-compose.yml logs --tail=50
+          args:
+            chdir: "{{ app_dir }}"
+          register: container_logs
+          changed_when: false
+
+        - name: Report Docker failure
+          ansible.builtin.fail:
+            msg: |
+              Docker deployment failed
+              Logs: {{ container_logs.stdout }}
+
+      tags: [deploy, docker]
+
+    # ========================================================================
+    # Verification
+    # ========================================================================
+
+    - name: Verify application is running
+      ansible.builtin.command: docker ps --filter name={{ app_name }} --filter status=running --format "{{ '{{' }}.Status{{ '}}' }}"
+      register: running_check
+      changed_when: false
+      failed_when: "'Up' not in running_check.stdout"
+      tags: [verify]
+
+    - name: Report deployment success
+      ansible.builtin.debug:
+        msg: |
+          ✓ Application deployed successfully
+          Container: {{ app_name }}
+          Status: {{ running_check.stdout }}
+          Health endpoint: http://{{ inventory_hostname }}:8080/health
+      tags: [verify]
+
+  # ==========================================================================
+  # Handlers
+  # ==========================================================================
+
+  handlers:
+    - name: Restart application
+      ansible.builtin.command: docker-compose -f {{ app_dir }}/docker-compose.yml restart
+      args:
+        chdir: "{{ app_dir }}"
+      changed_when: true

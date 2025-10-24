@@ -1,0 +1,11 @@
+{
+  "name": "proxmox-infrastructure",
+  "version": "1.0.0",
+  "description": "Proxmox VE cluster management including VM provisioning, templates, VLAN networking, and CEPH storage",
+  "author": {
+    "name": "basher83",
+    "email": "basher83@mail.spaceships.work"
+  },
+  "keywords": ["proxmox", "virtualization", "cloud-init", "ceph", "networking", "vlan"],
+  "homepage": "https://github.com/basher83/lunar-claude"
+}

@@ -1,0 +1,11 @@
+{
+  "name": "ansible-best-practices",
+  "version": "1.0.0",
+  "description": "Ansible playbook refactoring, role development, testing, and best practices with Infisical secrets management",
+  "author": {
+    "name": "basher83",
+    "email": "basher83@mail.spaceships.work"
+  },
+  "keywords": ["ansible", "iac", "automation", "infisical", "testing", "playbooks"],
+  "homepage": "https://github.com/basher83/lunar-claude"
+}

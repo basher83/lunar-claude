@@ -1,0 +1,11 @@
+{
+  "name": "netbox-powerdns-integration",
+  "version": "1.0.0",
+  "description": "NetBox IPAM and PowerDNS integration for automated DNS record management and infrastructure documentation",
+  "author": {
+    "name": "basher83",
+    "email": "basher83@mail.spaceships.work"
+  },
+  "keywords": ["netbox", "powerdns", "ipam", "dns", "automation", "terraform", "ansible"],
+  "homepage": "https://github.com/basher83/lunar-claude"
+}

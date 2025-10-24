@@ -21,12 +21,45 @@
       }
     },
     {
+      "name": "ansible-best-practices",
+      "source": "./plugins/infrastructure/ansible-best-practices",
+      "description": "Ansible playbook refactoring, role development, testing, and best practices with Infisical secrets management",
+      "version": "1.0.0",
+      "category": "infrastructure",
+      "keywords": ["ansible", "iac", "automation", "infisical", "testing", "playbooks"],
+      "author": {
+        "name": "basher83"
+      }
+    },
+    {
+      "name": "proxmox-infrastructure",
+      "source": "./plugins/infrastructure/proxmox-infrastructure",
+      "description": "Proxmox VE cluster management including VM provisioning, templates, VLAN networking, and CEPH storage",
+      "version": "1.0.0",
+      "category": "infrastructure",
+      "keywords": ["proxmox", "virtualization", "cloud-init", "ceph", "networking", "vlan"],
+      "author": {
+        "name": "basher83"
+      }
+    },
+    {
       "name": "python-uv-tools",
       "source": "./plugins/devops/python-uv-tools",
       "description": "Python single-file script development using uv and PEP 723 inline metadata",
       "version": "1.0.0",
       "category": "devops",
       "keywords": ["python", "uv", "scripting", "development", "pep-723"],
+      "author": {
+        "name": "basher83"
+      }
+    },
+    {
+      "name": "netbox-powerdns-integration",
+      "source": "./plugins/homelab/netbox-powerdns-integration",
+      "description": "NetBox IPAM and PowerDNS integration for automated DNS record management and infrastructure documentation",
+      "version": "1.0.0",
+      "category": "homelab",
+      "keywords": ["netbox", "powerdns", "ipam", "dns", "automation", "terraform", "ansible"],
       "author": {
         "name": "basher83"
       }

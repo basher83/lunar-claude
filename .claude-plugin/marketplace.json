@@ -8,5 +8,17 @@
     "description": "Personal Claude Code plugin marketplace for homelab and infrastructure automation",
     "version": "0.1.0"
   },
-  "plugins": []
+  "plugins": [
+    {
+      "name": "meta-claude",
+      "source": "./plugins/meta/meta-claude",
+      "description": "Meta tools for creating skills, agents, hooks, and commands",
+      "version": "0.1.0",
+      "category": "meta",
+      "keywords": ["meta", "tooling", "development", "creator"],
+      "author": {
+        "name": "basher83"
+      }
+    }
+  ]
 }

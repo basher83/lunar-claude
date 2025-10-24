@@ -1,0 +1,11 @@
+{
+  "name": "meta-claude",
+  "version": "0.1.0",
+  "description": "Meta tools for creating Claude Code skills, agents, hooks, and commands",
+  "author": {
+    "name": "basher83",
+    "email": "basher83@mail.spaceships.work"
+  },
+  "keywords": ["meta", "tooling", "development", "creator"],
+  "homepage": "https://github.com/basher83/lunar-claude"
+}

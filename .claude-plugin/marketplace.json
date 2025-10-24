@@ -1,0 +1,12 @@
+{
+  "name": "lunar-claude",
+  "owner": {
+    "name": "basher83",
+    "email": "basher83@mail.spaceships.work"
+  },
+  "metadata": {
+    "description": "Personal Claude Code plugin marketplace for homelab and infrastructure automation",
+    "version": "0.1.0"
+  },
+  "plugins": []
+}

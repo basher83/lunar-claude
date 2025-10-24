@@ -1,0 +1,5 @@
+.mcp.json
+.vscode
+.DS_Store
+.venv
+.worktrees/

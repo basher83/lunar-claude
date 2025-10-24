@@ -38,6 +38,24 @@ Meta tools for creating skills, agents, hooks, and commands.
 
 See [plugins/meta/meta-claude/README.md](plugins/meta/meta-claude/README.md) for details.
 
+### python-uv-tools
+
+Python single-file script development using uv and PEP 723 inline metadata.
+
+**Install:**
+
+```bash
+/plugin install python-uv-tools@lunar-claude
+```
+
+**Features:**
+- Comprehensive python-uv-scripts skill
+- Script creation patterns and best practices
+- Testing, security, and CI/CD guidance
+- Extensive reference documentation
+
+See [plugins/devops/python-uv-tools/README.md](plugins/devops/python-uv-tools/README.md) for details.
+
 ## Development
 
 ### Creating New Plugins

@@ -19,6 +19,17 @@
       "author": {
         "name": "basher83"
       }
+    },
+    {
+      "name": "python-uv-tools",
+      "source": "./plugins/devops/python-uv-tools",
+      "description": "Python single-file script development using uv and PEP 723 inline metadata",
+      "version": "1.0.0",
+      "category": "devops",
+      "keywords": ["python", "uv", "scripting", "development", "pep-723"],
+      "author": {
+        "name": "basher83"
+      }
     }
   ]
 }

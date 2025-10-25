@@ -36,6 +36,10 @@ A plugin for Claude to help with meta tasks.
     - PowerDNS
     - Netbox
     - Homelab
+    - Devtools expertise
+        - git-cliff (https://git-cliff.org/docs/)
+        - infisical (https://infisical.com/docs/)
+        - mise (https://mise.readthedocs.io/en/latest/)
 
 ## Use Cases
 

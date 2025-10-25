@@ -29,39 +29,59 @@ _.python.venv = { path = ".venv", create = true } # create the venv if it doesn'
 [tasks.changelog]
 description = "Update unreleased section of CHANGELOG.md"
 run = """
+set -euo pipefail
 echo "📝 Updating CHANGELOG.md with unreleased changes..."
-# Extract existing content after the first release heading
-sed -n '/^## \\[0\\.1\\.3\\]/,$p' CHANGELOG.md > /tmp/changelog_releases.txt
-# Generate new unreleased section
-git-cliff --unreleased --strip header > /tmp/changelog_unreleased.txt
-# Combine: header + unreleased + existing releases
-head -7 CHANGELOG.md > CHANGELOG.md.new
-cat /tmp/changelog_unreleased.txt >> CHANGELOG.md.new
-echo "" >> CHANGELOG.md.new
-cat /tmp/changelog_releases.txt >> CHANGELOG.md.new
-mv CHANGELOG.md.new CHANGELOG.md
-rm /tmp/changelog_unreleased.txt /tmp/changelog_releases.txt
+
+# Check if CHANGELOG.md exists
+if [ ! -f CHANGELOG.md ]; then
+  echo "⚠️  CHANGELOG.md not found. Generating initial changelog..."
+  git-cliff -o CHANGELOG.md
+  echo "✅ Initial CHANGELOG.md created!"
+  exit 0
+fi
+
+# Regenerate the entire changelog to include new unreleased commits
+git-cliff -o CHANGELOG.md
 echo "✅ CHANGELOG.md updated!"
 """
 
 [tasks.changelog-bump]
 description = "Bump version and update changelog for a release"
 run = """
-if [ -z "$1" ]; then
+set -euo pipefail
+
+if [ -z "${1:-}" ]; then
+  echo "❌ Error: Version number required"
+  echo ""
   echo "Usage: mise run changelog-bump <version>"
   echo "Example: mise run changelog-bump 0.1.4"
   exit 1
 fi
+
 VERSION="$1"
-echo "📝 Creating release $VERSION..."
+
+# Validate version format (basic semver check)
+if ! echo "$VERSION" | grep -qE '^[0-9]+\\.[0-9]+\\.[0-9]+$'; then
+  echo "❌ Error: Invalid version format. Expected: X.Y.Z (e.g., 0.1.4)"
+  exit 1
+fi
+
+echo "📝 Creating release v$VERSION..."
+
+# Generate changelog for the new version
 git-cliff --tag "v$VERSION" -o CHANGELOG.md
+
 echo "✅ CHANGELOG.md updated for v$VERSION!"
+echo ""
 echo "Next steps:"
 echo "  1. Review CHANGELOG.md"
-echo "  2. Update version in pyproject.toml"
-echo "  3. Commit changes: git add CHANGELOG.md pyproject.toml && git commit -m 'chore: release v$VERSION'"
-echo "  4. Tag release: git tag -a v$VERSION -m 'Release v$VERSION'"
-echo "  5. Push: git push && git push --tags"
+echo "  2. Update version in .claude-plugin/marketplace.json and plugin manifests"
+echo "  3. Commit changes:"
+echo "     git add CHANGELOG.md .claude-plugin/ && git commit -m 'chore: release v$VERSION'"
+echo "  4. Create annotated tag:"
+echo "     git tag -a v$VERSION -m 'Release v$VERSION'"
+echo "  5. Push to GitHub:"
+echo "     git push && git push --tags"
 """
 
 # === Hooks tasks ===

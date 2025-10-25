@@ -50,6 +50,8 @@ mise run changelog-bump <version>
 # Example: mise run changelog-bump 0.1.4
 ```
 
+**Note**: See [docs/git-cliff-configuration.md](docs/git-cliff-configuration.md) for detailed information about changelog configuration, commit message conventions, and release workflow.
+
 ### Structure Verification
 
 ```bash

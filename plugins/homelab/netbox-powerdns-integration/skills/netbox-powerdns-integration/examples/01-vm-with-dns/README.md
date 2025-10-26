@@ -6,11 +6,12 @@
 
 This is the "holy grail" of infrastructure automation - deploy infrastructure and have DNS automatically configured:
 
-```
+```text
 Terraform Deploy → Proxmox VM Created → NetBox IP Registered → PowerDNS Records Auto-Created → Ready for Ansible
 ```
 
 **Benefits:**
+
 - ✅ No manual DNS configuration
 - ✅ Single source of truth (NetBox)
 - ✅ Audit trail for all infrastructure changes
@@ -19,7 +20,7 @@ Terraform Deploy → Proxmox VM Created → NetBox IP Registered → PowerDNS Re
 
 ## Architecture
 
-```
+```text
 ┌──────────────┐
 │  Terraform   │
 └──────┬───────┘
@@ -56,6 +57,7 @@ tofu apply
 ### 2. NetBox Configuration
 
 **NetBox PowerDNS Sync Plugin** must be configured with:
+
 - Zone: `spaceships.work`
 - Tag rule matching: `production-dns`
 - PowerDNS server connection configured
@@ -102,6 +104,7 @@ tofu plan
 ```
 
 **Expected resources:**
+
 - 1 Proxmox VM (docker-01-nexus)
 - 1 NetBox IP address (192.168.1.100)
 - DNS records created automatically (not shown in plan)
@@ -117,30 +120,35 @@ tofu apply
 ### 4. Verify Complete Workflow
 
 **Step 1: Check VM exists**
+
 ```bash
 # On Proxmox node
 qm status $(terraform output -raw vm_id)
 ```
 
 **Step 2: Check NetBox registration**
+
 ```bash
 curl -H "Authorization: Token $NETBOX_API_TOKEN" \
   "https://netbox.spaceships.work/api/ipam/ip-addresses/?address=192.168.1.100" | jq
 ```
 
 **Step 3: Verify DNS forward resolution**
+
 ```bash
 dig @192.168.3.1 docker-01-nexus.spaceships.work +short
 # Expected: 192.168.1.100
 ```
 
 **Step 4: Verify DNS reverse resolution**
+
 ```bash
 dig @192.168.3.1 -x 192.168.1.100 +short
 # Expected: docker-01-nexus.spaceships.work.
 ```
 
 **Step 5: SSH into VM**
+
 ```bash
 ssh ansible@docker-01-nexus.spaceships.work
 # or
@@ -188,6 +196,7 @@ zone_config = {
 ```
 
 **What happens:**
+
 1. IP address created in NetBox with `production-dns` tag
 2. Plugin detects new IP matches zone rule
 3. Plugin calls PowerDNS API to create records:
@@ -234,27 +243,32 @@ tofu apply -var-file=dev.tfvars
 ### DNS Records Not Created
 
 **1. Check NetBox IP registration:**
+
 ```bash
 curl -H "Authorization: Token $NETBOX_API_TOKEN" \
   "https://netbox.spaceships.work/api/ipam/ip-addresses/?dns_name=docker-01-nexus.spaceships.work" | jq
 ```
 
 Verify:
+
 - IP exists in NetBox
 - Has `production-dns` tag
 - `dns_name` field is set
 
 **2. Check zone configuration:**
+
 - NetBox → Plugins → NetBox PowerDNS Sync → Zones
 - Verify `spaceships.work` zone exists
 - Check tag rules match `production-dns`
 
 **3. Check sync results:**
+
 - NetBox → Plugins → NetBox PowerDNS Sync → Zones → spaceships.work
 - Click "Sync Now" to manually trigger
 - Review sync results for errors
 
 **4. Check PowerDNS:**
+
 ```bash
 # Query PowerDNS API directly
 curl -H "X-API-Key: $POWERDNS_API_KEY" \
@@ -264,11 +278,13 @@ curl -H "X-API-Key: $POWERDNS_API_KEY" \
 ### SSH Connection Fails
 
 **Try IP first:**
+
 ```bash
 ssh ansible@192.168.1.100
 ```
 
 If IP works but FQDN doesn't:
+
 - DNS not propagated yet (wait 30s)
 - Check DNS resolution: `dig @192.168.3.1 docker-01-nexus.spaceships.work`
 
@@ -277,6 +293,7 @@ If IP works but FQDN doesn't:
 **Error:** `authentication failed`
 
 **Solution:**
+
 ```bash
 # Test API token
 curl -H "Authorization: Token $NETBOX_API_TOKEN" \
@@ -305,6 +322,7 @@ After deployment, use for Ansible configuration:
 ```
 
 **Run with dynamic inventory:**
+
 ```bash
 cd ../../../ansible
 ansible-playbook -i inventory/netbox.yml playbooks/configure-docker.yml
@@ -335,21 +353,25 @@ Before using in production:
 ## Benefits of This Approach
 
 **Single Source of Truth:**
+
 - All infrastructure documented in NetBox
 - DNS automatically matches reality
 - Easy to audit what exists
 
 **Automation:**
+
 - No manual DNS configuration
 - Reduced human error
 - Faster deployments
 
 **Consistency:**
+
 - Naming convention enforced
 - Tag-based organization
 - Audit trail via Terraform
 
 **Integration:**
+
 - Ansible dynamic inventory
 - Monitoring integrations
 - IPAM + DNS + DCIM in one place

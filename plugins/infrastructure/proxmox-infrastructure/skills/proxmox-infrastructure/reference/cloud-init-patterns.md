@@ -1,6 +1,6 @@
 # Cloud-Init Patterns for Proxmox VE
 
-*Source: https://pve.proxmox.com/wiki/Cloud-Init_Support*
+*Source: <https://pve.proxmox.com/wiki/Cloud-Init_Support*>
 
 ## Overview
 
@@ -87,41 +87,53 @@ qm cloudinit dump 9000 meta
 ## Cloud-Init Options Reference
 
 ### cicustom
+
 Specify custom files to replace automatically generated ones:
+
 - `meta=<volume>` - Meta data (provider specific)
 - `network=<volume>` - Network data
 - `user=<volume>` - User data
 - `vendor=<volume>` - Vendor data
 
 ### cipassword
+
 Password for the user. **Not recommended** - use SSH keys instead.
 
 ### citype
+
 Configuration format: `configdrive2 | nocloud | opennebula`
+
 - Default: `nocloud` for Linux, `configdrive2` for Windows
 
 ### ciupgrade
+
 Automatic package upgrade after first boot (default: `true`)
 
 ### ciuser
+
 Username to configure (instead of image's default user)
 
 ### ipconfig[n]
+
 IP addresses and gateways for network interfaces.
 
 Format: `[gw=<GatewayIPv4>] [,gw6=<GatewayIPv6>] [,ip=<IPv4Format/CIDR>] [,ip6=<IPv6Format/CIDR>]`
 
 Special values:
+
 - `ip=dhcp` - Use DHCP for IPv4
 - `ip6=auto` - Use stateless autoconfiguration (requires cloud-init 19.4+)
 
 ### sshkeys
+
 Public SSH keys (one per line, OpenSSH format)
 
 ### nameserver
+
 DNS server IP address
 
 ### searchdomain
+
 DNS search domains
 
 ## Best Practices
@@ -136,13 +148,16 @@ DNS search domains
 ## Troubleshooting
 
 ### Template Won't Boot
+
 - Check if serial console is configured: `qm set <vmid> --serial0 socket --vga serial0`
 - Verify boot order: `qm set <vmid> --boot order=scsi0`
 
 ### Network Not Configured
+
 - Ensure cloud-init CD-ROM is attached: `qm set <vmid> --ide2 local-lvm:cloudinit`
 - Check IP configuration: `qm config <vmid> | grep ipconfig`
 
 ### SSH Keys Not Working
+
 - Verify sshkeys format (OpenSSH format, one per line)
 - Check cloud-init logs in VM: `cat /var/log/cloud-init.log`

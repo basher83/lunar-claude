@@ -28,6 +28,7 @@ Every command MUST:
 ### Step 1: Define Command Purpose
 
 Ask the user:
+
 - What should this command do?
 - What inputs/context does it need?
 - What should Claude produce?
@@ -35,6 +36,7 @@ Ask the user:
 ### Step 2: Choose Command Name
 
 Create concise kebab-case name:
+
 - "generate tests" → `generate-tests.md`
 - "review pr" → `review-pr.md`
 - "deploy app" → `deploy-app.md`

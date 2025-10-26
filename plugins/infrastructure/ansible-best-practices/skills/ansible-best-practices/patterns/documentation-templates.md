@@ -5,6 +5,7 @@
 Analyzed 7 geerlingguy roles: security, users, docker, postgresql, nginx, pip, git
 
 **Universal Patterns (All 7 roles):**
+
 - Consistent README structure: Title + Badge → Description → Requirements → Variables → Dependencies → Example → License → Author (7/7 roles)
 - CI badge showing test status with link to workflow (7/7 roles)
 - Code-formatted variable defaults with detailed descriptions (7/7 roles)
@@ -16,6 +17,7 @@ Analyzed 7 geerlingguy roles: security, users, docker, postgresql, nginx, pip, g
 - Commented list examples showing optional items (7/7 roles)
 
 **Contextual Patterns (Varies by complexity):**
+
 - Warning/caveat sections: security-critical roles have prominent warnings, simple roles don't need them
 - Variable documentation depth: complex roles (postgresql) have extensive inline docs, simple roles (pip) are more concise
 - Example complexity: simple roles show basic examples, complex roles show multiple scenarios
@@ -23,11 +25,13 @@ Analyzed 7 geerlingguy roles: security, users, docker, postgresql, nginx, pip, g
 - Complex variable documentation: roles with 5+ optional dict attributes show ALL keys with inline comments
 
 **Evolving Patterns (Newer roles improved):**
+
 - PostgreSQL shows best practices for complex variable documentation: show all keys, mark required vs optional, document defaults
 - nginx demonstrates template extensibility documentation (Jinja2 block inheritance)
 - Complex roles provide comprehensive inline examples in defaults/ files as primary documentation
 
 **Sources:**
+
 - geerlingguy.security (analyzed 2025-10-23)
 - geerlingguy.github-users (analyzed 2025-10-23)
 - geerlingguy.docker (analyzed 2025-10-23)
@@ -37,13 +41,14 @@ Analyzed 7 geerlingguy roles: security, users, docker, postgresql, nginx, pip, g
 - geerlingguy.git (analyzed 2025-10-23)
 
 **Repositories:**
-- https://github.com/geerlingguy/ansible-role-security
-- https://github.com/geerlingguy/ansible-role-github-users
-- https://github.com/geerlingguy/ansible-role-docker
-- https://github.com/geerlingguy/ansible-role-postgresql
-- https://github.com/geerlingguy/ansible-role-nginx
-- https://github.com/geerlingguy/ansible-role-pip
-- https://github.com/geerlingguy/ansible-role-git
+
+- <https://github.com/geerlingguy/ansible-role-security>
+- <https://github.com/geerlingguy/ansible-role-github-users>
+- <https://github.com/geerlingguy/ansible-role-docker>
+- <https://github.com/geerlingguy/ansible-role-postgresql>
+- <https://github.com/geerlingguy/ansible-role-nginx>
+- <https://github.com/geerlingguy/ansible-role-pip>
+- <https://github.com/geerlingguy/ansible-role-git>
 
 ## Pattern Confidence Levels (Historical)
 
@@ -706,7 +711,7 @@ This role was created by [Author Name](link), [additional context].
 ## Validation: geerlingguy.postgresql
 
 **Analysis Date:** 2025-10-23
-**Repository:** https://github.com/geerlingguy/ansible-role-postgresql
+**Repository:** <https://github.com/geerlingguy/ansible-role-postgresql>
 
 ### README Structure
 
@@ -724,6 +729,7 @@ This role was created by [Author Name](link), [additional context].
     - Usage context and examples
     - Inline comments for complex structures
   - **Example quality:**
+
   ```markdown
       postgresql_databases:
         - name: exampledb # required; the rest are optional
@@ -731,6 +737,7 @@ This role was created by [Author Name](link), [additional context].
           lc_ctype: # defaults to 'en_US.UTF-8'
           encoding: # defaults to 'UTF-8'
   ```
+
   - **Validates:** Complex dict variables need inline comment documentation
   - **4/4 roles use this documentation pattern**
 
@@ -807,7 +814,7 @@ This role was created by [Author Name](link), [additional context].
 ## Validation: geerlingguy.pip
 
 **Analysis Date:** 2025-10-23
-**Repository:** https://github.com/geerlingguy/ansible-role-pip
+**Repository:** <https://github.com/geerlingguy/ansible-role-pip>
 
 ### README Structure
 
@@ -870,7 +877,7 @@ This role was created by [Author Name](link), [additional context].
 ## Validation: geerlingguy.git
 
 **Analysis Date:** 2025-10-23
-**Repository:** https://github.com/geerlingguy/ansible-role-git
+**Repository:** <https://github.com/geerlingguy/ansible-role-git>
 
 ### README Structure
 
@@ -957,6 +964,7 @@ This role was created by [Author Name](link), [additional context].
 **Next Steps:**
 
 Enhance Virgo-Core role READMEs with:
+
 1. More detailed variable context
 2. Troubleshooting sections
 3. CI badges (after implementing testing)

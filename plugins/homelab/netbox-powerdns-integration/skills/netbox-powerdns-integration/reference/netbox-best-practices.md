@@ -29,7 +29,7 @@ Comprehensive best practices for using NetBox as the source of truth for the Mat
 
 Follow this order when setting up infrastructure in NetBox:
 
-```
+```text
 1. Sites          → Create physical locations first
 2. Prefixes       → Define IP networks (IPAM)
 3. VLANs          → Network segmentation
@@ -43,6 +43,7 @@ Follow this order when setting up infrastructure in NetBox:
 ```
 
 **Why this order?**
+
 - Parent objects must exist before children
 - Avoids circular dependencies
 - Enables atomic operations
@@ -88,6 +89,7 @@ device = nb.dcim.devices.create(
 ```
 
 **Optional but recommended:**
+
 - `description` - Hardware specs, purpose
 - `tags` - For filtering and automation
 - `comments` - Additional notes
@@ -159,7 +161,7 @@ site = nb.dcim.sites.create(slug="Matrix_Cluster", ...)  # ❌ Bad
 
 **Matrix cluster example:**
 
-```
+```text
 192.168.0.0/16 (Home network supernet)
 ├── 192.168.3.0/24 (Management)
 │   ├── 192.168.3.1     (Gateway)
@@ -267,6 +269,7 @@ vrf_lab = nb.ipam.vrfs.create(
 ```
 
 **When to use VRFs:**
+
 - Multiple environments (prod, dev, lab)
 - Overlapping IP ranges
 - Security isolation
@@ -361,6 +364,7 @@ device.save()
 ```
 
 **Why?** Primary IP is used by:
+
 - Ansible dynamic inventory
 - Monitoring tools
 - DNS automation
@@ -490,18 +494,23 @@ vm.save()
 Organize tags by purpose:
 
 **Infrastructure Type:**
+
 - `proxmox-node`, `ceph-node`, `docker-host`, `k8s-master`, `k8s-worker`
 
 **Environment:**
+
 - `production`, `staging`, `development`, `lab`
 
 **DNS Automation:**
+
 - `production-dns`, `lab-dns` (triggers PowerDNS sync)
 
 **Management:**
+
 - `terraform`, `ansible`, `manual`
 
 **Networking:**
+
 - `management`, `ceph-public`, `ceph-private`, `jumbo-frames`
 
 ### Tag Naming Convention
@@ -599,7 +608,7 @@ Create tokens with appropriate scopes:
 
 **✅ Create separate tokens for different purposes:**
 
-```
+```text
 NETBOX_API_TOKEN_READONLY   → Read-only queries
 NETBOX_API_TOKEN_TERRAFORM  → Terraform automation
 NETBOX_API_TOKEN_ANSIBLE    → Ansible dynamic inventory
@@ -928,6 +937,7 @@ group_by:
 **Problem:** "Permission denied" errors
 
 **Solution:** Check API token permissions
+
 ```bash
 # Test token
 curl -H "Authorization: Token YOUR_TOKEN" \
@@ -937,6 +947,7 @@ curl -H "Authorization: Token YOUR_TOKEN" \
 **Problem:** IP not syncing to PowerDNS
 
 **Solution:** Check tags
+
 ```python
 # IP must have tag matching zone rules
 ip = nb.ipam.ip_addresses.get(address='192.168.3.10/24')
@@ -947,6 +958,7 @@ print(f"Tags: {[tag.name for tag in ip.tags]}")
 **Problem:** Slow API queries
 
 **Solution:** Use filtering and pagination
+
 ```python
 # ❌ Slow
 all_devices = nb.dcim.devices.all()

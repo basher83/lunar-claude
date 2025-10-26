@@ -12,22 +12,26 @@ Expert guidance for writing maintainable, idempotent, and testable Ansible playb
 ### Common Tasks
 
 **Lint Playbook:**
+
 ```bash
 mise run ansible-lint
 # Or: ./tools/lint-all.sh
 ```
 
 **Analyze Playbook Complexity:**
+
 ```bash
 ./tools/analyze_playbook.py ansible/playbooks/my-playbook.yml
 ```
 
 **Check Idempotency:**
+
 ```bash
 ./tools/check_idempotency.py ansible/playbooks/my-playbook.yml
 ```
 
 **Run With Infisical Secrets:**
+
 ```bash
 # Secrets loaded from Infisical vault
 cd ansible && uv run ansible-playbook playbooks/my-playbook.yml
@@ -36,6 +40,7 @@ cd ansible && uv run ansible-playbook playbooks/my-playbook.yml
 ## When to Use This Skill
 
 Activate this skill when:
+
 - Refactoring existing Ansible playbooks
 - Creating new roles or playbooks
 - Improving idempotency of tasks
@@ -55,6 +60,7 @@ This repository uses **Infisical** for secrets management. See the reusable task
 [../../ansible/tasks/infisical-secret-lookup.yml](../../ansible/tasks/infisical-secret-lookup.yml)
 
 **Usage Pattern:**
+
 ```yaml
 - name: Retrieve Proxmox credentials
   ansible.builtin.include_tasks: tasks/infisical-secret-lookup.yml
@@ -68,6 +74,7 @@ This repository uses **Infisical** for secrets management. See the reusable task
 ```
 
 **Key Features:**
+
 - Validates authentication (Universal Auth or fallback env)
 - Proper `no_log` for security
 - Fallback to environment variables
@@ -95,12 +102,14 @@ uv run ansible-playbook playbooks/create-admin-user.yml \
 ```
 
 **Why This Works:**
+
 - Follows community role patterns (`geerlingguy.docker`, etc.)
 - Single source of truth
 - Consistent interface
 - Less duplication
 
 **Key Implementation Details:**
+
 ```yaml
 - name: Manage Administrative User
   roles:
@@ -143,6 +152,7 @@ From [../../ansible/playbooks/proxmox-create-terraform-user.yml](../../ansible/p
 ```
 
 **Why This Works:**
+
 - `changed_when` prevents false positives
 - `failed_when` handles "already exists" gracefully
 - Idempotent despite using `command` module
@@ -150,6 +160,7 @@ From [../../ansible/playbooks/proxmox-create-terraform-user.yml](../../ansible/p
 ### 4. Proper Error Handling
 
 **Pattern:**
+
 ```yaml
 - name: Check if resource exists
   ansible.builtin.command: check-resource {{ resource_id }}
@@ -164,6 +175,7 @@ From [../../ansible/playbooks/proxmox-create-terraform-user.yml](../../ansible/p
 ```
 
 **Anti-pattern:**
+
 ```yaml
 # BAD: Using shell without proper controls
 - name: Do something
@@ -174,11 +186,13 @@ From [../../ansible/playbooks/proxmox-create-terraform-user.yml](../../ansible/p
 ### 5. Task Organization
 
 **Reusable Tasks:**
+
 - Extract common patterns to `tasks/` directory
 - Use `include_tasks` with clear variable contracts
 - Document required variables
 
 **Example from repository:**
+
 ```yaml
 # In playbook
 - name: Get database password
@@ -214,6 +228,7 @@ From [../../ansible/playbooks/proxmox-enable-vlan-bridging.yml](../../ansible/pl
 ```
 
 **Why This Works:**
+
 - Declarative network configuration
 - Automatic backup before changes
 - Handler pattern for network reload
@@ -244,6 +259,7 @@ See [patterns/network-automation.md](patterns/network-automation.md) for advance
 ```
 
 **Verify Operations:**
+
 ```yaml
 - name: Verify template was created
   ansible.builtin.shell: |
@@ -287,7 +303,7 @@ See [reference/variable-precedence.md](reference/variable-precedence.md) for det
 
 ### Organization Strategy
 
-```
+```text
 ansible/
 ├── group_vars/
 │   ├── all.yml          # Variables for ALL hosts
@@ -319,6 +335,7 @@ ansible/
 ### When to Use Community Modules
 
 **Use community.proxmox for Proxmox management:**
+
 ```yaml
 - name: Create Proxmox user
   community.proxmox.proxmox_user:
@@ -330,6 +347,7 @@ ansible/
 ```
 
 **Collections in use:**
+
 - `community.general` - General utilities
 - `community.proxmox` - Proxmox VE management
 - `infisical.vault` - Secrets management
@@ -351,6 +369,7 @@ mise run ansible-lint
 ```
 
 **Common Issues to Fix:**
+
 - Missing `name:` on tasks
 - Using `shell` instead of `command` unnecessarily
 - Not using `changed_when` with `command`/`shell`
@@ -362,6 +381,7 @@ mise run ansible-lint
 See [tools/molecule/](tools/molecule/) for test scenarios.
 
 **Basic workflow:**
+
 ```bash
 cd tools/molecule/default
 molecule create    # Create test environment
@@ -379,6 +399,7 @@ See [anti-patterns/common-mistakes.md](anti-patterns/common-mistakes.md) for det
 ### 1. Not Using set -euo pipefail
 
 **Bad:**
+
 ```yaml
 - name: Run script
   ansible.builtin.shell: |
@@ -387,6 +408,7 @@ See [anti-patterns/common-mistakes.md](anti-patterns/common-mistakes.md) for det
 ```
 
 **Good:**
+
 ```yaml
 - name: Run script
   ansible.builtin.shell: |
@@ -400,6 +422,7 @@ See [anti-patterns/common-mistakes.md](anti-patterns/common-mistakes.md) for det
 ### 2. Missing no_log on Secrets
 
 **Bad:**
+
 ```yaml
 - name: Set password
   ansible.builtin.command: set-password {{ password }}
@@ -407,6 +430,7 @@ See [anti-patterns/common-mistakes.md](anti-patterns/common-mistakes.md) for det
 ```
 
 **Good:**
+
 ```yaml
 - name: Set password
   ansible.builtin.command: set-password {{ password }}
@@ -416,12 +440,14 @@ See [anti-patterns/common-mistakes.md](anti-patterns/common-mistakes.md) for det
 ### 3. Using `shell` When `command` Suffices
 
 **Bad:**
+
 ```yaml
 - name: List files
   ansible.builtin.shell: ls -la
 ```
 
 **Good:**
+
 ```yaml
 - name: List files
   ansible.builtin.command: ls -la
@@ -434,18 +460,21 @@ Use `shell` ONLY when you need shell features (pipes, redirects, etc.).
 ### Python Analysis Tools (uv)
 
 **analyze_playbook.py** - Complexity metrics
+
 ```bash
 ./tools/analyze_playbook.py playbook.yml
 # Shows: task count, role usage, variable complexity
 ```
 
 **check_idempotency.py** - Find non-idempotent patterns
+
 ```bash
 ./tools/check_idempotency.py playbook.yml
 # Detects: missing changed_when, shell without controls
 ```
 
 **extract_variables.py** - Variable organization helper
+
 ```bash
 ./tools/extract_variables.py playbook.yml
 # Suggests: where to move variables (defaults, group_vars, etc.)
@@ -454,6 +483,7 @@ Use `shell` ONLY when you need shell features (pipes, redirects, etc.).
 ### Linting
 
 **lint-all.sh** - Run all linters
+
 ```bash
 ./tools/lint-all.sh
 # Runs: ansible-lint, yamllint, with project config
@@ -462,6 +492,7 @@ Use `shell` ONLY when you need shell features (pipes, redirects, etc.).
 ### Testing
 
 **molecule/** - Test scenarios
+
 ```bash
 ./tools/molecule/default/  # Default test scenario
 ```
@@ -484,10 +515,12 @@ Use `shell` ONLY when you need shell features (pipes, redirects, etc.).
 Start here, drill down as needed:
 
 ### Quick Reference (Read First)
+
 - [Playbook & Role Patterns](patterns/playbook-role-patterns.md) - State-based playbooks, public API variables, validation patterns
 - [Secrets management](patterns/secrets-management.md) - Infisical integration
 
 ### Deep Patterns (Read When Needed)
+
 - [testing-comprehensive.md](patterns/testing-comprehensive.md) - Molecule, CI/CD, test strategies ✨ NEW
 - [role-structure-standards.md](patterns/role-structure-standards.md) - Directory org, naming conventions ✨ NEW
 - [documentation-templates.md](patterns/documentation-templates.md) - README structure, variable docs ✨ NEW
@@ -496,11 +529,13 @@ Start here, drill down as needed:
 - [meta-dependencies.md](patterns/meta-dependencies.md) - galaxy_info, dependencies ✨ NEW
 
 ### Advanced Automation Patterns (from ProxSpray Analysis)
+
 - [Cluster Automation](patterns/cluster-automation.md) - Proxmox cluster formation with idempotency
 - [Network Automation](patterns/network-automation.md) - Declarative network configuration
 - [CEPH Automation](patterns/ceph-automation.md) - Complete CEPH storage deployment
 
 ### Core Reference
+
 - [Roles vs playbooks](reference/roles-vs-playbooks.md) - Organization patterns
 - [Variable precedence](reference/variable-precedence.md) - Complete precedence rules
 - [Idempotency patterns](reference/idempotency-patterns.md) - Advanced patterns
@@ -510,6 +545,7 @@ Start here, drill down as needed:
 - [production-repos.md](reference/production-repos.md) - Studied geerlingguy roles index ✨ NEW
 
 ### Patterns & Anti-Patterns
+
 - [Error handling](patterns/error-handling.md) - Proper error handling
 - [Task organization](patterns/task-organization.md) - Reusable tasks
 - [Common mistakes](anti-patterns/common-mistakes.md) - What to avoid

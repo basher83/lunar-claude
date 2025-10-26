@@ -14,6 +14,7 @@ PROXMOX_PASSWORD = "admin123"
 ```
 
 **Risks:**
+
 - Secrets exposed in version control
 - No audit trail
 - Difficult to rotate
@@ -47,6 +48,7 @@ API_URL = get_secret("PROXMOX_API_URL")
 ```
 
 **Usage:**
+
 ```bash
 export PROXMOX_PASSWORD="$(cat ~/.secrets/proxmox_pass)"
 ./script.py
@@ -82,6 +84,7 @@ proxmox_password = get_password("proxmox", "terraform@pam")
 ```
 
 **Setup:**
+
 ```bash
 # Store password in system keyring
 keyring set proxmox terraform@pam
@@ -136,6 +139,7 @@ PROXMOX_PASSWORD = get_infisical_secret(
 ```
 
 **Setup:**
+
 ```bash
 # Authenticate with Infisical
 infisical login
@@ -258,6 +262,7 @@ def validate_path(path: str) -> bool:
 ```
 
 **Why pin?**
+
 - Prevents automatic upgrades with vulnerabilities
 - Ensures reproducible execution
 - Allows controlled dependency updates
@@ -275,6 +280,7 @@ def validate_path(path: str) -> bool:
 ```
 
 **Use cases:**
+
 - Prevent supply chain attacks from compromised packages
 - Freeze dependencies at known-good state
 - Reproducible builds in CI/CD

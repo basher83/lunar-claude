@@ -41,6 +41,7 @@ From official documentation:
 ### Step 1: Identify Event and Purpose
 
 Ask the user:
+
 - What should happen automatically?
 - When should it happen (which event)?
 - What tool uses should trigger it (if PostToolUse)?
@@ -78,6 +79,7 @@ Structure for `hooks/hooks.json`:
 ### Step 4: Create Associated Scripts
 
 If using command hooks:
+
 1. Create script in plugin's `scripts/` directory
 2. Make executable: `chmod +x scripts/script.sh`
 3. Use `${CLAUDE_PLUGIN_ROOT}` for paths
@@ -85,6 +87,7 @@ If using command hooks:
 ### Step 5: Verify Against Official Docs
 
 Check `ai_docs/plugins-referance.md` for:
+
 - Current event names
 - Hook configuration schema
 - Environment variable usage

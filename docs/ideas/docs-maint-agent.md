@@ -42,13 +42,13 @@ async def documentation_maintenance_agent(repo_path: str):
         allowed_tools=["Read", "Write", "Grep", "Glob", "Bash"],
         permission_mode='requestPermission',  # Human-in-the-loop for safety
         max_turns=10,
-        system_prompt="""You are a documentation maintenance specialist. 
+        system_prompt="""You are a documentation maintenance specialist.
         Your responsibilities:
         1. Lint all markdown files and fix syntax errors
         2. Validate all links (internal and external)
         3. Review grammar and clarity
         4. Identify documentation gaps for the repository
-        
+
         Coordinate with specialized subagents for each task.""",
         agents=[
             {
@@ -77,7 +77,7 @@ async def documentation_maintenance_agent(repo_path: str):
             }
         ]
     )
-    
+
     prompt = """
     Review all markdown documentation in this repository:
     1. Find all .md files
@@ -85,10 +85,10 @@ async def documentation_maintenance_agent(repo_path: str):
     3. Validate all links (internal and external)
     4. Check grammar and writing quality
     5. Identify any documentation gaps based on the codebase
-    
+
     Create a detailed report with findings and auto-fix what you can.
     """
-    
+
     async for message in query(prompt=prompt, options=options):
         if isinstance(message, AssistantMessage):
             for block in message.content:
@@ -153,30 +153,30 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
-      
+
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-          
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '18'
-          
+
       - name: Install dependencies
         run: |
           pip install claude-agent-sdk
           npm install -g @anthropic-ai/claude-code
-          
+
       - name: Run documentation agent
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: python scripts/doc_maintenance_agent.py
-        
+
       - name: Create PR with fixes
         uses: peter-evans/create-pull-request@v5
         with:
@@ -241,7 +241,7 @@ Use hooks for automated validation before committing changes:
 Run independent validation tasks in parallel for faster processing:
 
 ```python
-# The SDK handles parallel execution automatically when subagents 
+# The SDK handles parallel execution automatically when subagents
 # don't have dependencies on each other
 options = ClaudeAgentOptions(
     agents=[

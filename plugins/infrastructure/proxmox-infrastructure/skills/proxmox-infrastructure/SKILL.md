@@ -12,12 +12,14 @@ Expert guidance for managing Proxmox VE clusters, creating templates, provisioni
 ### Common Tasks
 
 **Create VM Template:**
+
 ```bash
 # See tools/build-template.yml for automated playbook
 cd ansible && uv run ansible-playbook playbooks/proxmox-build-template.yml
 ```
 
 **Clone Template to VM:**
+
 ```bash
 qm clone <template-id> <new-vmid> --name <vm-name>
 qm set <new-vmid> --sshkey ~/.ssh/id_rsa.pub
@@ -26,6 +28,7 @@ qm start <new-vmid>
 ```
 
 **Check Cluster Status:**
+
 ```bash
 # Use tools/cluster_status.py
 ./tools/cluster_status.py
@@ -34,6 +37,7 @@ qm start <new-vmid>
 ## When to Use This Skill
 
 Activate this skill when:
+
 - Creating or managing Proxmox VM templates
 - Provisioning VMs via cloning or Terraform
 - Configuring Proxmox networking (bridges, VLANs, bonds)
@@ -55,6 +59,7 @@ See [tools/build-template.yml](tools/build-template.yml) for complete automation
 See [reference/cloud-init-patterns.md](reference/cloud-init-patterns.md) for detailed steps.
 
 Key points:
+
 - Use `virtio-scsi-pci` controller for Ubuntu images
 - Add cloud-init CD-ROM drive (`ide2`)
 - Configure serial console for cloud images
@@ -69,6 +74,7 @@ Analyze existing playbook: [../../ansible/playbooks/proxmox-build-template.yml](
 See examples in [../../terraform/netbox-vm/](../../terraform/netbox-vm/)
 
 **Key Configuration:**
+
 ```yaml
 # Ansible example
 proxmox_kvm:
@@ -88,11 +94,13 @@ proxmox_kvm:
 ### 3. Network Configuration
 
 This Virgo-Core cluster uses:
+
 - **vmbr0**: Management (192.168.3.0/24, VLAN 9 for Corosync)
 - **vmbr1**: CEPH Public (192.168.5.0/24, MTU 9000)
 - **vmbr2**: CEPH Private (192.168.7.0/24, MTU 9000)
 
 See [reference/networking.md](reference/networking.md) for:
+
 - VLAN-aware bridge configuration
 - Bond setup (802.3ad LACP)
 - Routed vs bridged vs NAT setups
@@ -104,13 +112,15 @@ See [reference/networking.md](reference/networking.md) for:
 **Nodes:** Foxtrot, Golf, Hotel (3× MINISFORUM MS-A2)
 
 **Hardware per Node:**
+
 - AMD Ryzen 9 9955HX (16C/32T)
 - 64GB DDR5 @ 5600 MT/s
 - 3× NVMe: 1× 1TB (boot), 2× 4TB (CEPH)
 - 4× NICs: 2× 10GbE SFP+, 2× 2.5GbE
 
 **Network Architecture:**
-```
+
+```text
 enp4s0 → vmbr0 (mgmt + vlan9 for corosync)
 enp5s0f0np0 → vmbr1 (ceph public, MTU 9000)
 enp5s0f1np1 → vmbr2 (ceph private, MTU 9000)
@@ -123,16 +133,19 @@ See [../../docs/goals.md](../../docs/goals.md) for complete specs.
 ### Python Scripts (uv)
 
 **validate_template.py** - Validate template health via API
+
 ```bash
 ./tools/validate_template.py --template-id 9000
 ```
 
 **vm_diagnostics.py** - VM health checks
+
 ```bash
 ./tools/vm_diagnostics.py --vmid 101
 ```
 
 **cluster_status.py** - Cluster health metrics
+
 ```bash
 ./tools/cluster_status.py
 ```
@@ -140,11 +153,13 @@ See [../../docs/goals.md](../../docs/goals.md) for complete specs.
 ### Ansible Playbooks
 
 **build-template.yml** - Automated template creation
+
 - Downloads cloud image
 - Creates VM with proper configuration
 - Converts to template
 
 **configure-networking.yml** - VLAN bridge setup
+
 - Creates VLAN-aware bridges
 - Configures bonds
 - Sets MTU for storage networks
@@ -152,6 +167,7 @@ See [../../docs/goals.md](../../docs/goals.md) for complete specs.
 ### OpenTofu Modules
 
 **vm-module-example/** - Reusable VM provisioning
+
 - Clone-based deployment
 - Cloud-init integration
 - Network configuration
@@ -159,6 +175,7 @@ See [../../docs/goals.md](../../docs/goals.md) for complete specs.
 See [examples/](examples/) directory.
 
 **Real Examples from Repository**:
+
 - **Multi-VM Cluster**: [../../terraform/examples/microk8s-cluster](../../terraform/examples/microk8s-cluster) - Comprehensive 3-node MicroK8s deployment using `for_each` pattern, cross-node cloning, **dual NIC with VLAN** (VLAN 30 primary, VLAN 2 secondary), Ansible integration
 - **Template with Cloud-Init**: [../../terraform/examples/template-with-custom-cloudinit](../../terraform/examples/template-with-custom-cloudinit) - Custom cloud-init snippet configuration
 - **VLAN Bridge Configuration**: [../../ansible/playbooks/proxmox-enable-vlan-bridging.yml](../../ansible/playbooks/proxmox-enable-vlan-bridging.yml) - Enable VLAN-aware bridging on Proxmox nodes (supports VLANs 2-4094)
@@ -171,11 +188,13 @@ Common issues and solutions:
 
 **Serial console required:**
 Many cloud images need serial console configured.
+
 ```bash
 qm set <vmid> --serial0 socket --vga serial0
 ```
 
 **Boot order:**
+
 ```bash
 qm set <vmid> --boot order=scsi0
 ```
@@ -183,17 +202,22 @@ qm set <vmid> --boot order=scsi0
 ### Network Issues
 
 **VLAN not working:**
+
 1. Check bridge is VLAN-aware:
+
    ```bash
    grep "bridge-vlan-aware" /etc/network/interfaces
    ```
+
 2. Verify VLAN in bridge-vids:
+
    ```bash
    bridge vlan show
    ```
 
 **MTU problems (CEPH):**
 Ensure MTU 9000 on storage networks:
+
 ```bash
 ip link show vmbr1 | grep mtu
 ```
@@ -201,17 +225,20 @@ ip link show vmbr1 | grep mtu
 ### VM Won't Start
 
 1. Check QEMU guest agent:
+
    ```bash
    qm agent <vmid> ping
    ```
 
 2. Review cloud-init logs (in VM):
+
    ```bash
    cloud-init status --wait
    cat /var/log/cloud-init.log
    ```
 
 3. Validate template exists:
+
    ```bash
    qm list | grep template
    ```
@@ -233,10 +260,12 @@ For more issues, see [troubleshooting/](troubleshooting/) directory.
 For deeper knowledge:
 
 ### Advanced Automation Workflows (from ProxSpray Analysis)
+
 - [Cluster Formation](workflows/cluster-formation.md) - Complete cluster automation with idempotency
 - [CEPH Deployment](workflows/ceph-deployment.md) - Automated CEPH storage deployment
 
 ### Core Reference
+
 - [Cloud-Init patterns](reference/cloud-init-patterns.md) - Complete template creation guide
 - [Network configuration](reference/networking.md) - VLANs, bonds, routing, NAT
 - [API reference](reference/api-reference.md) - Proxmox API interactions
@@ -244,6 +273,7 @@ For deeper knowledge:
 - [QEMU guest agent](reference/qemu-guest-agent.md) - Integration and troubleshooting
 
 ### Anti-Patterns & Common Mistakes
+
 - [Common Mistakes](anti-patterns/common-mistakes.md) - Real-world pitfalls from OpenTofu/Ansible deployments, template creation, and remote backend configuration
 
 ## Related Skills

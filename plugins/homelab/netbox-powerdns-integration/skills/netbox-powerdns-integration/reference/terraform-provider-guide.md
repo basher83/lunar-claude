@@ -1,6 +1,6 @@
 # Terraform NetBox Provider Guide
 
-*Source: https://registry.terraform.io/providers/e-breuninger/netbox/latest/docs*
+*Source: <https://registry.terraform.io/providers/e-breuninger/netbox/latest/docs*>
 
 ## Overview
 
@@ -371,7 +371,7 @@ module "network_documentation" {
 
 ### Version Mismatch Warning
 
-```
+```text
 Warning: NetBox version X.Y.Z is not officially supported by provider version A.B.C
 ```
 
@@ -379,22 +379,24 @@ Warning: NetBox version X.Y.Z is not officially supported by provider version A.
 
 ### API Authentication Errors
 
-```
+```text
 Error: authentication failed
 ```
 
 **Solution**:
+
 1. Verify `api_token` is valid
 2. Check token has required permissions
 3. Ensure `server_url` includes scheme (`https://`)
 
 ### SSL Certificate Errors
 
-```
+```text
 Error: x509: certificate signed by unknown authority
 ```
 
 **Solution**:
+
 ```hcl
 provider "netbox" {
   server_url          = var.netbox_url
@@ -407,7 +409,7 @@ provider "netbox" {
 
 ### Trailing Slash Issues
 
-```
+```text
 Error: invalid URL format
 ```
 

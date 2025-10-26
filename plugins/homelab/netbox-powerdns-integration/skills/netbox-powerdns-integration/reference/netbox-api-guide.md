@@ -1,7 +1,7 @@
 # NetBox REST API Guide
 
 **NetBox Version:** 4.3.0
-**API Documentation:** https://netboxlabs.com/docs/netbox/en/stable/
+**API Documentation:** <https://netboxlabs.com/docs/netbox/en/stable/>
 
 Complete reference for working with the NetBox REST API, including authentication, common operations, filtering, pagination, and error handling patterns for the Virgo-Core infrastructure.
 
@@ -161,7 +161,7 @@ All API endpoints are prefixed with `/api/` followed by the app name:
 
 All endpoints follow REST conventions:
 
-```
+```text
 GET    /api/{app}/{model}/          # List all objects
 POST   /api/{app}/{model}/          # Create new object(s)
 GET    /api/{app}/{model}/{id}/     # Get specific object
@@ -731,6 +731,7 @@ except pynetbox.RequestError as e:
 ### Best Practices
 
 1. **Always check for None:**
+
    ```python
    device = nb.dcim.devices.get(name='foo')
    if device:
@@ -740,6 +741,7 @@ except pynetbox.RequestError as e:
    ```
 
 2. **Use try/except for create/update:**
+
    ```python
    try:
        ip = nb.ipam.ip_addresses.create(address='192.168.1.1/24')
@@ -748,6 +750,7 @@ except pynetbox.RequestError as e:
    ```
 
 3. **Validate data before API calls:**
+
    ```python
    import ipaddress
 
@@ -769,7 +772,7 @@ NetBox may enforce rate limits on API requests.
 
 ### Response Headers
 
-```
+```text
 X-RateLimit-Limit: 1000        # Total requests allowed
 X-RateLimit-Remaining: 950     # Remaining requests
 X-RateLimit-Reset: 1640000000  # Reset time (Unix timestamp)
@@ -999,6 +1002,7 @@ Store tokens in Infisical and rotate every 90 days. See [Security](#security) se
 ### API Token Security
 
 1. **Store in Infisical (never hardcode):**
+
    ```python
    from infisical import InfisicalClient
 
@@ -1012,6 +1016,7 @@ Store tokens in Infisical and rotate every 90 days. See [Security](#security) se
    ```
 
 2. **Use environment variables (alternative):**
+
    ```python
    import os
    token = os.getenv('NETBOX_API_TOKEN')
@@ -1070,8 +1075,8 @@ audit_api_call('CREATE', 'ip-address', {'address': '192.168.1.1/24'})
 
 ## Additional Resources
 
-- **Official API Docs:** https://netboxlabs.com/docs/netbox/en/stable/
-- **pynetbox Docs:** https://pynetbox.readthedocs.io/
+- **Official API Docs:** <https://netboxlabs.com/docs/netbox/en/stable/>
+- **pynetbox Docs:** <https://pynetbox.readthedocs.io/>
 - **OpenAPI Schema:** `GET https://netbox.spaceships.work/api/schema/`
 - **GraphQL API:** `https://netbox.spaceships.work/graphql/`
 

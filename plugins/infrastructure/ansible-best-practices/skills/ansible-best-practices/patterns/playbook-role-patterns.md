@@ -5,6 +5,7 @@ Best practices for structuring playbooks and roles based on production patterns 
 ## Pattern 1: State-Based Playbooks (Not Separate Create/Delete)
 
 **Anti-Pattern: Separate playbooks for each operation**
+
 ```text
 ❌ BAD:
 playbooks/
@@ -13,6 +14,7 @@ playbooks/
 ```
 
 **Best Practice: Single playbook with state variable**
+
 ```text
 ✅ GOOD:
 playbooks/
@@ -22,6 +24,7 @@ playbooks/
 ### Why This Pattern?
 
 Following community role patterns (like `geerlingguy.docker`, `geerlingguy.postgresql`):
+
 - **Single source of truth**: One playbook to maintain
 - **Consistent interface**: Same variables, just change `state`
 - **Less duplication**: Validation and logic shared
@@ -90,21 +93,25 @@ Following community role patterns (like `geerlingguy.docker`, `geerlingguy.postg
 ### Key Design Decisions
 
 1. **Default to `present`**: Makes common case (creation) easiest
+
    ```yaml
    admin_state_value: "{{ admin_state | default('present') }}"
    ```
 
 2. **Conditional validation**: SSH key only required when creating
+
    ```yaml
    - (admin_state_value == 'absent') or (admin_ssh_key is defined)
    ```
 
 3. **Conditional parameters**: Skip unnecessary vars when removing
+
    ```yaml
    ssh_keys: "{{ [] if admin_state_value == 'absent' else [admin_ssh_key] }}"
    ```
 
 4. **State-specific messages**: Different post_tasks based on state
+
    ```yaml
    - name: Display success (created)
      when: admin_state_value == 'present'
@@ -125,6 +132,7 @@ system_users: []
 ```
 
 **Why?**
+
 - Clean interface for users of the role
 - Follows community role patterns (`docker_users`, not `geerlingguy_docker_users`)
 - Internal variables should be prefixed (e.g., `system_user_create_result`)
@@ -143,6 +151,7 @@ pre_tasks:
 ```
 
 **Benefits:**
+
 - Defaults set once, used everywhere
 - Clear separation of user input vs computed values
 - Conditional defaults (only when needed)
@@ -165,6 +174,7 @@ pre_tasks:
 ```
 
 **Why validate in playbook, not role?**
+
 - Playbooks know the specific use case
 - Roles should be flexible
 - Better error messages with context
@@ -228,6 +238,7 @@ post_tasks:
 ```
 
 **Benefits:**
+
 - Users know what to do next
 - Copy-paste ready commands
 - Different messages per operation
@@ -259,6 +270,7 @@ uv run ansible-playbook playbooks/manage-user.yml -e "admin_name=test" -e "admin
 From this repository: `ansible/playbooks/create-admin-user.yml` + `ansible/roles/system_user/`
 
 **Features:**
+
 - ✅ Single playbook for create and remove
 - ✅ State defaults to `present`
 - ✅ Conditional validation (SSH key only when creating)
@@ -267,6 +279,7 @@ From this repository: `ansible/playbooks/create-admin-user.yml` + `ansible/roles
 - ✅ Fully idempotent (tested on production infrastructure)
 
 **Usage:**
+
 ```bash
 # Create admin user with full sudo
 cd ansible
@@ -314,6 +327,7 @@ playbooks/
 ## Summary
 
 ✅ **Do:**
+
 - Single playbook with `state` variable
 - Default `state: present` for common case
 - Conditional validation and parameters
@@ -321,6 +335,7 @@ playbooks/
 - Comprehensive documentation in headers
 
 ❌ **Don't:**
+
 - Create separate create/delete playbooks
 - Require parameters for both create and delete
 - Use role prefixes on public API variables

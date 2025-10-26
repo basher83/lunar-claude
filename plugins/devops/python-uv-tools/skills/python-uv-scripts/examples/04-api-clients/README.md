@@ -9,6 +9,7 @@ Production-ready API client scripts demonstrating modern Python patterns with uv
 Complete NetBox API client showing all best practices:
 
 **Features:**
+
 - PEP 723 inline dependency management
 - Infisical secrets integration (Virgo-Core security pattern)
 - Type hints and dataclasses
@@ -34,6 +35,7 @@ Complete NetBox API client showing all best practices:
 **Key Patterns Demonstrated:**
 
 1. **Secrets Management (Infisical):**
+
    ```python
    client = InfisicalClient()
    token = client.get_secret(
@@ -45,6 +47,7 @@ Complete NetBox API client showing all best practices:
    ```
 
 2. **Input Validation:**
+
    ```python
    def validate_vm_name(name: str) -> bool:
        """Validate VM name format."""
@@ -53,6 +56,7 @@ Complete NetBox API client showing all best practices:
    ```
 
 3. **Error Handling:**
+
    ```python
    try:
        vm = nb.virtualization.virtual_machines.get(name=vm_name)
@@ -65,6 +69,7 @@ Complete NetBox API client showing all best practices:
    ```
 
 4. **Rich Output:**
+
    ```python
    table = Table(title="Matrix Cluster VMs")
    table.add_column("ID", style="cyan")
@@ -74,6 +79,7 @@ Complete NetBox API client showing all best practices:
    ```
 
 5. **Type Hints:**
+
    ```python
    def get_vm_details(nb: pynetbox.api, vm_name: str) -> Optional[dict]:
        """Get detailed VM information."""
@@ -83,12 +89,14 @@ Complete NetBox API client showing all best practices:
 ## When to Use This Pattern
 
 ✅ **Use API client scripts when:**
+
 - Querying external APIs (NetBox, GitHub, cloud providers)
 - Building CLI tools for infrastructure automation
 - Creating reusable automation utilities
 - Need formatted output (tables, JSON)
 
 ✅ **Benefits:**
+
 - Self-contained (uv handles dependencies)
 - Secure (Infisical for secrets)
 - Fast to run (uv caching)
@@ -97,6 +105,7 @@ Complete NetBox API client showing all best practices:
 ## Dependencies
 
 The example uses:
+
 - `pynetbox>=7.0.0` - NetBox API client
 - `infisical-python>=2.3.3` - Secrets management
 - `rich>=13.0.0` - Terminal formatting
@@ -106,12 +115,14 @@ All managed via PEP 723 inline metadata - no manual installation needed!
 ## Security
 
 **✅ DO:**
+
 - Use Infisical for API tokens
 - Validate all input
 - Handle errors gracefully
 - Use HTTPS only
 
 **❌ DON'T:**
+
 - Hardcode API tokens
 - Skip input validation
 - Ignore errors

@@ -19,17 +19,20 @@ Guide for rolling out UV single-file scripts across development teams, establish
 ## Adoption Roadmap
 
 ### Phase 1: Pilot (Week 1-2)
+
 - Select 2-3 team members for initial trial
 - Convert 3-5 existing scripts
 - Gather feedback and iterate
 
 ### Phase 2: Expansion (Week 3-4)
+
 - Team-wide training session
 - Establish coding standards
 - Set up CI/CD integration
 - Create internal documentation
 
 ### Phase 3: Full Adoption (Week 5+)
+
 - All new scripts use UV format
 - Migration plan for legacy scripts
 - Regular reviews and improvements

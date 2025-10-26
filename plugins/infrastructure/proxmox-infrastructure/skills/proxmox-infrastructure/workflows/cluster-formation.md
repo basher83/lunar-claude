@@ -5,6 +5,7 @@ Complete guide to forming a Proxmox VE cluster using Ansible automation with ide
 ## Overview
 
 This workflow automates the creation of a Proxmox VE cluster with:
+
 - Hostname resolution configuration
 - SSH key distribution for cluster operations
 - Idempotent cluster initialization
@@ -596,9 +597,11 @@ ansible -i ansible/inventory/proxmox.yml foxtrot -m shell -a "pvecm status"
 ### Node Won't Join Cluster
 
 **Symptoms:**
+
 - `pvecm add` fails with timeout or connection error
 
 **Solutions:**
+
 1. Verify SSH connectivity: `ssh root@first-node hostname`
 2. Check /etc/hosts: `getent hosts first-node`
 3. Verify corosync network: `ping -c 3 192.168.8.5`
@@ -607,9 +610,11 @@ ansible -i ansible/inventory/proxmox.yml foxtrot -m shell -a "pvecm status"
 ### Cluster Shows No Quorum
 
 **Symptoms:**
+
 - `pvecm status` shows `Quorate: No`
 
 **Solutions:**
+
 1. Check node count: Must have majority (2 of 3, 3 of 5, etc.)
 2. Verify corosync: `systemctl status corosync`
 3. Check corosync ring: `corosync-cfgtool -s`
@@ -618,9 +623,11 @@ ansible -i ansible/inventory/proxmox.yml foxtrot -m shell -a "pvecm status"
 ### Configuration Sync Issues
 
 **Symptoms:**
+
 - Changes on one node don't appear on others
 
 **Solutions:**
+
 1. Verify pmxcfs: `systemctl status pve-cluster`
 2. Check filesystem: `pvecm status | grep -i cluster`
 3. Restart cluster filesystem: `systemctl restart pve-cluster`

@@ -31,6 +31,7 @@ Clear guidance on when single-file scripts are inappropriate and a proper Python
 ### Use Case Examples
 
 #### ❌ Wrong: Web Application
+
 ```python
 # DON'T: Single-file Flask/FastAPI app
 #!/usr/bin/env -S uv run
@@ -45,6 +46,7 @@ Clear guidance on when single-file scripts are inappropriate and a proper Python
 **Use instead**: Proper project with `pyproject.toml`, src/ structure
 
 #### ✅ Right: Quick Health Check
+
 ```python
 # DO: Simple monitoring script
 #!/usr/bin/env -S uv run

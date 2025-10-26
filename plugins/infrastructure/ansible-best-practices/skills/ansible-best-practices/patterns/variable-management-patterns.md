@@ -5,6 +5,7 @@
 Analyzed 7 geerlingguy roles: security, users, docker, postgresql, nginx, pip, git
 
 **Universal Patterns (All 7 roles):**
+
 - Role-prefixed variable names preventing conflicts (7/7 roles use rolename_feature_attribute)
 - Snake_case naming convention throughout (7/7 roles)
 - Feature grouping with shared prefixes (7/7 roles: security_ssh_*, postgresql_global_config_*)
@@ -17,17 +18,20 @@ Analyzed 7 geerlingguy roles: security, users, docker, postgresql, nginx, pip, g
 - Inline variable documentation in defaults/main.yml (7/7 roles)
 
 **Contextual Patterns (Varies by requirements):**
+
 - vars/ directory presence: only when OS-specific non-configurable data needed (4/7 roles have it)
 - Variable count scales with role complexity: minimal roles have 3-5 variables, complex roles have 20+
 - Complex list-of-dict structures: database/service roles (postgresql, nginx) vs simple list variables (pip, git)
 - Conditional variable groups: feature-toggle variables activate groups of related configuration (git_install_from_source)
 
 **Evolving Patterns (Newer roles improved):**
+
 - PostgreSQL demonstrates best practice for complex dict structures: show ALL possible keys with inline comments, mark required vs optional vs defaults
 - Flexible dict patterns: item.name | default(item) supports both simple strings and complex dicts (github-users role)
 - Advanced variable loading: first_found lookup (docker) vs simple include_vars (security) for better fallback support
 
 **Sources:**
+
 - geerlingguy.security (analyzed 2025-10-23)
 - geerlingguy.github-users (analyzed 2025-10-23)
 - geerlingguy.docker (analyzed 2025-10-23)
@@ -37,13 +41,14 @@ Analyzed 7 geerlingguy roles: security, users, docker, postgresql, nginx, pip, g
 - geerlingguy.git (analyzed 2025-10-23)
 
 **Repositories:**
-- https://github.com/geerlingguy/ansible-role-security
-- https://github.com/geerlingguy/ansible-role-github-users
-- https://github.com/geerlingguy/ansible-role-docker
-- https://github.com/geerlingguy/ansible-role-postgresql
-- https://github.com/geerlingguy/ansible-role-nginx
-- https://github.com/geerlingguy/ansible-role-pip
-- https://github.com/geerlingguy/ansible-role-git
+
+- <https://github.com/geerlingguy/ansible-role-security>
+- <https://github.com/geerlingguy/ansible-role-github-users>
+- <https://github.com/geerlingguy/ansible-role-docker>
+- <https://github.com/geerlingguy/ansible-role-postgresql>
+- <https://github.com/geerlingguy/ansible-role-nginx>
+- <https://github.com/geerlingguy/ansible-role-pip>
+- <https://github.com/geerlingguy/ansible-role-git>
 
 ## Pattern Confidence Levels (Historical)
 
@@ -185,6 +190,7 @@ security_sshd_name: sshd
 ### When to Use
 
 **defaults/ - Use for:**
+
 - Port numbers users might change
 - Feature enable/disable flags
 - List of items users configure
@@ -192,6 +198,7 @@ security_sshd_name: sshd
 - Template paths users might override
 
 **vars/ - Use for:**
+
 - Service names that differ by OS (ssh vs sshd)
 - Configuration file paths
 - Package names that vary by OS
@@ -213,7 +220,7 @@ Use a consistent, hierarchical naming pattern: `{role_name}_{feature}_{attribute
 
 ### Naming Pattern Structure
 
-```
+```text
 {role_name}_{feature}_{attribute}_{sub_attribute}
 ```
 
@@ -273,6 +280,7 @@ github_users_authorized_keys_exclusive: true
 ```
 
 **Valid Ansible boolean values:**
+
 - `true` / `false` (preferred)
 - `yes` / `no`
 - `on` / `off`
@@ -306,12 +314,14 @@ security_ssh_password_authentication: "no"  # Literal string "no" for SSH
 ### When to Use
 
 **Unquoted booleans:**
+
 - Feature enable/disable flags (`role_feature_enabled`)
 - Task conditionals (`when:` clauses)
 - Handler behavior
 - Internal role logic
 
 **Quoted strings:**
+
 - Values written to config files
 - Values that must preserve exact format
 - Values that look like booleans but aren't
@@ -374,6 +384,7 @@ github_users:
 ```
 
 **Key technique:** `{{ item.name | default(item) }}`
+
 - If item is a dict with 'name' key → use item.name
 - If item is a string → default to item itself
 - Supports both simple and complex usage
@@ -394,18 +405,21 @@ This pattern is less common in geerlingguy roles (flat variables preferred for s
 ### When to Use
 
 **Simple lists:**
+
 - When each item needs only one value
 - User management (simple usernames)
 - Package lists
 - Simple configuration items
 
 **List of dicts:**
+
 - When items have multiple optional attributes
 - Users with groups, shells, home directories
 - Complex configuration items
 - When backwards compatibility with simple list is needed
 
 **Flat variables:**
+
 - When configuration is not deeply nested
 - When clarity is more important than brevity
 - When users need to override individual values
@@ -433,6 +447,7 @@ security_sudoers_passwordless: []
 ```
 
 **Rationale:**
+
 - Safe default (no users created/removed)
 - Allows conditional logic: `when: github_users | length > 0`
 - Users must explicitly configure
@@ -447,6 +462,7 @@ github_users_authorized_keys_exclusive: true
 ```
 
 **Rationale:**
+
 - Security-first approach
 - Users can relax security if needed
 - Prevents accidental insecure configurations
@@ -459,6 +475,7 @@ security_ssh_restart_handler_state: restarted
 ```
 
 **Rationale:**
+
 - Explicit state management
 - Allows users to override (e.g., for testing)
 - Documents expected state
@@ -471,6 +488,7 @@ security_autoupdate_enabled: true
 ```
 
 **Rationale:**
+
 - Enable useful features by default
 - Easy to disable if not wanted
 - Clear intent
@@ -483,6 +501,7 @@ github_url: https://github.com
 ```
 
 **Rationale:**
+
 - Standard/expected values
 - Users only change when needed
 - Reduces configuration burden
@@ -519,6 +538,7 @@ system_user_state: present
 ```
 
 **Matches geerlingguy patterns:**
+
 - ✅ Role prefix (system_user_*)
 - ✅ Snake_case naming
 - ✅ Empty list defaults
@@ -526,6 +546,7 @@ system_user_state: present
 - ✅ All in defaults/main.yml
 
 **Gaps:**
+
 - ⚠️  No feature grouping (all variables are related to user management, so not needed)
 - ⚠️  Could use string for sudo_access ("full", "commands", "none" vs full/limited)
 - ✅ No vars/ directory needed (no OS-specific values)
@@ -547,6 +568,7 @@ proxmox_access_export_terraform_env: false
 ```
 
 **Matches:**
+
 - ✅ Role prefix (proxmox_access_*)
 - ✅ Snake_case naming
 - ✅ Empty list defaults
@@ -554,6 +576,7 @@ proxmox_access_export_terraform_env: false
 - ✅ Feature grouping (access_roles, access_groups, access_users)
 
 **Gaps:**
+
 - ✅ No OS-specific vars needed (Proxmox-specific role)
 - ✅ Good variable organization
 
@@ -571,6 +594,7 @@ proxmox_network_verify_connectivity: true
 ```
 
 **Matches:**
+
 - ✅ Role prefix (proxmox_network_*)
 - ✅ Snake_case naming
 - ✅ Empty list defaults
@@ -578,6 +602,7 @@ proxmox_network_verify_connectivity: true
 - ✅ Feature grouping
 
 **Gaps:**
+
 - ✅ Excellent pattern adherence
 
 **Pattern Match:** 100% - Perfect variable management
@@ -609,7 +634,7 @@ proxmox_network_verify_connectivity: true
 ## Validation: geerlingguy.postgresql
 
 **Analysis Date:** 2025-10-23
-**Repository:** https://github.com/geerlingguy/ansible-role-postgresql
+**Repository:** <https://github.com/geerlingguy/ansible-role-postgresql>
 
 ### Role-Prefixed Variable Names
 
@@ -622,6 +647,7 @@ proxmox_network_verify_connectivity: true
 
 - **Pattern: List of dicts with comprehensive inline documentation** - ✅ **EXCELLENT EXAMPLE**
   - PostgreSQL has multiple complex list-of-dict variables:
+
   ```yaml
   postgresql_databases: []
   # - name: exampledb # required; the rest are optional
@@ -642,6 +668,7 @@ proxmox_network_verify_connectivity: true
   #   db: # defaults to not set
   #   state: # defaults to 'present'
   ```
+
   - **Validates:** Complex dict structures work beautifully with inline documentation
   - **Best practice:** Show ALL possible keys, mark required vs optional, document defaults
 
@@ -718,8 +745,9 @@ proxmox_network_verify_connectivity: true
 
 **Analysis Date:** 2025-10-23
 **Repositories:**
-- https://github.com/geerlingguy/ansible-role-pip
-- https://github.com/geerlingguy/ansible-role-git
+
+- <https://github.com/geerlingguy/ansible-role-pip>
+- <https://github.com/geerlingguy/ansible-role-git>
 
 ### Minimal Variables Pattern (pip role)
 

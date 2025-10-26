@@ -19,7 +19,6 @@ pre-commit = "4.3.0"
 rg = "14.1.1"
 git-cliff = "2.10.1"
 shellcheck = "0.11.0"
-markdownlint-cli2 = "0.18.1"
 uv = "0.9.5"
 
 [env]
@@ -100,8 +99,8 @@ run = "infisical scan"
 
 [tasks.markdown-lint]
 description = "Lint Markdown files"
-run = "markdownlint-cli2 '**/*.md'"
+run = "rumdl check ."
 
 [tasks.markdown-fix]
 description = "Fix Markdown files"
-run = "markdownlint-cli2 '**/*.md' --fix"
+run = "rumdl fmt ."

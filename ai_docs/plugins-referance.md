@@ -70,7 +70,7 @@ Plugins can provide Agent Skills that extend Claude's capabilities. Skills are m
 
 **Skill structure**:
 
-```
+```text
 skills/
 ├── pdf-processor/
 │   ├── SKILL.md
@@ -224,10 +224,10 @@ The `plugin.json` file defines your plugin's metadata and configuration. This se
 
 | Field        | Type           | Description                          | Example                                |
 | :----------- | :------------- | :----------------------------------- | :------------------------------------- |
-| `commands`   | string\|array  | Additional command files/directories | `"./custom/cmd.md"` or `["./cmd1.md"]` |
-| `agents`     | string\|array  | Additional agent files               | `"./custom/agents/"`                   |
-| `hooks`      | string\|object | Hook config path or inline config    | `"./hooks.json"`                       |
-| `mcpServers` | string\|object | MCP config path or inline config     | `"./mcp.json"`                         |
+| `commands` | string\ | array | Additional command files/directories |
+| `agents` | string\ | array | Additional agent files |
+| `hooks` | string\ | object | Hook config path or inline config |
+| `mcpServers` | string\ | object | MCP config path or inline config |
 
 ### Path behavior rules
 
@@ -276,7 +276,7 @@ The `plugin.json` file defines your plugin's metadata and configuration. This se
 
 A complete plugin follows this structure:
 
-```
+```text
 enterprise-plugin/
 ├── .claude-plugin/           # Metadata directory
 │   └── plugin.json          # Required: plugin manifest

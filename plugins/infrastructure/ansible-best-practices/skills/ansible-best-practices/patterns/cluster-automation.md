@@ -243,6 +243,7 @@ cluster_nodes:
 ```
 
 **Problems**:
+
 - Hides real failures (network issues, authentication problems)
 - Makes debugging impossible
 - Creates inconsistent cluster state

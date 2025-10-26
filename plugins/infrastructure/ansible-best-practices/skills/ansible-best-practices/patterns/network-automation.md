@@ -338,6 +338,7 @@ node_id: "{{ node_ids[inventory_hostname_short] }}"
 ```
 
 **Problems**:
+
 - Shell-specific syntax
 - Limited idempotency
 - No check-mode support

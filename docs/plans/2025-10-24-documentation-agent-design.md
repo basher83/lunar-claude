@@ -189,7 +189,8 @@ Pre-commit hooks continue to block bad commits. Agent runs post-commit or on-dem
 Uses `rich` library for colorized, structured output. Real-time progress: "Layer 1 complete (2.3s), starting Layer 2...". Issue summary table: grouped by file, severity color-coded (red=critical, yellow=warning, blue=info). Actionable items: "Run `doc-agent fix --auto` to apply 12 auto-fixable issues". Layer attribution: `[L1]` markdown syntax, `[L2]` grammar, `[L3]` code mismatch.
 
 Example:
-```
+
+```text
 📄 lunar-claude/README.md
   [L1] Line 42: MD013 Line length exceeds 120 characters
   [L2] Paragraph 3: Consider breaking long sentence for clarity
@@ -265,7 +266,8 @@ doc-agent fix --auto --repo /workspaces/lunar-claude
 <summary>View all issues</summary>
 [Detailed issue list...]
 </details>
-```
+
+```text
 
 ### Cross-Repo Dashboard
 

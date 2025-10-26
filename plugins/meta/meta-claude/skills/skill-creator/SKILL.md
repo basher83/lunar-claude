@@ -28,6 +28,7 @@ Every skill MUST include:
 ### Step 1: Gather Requirements
 
 Ask the user:
+
 - What task should this skill help with?
 - When should Claude invoke this skill?
 - What are the key steps or phases?
@@ -35,6 +36,7 @@ Ask the user:
 ### Step 2: Determine Skill Name
 
 Create kebab-case name from purpose:
+
 - "code review" → `code-reviewer`
 - "terraform planning" → `terraform-planner`
 - "test generation" → `test-generator`
@@ -83,6 +85,7 @@ Concrete usage examples showing input → process → output.
 ### Step 4: Reference Official Docs
 
 Before finalizing, check:
+
 - `ai_docs/plugins-referance.md` for skill structure requirements
 - Official Claude Code docs for latest patterns
 - Existing skills in superpowers plugin for proven patterns
@@ -105,6 +108,7 @@ Place skill at: `skills/[skill-name]/SKILL.md`
 User: "Help me create a skill for reviewing code changes"
 
 Process:
+
 1. Gather: Review should check style, logic, tests, documentation
 2. Name: `code-reviewer`
 3. Structure: Include phases for analysis, feedback, verification
@@ -118,6 +122,7 @@ Output: `skills/code-reviewer/SKILL.md` with structured review workflow
 User: "I need a skill for creating database migrations"
 
 Process:
+
 1. Gather: Should generate migration files, validate schema, handle rollback
 2. Name: `migration-creator`
 3. Structure: Phases for schema analysis, migration generation, testing

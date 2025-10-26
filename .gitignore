@@ -3,3 +3,4 @@
 .DS_Store
 .venv
 .worktrees/
+.rumdl-cache

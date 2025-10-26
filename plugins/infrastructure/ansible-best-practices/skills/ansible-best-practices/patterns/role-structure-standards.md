@@ -5,6 +5,7 @@
 Analyzed 7 geerlingguy roles: security, users, docker, postgresql, nginx, pip, git
 
 **Universal Patterns (All 7 roles):**
+
 - Standard Ansible role directory structure (defaults/, tasks/, meta/, molecule/, .github/) (7/7 roles)
 - tasks/main.yml as router with include_tasks/import_tasks (7/7 roles)
 - Role-prefixed variable names preventing conflicts (7/7 roles use rolename_feature_attribute)
@@ -16,6 +17,7 @@ Analyzed 7 geerlingguy roles: security, users, docker, postgresql, nginx, pip, g
 - Quality control files (.ansible-lint, .yamllint, .gitignore) (7/7 roles)
 
 **Contextual Patterns (Varies by complexity):**
+
 - Task file organization: simple roles use single main.yml, complex roles split into 8+ feature files
 - vars/ directory presence: only when OS-specific data needed (4/7 roles have it)
 - templates/ usage: complex config roles use templates/ heavily, simple roles use lineinfile/copy
@@ -23,11 +25,13 @@ Analyzed 7 geerlingguy roles: security, users, docker, postgresql, nginx, pip, g
 - Directory count scales with complexity: minimal roles (pip) have 3 dirs, complex roles (postgresql) have 7+ dirs
 
 **Evolving Patterns (Newer roles improved):**
+
 - Advanced include_vars with first_found lookup (docker role) provides fallback chain for better distribution support
 - import_tasks vs include_tasks distinction: import for ordered execution, include for conditional
 - Jinja2 block inheritance in templates (nginx role) for user extensibility without full template replacement
 
 **Sources:**
+
 - geerlingguy.security (analyzed 2025-10-23)
 - geerlingguy.github-users (analyzed 2025-10-23)
 - geerlingguy.docker (analyzed 2025-10-23)
@@ -37,13 +41,14 @@ Analyzed 7 geerlingguy roles: security, users, docker, postgresql, nginx, pip, g
 - geerlingguy.git (analyzed 2025-10-23)
 
 **Repositories:**
-- https://github.com/geerlingguy/ansible-role-security
-- https://github.com/geerlingguy/ansible-role-github-users
-- https://github.com/geerlingguy/ansible-role-docker
-- https://github.com/geerlingguy/ansible-role-postgresql
-- https://github.com/geerlingguy/ansible-role-nginx
-- https://github.com/geerlingguy/ansible-role-pip
-- https://github.com/geerlingguy/ansible-role-git
+
+- <https://github.com/geerlingguy/ansible-role-security>
+- <https://github.com/geerlingguy/ansible-role-github-users>
+- <https://github.com/geerlingguy/ansible-role-docker>
+- <https://github.com/geerlingguy/ansible-role-postgresql>
+- <https://github.com/geerlingguy/ansible-role-nginx>
+- <https://github.com/geerlingguy/ansible-role-pip>
+- <https://github.com/geerlingguy/ansible-role-git>
 
 ## Pattern Confidence Levels (Historical)
 
@@ -82,7 +87,7 @@ This document captures role structure and organization patterns from production-
 
 **Directory Tree:**
 
-```
+```text
 ansible-role-security/
 ├── .github/
 │   └── workflows/
@@ -354,11 +359,12 @@ security_fail2ban_custom_configuration_template: "jail.local.j2"
 
 **Naming Pattern:**
 
-```
+```text
 {role_name}_{feature}_{attribute}
 ```
 
 Examples:
+
 - `security_ssh_port` - Role: security, Feature: ssh, Attribute: port
 - `security_fail2ban_enabled` - Role: security, Feature: fail2ban, Attribute: enabled
 - `security_autoupdate_reboot_time` - Role: security, Feature: autoupdate, Attribute: reboot_time
@@ -392,7 +398,7 @@ Examples:
 
 **Task Name Pattern:**
 
-```
+```text
 [Action verb] [object] [additional context]
 ```
 
@@ -556,11 +562,12 @@ security_sshd_name: sshd
 
 **Handler Naming Pattern:**
 
-```
+```text
 [action] [service/component]
 ```
 
 Examples:
+
 - "restart ssh" - Restart SSH service
 - "reload systemd" - Reload systemd daemon
 - "reload fail2ban" - Reload fail2ban configuration
@@ -584,7 +591,7 @@ Examples:
 
 **Structure Analysis:**
 
-```
+```text
 system_user/
 ├── defaults/
 │   └── main.yml ✅
@@ -621,7 +628,7 @@ system_user/
 
 **Structure Analysis:**
 
-```
+```text
 proxmox_access/
 ├── defaults/
 │   └── main.yml ✅
@@ -663,7 +670,7 @@ proxmox_access/
 
 **Structure Analysis:**
 
-```
+```text
 proxmox_network/
 ├── defaults/
 │   └── main.yml ✅
@@ -699,7 +706,7 @@ proxmox_network/
 ## Validation: geerlingguy.docker
 
 **Analysis Date:** 2025-10-23
-**Repository:** https://github.com/geerlingguy/ansible-role-docker
+**Repository:** <https://github.com/geerlingguy/ansible-role-docker>
 
 ### Directory Organization
 
@@ -751,6 +758,7 @@ proxmox_network/
 ### Advanced Pattern: first_found Lookup
 
 - **Pattern Evolution:** Docker role uses advanced vars loading:
+
   ```yaml
   - name: Load OS-specific vars.
     include_vars: "{{ lookup('first_found', params) }}"
@@ -763,6 +771,7 @@ proxmox_network/
         paths:
           - 'vars'
   ```
+
   - **vs security simple pattern:** `include_vars: "{{ ansible_os_family }}.yml"`
   - **Insight:** More complex roles use fallback chain for better distribution support
   - **Recommendation:** Simple pattern for basic roles, first_found for complex multi-OS roles
@@ -794,7 +803,7 @@ proxmox_network/
 ## Validation: geerlingguy.postgresql
 
 **Analysis Date:** 2025-10-23
-**Repository:** https://github.com/geerlingguy/ansible-role-postgresql
+**Repository:** <https://github.com/geerlingguy/ansible-role-postgresql>
 
 ### Directory Organization
 
@@ -846,6 +855,7 @@ proxmox_network/
 ### Advanced Pattern: include_tasks vs import_tasks
 
 - **Pattern Evolution:** PostgreSQL demonstrates when to use each:
+
   ```yaml
   # Conditional loading - use include_tasks
   - include_tasks: setup-Archlinux.yml
@@ -856,6 +866,7 @@ proxmox_network/
   - import_tasks: databases.yml
   - import_tasks: users_props.yml
   ```
+
   - **New insight:** `include_tasks` = dynamic/conditional, `import_tasks` = static/ordered
   - **Recommendation:** Use import when order matters, include when conditional
 
@@ -863,6 +874,7 @@ proxmox_network/
 
 - **Pattern: Inline documentation in defaults/main.yml** - ✅ **EXCELLENT EXAMPLE**
   - PostgreSQL defaults/ has extensive inline examples for complex structures:
+
   ```yaml
   postgresql_databases: []
   # - name: exampledb # required; the rest are optional
@@ -870,6 +882,7 @@ proxmox_network/
   #   lc_ctype: # defaults to 'en_US.UTF-8'
   #   encoding: # defaults to 'UTF-8'
   ```
+
   - **Validates:** Complex dict structures benefit from commented examples in defaults
   - **Best practice:** Show all available keys, even optional ones
 
@@ -903,7 +916,7 @@ proxmox_network/
 ## Validation: geerlingguy.nginx
 
 **Analysis Date:** 2025-10-23
-**Repository:** https://github.com/geerlingguy/ansible-role-nginx
+**Repository:** <https://github.com/geerlingguy/ansible-role-nginx>
 
 ### Directory Organization
 
@@ -923,6 +936,7 @@ proxmox_network/
 
 - **Advanced Template Pattern: Jinja2 Block Inheritance**
   - nginx.conf.j2 uses `{% block %}` for template extensibility:
+
     ```jinja2
     {% block worker %}
     worker_processes  {{ nginx_worker_processes }};
@@ -935,6 +949,7 @@ proxmox_network/
     {% block http_includes %}...{% endblock %}
     {% block http_end %}{% endblock %}
     ```
+
   - Allows users to override specific template sections without replacing entire template
   - README documents how to extend templates using Jinja2 inheritance
 
@@ -987,6 +1002,7 @@ proxmox_network/
 
 - **Pattern: Inline documentation with examples** - ✅ **EXCELLENT EXAMPLE**
   - nginx_vhosts documented with full example showing all options:
+
     ```yaml
     nginx_vhosts: []
     # Example vhost below, showing all available options:
@@ -997,6 +1013,7 @@ proxmox_network/
     #   filename: "example.com.conf"
     #   ...
     ```
+
   - nginx_upstreams similar pattern with all load balancing options shown
   - **Validates:** Complex list-of-dict variables need comprehensive inline examples
 
@@ -1032,7 +1049,7 @@ proxmox_network/
 ## Validation: geerlingguy.pip
 
 **Analysis Date:** 2025-10-23
-**Repository:** https://github.com/geerlingguy/ansible-role-pip
+**Repository:** <https://github.com/geerlingguy/ansible-role-pip>
 
 ### Directory Structure
 
@@ -1077,7 +1094,7 @@ proxmox_network/
 ## Validation: geerlingguy.git
 
 **Analysis Date:** 2025-10-23
-**Repository:** https://github.com/geerlingguy/ansible-role-git
+**Repository:** <https://github.com/geerlingguy/ansible-role-git>
 
 ### Directory Structure
 

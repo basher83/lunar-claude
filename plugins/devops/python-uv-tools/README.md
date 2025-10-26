@@ -35,7 +35,7 @@ Install python-uv-tools:
 
 Simply ask Claude to help with Python/uv scripts:
 
-```
+```text
 "Create a Python script using uv that fetches GitHub API data"
 "Convert this Python script to use uv inline dependencies"
 "Help me add testing to my uv script"
@@ -58,6 +58,7 @@ The python-uv-scripts skill provides comprehensive guidance on:
 ## Supporting Documentation
 
 The skill includes extensive reference material:
+
 - `/patterns/` - Common implementation patterns
 - `/anti-patterns/` - Mistakes to avoid
 - `/examples/` - Real-world examples

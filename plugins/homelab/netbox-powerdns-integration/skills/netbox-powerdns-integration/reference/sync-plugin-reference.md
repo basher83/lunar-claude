@@ -1,6 +1,6 @@
 # NetBox PowerDNS Sync Plugin Reference
 
-*Source: https://github.com/ArnesSI/netbox-powerdns-sync*
+*Source: <https://github.com/ArnesSI/netbox-powerdns-sync*>
 
 ## Overview
 
@@ -105,6 +105,7 @@ To set TTL per DNS record:
    - Name: e.g., "dns_ttl"
 
 2. Set in plugin config:
+
    ```python
    "ttl_custom_field": "dns_ttl"
    ```
@@ -124,6 +125,7 @@ To set TTL per DNS record:
 ### 1. Configure DNS Zones in NetBox
 
 Create zones in the plugin interface with:
+
 - Zone name (e.g., `spaceships.work`)
 - PowerDNS server connection
 - Tag matching rules
@@ -141,6 +143,7 @@ ipaddress.tags.add("production-dns")
 ### 3. Schedule Sync
 
 Configure sync schedule for each zone:
+
 - Immediate (on save)
 - Scheduled (cron-style)
 - Manual only
@@ -148,6 +151,7 @@ Configure sync schedule for each zone:
 ### 4. Monitor Sync Results
 
 View sync results in NetBox:
+
 - Records created
 - Records updated
 - Records deleted

@@ -168,7 +168,7 @@ Create `.claude-plugin/marketplace.json` in your repository root:
 | Field    | Type           | Description                               |
 | :------- | :------------- | :---------------------------------------- |
 | `name`   | string         | Plugin identifier (kebab-case, no spaces) |
-| `source` | string\|object | Where to fetch the plugin from            |
+| `source` | string\ | object |
 
 #### Optional plugin fields
 
@@ -191,12 +191,12 @@ Create `.claude-plugin/marketplace.json` in your repository root:
 
 | Field        | Type           | Description                                      |
 | :----------- | :------------- | :----------------------------------------------- |
-| `commands`   | string\|array  | Custom paths to command files or directories     |
-| `agents`     | string\|array  | Custom paths to agent files                      |
-| `hooks`      | string\|object | Custom hooks configuration or path to hooks file |
-| `mcpServers` | string\|object | MCP server configurations or path to MCP config  |
+| `commands` | string\ | array |
+| `agents` | string\ | array |
+| `hooks` | string\ | object |
+| `mcpServers` | string\ | object |
 
-_<sup>1 - When `strict: true` (default), the plugin must include a `plugin.json` manifest file, and marketplace fields supplement those values. When `strict: false`, the plugin.json is optional. If it's missing, the marketplace entry serves as the complete plugin manifest.</sup>_
+*<sup>1 - When XXXXXXXXXXXXXX (default), the plugin must include a XXXXXXXXXXXXX manifest file, and marketplace fields supplement those values. When XXXXXXXXXXXXXXX, the plugin.json is optional. If it's missing, the marketplace entry serves as the complete plugin manifest.</sup>*
 
 ### Plugin sources
 

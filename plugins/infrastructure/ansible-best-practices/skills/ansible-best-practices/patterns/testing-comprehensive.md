@@ -5,6 +5,7 @@
 Analyzed 7 geerlingguy roles: security, users, docker, postgresql, nginx, pip, git
 
 ### Universal Patterns (All 7 roles)
+
 - Molecule default scenario with Docker driver (7/7 roles identical configuration)
 - Multi-distribution test matrix covering RedHat + Debian families (7/7 roles)
 - GitHub Actions CI with separate lint and molecule jobs (7/7 roles)
@@ -17,15 +18,18 @@ Analyzed 7 geerlingguy roles: security, users, docker, postgresql, nginx, pip, g
 - Testing infrastructure maintained even for minimal utility roles (pip: 3 tasks, git: 4 tasks)
 
 ### Contextual Patterns (Varies by complexity)
+
 - Distribution coverage scales with role complexity: simple roles test 3 distros, complex roles test 6-7 distros
 - Multi-scenario testing for roles with multiple installation methods (git uses MOLECULE_PLAYBOOK variable)
 - Scheduled testing timing varies (Monday-Sunday, different UTC times) but presence is universal
 
 ### Evolving Patterns (Newer roles improved)
+
 - Updated test distributions: rockylinux9, ubuntu2404, debian12 (replacing older versions)
 - Advanced include_vars with first_found lookup (docker role) vs simple include_vars (security role)
 
 ### Sources
+
 - geerlingguy.security (analyzed 2025-10-23)
 - geerlingguy.github-users (analyzed 2025-10-23)
 - geerlingguy.docker (analyzed 2025-10-23)
@@ -35,6 +39,7 @@ Analyzed 7 geerlingguy roles: security, users, docker, postgresql, nginx, pip, g
 - geerlingguy.git (analyzed 2025-10-23)
 
 ### Repositories
+
 - <https://github.com/geerlingguy/ansible-role-security>
 - <https://github.com/geerlingguy/ansible-role-github-users>
 - <https://github.com/geerlingguy/ansible-role-docker>
@@ -512,7 +517,7 @@ For more complex roles, consider adding `molecule/default/verify.yml`:
 ## Validation: geerlingguy.docker
 
 **Analysis Date:** 2025-10-23
-**Repository:** https://github.com/geerlingguy/ansible-role-docker
+**Repository:** <https://github.com/geerlingguy/ansible-role-docker>
 
 ### Molecule Testing Patterns
 
@@ -572,7 +577,7 @@ For more complex roles, consider adding `molecule/default/verify.yml`:
 ## Validation: geerlingguy.postgresql
 
 **Analysis Date:** 2025-10-23
-**Repository:** https://github.com/geerlingguy/ansible-role-postgresql
+**Repository:** <https://github.com/geerlingguy/ansible-role-postgresql>
 
 ### Molecule Testing Patterns
 
@@ -644,7 +649,7 @@ For more complex roles, consider adding `molecule/default/verify.yml`:
 ## Validation: geerlingguy.nginx
 
 **Analysis Date:** 2025-10-23
-**Repository:** https://github.com/geerlingguy/ansible-role-nginx
+**Repository:** <https://github.com/geerlingguy/ansible-role-nginx>
 
 ### Molecule Testing Patterns
 
@@ -705,7 +710,7 @@ For more complex roles, consider adding `molecule/default/verify.yml`:
 ## Validation: geerlingguy.pip
 
 **Analysis Date:** 2025-10-23
-**Repository:** https://github.com/geerlingguy/ansible-role-pip
+**Repository:** <https://github.com/geerlingguy/ansible-role-pip>
 
 ### Molecule Testing Patterns
 
@@ -760,7 +765,7 @@ For more complex roles, consider adding `molecule/default/verify.yml`:
 ## Validation: geerlingguy.git
 
 **Analysis Date:** 2025-10-23
-**Repository:** https://github.com/geerlingguy/ansible-role-git
+**Repository:** <https://github.com/geerlingguy/ansible-role-git>
 
 ### Molecule Testing Patterns
 

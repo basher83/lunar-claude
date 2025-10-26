@@ -36,7 +36,7 @@ Install proxmox-infrastructure:
 
 Simply ask Claude to help with Proxmox:
 
-```
+```text
 "Create a cloud-init VM template for Ubuntu"
 "Configure VLAN-aware bridging on Proxmox"
 "Set up CEPH storage with MTU 9000"
@@ -60,6 +60,7 @@ The proxmox-infrastructure skill provides comprehensive guidance on:
 ## Supporting Documentation
 
 The skill includes extensive reference material:
+
 - `/reference/` - Cloud-init patterns, networking, API, storage, QEMU guest agent
 - `/workflows/` - Cluster formation, CEPH deployment automation
 - `/examples/` - Real Terraform configurations
@@ -75,6 +76,7 @@ The skill includes extensive reference material:
 ### Cloud-Init Templates
 
 Complete automation for creating production-ready VM templates:
+
 - Virtio-SCSI controller configuration
 - Serial console setup for cloud images
 - Cloud-init CD-ROM drive (ide2)
@@ -84,6 +86,7 @@ Complete automation for creating production-ready VM templates:
 ### VLAN-Aware Networking
 
 Multi-VLAN support on single bridge:
+
 - vmbr0: Management network
 - vmbr1: CEPH Public (MTU 9000)
 - vmbr2: CEPH Private (MTU 9000)
@@ -92,6 +95,7 @@ Multi-VLAN support on single bridge:
 ### CEPH Storage
 
 Complete CEPH deployment patterns:
+
 - Multi-OSD configuration per node
 - MTU 9000 for storage networks
 - Public/private network separation
@@ -100,6 +104,7 @@ Complete CEPH deployment patterns:
 ### Real-World Architecture
 
 Based on production 3-node Proxmox cluster:
+
 - **Nodes**: Foxtrot, Golf, Hotel (MINISFORUM MS-A2)
 - **CPU**: AMD Ryzen 9 9955HX (16C/32T)
 - **RAM**: 64GB DDR5 @ 5600 MT/s

@@ -13,6 +13,7 @@
 ## Task 1: Create Core Directory Structure
 
 **Files:**
+
 - Create: `plugins/meta/`
 - Create: `plugins/infrastructure/`
 - Create: `plugins/devops/`
@@ -39,7 +40,8 @@ mkdir -p templates/plugin-template
 Run: `tree -L 2 plugins/ templates/`
 
 Expected output:
-```
+
+```text
 plugins/
 ├── devops
 ├── homelab
@@ -68,6 +70,7 @@ Co-Authored-By: Claude <noreply@anthropic.com>"
 ## Task 2: Create New Marketplace Manifest
 
 **Files:**
+
 - Modify: `.claude-plugin/marketplace.json`
 
 **Step 1: Back up existing marketplace.json**
@@ -120,6 +123,7 @@ Co-Authored-By: Claude <noreply@anthropic.com>"
 ## Task 3: Create Plugin Template Structure
 
 **Files:**
+
 - Create: `templates/plugin-template/.claude-plugin/`
 - Create: `templates/plugin-template/commands/`
 - Create: `templates/plugin-template/agents/`
@@ -147,7 +151,8 @@ touch templates/plugin-template/commands/.gitkeep
 Run: `tree templates/plugin-template/`
 
 Expected:
-```
+
+```text
 templates/plugin-template/
 ├── .claude-plugin
 ├── agents
@@ -177,6 +182,7 @@ Co-Authored-By: Claude <noreply@anthropic.com>"
 ## Task 4: Create Template Plugin Manifest
 
 **Files:**
+
 - Create: `templates/plugin-template/.claude-plugin/plugin.json`
 
 **Step 1: Write template plugin.json**
@@ -220,6 +226,7 @@ Co-Authored-By: Claude <noreply@anthropic.com>"
 ## Task 5: Create Template README
 
 **Files:**
+
 - Create: `templates/plugin-template/README.md`
 
 **Step 1: Write template README.md**
@@ -304,6 +311,7 @@ Co-Authored-By: Claude <noreply@anthropic.com>"
 ## Task 6: Create Template Example Agent
 
 **Files:**
+
 - Create: `templates/plugin-template/agents/example-agent.md`
 
 **Step 1: Write example agent**
@@ -373,6 +381,7 @@ Co-Authored-By: Claude <noreply@anthropic.com>"
 ## Task 7: Create Template Example Skill
 
 **Files:**
+
 - Create: `templates/plugin-template/skills/example-skill/SKILL.md`
 
 **Step 1: Write example skill**
@@ -470,6 +479,7 @@ Co-Authored-By: Claude <noreply@anthropic.com>"
 ## Task 8: Create Template Hooks Configuration
 
 **Files:**
+
 - Create: `templates/plugin-template/hooks/hooks.json`
 
 **Step 1: Write hooks.json**
@@ -529,6 +539,7 @@ Co-Authored-By: Claude <noreply@anthropic.com>"
 ## Task 9: Create Meta-Claude Plugin Structure
 
 **Files:**
+
 - Create: `plugins/meta/meta-claude/.claude-plugin/`
 - Create: `plugins/meta/meta-claude/commands/`
 - Create: `plugins/meta/meta-claude/skills/`
@@ -549,7 +560,8 @@ mkdir -p plugins/meta/meta-claude/skills/command-creator
 Run: `tree plugins/meta/meta-claude/`
 
 Expected:
-```
+
+```text
 plugins/meta/meta-claude/
 ├── .claude-plugin
 ├── commands
@@ -579,6 +591,7 @@ Co-Authored-By: Claude <noreply@anthropic.com>"
 ## Task 10: Create Meta-Claude Plugin Manifest
 
 **Files:**
+
 - Create: `plugins/meta/meta-claude/.claude-plugin/plugin.json`
 
 **Step 1: Write meta-claude plugin.json**
@@ -624,6 +637,7 @@ Co-Authored-By: Claude <noreply@anthropic.com>"
 ## Task 11: Create Meta-Claude README
 
 **Files:**
+
 - Create: `plugins/meta/meta-claude/README.md`
 
 **Step 1: Write README**
@@ -727,6 +741,7 @@ Co-Authored-By: Claude <noreply@anthropic.com>"
 ## Task 12: Create Skill-Creator Skill
 
 **Files:**
+
 - Create: `plugins/meta/meta-claude/skills/skill-creator/SKILL.md`
 
 **Step 1: Write skill-creator skill**
@@ -889,6 +904,7 @@ Co-Authored-By: Claude <noreply@anthropic.com>"
 ## Task 13: Create Agent-Creator Skill
 
 **Files:**
+
 - Create: `plugins/meta/meta-claude/skills/agent-creator/SKILL.md`
 
 **Step 1: Write agent-creator skill**
@@ -1050,6 +1066,7 @@ Co-Authored-By: Claude <noreply@anthropic.com>"
 ## Task 14: Create Hook-Creator Skill
 
 **Files:**
+
 - Create: `plugins/meta/meta-claude/skills/hook-creator/SKILL.md`
 
 **Step 1: Write hook-creator skill**
@@ -1261,6 +1278,7 @@ Co-Authored-By: Claude <noreply@anthropic.com>"
 ## Task 15: Create Command-Creator Skill
 
 **Files:**
+
 - Create: `plugins/meta/meta-claude/skills/command-creator/SKILL.md`
 
 **Step 1: Write command-creator skill**
@@ -1469,6 +1487,7 @@ Co-Authored-By: Claude <noreply@anthropic.com>"
 ## Task 16: Create New-Plugin Command
 
 **Files:**
+
 - Create: `plugins/meta/meta-claude/commands/new-plugin.md`
 
 **Step 1: Write new-plugin command**
@@ -1536,6 +1555,7 @@ Check that:
 1. Read current `.claude-plugin/marketplace.json`
 
 2. Add new plugin entry to `plugins` array:
+
    ```json
    {
      "name": "plugin-name",
@@ -1612,7 +1632,8 @@ Result:
 - Created `plugins/homelab/proxmox-ops/`
 - Added to marketplace.json under homelab category
 - Removed unused skills and hooks directories
-```
+
+```text
 
 **Step 2: Verify command structure**
 
@@ -1640,6 +1661,7 @@ Co-Authored-By: Claude <noreply@anthropic.com>"
 ## Task 17: Add Meta-Claude to Marketplace
 
 **Files:**
+
 - Modify: `.claude-plugin/marketplace.json`
 
 **Step 1: Read current marketplace.json**
@@ -1702,6 +1724,7 @@ Co-Authored-By: Claude <noreply@anthropic.com>"
 ## Task 18: Test Local Installation
 
 **Files:**
+
 - No file changes
 
 **Step 1: Add marketplace locally**
@@ -1731,6 +1754,7 @@ Expected: Installation succeeds, plugin components available
 **Step 5: Verify installation**
 
 Check:
+
 - `/help` shows `/new-plugin` command
 - Skills are loaded (check via skill list if available)
 
@@ -1749,6 +1773,7 @@ echo "Meta-claude plugin installed and verified" >> /tmp/test-results.txt
 ## Task 19: Create Verification Script
 
 **Files:**
+
 - Create: `scripts/verify-structure.sh`
 
 **Step 1: Create scripts directory**
@@ -1846,6 +1871,7 @@ Co-Authored-By: Claude <noreply@anthropic.com>"
 ## Task 20: Final Verification and Documentation
 
 **Files:**
+
 - Modify: `README.md`
 
 **Step 1: Run final verification**
@@ -1952,6 +1978,8 @@ See [docs/plans/](docs/plans/) for detailed design and implementation documentat
 
 **Step 3: Commit README update**
 
+```
+
 ```bash
 git add README.md
 git commit -m "docs: update README with marketplace documentation
@@ -1974,6 +2002,7 @@ Expected: Shows all commits from implementation
 **Step 5: Final verification**
 
 Run all checks:
+
 ```bash
 ./scripts/verify-structure.sh
 jq empty .claude-plugin/marketplace.json
@@ -1997,11 +2026,13 @@ You have successfully implemented:
 ✅ Updated documentation
 
 The marketplace is ready for:
+
 - Local testing and installation
 - Adding new plugins via template
 - Using meta-claude tools for development
 
 Next steps:
+
 - Test meta-claude skills by creating components
 - Add infrastructure/devops/homelab plugins as needed
 - Share marketplace or keep private for personal use

@@ -58,6 +58,7 @@ ssh root@foxtrot "qm clone 9000 9000 --pool templates"
 ```
 
 **Better**: Use Ansible playbook to create templates consistently across nodes:
+
 ```bash
 cd ansible && uv run ansible-playbook playbooks/proxmox-build-template.yml
 ```
@@ -94,6 +95,7 @@ provider "proxmox" {
 ```
 
 Required environment variables:
+
 ```bash
 export SCALR_HOSTNAME="your-scalr-host"
 export SCALR_TOKEN="your-scalr-token"
@@ -115,6 +117,7 @@ provider "proxmox" {
 ```
 
 **Reference Architecture**:
+
 - Local examples: `terraform/examples/`
 - Versioned root modules: `basher83/Triangulum-Prime/terraform-bgp-vm`
 
@@ -193,6 +196,7 @@ runcmd:
 ```
 
 **Critical Requirements**:
+
 - ✅ MUST include `qemu-guest-agent` package
 - ✅ MUST include `python3` for Ansible compatibility
 - ✅ MUST configure SSH key for Ansible user
@@ -207,6 +211,7 @@ runcmd:
 **Problem**: Confusion about which tool is responsible for what.
 
 **Anti-Pattern**:
+
 ```hcl
 # BAD - Complex provisioning in Terraform
 resource "proxmox_virtual_environment_vm" "example" {
@@ -220,23 +225,27 @@ resource "proxmox_virtual_environment_vm" "example" {
 **Best Practice**: Clear separation of concerns.
 
 **OpenTofu Responsibility**:
+
 - VM resource allocation (CPU, memory, disk)
 - Network configuration
 - Basic cloud-init (user, SSH keys, qemu-guest-agent)
 - Infrastructure provisioning
 
 **Ansible Responsibility**:
+
 - Application installation
 - Configuration management
 - Service orchestration
 - Ongoing management
 
 **Pattern**:
+
 1. OpenTofu: Provision VM with minimal cloud-init
 2. Cloud-init: Create ansible user, install qemu-guest-agent, python3
 3. Ansible: Configure everything else
 
 **Reference Architecture**:
+
 - Template creation: `basher83/Triangulum-Prime/deployments/homelab/templates`
 - OpenTofu examples: `terraform/examples/`
 
@@ -245,6 +254,7 @@ resource "proxmox_virtual_environment_vm" "example" {
 ## Best Practices Summary
 
 ### Template Creation
+
 1. ✅ Download cloud images to target node before import
 2. ✅ Use standardized cloud-init snippet format
 3. ✅ Always include qemu-guest-agent
@@ -252,6 +262,7 @@ resource "proxmox_virtual_environment_vm" "example" {
 5. ✅ Reference: `basher83/Triangulum-Prime/deployments/homelab/templates`
 
 ### OpenTofu Provisioning
+
 1. ✅ Verify template exists on target node
 2. ✅ Upload cloud-init snippets before referencing
 3. ✅ Use `ssh.agent = false` for remote backends (Scalr)
@@ -260,6 +271,7 @@ resource "proxmox_virtual_environment_vm" "example" {
 6. ✅ Reference: `terraform/examples/` and `basher83/Triangulum-Prime`
 
 ### Workflow
+
 1. ✅ Create template once per node (or sync across nodes)
 2. ✅ Upload cloud-init snippets to `/var/lib/vz/snippets/`
 3. ✅ Provision VM via OpenTofu (infrastructure)
@@ -272,6 +284,7 @@ resource "proxmox_virtual_environment_vm" "example" {
 ### VM Won't Start After tofu apply
 
 **Check**:
+
 1. Does template exist? `qm list | grep <template-id>`
 2. Does cloud-init file exist? `ls -la /var/lib/vz/snippets/`
 3. Is qemu-guest-agent installed? `qm agent <vmid> ping`
@@ -279,11 +292,13 @@ resource "proxmox_virtual_environment_vm" "example" {
 ### tofu Can't Connect to Proxmox
 
 **Remote Backend**:
+
 1. `ssh.agent = false`? ✅
 2. `SCALR_HOSTNAME` and `SCALR_TOKEN` set? ✅
 3. Using OpenTofu variables for credentials? ✅
 
 **Local Testing**:
+
 1. `ssh.agent = true`? ✅
 2. SSH key in agent? `ssh-add -l` ✅
 3. Can you SSH to node? `ssh root@foxtrot` ✅
@@ -291,6 +306,7 @@ resource "proxmox_virtual_environment_vm" "example" {
 ### Cloud-Init Didn't Configure VM
 
 **Check**:
+
 1. File format matches `user-data.yaml.example`? ✅
 2. Includes qemu-guest-agent? ✅
 3. Includes python3? ✅

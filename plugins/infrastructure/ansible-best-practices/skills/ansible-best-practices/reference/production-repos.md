@@ -9,8 +9,8 @@
 #### 1. geerlingguy/ansible-role-security
 
 - **Purpose:** System hardening and security baseline configuration
-- **Repository:** https://github.com/geerlingguy/ansible-role-security
-- **Galaxy:** https://galaxy.ansible.com/geerlingguy/security
+- **Repository:** <https://github.com/geerlingguy/ansible-role-security>
+- **Galaxy:** <https://galaxy.ansible.com/geerlingguy/security>
 - **Key Learnings:**
   - Molecule testing infrastructure as template for all roles
   - Multi-distribution CI testing (rockylinux9, ubuntu2404, debian12)
@@ -24,8 +24,8 @@
 #### 2. geerlingguy/ansible-role-github-users
 
 - **Purpose:** User and SSH key management from GitHub accounts (maps to system_user)
-- **Repository:** https://github.com/geerlingguy/ansible-role-github-users
-- **Galaxy:** https://galaxy.ansible.com/geerlingguy/github_users
+- **Repository:** <https://github.com/geerlingguy/ansible-role-github-users>
+- **Galaxy:** <https://galaxy.ansible.com/geerlingguy/github_users>
 - **Key Learnings:**
   - Flexible variable patterns: supports both simple strings and complex dicts
   - item.name | default(item) pattern for backward compatibility
@@ -40,8 +40,8 @@
 
 #### 3. geerlingguy/ansible-role-docker
 
-- **Repository:** https://github.com/geerlingguy/ansible-role-docker
-- **Galaxy:** https://galaxy.ansible.com/geerlingguy/docker
+- **Repository:** <https://github.com/geerlingguy/ansible-role-docker>
+- **Galaxy:** <https://galaxy.ansible.com/geerlingguy/docker>
 - **Key Learnings:**
   - Advanced include_vars with first_found lookup for better OS fallback
   - Conditional handler execution (when: docker_service_manage | bool)
@@ -54,8 +54,8 @@
 
 #### 4. geerlingguy/ansible-role-postgresql
 
-- **Repository:** https://github.com/geerlingguy/ansible-role-postgresql
-- **Galaxy:** https://galaxy.ansible.com/geerlingguy/postgresql
+- **Repository:** <https://github.com/geerlingguy/ansible-role-postgresql>
+- **Galaxy:** <https://galaxy.ansible.com/geerlingguy/postgresql>
 - **Key Learnings:**
   - Best-in-class complex variable documentation (list-of-dicts with all keys shown)
   - Inline comments marking required vs optional vs defaults
@@ -68,8 +68,8 @@
 
 #### 5. geerlingguy/ansible-role-nginx
 
-- **Repository:** https://github.com/geerlingguy/ansible-role-nginx
-- **Galaxy:** https://galaxy.ansible.com/geerlingguy/nginx
+- **Repository:** <https://github.com/geerlingguy/ansible-role-nginx>
+- **Galaxy:** <https://galaxy.ansible.com/geerlingguy/nginx>
 - **Key Learnings:**
   - Jinja2 block inheritance in templates for user extensibility
   - Template path variables for customization (nginx_conf_template, nginx_vhost_template)
@@ -82,8 +82,8 @@
 
 #### 6. geerlingguy/ansible-role-pip
 
-- **Repository:** https://github.com/geerlingguy/ansible-role-pip
-- **Galaxy:** https://galaxy.ansible.com/geerlingguy/pip
+- **Repository:** <https://github.com/geerlingguy/ansible-role-pip>
+- **Galaxy:** <https://galaxy.ansible.com/geerlingguy/pip>
 - **Key Learnings:**
   - Minimal role structure scales down appropriately (only essential directories)
   - Testing patterns maintained even for 3-task roles
@@ -96,8 +96,8 @@
 
 #### 7. geerlingguy/ansible-role-git
 
-- **Repository:** https://github.com/geerlingguy/ansible-role-git
-- **Galaxy:** https://galaxy.ansible.com/geerlingguy/git
+- **Repository:** <https://github.com/geerlingguy/ansible-role-git>
+- **Galaxy:** <https://galaxy.ansible.com/geerlingguy/git>
 - **Key Learnings:**
   - Multi-scenario testing (package install vs source install)
   - MOLECULE_PLAYBOOK variable for testing different installation methods
@@ -131,6 +131,7 @@
 ### Key Insights
 
 **Universal Patterns (All 7 roles follow):**
+
 - Molecule + Docker testing infrastructure (even for minimal 3-task roles)
 - Role-prefixed variable naming preventing conflicts
 - GitHub Actions CI with separate lint and molecule jobs
@@ -140,6 +141,7 @@
 - Idempotence testing as primary quality verification
 
 **Contextual Patterns (Scale appropriately):**
+
 - Test distribution coverage: 3 for simple roles, 6-7 for complex roles
 - Task file count: 1 for minimal roles, 8+ for database/complex roles
 - Variable count: 3-5 for utilities, 20+ for configuration management
@@ -147,6 +149,7 @@
 - Platform breadth: utilities support more platforms than complex roles
 
 **Evolving Patterns (Improvements noted):**
+
 - Advanced include_vars with first_found lookup (better OS fallback)
 - Jinja2 block inheritance in templates (user extensibility)
 - Conditional handler execution (docker, nginx patterns)
@@ -156,6 +159,7 @@
 ## Download and Popularity Analysis
 
 **Most Downloaded Roles:**
+
 1. docker: 2M+ downloads
 2. nginx: 1M+ downloads
 3. security: 1.5M+ downloads
@@ -165,6 +169,7 @@
 7. github-users: 100K+
 
 **Insights:**
+
 - Infrastructure roles (docker, nginx, git, pip) have highest downloads
 - Security and database roles have strong sustained usage
 - Niche roles (github-users) still provide valuable patterns despite lower downloads
@@ -173,21 +178,25 @@
 ## Role Complexity Spectrum
 
 **Minimal (3-5 tasks):**
+
 - pip: Package installation only
 - Simple, focused purpose
 - Broad platform support
 
 **Low (5-10 tasks):**
+
 - git: Dual installation methods
 - github-users: User management
 - Focused feature set
 
 **Medium (10-20 tasks):**
+
 - security: Multiple security features
 - docker: Service + user management
 - nginx: Web server + vhost management
 
 **High (20+ tasks):**
+
 - postgresql: Database + users + configuration
 - Complex orchestration
 - Extensive variable structures
@@ -216,11 +225,13 @@ All three Phase 1-3 roles compared against extracted patterns:
 - **proxmox_network** - Good network-specific handler usage, proper verification patterns
 
 **Primary Gaps Identified:**
+
 - Testing infrastructure (molecule + CI) missing from all roles (Critical)
 - galaxy_info could be enhanced with broader platform testing (Important)
 - README troubleshooting sections would add value (Nice-to-have)
 
 **Pattern Match Score:**
+
 - Structure: 95%+ across all three roles
 - Variable Management: 100% (perfect adherence to patterns)
 - Documentation: 90% (good foundation, room for enhancement)

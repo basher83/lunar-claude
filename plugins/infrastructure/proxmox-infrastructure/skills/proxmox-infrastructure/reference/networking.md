@@ -1,15 +1,17 @@
 # Proxmox Network Configuration
 
-*Source: https://pve.proxmox.com/wiki/Network_Configuration*
+*Source: <https://pve.proxmox.com/wiki/Network_Configuration*>
 
 ## Key Concepts
 
 ### Configuration File
+
 All network configuration is in `/etc/network/interfaces`. GUI changes write to `/etc/network/interfaces.new` for safety.
 
 ### Applying Changes
 
 **ifupdown2 (recommended):**
+
 ```bash
 # Apply from GUI or run:
 ifreload -a
@@ -21,6 +23,7 @@ The `pvenetcommit` service activates staging file before `networking` service ap
 ## Naming Conventions
 
 ### Current (Proxmox VE 5.0+)
+
 - Ethernet: `en*` (systemd predictable names)
   - `eno1` - first on-board NIC
   - `enp3s0f1` - function 1 of NIC on PCI bus 3, slot 0
@@ -29,10 +32,13 @@ The `pvenetcommit` service activates staging file before `networking` service ap
 - VLANs: Add VLAN number after period: `eno1.50`, `bond1.30`
 
 ### Legacy (pre-5.0)
+
 - Ethernet: `eth[N]` (eth0, eth1, ...)
 
 ### Pinning Naming Scheme Version
+
 Add to kernel command line to prevent name changes:
+
 ```bash
 net.naming-scheme=v252
 ```
@@ -40,6 +46,7 @@ net.naming-scheme=v252
 ### Overriding Device Names
 
 **Automatic tool:**
+
 ```bash
 # Generate .link files for all interfaces
 pve-network-interface-pinning generate
@@ -52,6 +59,7 @@ pve-network-interface-pinning generate --interface enp1s0 --target-name if42
 ```
 
 **Manual method** (`/etc/systemd/network/10-enwan0.link`):
+
 ```ini
 [Match]
 MACAddress=aa:bb:cc:dd:ee:ff
@@ -62,6 +70,7 @@ Name=enwan0
 ```
 
 After creating link files:
+
 ```bash
 update-initramfs -u -k all
 # Then reboot
@@ -136,6 +145,7 @@ iface vmbr0 inet static
 ```
 
 **Conntrack zones fix** (if firewall blocks outgoing):
+
 ```bash
 post-up   iptables -t raw -I PREROUTING -i fwbr+ -j CT --zone 1
 post-down iptables -t raw -D PREROUTING -i fwbr+ -j CT --zone 1
@@ -154,6 +164,7 @@ post-down iptables -t raw -D PREROUTING -i fwbr+ -j CT --zone 1
 7. **balance-alb** - Adaptive load balancing (balance-tlb + receive balancing)
 
 **Recommendation:**
+
 - If switch supports LACP → use 802.3ad
 - Otherwise → use active-backup
 
@@ -217,6 +228,7 @@ iface vmbr0 inet static
 **Guest VLANs** - Configure VLAN tag in VM settings, bridge handles transparently.
 
 **Bridge with VLAN awareness:**
+
 ```bash
 auto vmbr0
 iface vmbr0 inet manual
@@ -230,6 +242,7 @@ iface vmbr0 inet manual
 ### Host Management on VLAN
 
 **With VLAN-aware bridge:**
+
 ```bash
 auto lo
 iface lo inet loopback
@@ -251,6 +264,7 @@ iface vmbr0 inet manual
 ```
 
 **Traditional VLAN:**
+
 ```bash
 auto lo
 iface lo inet loopback
@@ -343,6 +357,7 @@ Then: `sysctl -p /etc/sysctl.d/disable-ipv6.conf`
 **Don't use** `ifup`/`ifdown` on bridges as they interrupt guest traffic without reconnecting.
 
 **Use instead:**
+
 - GUI "Apply Configuration" button
 - `ifreload -a` command
 - Reboot

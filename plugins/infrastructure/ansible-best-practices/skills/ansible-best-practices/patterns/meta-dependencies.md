@@ -5,6 +5,7 @@
 Analyzed 7 geerlingguy roles: security, users, docker, postgresql, nginx, pip, git
 
 **Universal Patterns (All 7 roles):**
+
 - Complete galaxy_info structure in meta/main.yml (7/7 roles)
 - Explicit role_name specification (7/7 roles)
 - Clear one-sentence description (7/7 roles)
@@ -17,6 +18,7 @@ Analyzed 7 geerlingguy roles: security, users, docker, postgresql, nginx, pip, g
 - Testing matrix aligns with galaxy_info platforms (7/7 roles)
 
 **Contextual Patterns (Varies by role scope):**
+
 - Platform coverage breadth: utility roles have BROADER support (4+ OS families) than complex roles (focused on tested platforms)
 - Version specification: specific versions (EL 8, 9) vs "all" versions vs version ranges ("xenial-jammy")
 - Tag count: focused roles use 3-5 tags, broader roles use 5-7 tags
@@ -24,11 +26,13 @@ Analyzed 7 geerlingguy roles: security, users, docker, postgresql, nginx, pip, g
 - Platform families: service roles test specific versions, user management roles support GenericLinux/GenericUNIX
 
 **Evolving Patterns (Newer roles improved):**
+
 - Version ranges for long-lived roles: "xenial-jammy" (Ubuntu 16.04-22.04) more readable than listing every version (postgresql pattern)
 - ArchLinux inclusion for bleeding-edge testing in database roles (postgresql)
 - Platform specificity signals tested compatibility vs aspirational support
 
 **Sources:**
+
 - geerlingguy.security (analyzed 2025-10-23)
 - geerlingguy.github-users (analyzed 2025-10-23)
 - geerlingguy.docker (analyzed 2025-10-23)
@@ -38,13 +42,14 @@ Analyzed 7 geerlingguy roles: security, users, docker, postgresql, nginx, pip, g
 - geerlingguy.git (analyzed 2025-10-23)
 
 **Repositories:**
-- https://github.com/geerlingguy/ansible-role-security
-- https://github.com/geerlingguy/ansible-role-github-users
-- https://github.com/geerlingguy/ansible-role-docker
-- https://github.com/geerlingguy/ansible-role-postgresql
-- https://github.com/geerlingguy/ansible-role-nginx
-- https://github.com/geerlingguy/ansible-role-pip
-- https://github.com/geerlingguy/ansible-role-git
+
+- <https://github.com/geerlingguy/ansible-role-security>
+- <https://github.com/geerlingguy/ansible-role-github-users>
+- <https://github.com/geerlingguy/ansible-role-docker>
+- <https://github.com/geerlingguy/ansible-role-postgresql>
+- <https://github.com/geerlingguy/ansible-role-nginx>
+- <https://github.com/geerlingguy/ansible-role-pip>
+- <https://github.com/geerlingguy/ansible-role-git>
 
 ## Pattern Confidence Levels (Historical)
 
@@ -174,34 +179,41 @@ galaxy_info:
 #### Required Fields
 
 **role_name** (string):
+
 - Short, descriptive name for Galaxy
 - No ansible-role- prefix (Galaxy adds it)
 - Examples: `security`, `github-users`, `docker`
 
 **author** (string):
+
 - GitHub username or author name
 - Used for Galaxy namespace (galaxy.ansible.com/author/role)
 
 **description** (string):
+
 - One-sentence role description
 - Clear and specific
 - Used in Galaxy search results
 
 **license** (string):
+
 - License identifier (MIT, BSD, Apache, etc.)
 - Or "license (BSD, MIT)" for dual licensing
 - Must match LICENSE file in repo
 
 **min_ansible_version** (string or number):
+
 - Minimum Ansible version required
 - Examples: `'2.10'`, `'2.12'`, `2.10`
 - Quote to prevent float interpretation
 
 **platforms** (list):
+
 - List of supported OS families and versions
 - See Platform Specification section below
 
 **galaxy_tags** (list):
+
 - Keywords for Galaxy search
 - 5-7 tags recommended
 - See Tags section below
@@ -209,14 +221,17 @@ galaxy_info:
 #### Optional Fields
 
 **company** (string):
+
 - Author's company or project
 - Not required for personal roles
 
 **issue_tracker_url** (string):
+
 - GitHub issues URL
 - Auto-derived from repo if not specified
 
 **github_branch** (string):
+
 - Default branch for imports
 - Defaults to repository default branch
 
@@ -254,7 +269,7 @@ Define supported operating systems and versions in the platforms list. Be as spe
 - `FreeBSD` - FreeBSD
 - `GenericBSD` - Any BSD variant
 
-**Full list:** https://galaxy.ansible.com/api/v1/platforms/
+**Full list:** <https://galaxy.ansible.com/api/v1/platforms/>
 
 ### Version Specification Strategies
 
@@ -277,6 +292,7 @@ platforms:
 ```
 
 **Use when:**
+
 - Role has been tested on specific versions
 - Different versions require different handling
 - You want to signal explicit support/testing
@@ -294,6 +310,7 @@ platforms:
 ```
 
 **Use when:**
+
 - Role is truly platform-agnostic
 - No OS-specific code or dependencies
 - Works on any UNIX-like system
@@ -315,6 +332,7 @@ platforms:
 ```
 
 **Use when:**
+
 - Some platforms tested specifically
 - Others likely to work but not tested
 
@@ -390,6 +408,7 @@ Use descriptive, searchable tags to improve role discoverability on Ansible Gala
 ### Tag Categories
 
 **System category tags:**
+
 - `system` - System configuration
 - `security` - Security hardening
 - `networking` - Network configuration
@@ -397,6 +416,7 @@ Use descriptive, searchable tags to improve role discoverability on Ansible Gala
 - `web` - Web server management
 
 **Function category tags:**
+
 - `user` - User management
 - `account` - Account management
 - `ssh` - SSH configuration
@@ -404,6 +424,7 @@ Use descriptive, searchable tags to improve role discoverability on Ansible Gala
 - `monitoring` - Monitoring/metrics
 
 **Technology tags:**
+
 - `docker` - Docker-related
 - `kubernetes` - K8s-related
 - `nginx` - Nginx web server
@@ -411,6 +432,7 @@ Use descriptive, searchable tags to improve role discoverability on Ansible Gala
 - `proxmox` - Proxmox virtualization
 
 **Action tags:**
+
 - `installation` - Installs software
 - `configuration` - Configures systems
 - `deployment` - Deploys applications
@@ -430,6 +452,7 @@ galaxy_tags:
 ```
 
 **Explanation:**
+
 - `security` - Primary category
 - `system` - System-level role
 - `ssh` - SSH hardening feature
@@ -450,6 +473,7 @@ galaxy_tags:
 ```
 
 **Explanation:**
+
 - `system` - System-level role
 - `user` - User management
 - `security` - SSH key security
@@ -545,12 +569,14 @@ dependencies:
 ### When to Use Dependencies
 
 **Good use cases:**
+
 - Required repository setup (EPEL for RedHat packages)
 - Prerequisite software (Python, build tools)
 - Common configuration (firewall rules before service)
 - Shared components (common user accounts)
 
 **Avoid dependencies for:**
+
 - Optional features (use variables instead)
 - Tightly coupling roles (reduces reusability)
 - What playbooks should orchestrate (role order)
@@ -853,6 +879,7 @@ galaxy_info:
 **Virgo-Core Assessment:**
 
 All three Virgo-Core roles have excellent meta/main.yml configuration:
+
 - Complete galaxy_info structure
 - Appropriate platform specifications
 - Good tag selection
@@ -864,7 +891,7 @@ No meta-related gaps identified. Roles follow best practices.
 ## Validation: geerlingguy.postgresql
 
 **Analysis Date:** 2025-10-23
-**Repository:** https://github.com/geerlingguy/ansible-role-postgresql
+**Repository:** <https://github.com/geerlingguy/ansible-role-postgresql>
 
 ### galaxy_info Structure
 
@@ -982,8 +1009,9 @@ galaxy_info:
 
 **Analysis Date:** 2025-10-23
 **Repositories:**
-- https://github.com/geerlingguy/ansible-role-pip
-- https://github.com/geerlingguy/ansible-role-git
+
+- <https://github.com/geerlingguy/ansible-role-pip>
+- <https://github.com/geerlingguy/ansible-role-git>
 
 ### galaxy_info for Utility Roles
 

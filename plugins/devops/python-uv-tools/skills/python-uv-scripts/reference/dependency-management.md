@@ -21,6 +21,7 @@ Comprehensive guide to managing dependencies in UV single-file scripts using PEP
 ### Version Pinning Strategies
 
 **Exact pinning** (most restrictive):
+
 ```python
 # /// script
 # dependencies = ["requests==2.31.0"]
@@ -28,6 +29,7 @@ Comprehensive guide to managing dependencies in UV single-file scripts using PEP
 ```
 
 **Compatible release** (recommended):
+
 ```python
 # /// script
 # dependencies = ["requests~=2.31.0"]  # >=2.31.0, <2.32.0
@@ -35,6 +37,7 @@ Comprehensive guide to managing dependencies in UV single-file scripts using PEP
 ```
 
 **Minimum version**:
+
 ```python
 # /// script
 # dependencies = ["requests>=2.31.0"]
@@ -44,6 +47,7 @@ Comprehensive guide to managing dependencies in UV single-file scripts using PEP
 ### Following Repository Standards
 
 From this repository's `pyproject.toml`, we use:
+
 - `>=` for minimum versions with flexibility
 - Specific version ranges for critical dependencies
 - Regular dependency audits with Renovate

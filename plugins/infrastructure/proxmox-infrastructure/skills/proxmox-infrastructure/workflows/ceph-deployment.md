@@ -5,6 +5,7 @@ Complete guide to deploying CEPH storage on a Proxmox VE cluster with automated 
 ## Overview
 
 This workflow automates CEPH deployment with:
+
 - CEPH package installation
 - Cluster initialization with proper network configuration
 - Monitor and manager creation across all nodes
@@ -729,9 +730,11 @@ ansible -i ansible/inventory/proxmox.yml foxtrot -m shell -a "ceph health detail
 ### OSDs Won't Create
 
 **Symptoms:**
+
 - `pveceph osd create` fails with "already in use" error
 
 **Solutions:**
+
 1. Check if disk has existing partitions: `lsblk /dev/nvme1n1`
 2. Wipe disk: `wipefs -a /dev/nvme1n1` (DESTRUCTIVE!)
 3. Set `ceph_wipe_disks: true` in group_vars
@@ -740,9 +743,11 @@ ansible -i ansible/inventory/proxmox.yml foxtrot -m shell -a "ceph health detail
 ### PGs Stuck in Creating
 
 **Symptoms:**
+
 - PGs stay in "creating" state for extended period
 
 **Solutions:**
+
 1. Check OSD status: `ceph osd tree`
 2. Verify all OSDs are up and in: `ceph osd stat`
 3. Check mon/mgr status: `ceph mon stat`, `ceph mgr stat`
@@ -751,9 +756,11 @@ ansible -i ansible/inventory/proxmox.yml foxtrot -m shell -a "ceph health detail
 ### Poor CEPH Performance
 
 **Symptoms:**
+
 - Slow VM disk I/O
 
 **Solutions:**
+
 1. Verify MTU 9000: `ip link show vmbr1 | grep mtu`
 2. Test network throughput: `iperf3` between nodes
 3. Check OSD utilization: `ceph osd df`

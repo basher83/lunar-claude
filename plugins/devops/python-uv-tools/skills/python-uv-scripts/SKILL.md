@@ -29,6 +29,7 @@ print(f"[green]Status: {response.status_code}[/green]")
 ```
 
 Make it executable:
+
 ```bash
 chmod +x script.py
 ./script.py  # uv automatically installs dependencies
@@ -47,6 +48,7 @@ chmod +x script.py
 ## When to Use This Skill
 
 Activate this skill when:
+
 - Creating standalone Python utilities or automation scripts
 - Converting scripts from `requirements.txt` to uv format
 - Adding dependencies to existing single-file scripts
@@ -72,6 +74,7 @@ Activate this skill when:
 ```
 
 **Benefits:**
+
 - ✅ Dependencies live with the code
 - ✅ No separate `requirements.txt`
 - ✅ Reproducible execution
@@ -81,6 +84,7 @@ Activate this skill when:
 ### uv Script Execution Modes
 
 **Mode 1: Inline Dependencies** (Recommended for utilities)
+
 ```python
 #!/usr/bin/env -S uv run --script
 # /// script
@@ -89,11 +93,13 @@ Activate this skill when:
 ```
 
 **Mode 2: Project Mode** (For larger scripts)
+
 ```bash
 uv run script.py  # Uses pyproject.toml
 ```
 
 **Mode 3: No Dependencies**
+
 ```python
 #!/usr/bin/env -S uv run
 # Standard library only
@@ -106,6 +112,7 @@ uv run script.py  # Uses pyproject.toml
 See [examples/03-production-ready/check_cluster_health_enhanced.py](examples/03-production-ready/check_cluster_health_enhanced.py)
 
 **Current version** (basic):
+
 ```python
 #!/usr/bin/env python3
 import subprocess
@@ -113,6 +120,7 @@ import subprocess
 ```
 
 **Enhanced with uv** (production-ready):
+
 ```python
 #!/usr/bin/env -S uv run --script --quiet
 # /// script
@@ -142,6 +150,7 @@ Pattern: JSON API interaction with structured output
 ### 1. Security Patterns
 
 **Don't hardcode secrets:**
+
 ```python
 # ❌ BAD
 password = "super_secret"
@@ -154,6 +163,7 @@ if not password:
 ```
 
 **Better - Use keyring:**
+
 ```python
 # /// script
 # dependencies = ["keyring>=24.0.0"]
@@ -163,6 +173,7 @@ password = keyring.get_password("proxmox", "api_user")
 ```
 
 **Best - Use Infisical (following repository pattern):**
+
 ```python
 # /// script
 # dependencies = ["infisical-python>=2.3.3"]
@@ -191,6 +202,7 @@ Following this repository's approach (from `pyproject.toml`):
 ```
 
 **Pinning levels:**
+
 - `>=X.Y.Z` - Minimum version (most flexible)
 - `~=X.Y.Z` - Compatible release (patch updates only)
 - `==X.Y.Z` - Exact version (most strict)
@@ -200,6 +212,7 @@ See [reference/dependency-management.md](reference/dependency-management.md).
 ### 3. Team Standards
 
 **File naming:**
+
 ```bash
 check_cluster_health.py    # ✅ Descriptive, snake_case
 validate_template.py       # ✅ Action-oriented
@@ -207,12 +220,14 @@ cluster.py                 # ❌ Too generic
 ```
 
 **Shebang pattern:**
+
 ```python
 #!/usr/bin/env -S uv run --script --quiet
 # --quiet suppresses uv's own output
 ```
 
 **Documentation template:**
+
 ```python
 #!/usr/bin/env -S uv run --script
 # /// script
@@ -267,6 +282,7 @@ See [patterns/error-handling.md](patterns/error-handling.md).
 ### 5. Testing Patterns
 
 **Inline testing** (for simple scripts):
+
 ```python
 #!/usr/bin/env -S uv run --script
 # /// script
@@ -302,6 +318,7 @@ See [workflows/testing-strategies.md](workflows/testing-strategies.md).
 See [anti-patterns/when-not-to-use.md](anti-patterns/when-not-to-use.md) for details.
 
 **Use a proper project instead when:**
+
 - ❌ Script exceeds 500 lines
 - ❌ Multiple modules/files needed
 - ❌ Complex configuration management
@@ -310,6 +327,7 @@ See [anti-patterns/when-not-to-use.md](anti-patterns/when-not-to-use.md) for det
 - ❌ Web applications or long-running services
 
 **Example - Too Complex for Single File:**
+
 ```python
 # This should be a uv project, not a script:
 # - 15+ dependencies
@@ -532,11 +550,13 @@ See [workflows/ci-cd-integration.md](workflows/ci-cd-integration.md).
 For deeper knowledge:
 
 ### Reference Documentation
+
 - [PEP 723 Specification](reference/pep-723-spec.md) - Complete inline metadata spec
 - [Dependency Management](reference/dependency-management.md) - Version pinning strategies
 - [Security Patterns](reference/security-patterns.md) - Secrets, validation, input sanitization
 
 ### Pattern Guides
+
 - [CLI Applications](patterns/cli-applications.md) - Typer, Click, argparse patterns
 - [API Clients](patterns/api-clients.md) - httpx, requests, authentication
 - [Data Processing](patterns/data-processing.md) - Polars, pandas, analysis
@@ -544,14 +564,17 @@ For deeper knowledge:
 - [Error Handling](patterns/error-handling.md) - Exception handling, logging
 
 ### Working Examples
+
 - [NetBox API Client](examples/04-api-clients/netbox_client.py) - Production-ready API client with Infisical, validation, error handling, and Rich output
 - [Examples README](examples/README.md) - Complete examples directory with progressive complexity
 
 ### Anti-Patterns
+
 - [When NOT to Use](anti-patterns/when-not-to-use.md) - Signs you need a proper project
 - [Common Mistakes](anti-patterns/common-mistakes.md) - Pitfalls and how to avoid them
 
 ### Workflows
+
 - [Team Adoption](workflows/team-adoption.md) - Rolling out uv scripts across teams
 - [CI/CD Integration](workflows/ci-cd-integration.md) - GitHub Actions, GitLab CI
 - [Testing Strategies](workflows/testing-strategies.md) - Inline tests, pytest integration

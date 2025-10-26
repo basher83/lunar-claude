@@ -13,6 +13,7 @@ Follow these steps to create a properly structured plugin:
 ### Step 1: Gather Plugin Information
 
 Ask the user for:
+
 - **Plugin name** (kebab-case, no spaces)
 - **Description** (one-line summary)
 - **Category** (meta, infrastructure, devops, or homelab)
@@ -22,6 +23,7 @@ Ask the user for:
 ### Step 2: Validate Plugin Name
 
 Check that:
+
 - Name uses kebab-case format
 - Name is unique (not in current marketplace.json)
 - Name is descriptive and clear
@@ -29,6 +31,7 @@ Check that:
 ### Step 3: Create Plugin Directory
 
 1. Copy template to appropriate category:
+
    ```bash
    cp -r templates/plugin-template/ plugins/<category>/<plugin-name>/
    ```
@@ -58,6 +61,7 @@ Check that:
 1. Read current `.claude-plugin/marketplace.json`
 
 2. Add new plugin entry to `plugins` array:
+
    ```json
    {
      "name": "plugin-name",
@@ -100,6 +104,7 @@ Tell the user:
 Location: `plugins/<category>/<plugin-name>/`
 
 Next steps:
+
 1. Add your components (skills, agents, hooks, commands)
 2. Update README.md with usage examples
 3. Test locally: `/plugin marketplace add .`
@@ -110,6 +115,7 @@ Next steps:
 **Example: Creating infrastructure plugin**
 
 User input:
+
 - Name: terraform-tools
 - Description: Terraform and OpenTofu helpers
 - Category: infrastructure
@@ -117,6 +123,7 @@ User input:
 - Components: skills, commands
 
 Result:
+
 - Created `plugins/infrastructure/terraform-tools/`
 - Added to marketplace.json under infrastructure category
 - Ready for component development
@@ -124,6 +131,7 @@ Result:
 **Example: Creating homelab plugin**
 
 User input:
+
 - Name: proxmox-ops
 - Description: Proxmox cluster operations
 - Category: homelab
@@ -131,6 +139,7 @@ User input:
 - Components: agents, commands
 
 Result:
+
 - Created `plugins/homelab/proxmox-ops/`
 - Added to marketplace.json under homelab category
 - Removed unused skills and hooks directories

@@ -1,6 +1,6 @@
 # TODO
 
-**Need to review all plugins and see if and where they referance ai_docs/ directory as this will cause plugin to fail when installed into a new environment outside of this repository.**
+**Need to review all plugins and see if and where they referance ai_docs/ directory as this will may cause plugin to fail when installed into a new environment outside of this repository. Need to test/validate**
 
 - [ ] `plugins/meta/meta-claude/README.md` Line 65
 

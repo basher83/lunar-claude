@@ -389,9 +389,9 @@ To add a custom commit type:
 { message = "^design", group = "<!-- 4 -->🎨 Design" },
 ```
 
-2. **Update this documentation** with the new type
+1. **Update this documentation** with the new type
 
-3. **Communicate to team** about the new convention
+2. **Communicate to team** about the new convention
 
 ### Changing Group Order
 

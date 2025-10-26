@@ -29,6 +29,7 @@ Every agent MUST include:
 ### Step 1: Define Agent Purpose
 
 Ask the user:
+
 - What specialized task does this agent handle?
 - What capabilities distinguish it from other agents?
 - When should Claude invoke this vs doing work directly?
@@ -36,6 +37,7 @@ Ask the user:
 ### Step 2: Determine Agent Name
 
 Create descriptive kebab-case name:
+
 - "security review" → `security-reviewer`
 - "performance testing" → `performance-tester`
 - "API documentation" → `api-documenter`
@@ -43,6 +45,7 @@ Create descriptive kebab-case name:
 ### Step 3: List Capabilities
 
 Identify 3-5 specific capabilities:
+
 - Concrete actions the agent performs
 - Specialized knowledge it applies
 - Outputs it generates
@@ -104,6 +107,7 @@ Check `ai_docs/plugins-referance.md` for current agent specification.
 User: "Create an agent for security reviews"
 
 Process:
+
 1. Purpose: Reviews code for security vulnerabilities
 2. Name: `security-reviewer`
 3. Capabilities: ["vulnerability detection", "security best practices", "threat modeling"]
@@ -117,6 +121,7 @@ Output: Agent that Claude invokes for security-related code review
 User: "I need an agent for performance testing"
 
 Process:
+
 1. Purpose: Designs and analyzes performance tests
 2. Name: `performance-tester`
 3. Capabilities: ["load testing", "benchmark design", "performance analysis"]

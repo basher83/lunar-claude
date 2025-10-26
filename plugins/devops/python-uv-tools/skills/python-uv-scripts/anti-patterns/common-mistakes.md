@@ -127,7 +127,7 @@ else:
 
 This file will be expanded to include:
 
--   Complete checklist of common mistakes
--   Detailed explanations and fixes
--   Code review guidelines
--   Linting rules to catch issues
+- Complete checklist of common mistakes
+- Detailed explanations and fixes
+- Code review guidelines
+- Linting rules to catch issues

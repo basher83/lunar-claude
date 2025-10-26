@@ -5,13 +5,17 @@ Progressive examples demonstrating uv single-file script patterns.
 ## Example Structure
 
 ### 01-basic-script/
+
 Simple scripts with minimal dependencies showing fundamental concepts.
 
 ### 02-with-dependencies/
+
 Scripts demonstrating dependency management with PEP 723 metadata.
 
 ### 03-production-ready/
+
 Production-quality scripts with:
+
 - Comprehensive error handling
 - Security best practices
 - Rich CLI interfaces
@@ -40,6 +44,7 @@ This demonstrates all best practices from the skill:
 ```
 
 **Features:**
+
 - ✅ PEP 723 inline metadata
 - ✅ Typer CLI with help text
 - ✅ Rich formatted output
@@ -51,6 +56,7 @@ This demonstrates all best practices from the skill:
 - ✅ Comprehensive documentation
 
 **Usage:**
+
 ```bash
 # Interactive mode
 ./check_cluster_health_enhanced.py --node foxtrot
@@ -65,12 +71,14 @@ This demonstrates all best practices from the skill:
 ## Comparison with Basic Version
 
 **Basic** (.claude/skills/proxmox-infrastructure/tools/check_cluster_health.py):
+
 - Manual dependency installation required
 - Basic argparse
 - Plain text output
 - Minimal error handling
 
 **Enhanced** (this example):
+
 - Inline dependencies (self-installing)
 - Typer with rich help
 - Beautiful table output + JSON mode

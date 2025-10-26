@@ -24,6 +24,7 @@ This skill demonstrates the proper structure for Claude Code skills. Skills are 
 ### Phase 1: Setup
 
 Steps for initial setup:
+
 1. Verify prerequisites
 2. Gather required information
 3. Prepare workspace
@@ -31,6 +32,7 @@ Steps for initial setup:
 ### Phase 2: Execution
 
 Main execution steps:
+
 1. Execute primary task
 2. Handle edge cases
 3. Process results
@@ -38,6 +40,7 @@ Main execution steps:
 ### Phase 3: Validation
 
 Verification steps:
+
 1. Check output quality
 2. Verify completeness
 3. Confirm success criteria

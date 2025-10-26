@@ -37,7 +37,7 @@ Meta-claude provides four creator skills that Claude invokes automatically:
 
 Simply ask Claude to create components:
 
-```
+```text
 "Help me create a skill for processing terraform configurations"
 "I need an agent for kubernetes operations"
 "Create a hook that runs tests after file edits"
@@ -54,6 +54,7 @@ For structured plugin creation:
 ```
 
 Walks through:
+
 1. Plugin name and description
 2. Category selection (meta, infrastructure, devops, homelab)
 3. Component selection (skills, agents, hooks, commands)

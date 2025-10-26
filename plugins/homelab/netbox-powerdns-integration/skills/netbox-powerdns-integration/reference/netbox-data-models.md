@@ -41,6 +41,7 @@ NetBox organizes infrastructure data into logical models across several applicat
 Represents a physical location containing infrastructure.
 
 **Fields:**
+
 - `name` - Display name (e.g., "Matrix Cluster")
 - `slug` - URL-friendly identifier (e.g., "matrix")
 - `status` - active, planned, retired, etc.
@@ -61,6 +62,7 @@ site = nb.dcim.sites.create(
 ```
 
 **Relationships:**
+
 - Has many: Racks, Devices, Prefixes
 - Belongs to: Region (optional)
 
@@ -71,6 +73,7 @@ site = nb.dcim.sites.create(
 Physical rack within a site.
 
 **Fields:**
+
 - `name` - Rack identifier
 - `site` - Parent site
 - `u_height` - Units (typically 42U)
@@ -90,6 +93,7 @@ rack = nb.dcim.racks.create(
 ```
 
 **Relationships:**
+
 - Belongs to: Site
 - Has many: Devices (mounted in rack)
 
@@ -100,6 +104,7 @@ rack = nb.dcim.racks.create(
 Physical piece of equipment.
 
 **Fields:**
+
 - `name` - Device hostname (e.g., "foxtrot")
 - `device_type` - Reference to device type
 - `device_role` - Purpose (server, switch, etc.)
@@ -125,6 +130,7 @@ device = nb.dcim.devices.create(
 ```
 
 **Relationships:**
+
 - Belongs to: Site, Rack, Device Type, Device Role
 - Has many: Interfaces, Console Ports, Power Ports
 - Has one: Primary IP4, Primary IP6
@@ -136,6 +142,7 @@ device = nb.dcim.devices.create(
 Network interface on a device.
 
 **Fields:**
+
 - `device` - Parent device
 - `name` - Interface name (e.g., "eth0", "enp1s0")
 - `type` - Physical type (1000base-t, 10gbase-x, etc.)
@@ -161,6 +168,7 @@ interface = nb.dcim.interfaces.create(
 ```
 
 **Relationships:**
+
 - Belongs to: Device
 - Has many: IP Addresses (assigned to interface)
 - Connected to: Cable (physical connection)
@@ -172,6 +180,7 @@ interface = nb.dcim.interfaces.create(
 Physical cable connection between interfaces.
 
 **Fields:**
+
 - `a_terminations` - End A (interface, console port, etc.)
 - `b_terminations` - End B
 - `type` - Cable type (cat6, fiber, dac, etc.)
@@ -195,6 +204,7 @@ cable = nb.dcim.cables.create(
 ```
 
 **Relationships:**
+
 - Connects: Two termination objects (interfaces, ports, etc.)
 
 ---
@@ -204,6 +214,7 @@ cable = nb.dcim.cables.create(
 IPv4 or IPv6 address.
 
 **Fields:**
+
 - `address` - IP with CIDR (e.g., "192.168.3.5/24")
 - `dns_name` - FQDN (e.g., "foxtrot.spaceships.work")
 - `status` - active, reserved, deprecated, etc.
@@ -228,6 +239,7 @@ ip = nb.ipam.ip_addresses.create(
 ```
 
 **Relationships:**
+
 - Belongs to: Prefix, VRF (optional)
 - Assigned to: Interface (device or VM)
 - Referenced by: Device (as primary IP)
@@ -239,6 +251,7 @@ ip = nb.ipam.ip_addresses.create(
 IP network or subnet.
 
 **Fields:**
+
 - `prefix` - Network in CIDR (e.g., "192.168.3.0/24")
 - `status` - active, reserved, deprecated, etc.
 - `role` - Purpose (e.g., "management", "ceph-public")
@@ -264,6 +277,7 @@ prefix = nb.ipam.prefixes.create(
 ```
 
 **Relationships:**
+
 - Belongs to: Site, VRF, VLAN (optional)
 - Contains: IP Addresses
 - Hierarchical: Can contain child prefixes
@@ -275,6 +289,7 @@ prefix = nb.ipam.prefixes.create(
 Virtual LAN.
 
 **Fields:**
+
 - `vid` - VLAN ID (1-4094)
 - `name` - VLAN name
 - `site` - Site assignment
@@ -298,6 +313,7 @@ vlan = nb.ipam.vlans.create(
 ```
 
 **Relationships:**
+
 - Belongs to: Site, VLAN Group
 - Assigned to: Prefixes, Interfaces
 
@@ -308,6 +324,7 @@ vlan = nb.ipam.vlans.create(
 Virtual Routing and Forwarding instance.
 
 **Fields:**
+
 - `name` - VRF name
 - `rd` - Route distinguisher (optional)
 - `description`
@@ -325,6 +342,7 @@ vrf = nb.ipam.vrfs.create(
 ```
 
 **Relationships:**
+
 - Has many: Prefixes, IP Addresses
 
 ---
@@ -334,6 +352,7 @@ vrf = nb.ipam.vrfs.create(
 VM in a virtualization cluster.
 
 **Fields:**
+
 - `name` - VM hostname
 - `cluster` - Virtualization cluster
 - `role` - VM role (optional)
@@ -361,6 +380,7 @@ vm = nb.virtualization.virtual_machines.create(
 ```
 
 **Relationships:**
+
 - Belongs to: Cluster, Role (optional)
 - Has many: VM Interfaces
 - Has one: Primary IP4, Primary IP6
@@ -372,6 +392,7 @@ vm = nb.virtualization.virtual_machines.create(
 Virtualization cluster (e.g., Proxmox, VMware).
 
 **Fields:**
+
 - `name` - Cluster name
 - `type` - Cluster type
 - `site` - Physical location
@@ -392,6 +413,7 @@ cluster = nb.virtualization.clusters.create(
 ```
 
 **Relationships:**
+
 - Belongs to: Site, Cluster Type
 - Has many: Virtual Machines
 
@@ -402,6 +424,7 @@ cluster = nb.virtualization.clusters.create(
 Network interface on a virtual machine.
 
 **Fields:**
+
 - `virtual_machine` - Parent VM
 - `name` - Interface name (e.g., "eth0")
 - `type` - Interface type (virtual, bridge)
@@ -425,6 +448,7 @@ vm_interface = nb.virtualization.interfaces.create(
 ```
 
 **Relationships:**
+
 - Belongs to: Virtual Machine
 - Has many: IP Addresses
 
@@ -434,7 +458,7 @@ vm_interface = nb.virtualization.interfaces.create(
 
 ### Hierarchical Relationships
 
-```
+```text
 Region (optional)
   └── Site
       ├── Rack
@@ -452,7 +476,8 @@ Region (optional)
 ### Key Relationships
 
 **Site containment:**
-```
+
+```text
 Site
   ├── has many Racks
   ├── has many Devices
@@ -462,7 +487,8 @@ Site
 ```
 
 **Device structure:**
-```
+
+```text
 Device
   ├── belongs to Site
   ├── belongs to Rack (optional)
@@ -474,7 +500,8 @@ Device
 ```
 
 **Interface connectivity:**
-```
+
+```text
 Interface
   ├── belongs to Device
   ├── has many IP Addresses
@@ -484,7 +511,8 @@ Interface
 ```
 
 **IP Address assignment:**
-```
+
+```text
 IP Address
   ├── belongs to Prefix
   ├── assigned to Interface (device or VM)
@@ -493,7 +521,8 @@ IP Address
 ```
 
 **VM structure:**
-```
+
+```text
 Virtual Machine
   ├── belongs to Cluster
   ├── has many VM Interfaces
@@ -502,7 +531,8 @@ Virtual Machine
 ```
 
 **IPAM hierarchy:**
-```
+
+```text
 VRF (optional)
   └── Prefix
       ├── child Prefix (nested)
@@ -925,7 +955,7 @@ print("Matrix cluster created in NetBox!")
 
 ### 1. Plan Hierarchy First
 
-```
+```text
 1. Create Site
 2. Create Prefixes (IPAM)
 3. Create VLANs

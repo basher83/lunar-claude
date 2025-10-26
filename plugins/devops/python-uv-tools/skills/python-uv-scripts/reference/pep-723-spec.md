@@ -18,6 +18,7 @@ PEP 723 defines a standardized way to embed dependency and configuration metadat
 ```
 
 **Key Requirements:**
+
 - Must appear as comments (`#`)
 - Must use `# /// script` as opening marker
 - Must use `# ///` as closing marker
@@ -39,6 +40,7 @@ Specifies minimum Python version:
 ```
 
 **Formats:**
+
 ```python
 requires-python = ">=3.11"      # Minimum version
 requires-python = ">=3.11,<3.13" # Version range
@@ -60,6 +62,7 @@ Lists required packages:
 ```
 
 **Version Specifiers:**
+
 ```python
 "package"           # Any version
 "package>=1.0"      # Minimum version
@@ -86,6 +89,7 @@ uv-specific configuration:
 ```
 
 **Available options:**
+
 - `exclude-newer`: Only use packages published before this date
 - `index-url`: Alternative PyPI index
 - `extra-index-url`: Additional package indexes

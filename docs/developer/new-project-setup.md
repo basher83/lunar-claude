@@ -24,13 +24,13 @@
 
 ## Claude settings
 
-    - Launch claude code
-    - Add plugin marketplace for superpowers: `/plugin marketplace add obra/superpowers-marketplace` 
-    - Add plugin for offical anthropic claude code: `/plugin marketplace add anthropics/claude-code`
-    - Install agent-sdk-dev: `/plugin install agent-sdk-dev@anthropics/claude-code`
-    - Install superpowers: `/plugin install superpowers@superpowers-marketplace`
-    - Install elements-of-style: `/plugin install elements-of-style@superpowers-marketplace`
-    - Restart claude code to apply changes
+- Launch claude code
+- Add plugin marketplace for superpowers: `/plugin marketplace add obra/superpowers-marketplace`
+- Add plugin for offical anthropic claude code: `/plugin marketplace add anthropics/claude-code`
+- Install agent-sdk-dev: `/plugin install agent-sdk-dev@anthropics/claude-code`
+- Install superpowers: `/plugin install superpowers@superpowers-marketplace`
+- Install elements-of-style: `/plugin install elements-of-style@superpowers-marketplace`
+- Restart claude code to apply changes
 
 ## VS Code Extensions
 

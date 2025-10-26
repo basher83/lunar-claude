@@ -12,7 +12,7 @@ This marketplace serves as a personal plugin collection for homelab and infrastr
 
 ### Directory Layout
 
-```
+```text
 lunar-claude/
 ├── .claude-plugin/
 │   └── marketplace.json
@@ -90,7 +90,7 @@ Example:
 
 The template provides complete scaffolding for new plugins:
 
-```
+```text
 plugin-template/
 ├── .claude-plugin/
 │   └── plugin.json
@@ -123,6 +123,7 @@ The plugin.json uses placeholders for customization:
 ```
 
 The README.md includes standard sections:
+
 - Plugin name and description
 - Installation instructions
 - Usage examples
@@ -130,6 +131,7 @@ The README.md includes standard sections:
 - Configuration notes
 
 Example files demonstrate proper formats:
+
 - `example-agent.md`: Agent with frontmatter and capability description
 - `example-skill/SKILL.md`: Complete skill with all required sections
 - `hooks.json`: Common hook patterns
@@ -138,7 +140,7 @@ Example files demonstrate proper formats:
 
 The first plugin demonstrates the complete structure:
 
-```
+```text
 plugins/meta/meta-claude/
 ├── .claude-plugin/
 │   └── plugin.json
@@ -155,6 +157,7 @@ plugins/meta/meta-claude/
 ### Components
 
 **Skills** (four creators):
+
 - skill-creator: Extends Anthropic's skill-creator with official documentation
 - agent-creator: Generates properly formatted agents
 - hook-creator: Creates hook configurations
@@ -163,6 +166,7 @@ plugins/meta/meta-claude/
 Skills reference official documentation in `ai_docs/` for accuracy.
 
 **Command** (interactive workflow):
+
 - new-plugin: Walks through plugin creation
 - Uses template structure
 - Updates marketplace.json
@@ -199,6 +203,7 @@ Install plugins:
 ### Version Management
 
 Follow semantic versioning:
+
 - Marketplace: Increment when adding/removing plugins
 - Plugins: Increment per plugin changes
 - Independent versioning allows granular updates

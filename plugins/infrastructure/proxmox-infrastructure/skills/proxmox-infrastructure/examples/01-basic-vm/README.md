@@ -17,6 +17,7 @@
    - Or use Triangulum-Prime template examples
 
 2. **Proxmox API credentials** configured:
+
    ```bash
    export PROXMOX_VE_ENDPOINT="https://192.168.3.5:8006"
    export PROXMOX_VE_API_TOKEN="user@realm!token-id=secret"
@@ -26,6 +27,7 @@
    ```
 
 3. **SSH public key** available:
+
    ```bash
    export TF_VAR_ssh_public_key="$(cat ~/.ssh/id_rsa.pub)"
    ```
@@ -45,6 +47,7 @@ tofu plan
 ```
 
 **Expected resources:**
+
 - 1 VM (cloned from template 9000)
 - Cloud-init configuration
 - Network interface with static IP
@@ -156,6 +159,7 @@ vm_net_ifaces = {
 ### Issue: "Template 9000 not found"
 
 **Solution:** Create a template first:
+
 ```bash
 cd ../../.. # Back to repo root
 cd terraform/netbox-template
@@ -165,6 +169,7 @@ tofu apply
 ### Issue: "IP address already in use"
 
 **Solution:** Change `ip_address` variable:
+
 ```bash
 tofu apply -var="ip_address=192.168.3.101"
 ```
@@ -172,6 +177,7 @@ tofu apply -var="ip_address=192.168.3.101"
 ### Issue: "Cannot connect to Proxmox API"
 
 **Solution:** Check credentials:
+
 ```bash
 echo $PROXMOX_VE_ENDPOINT
 echo $PROXMOX_VE_API_TOKEN
@@ -180,6 +186,7 @@ echo $PROXMOX_VE_API_TOKEN
 ### Issue: "EFI disk creation failed"
 
 **Solution:** Ensure datastore has space:
+
 ```bash
 # On Proxmox node
 pvesm status
@@ -219,6 +226,7 @@ pvesm status
 This example follows the module's DRY principle:
 
 ✅ **Good:** Only specify what differs from defaults
+
 ```hcl
 vm_cpu = {
   cores = 4  # Only override cores, use default type
@@ -226,6 +234,7 @@ vm_cpu = {
 ```
 
 ❌ **Bad:** Repeating module defaults
+
 ```hcl
 vm_cpu = {
   cores = 4

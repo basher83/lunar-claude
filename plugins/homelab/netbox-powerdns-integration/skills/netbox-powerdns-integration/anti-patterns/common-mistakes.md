@@ -9,6 +9,7 @@ DNS naming convention violations and NetBox/PowerDNS integration pitfalls based 
 **Root Domain**: `spaceships.work`
 
 **Cluster Domains**:
+
 - `matrix.spaceships.work` - Nexus cluster (3 nodes)
 - `quantum.spaceships.work` - Quantum cluster (3 nodes)
 - `nexus.spaceships.work` - (Legacy naming reference)
@@ -16,16 +17,19 @@ DNS naming convention violations and NetBox/PowerDNS integration pitfalls based 
 **Proxmox Node Domains** (with master node designations):
 
 **Matrix Cluster** (nexus.spaceships.work):
+
 - `foxtrot.nexus.spaceships.work` - **Master Node** (API Target)
 - `golf.nexus.spaceships.work`
 - `hotel.nexus.spaceships.work`
 
 **Quantum Cluster** (quantum.spaceships.work):
+
 - `charlie.quantum.spaceships.work`
 - `delta.quantum.spaceships.work` - **Master Node** (API Target)
 - `echo.quantum.spaceships.work`
 
 **Matrix Cluster** (matrix.spaceships.work):
+
 - `alpha.matrix.spaceships.work`
 - `bravo.matrix.spaceships.work` - **Master Node** (API Target)
 - `charlie.matrix.spaceships.work`
@@ -73,6 +77,7 @@ hostname = "storage-01-ceph.nexus.spaceships.work"
 ```
 
 **Valid Clusters**:
+
 - `matrix.spaceships.work`
 - `quantum.spaceships.work`
 - `nexus.spaceships.work`
@@ -145,6 +150,7 @@ proxmox_matrix = ProxmoxAPI(
 ```
 
 **Master Nodes Quick Reference**:
+
 - **Nexus**: `foxtrot.nexus.spaceships.work`
 - **Quantum**: `delta.quantum.spaceships.work`
 - **Matrix**: `bravo.matrix.spaceships.work`
@@ -175,6 +181,7 @@ hostname = "storage-03-ceph.nexus.spaceships.work"# ✅ service-03-purpose
 **Pattern**: `<service>-<NN>-<purpose>.<cluster>.<root-domain>`
 
 Components:
+
 - **service**: Infrastructure type (`docker`, `k8s`, `proxmox`, `storage`, `db`)
 - **NN**: Two-digit number (`01`, `02`, `03`, ... `99`)
 - **purpose**: Specific role (`nexus`, `master`, `worker`, `ceph`, `postgres`)
@@ -262,6 +269,7 @@ ip = nb.ipam.ip_addresses.create(
 ```
 
 **Sync Tags**:
+
 - `production-dns` - Auto-create in PowerDNS production zone
 - `lab-dns` - Auto-create in PowerDNS lab zone
 
@@ -342,7 +350,8 @@ initialization {
 ### Correct Naming Patterns
 
 **VM Hostnames**:
-```
+
+```text
 docker-01-nexus.matrix.spaceships.work
 k8s-01-master.quantum.spaceships.work
 storage-01-ceph.nexus.spaceships.work
@@ -350,13 +359,15 @@ db-01-postgres.matrix.spaceships.work
 ```
 
 **Proxmox Nodes**:
-```
+
+```text
 foxtrot.nexus.spaceships.work (master)
 delta.quantum.spaceships.work (master)
 bravo.matrix.spaceships.work (master)
 ```
 
 **Service Types**:
+
 - `docker-NN-<app>` - Docker hosts
 - `k8s-NN-<role>` - Kubernetes nodes (master, worker)
 - `proxmox-<node>-<iface>` - Proxmox infrastructure
@@ -366,11 +377,13 @@ bravo.matrix.spaceships.work (master)
 ### Valid Domains
 
 **Clusters**:
+
 - `matrix.spaceships.work`
 - `quantum.spaceships.work`
 - `nexus.spaceships.work`
 
 **Master Nodes** (API targets):
+
 - Nexus: `foxtrot.nexus.spaceships.work`
 - Quantum: `delta.quantum.spaceships.work`
 - Matrix: `bravo.matrix.spaceships.work`
@@ -382,6 +395,7 @@ bravo.matrix.spaceships.work (master)
 ### DNS Record Not Created in PowerDNS
 
 **Check**:
+
 1. ✅ DNS name follows pattern? `service-NN-purpose.cluster.spaceships.work`
 2. ✅ Has `production-dns` or `lab-dns` tag in NetBox?
 3. ✅ NetBox PowerDNS sync plugin enabled?
@@ -390,6 +404,7 @@ bravo.matrix.spaceships.work (master)
 ### Can't Connect to Proxmox API
 
 **Check**:
+
 1. ✅ Using master node FQDN?
    - Nexus: `foxtrot.nexus.spaceships.work`
    - Quantum: `delta.quantum.spaceships.work`
@@ -400,6 +415,7 @@ bravo.matrix.spaceships.work (master)
 ### Validation Script Fails
 
 **Common Issues**:
+
 ```bash
 # Missing number
 ❌ docker-nexus.spaceships.work
@@ -419,6 +435,7 @@ bravo.matrix.spaceships.work (master)
 ```
 
 Run validation:
+
 ```bash
 ./tools/validate_dns_naming.py --name "your-hostname-here"
 ```

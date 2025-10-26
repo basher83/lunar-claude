@@ -592,6 +592,7 @@ ceph_pools:
 ```
 
 **Problems**:
+
 - Defeats purpose of automation
 - Error-prone manual process
 - No consistency across nodes

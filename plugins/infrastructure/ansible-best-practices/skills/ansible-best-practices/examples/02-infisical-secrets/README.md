@@ -7,23 +7,27 @@
 This playbook showcases **production-ready Ansible patterns** from Virgo-Core:
 
 ✅ **Secrets Management:**
+
 - Infisical integration using reusable task
 - Fallback to environment variables
 - `no_log: true` on sensitive tasks
 
 ✅ **Error Handling:**
+
 - Pre-flight checks with `assert`
 - `changed_when` for idempotency
 - `failed_when` for graceful failures
 - Block/rescue for rollback
 
 ✅ **Best Practices:**
+
 - Fully qualified module names (FQCN)
 - Task organization with blocks
 - Handlers for service restarts
 - Verification steps
 
 ✅ **Docker Operations:**
+
 - Idempotent container management
 - Health checks with retries
 - Proper logging on failures
@@ -70,6 +74,7 @@ docker-01-nexus.spaceships.work
 The playbook references templates you need to create:
 
 **`templates/app-config.yml.j2`:**
+
 ```yaml
 database:
   host: db.spaceships.work
@@ -84,6 +89,7 @@ redis:
 ```
 
 **`templates/docker-compose.yml.j2`:**
+
 ```yaml
 version: '3.8'
 services:
@@ -102,16 +108,19 @@ services:
 ### 1. Validate Playbook
 
 **Syntax check:**
+
 ```bash
 ansible-playbook docker-deployment.yml --syntax-check
 ```
 
 **Lint check:**
+
 ```bash
 ansible-lint docker-deployment.yml
 ```
 
 **Dry run:**
+
 ```bash
 ansible-playbook docker-deployment.yml --check
 ```
@@ -143,6 +152,7 @@ ssh ansible@docker-01-nexus.spaceships.work "docker ps"
 ### Pattern 1: Infisical Secret Lookup
 
 **The Pattern:**
+
 ```yaml
 - name: Retrieve database password from Infisical
   ansible.builtin.include_tasks: ../../tasks/infisical-secret-lookup.yml
@@ -153,6 +163,7 @@ ssh ansible@docker-01-nexus.spaceships.work "docker ps"
 ```
 
 **Why it works:**
+
 - Reusable task (DRY principle)
 - Validates authentication before retrieving
 - Fallback to environment for local dev
@@ -164,6 +175,7 @@ ssh ansible@docker-01-nexus.spaceships.work "docker ps"
 ### Pattern 2: Pre-flight Validation
 
 **The Pattern:**
+
 ```yaml
 pre_tasks:
   - name: Validate required variables
@@ -180,6 +192,7 @@ pre_tasks:
 ```
 
 **Why it works:**
+
 - Fails fast with clear messages
 - Prevents partial deployments
 - Uses `changed_when: false` for checks
@@ -188,6 +201,7 @@ pre_tasks:
 ### Pattern 3: Idempotent Docker Operations
 
 **The Pattern:**
+
 ```yaml
 - name: Check if container is already running
   ansible.builtin.command: docker ps --filter name={{ app_name }}
@@ -202,6 +216,7 @@ pre_tasks:
 ```
 
 **Why it works:**
+
 - Check first, then create
 - Only reports "changed" if actually started something
 - Conditional execution with `when:`
@@ -210,6 +225,7 @@ pre_tasks:
 ### Pattern 4: Block/Rescue Error Handling
 
 **The Pattern:**
+
 ```yaml
 - name: Docker Management Block
   block:
@@ -227,6 +243,7 @@ pre_tasks:
 ```
 
 **Why it works:**
+
 - Groups related tasks
 - Automatic rollback on failure
 - Provides debugging info
@@ -237,6 +254,7 @@ pre_tasks:
 ### Pattern 5: Health Checks with Retries
 
 **The Pattern:**
+
 ```yaml
 - name: Wait for application to be healthy
   ansible.builtin.uri:
@@ -249,6 +267,7 @@ pre_tasks:
 ```
 
 **Why it works:**
+
 - Automatic retries for transient failures
 - Configurable timeout (30 × 10s = 5 minutes)
 - Fails clearly if never becomes healthy
@@ -341,6 +360,7 @@ ansible-playbook docker-deployment.yml --skip-tags verify
 **Error:** `Missing Infisical authentication credentials`
 
 **Solution:**
+
 ```bash
 # Check environment variables
 echo $INFISICAL_UNIVERSAL_AUTH_CLIENT_ID
@@ -355,6 +375,7 @@ export DB_PASSWORD="fallback-password"
 **Error:** `Docker is not installed`
 
 **Solution:**
+
 ```bash
 # Install Docker on target host
 ssh ansible@docker-host
@@ -369,6 +390,7 @@ sudo apt install docker.io docker-compose
 **Solution:** Playbook shows logs automatically in rescue block. Review output for errors.
 
 **Manual check:**
+
 ```bash
 ssh ansible@docker-host
 cd /opt/my-application
@@ -380,6 +402,7 @@ docker-compose logs
 **Error:** `Wait for application to be healthy` times out
 
 **Solution:**
+
 ```yaml
 # Increase retries/delay
 retries: 60  # 10 minutes
@@ -425,11 +448,13 @@ ansible-lint docker-deployment.yml
 ### Best Practices
 
 Review the main skill:
+
 - [../../SKILL.md](../../SKILL.md) - Complete best practices guide
 
 ## Why These Patterns Matter
 
 **In Production:**
+
 - ✅ Secrets never in version control
 - ✅ Playbooks are truly idempotent
 - ✅ Clear error messages for troubleshooting
@@ -437,12 +462,14 @@ Review the main skill:
 - ✅ Rollback on failures
 
 **For Teams:**
+
 - ✅ Consistent patterns across playbooks
 - ✅ Easy to understand and maintain
 - ✅ Self-documenting code
 - ✅ Reduced bus factor
 
 **For You:**
+
 - ✅ Confidence in deployments
 - ✅ Less time debugging
 - ✅ Better sleep at night!

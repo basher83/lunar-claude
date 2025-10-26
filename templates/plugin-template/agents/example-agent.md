@@ -16,6 +16,7 @@ This agent demonstrates the proper structure for Claude Code agents. Replace thi
 ## When to Use This Agent
 
 Claude should invoke this agent when:
+
 - User requests task type 1
 - Project needs task type 2 functionality
 - Specific problem matches task type 3 patterns

@@ -12,6 +12,7 @@ Expert guidance for implementing NetBox as your source of truth for infrastructu
 ### Common Tasks
 
 **Query NetBox API:**
+
 ```bash
 # List all sites
 ./tools/netbox_api_client.py sites list
@@ -27,6 +28,7 @@ Expert guidance for implementing NetBox as your source of truth for infrastructu
 ```
 
 **Create VM in NetBox:**
+
 ```bash
 # Create VM with auto-assigned IP
 ./tools/netbox_vm_create.py --name docker-02 --cluster matrix --vcpus 4 --memory 8192
@@ -36,6 +38,7 @@ Expert guidance for implementing NetBox as your source of truth for infrastructu
 ```
 
 **IPAM Queries:**
+
 ```bash
 # Get available IPs
 ./tools/netbox_ipam_query.py available --prefix 192.168.3.0/24
@@ -48,11 +51,13 @@ Expert guidance for implementing NetBox as your source of truth for infrastructu
 ```
 
 **Validate DNS Naming:**
+
 ```bash
 ./tools/validate_dns_naming.py --name "docker-01-nexus.spaceships.work"
 ```
 
 **Deploy from NetBox Inventory:**
+
 ```bash
 cd ansible && uv run ansible-playbook -i tools/netbox-dynamic-inventory.yml deploy-from-netbox.yml
 ```
@@ -60,6 +65,7 @@ cd ansible && uv run ansible-playbook -i tools/netbox-dynamic-inventory.yml depl
 ## When to Use This Skill
 
 Activate this skill when:
+
 - **Querying NetBox API** - Sites, devices, VMs, IPs, prefixes, VLANs
 - **Setting up NetBox IPAM** - Prefixes, IP management, VRFs
 - **Implementing automated DNS** - PowerDNS sync plugin configuration
@@ -114,11 +120,13 @@ See [reference/netbox-api-guide.md](reference/netbox-api-guide.md) for complete 
 This infrastructure uses the pattern: `<service>-<number>-<purpose>.<domain>`
 
 **Examples:**
+
 - `docker-01-nexus.spaceships.work` - Docker host #1 running Nexus
 - `proxmox-foxtrot-mgmt.spaceships.work` - Proxmox node Foxtrot management interface
 - `k8s-01-master.spaceships.work` - Kubernetes cluster master node #1
 
 **Implementation:**
+
 ```python
 # tools/validate_dns_naming.py validates this pattern
 pattern = r'^[a-z0-9-]+-\d{2}-[a-z0-9-]+\.[a-z0-9.-]+$'
@@ -152,6 +160,7 @@ PLUGINS_CONFIG = {
 **Step 3: Create Zones in NetBox**
 
 Configure zones with:
+
 - Zone name (e.g., `spaceships.work`)
 - PowerDNS server connection
 - Tag matching rules (e.g., `production-dns`)
@@ -162,6 +171,7 @@ See [reference/sync-plugin-reference.md](reference/sync-plugin-reference.md) for
 ### 4. Terraform Integration
 
 **Provider Setup:**
+
 ```hcl
 terraform {
   required_providers {
@@ -179,6 +189,7 @@ provider "netbox" {
 ```
 
 **Create IP with Auto-DNS:**
+
 ```hcl
 resource "netbox_ip_address" "docker_host" {
   ip_address  = "192.168.1.100/24"
@@ -212,6 +223,7 @@ group_by:
 ```
 
 **Deploy Using NetBox Data:**
+
 ```bash
 ansible-playbook -i tools/netbox-dynamic-inventory.yml deploy-from-netbox.yml
 ```
@@ -222,7 +234,7 @@ See [workflows/ansible-dynamic-inventory.md](workflows/ansible-dynamic-inventory
 
 ### DNS Automation Flow
 
-```
+```text
 1. Create/Update resource in NetBox
    └→ IP Address with dns_name and tags
 
@@ -240,7 +252,7 @@ See [workflows/ansible-dynamic-inventory.md](workflows/ansible-dynamic-inventory
 
 ### Integration with Proxmox
 
-```
+```text
 Terraform/Ansible
   ↓
 Creates VM in Proxmox
@@ -264,6 +276,7 @@ Automated configuration management
 ### NetBox API Tools (Python + uv)
 
 **netbox_api_client.py** - Comprehensive NetBox API client
+
 ```bash
 # List sites, devices, VMs, IPs
 ./tools/netbox_api_client.py sites list
@@ -274,6 +287,7 @@ Automated configuration management
 ```
 
 **netbox_vm_create.py** - Create VMs in NetBox with IP assignment
+
 ```bash
 # Create VM with auto IP
 ./tools/netbox_vm_create.py --name docker-02 --cluster matrix --vcpus 4 --memory 8192
@@ -283,6 +297,7 @@ Automated configuration management
 ```
 
 **netbox_ipam_query.py** - Advanced IPAM queries
+
 ```bash
 # Available IPs
 ./tools/netbox_ipam_query.py available --prefix 192.168.3.0/24
@@ -298,6 +313,7 @@ Automated configuration management
 ```
 
 **validate_dns_naming.py** - Validate DNS naming conventions
+
 ```bash
 ./tools/validate_dns_naming.py --name "docker-01-nexus.spaceships.work"
 ```
@@ -305,12 +321,14 @@ Automated configuration management
 ### Terraform Modules
 
 **netbox-data-sources.tf** - Examples using NetBox provider
+
 - Query existing NetBox resources
 - Use as data sources for other resources
 
 ### Ansible Playbooks
 
 **deploy-from-netbox.yml** - Deploy using NetBox inventory
+
 - Dynamic inventory from NetBox
 - Tag-based host selection
 - Automatic IP and hostname discovery
@@ -322,17 +340,20 @@ See [examples/](examples/) directory.
 ### DNS Records Not Syncing
 
 **Check 1: Tag Matching**
+
 ```bash
 # Verify IP has correct tags
 ./tools/netbox_query.py --ip 192.168.1.100 | jq '.tags'
 ```
 
 **Check 2: Zone Configuration**
+
 - Ensure zone exists in NetBox
 - Verify tag rules match
 - Check PowerDNS server connectivity
 
 **Check 3: Sync Results**
+
 ```bash
 ./tools/powerdns_sync_check.py --zone spaceships.work --verbose
 ```
@@ -340,11 +361,13 @@ See [examples/](examples/) directory.
 ### Naming Convention Violations
 
 **Validate names before creating:**
+
 ```bash
 ./tools/validate_dns_naming.py --name "my-proposed-name.domain"
 ```
 
 **Common mistakes:**
+
 - Uppercase letters (use lowercase only)
 - Missing service number (must be XX format)
 - Wrong domain
@@ -353,11 +376,13 @@ See [examples/](examples/) directory.
 ### Terraform Provider Issues
 
 **Version mismatch:**
-```
+
+```text
 Warning: NetBox version 4.3.0 not supported by provider 3.9.0
 ```
 
 **Solution:** Update provider version:
+
 ```hcl
 version = "~> 5.0.0"  # Match NetBox 4.3.x
 ```
@@ -365,12 +390,14 @@ version = "~> 5.0.0"  # Match NetBox 4.3.x
 ### Dynamic Inventory Not Working
 
 **Check API connectivity:**
+
 ```bash
 curl -H "Authorization: Token YOUR_TOKEN" \
   https://netbox.spaceships.work/api/dcim/devices/
 ```
 
 **Verify inventory plugin:**
+
 ```bash
 ansible-inventory -i tools/netbox-dynamic-inventory.yml --list
 ```
@@ -399,7 +426,7 @@ See [troubleshooting/](reference/) for more details.
 
 ### Examples from This Infrastructure
 
-```
+```text
 docker-01-nexus.spaceships.work       # Nexus container registry
 k8s-01-master.spaceships.work         # K8s control plane
 k8s-02-worker.spaceships.work         # K8s worker node
@@ -414,20 +441,24 @@ db-01-postgres.spaceships.work        # PostgreSQL database
 For deeper knowledge:
 
 ### NetBox API & Integration
+
 - [NetBox API Guide](reference/netbox-api-guide.md) - Complete REST API reference with pynetbox examples
 - [NetBox Data Models](reference/netbox-data-models.md) - Data model relationships and hierarchy
 - [NetBox Best Practices](reference/netbox-best-practices.md) - Security, performance, automation patterns
 
 ### DNS & PowerDNS Integration
+
 - [Sync Plugin Reference](reference/sync-plugin-reference.md) - PowerDNS sync plugin installation and config
 - [Terraform Provider Guide](reference/terraform-provider-guide.md) - Complete provider documentation
 - [Naming Conventions](workflows/naming-conventions.md) - Detailed DNS naming rules
 - [DNS Automation](workflows/dns-automation.md) - End-to-end automation workflows
 
 ### Ansible Integration
+
 - [Ansible Dynamic Inventory](workflows/ansible-dynamic-inventory.md) - Using NetBox as inventory source
 
 ### Anti-Patterns & Common Mistakes
+
 - [Common Mistakes](anti-patterns/common-mistakes.md) - DNS naming violations, cluster domain errors, master node targeting, and NetBox integration pitfalls for spaceships.work infrastructure
 
 ## Related Skills

@@ -38,7 +38,7 @@ Install ansible-best-practices:
 
 Simply ask Claude to help with Ansible development:
 
-```
+```text
 "Refactor this Ansible playbook for idempotency"
 "Create a role for deploying Docker containers"
 "Help me add Infisical secret management to my playbook"
@@ -67,6 +67,7 @@ The ansible-best-practices skill provides comprehensive guidance on:
 ## Supporting Documentation
 
 The skill includes extensive reference material:
+
 - `/patterns/` - Production patterns (secrets, roles, network, cluster, CEPH)
 - `/reference/` - Core reference guides (variables, idempotency, testing, collections)
 - `/anti-patterns/` - Mistakes to avoid and refactoring guides

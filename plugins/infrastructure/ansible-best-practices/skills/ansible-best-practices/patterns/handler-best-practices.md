@@ -5,6 +5,7 @@
 Analyzed 7 geerlingguy roles: security, users, docker, postgresql, nginx, pip, git
 
 **Universal Patterns (All 7 roles that manage services):**
+
 - Lowercase naming convention: "[action] [service]" (7/7 service-managing roles)
 - Simple, single-purpose handlers using one module (7/7 service roles)
 - Configurable handler behavior via variables (docker_restart_handler_state, security_ssh_restart_handler_state) (7/7 critical service handlers)
@@ -14,18 +15,21 @@ Analyzed 7 geerlingguy roles: security, users, docker, postgresql, nginx, pip, g
 - Handler name must match notify string exactly (7/7 roles)
 
 **Contextual Patterns (Varies by role purpose):**
+
 - Handler presence decision matrix: service-managing roles have handlers (4/7), utility roles don't (3/7 roles: pip, git, users)
 - Handler count scales with services: security has 3 handlers (systemd, ssh, fail2ban), simple service roles have 1-2
 - Conditional handler execution when service management is optional (docker: when: docker_service_manage | bool)
 - Both reload AND restart handlers for web servers providing flexibility (nginx pattern)
 
 **Evolving Patterns (Newer roles improved):**
+
 - Conditional reload handlers with state checks: when: service_state == "started" prevents errors (nginx role)
 - Explicit handler flushing with meta: flush_handlers for mid-play execution when needed (docker role)
 - Check mode support: ignore_errors: "{{ ansible_check_mode }}" (docker role)
 - Validation handlers as alternative to task-level validation (nginx: validate nginx configuration handler)
 
 **Sources:**
+
 - geerlingguy.security (analyzed 2025-10-23)
 - geerlingguy.github-users (analyzed 2025-10-23)
 - geerlingguy.docker (analyzed 2025-10-23)
@@ -35,13 +39,14 @@ Analyzed 7 geerlingguy roles: security, users, docker, postgresql, nginx, pip, g
 - geerlingguy.git (analyzed 2025-10-23)
 
 **Repositories:**
-- https://github.com/geerlingguy/ansible-role-security
-- https://github.com/geerlingguy/ansible-role-github-users
-- https://github.com/geerlingguy/ansible-role-docker
-- https://github.com/geerlingguy/ansible-role-postgresql
-- https://github.com/geerlingguy/ansible-role-nginx
-- https://github.com/geerlingguy/ansible-role-pip
-- https://github.com/geerlingguy/ansible-role-git
+
+- <https://github.com/geerlingguy/ansible-role-security>
+- <https://github.com/geerlingguy/ansible-role-github-users>
+- <https://github.com/geerlingguy/ansible-role-docker>
+- <https://github.com/geerlingguy/ansible-role-postgresql>
+- <https://github.com/geerlingguy/ansible-role-nginx>
+- <https://github.com/geerlingguy/ansible-role-pip>
+- <https://github.com/geerlingguy/ansible-role-git>
 
 ## Pattern Confidence Levels (Historical)
 
@@ -151,11 +156,12 @@ Use clear, action-oriented names that describe what the handler does. Follow the
 
 ### Naming Pattern
 
-```
+```text
 [action] [service]
 ```
 
 **Common actions:**
+
 - restart - Full service restart (disruptive)
 - reload - Configuration reload (graceful)
 - restart - systemd daemon reload
@@ -297,6 +303,7 @@ Prefer `reload` over `restart` when the service supports it. Reloading is less d
 ### Reload (Preferred When Available)
 
 **Characteristics:**
+
 - Graceful configuration reload
 - Maintains active connections
 - Less disruptive to service
@@ -312,6 +319,7 @@ Prefer `reload` over `restart` when the service supports it. Reloading is less d
 ```
 
 **Services that support reload:**
+
 - nginx
 - apache
 - fail2ban
@@ -321,6 +329,7 @@ Prefer `reload` over `restart` when the service supports it. Reloading is less d
 ### Restart (When Reload Not Supported)
 
 **Characteristics:**
+
 - Full service stop and start
 - Drops active connections
 - More disruptive
@@ -336,6 +345,7 @@ Prefer `reload` over `restart` when the service supports it. Reloading is less d
 ```
 
 **When restart is necessary:**
+
 - SSH daemon (sshd doesn't support reload properly)
 - Services without reload capability
 - Major configuration changes requiring full restart
@@ -352,6 +362,7 @@ Prefer `reload` over `restart` when the service supports it. Reloading is less d
 ```
 
 **When to use:**
+
 - After adding new systemd unit files
 - After modifying existing unit files
 - Before starting newly added services
@@ -419,12 +430,14 @@ security_ssh_restart_handler_state: started
 ### When to Make Handlers Configurable
 
 **Good candidates for configuration:**
+
 1. Services with both reload and restart options
 2. Critical services users might not want to restart automatically
 3. Services with graceful shutdown requirements
 4. Testing scenarios where full restart is undesirable
 
 **Not necessary for:**
+
 1. systemd daemon-reload (only one valid action)
 2. Simple cache clears
 3. Handlers where state is always the same
@@ -561,6 +574,7 @@ Notify handlers from tasks using the `notify` directive. Tasks can notify multip
 - ✅ **Simple handler definitions** - One action per handler
 
 **Recommendations:**
+
 - Review if all handlers are necessary
 - Consider if any operations could be immediate tasks
 
@@ -600,7 +614,7 @@ Notify handlers from tasks using the `notify` directive. Tasks can notify multip
 ## Validation: geerlingguy.docker
 
 **Analysis Date:** 2025-10-23
-**Repository:** https://github.com/geerlingguy/ansible-role-docker
+**Repository:** <https://github.com/geerlingguy/ansible-role-docker>
 
 ### Handler Structure
 
@@ -642,10 +656,12 @@ Notify handlers from tasks using the `notify` directive. Tasks can notify multip
 ### Advanced Pattern: Conditional Handlers
 
 - **Pattern Evolution:** Docker introduces conditional handler execution:
+
   ```yaml
   when: docker_service_manage | bool
   ignore_errors: "{{ ansible_check_mode }}"
   ```
+
   - **New insight:** Handlers can have conditionals to prevent execution in certain scenarios
   - **Use case:** Container environments without systemd (docker_service_manage: false)
   - **Use case:** Check mode support (ignore_errors in check mode)
@@ -661,10 +677,12 @@ Notify handlers from tasks using the `notify` directive. Tasks can notify multip
 ### Advanced Pattern: meta: flush_handlers
 
 - **Pattern Evolution:** Docker uses explicit handler flushing:
+
   ```yaml
   - name: Ensure handlers are notified now to avoid firewall conflicts.
     ansible.builtin.meta: flush_handlers
   ```
+
   - **New insight:** Can force handlers to run mid-play, not just at end
   - **Use case:** Docker service must be running before adding users to docker group
   - **Recommendation:** Use flush_handlers when later tasks depend on handler completion
@@ -726,6 +744,7 @@ Notify handlers from tasks using the `notify` directive. Tasks can notify multip
 **Virgo-Core Assessment:**
 
 All three roles demonstrate good handler discipline:
+
 - **system_user** - Correctly has no handlers (none needed)
 - **proxmox_access** - Has appropriate handlers
 - **proxmox_network** - Good network reload handler
@@ -735,7 +754,7 @@ No critical handler-related gaps identified. Virgo-Core roles follow best practi
 ## Validation: geerlingguy.postgresql
 
 **Analysis Date:** 2025-10-23
-**Repository:** https://github.com/geerlingguy/ansible-role-postgresql
+**Repository:** <https://github.com/geerlingguy/ansible-role-postgresql>
 
 ### Handler Structure
 
@@ -817,6 +836,7 @@ No critical handler-related gaps identified. Virgo-Core roles follow best practi
 **Next Steps:**
 
 Continue pattern of creating handlers only when necessary. Use the handler checklist:
+
 1. Does this role manage a service? → Maybe needs handlers
 2. Does configuration change require reload/restart? → Add handler
 3. Can I use reload instead of restart? → Prefer reload (PostgreSQL uses restart, can't reload config)
@@ -827,7 +847,7 @@ Continue pattern of creating handlers only when necessary. Use the handler check
 ## Validation: geerlingguy.nginx
 
 **Analysis Date:** 2025-10-23
-**Repository:** https://github.com/geerlingguy/ansible-role-nginx
+**Repository:** <https://github.com/geerlingguy/ansible-role-nginx>
 
 ### Handler Structure
 
@@ -929,8 +949,9 @@ Continue pattern of creating handlers only when necessary. Use the handler check
 
 **Analysis Date:** 2025-10-23
 **Repositories:**
-- https://github.com/geerlingguy/ansible-role-pip
-- https://github.com/geerlingguy/ansible-role-git
+
+- <https://github.com/geerlingguy/ansible-role-pip>
+- <https://github.com/geerlingguy/ansible-role-git>
 
 ### Handler Absence Pattern
 

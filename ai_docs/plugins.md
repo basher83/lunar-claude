@@ -21,20 +21,25 @@ Let's create a simple greeting plugin to get you familiar with the plugin system
 
 <Steps>
   <Step title="Create the marketplace structure">
+
     ```bash  theme={null}
     mkdir test-marketplace
     cd test-marketplace
     ```
+
   </Step>
 
   <Step title="Create the plugin directory">
+
     ```bash  theme={null}
     mkdir my-first-plugin
     cd my-first-plugin
     ```
+
   </Step>
 
   <Step title="Create the plugin manifest">
+
     ```bash Create .claude-plugin/plugin.json theme={null}
     mkdir .claude-plugin
     cat > .claude-plugin/plugin.json << 'EOF'
@@ -48,9 +53,11 @@ Let's create a simple greeting plugin to get you familiar with the plugin system
     }
     EOF
     ```
+
   </Step>
 
   <Step title="Add a custom command">
+
     ```bash Create commands/hello.md theme={null}
     mkdir commands
     cat > commands/hello.md << 'EOF'
@@ -67,6 +74,7 @@ Let's create a simple greeting plugin to get you familiar with the plugin system
   </Step>
 
   <Step title="Create the marketplace manifest">
+
     ```bash Create marketplace.json theme={null}
     cd ..
     mkdir .claude-plugin
@@ -86,9 +94,11 @@ Let's create a simple greeting plugin to get you familiar with the plugin system
     }
     EOF
     ```
+
   </Step>
 
   <Step title="Install and test your plugin">
+
     ```bash Start Claude Code from parent directory theme={null}
     cd ..
     claude
@@ -102,13 +112,17 @@ Let's create a simple greeting plugin to get you familiar with the plugin system
     /plugin install my-first-plugin@test-marketplace
     ```
 
-    Select "Install now". You'll then need to restart Claude Code in order to use the new plugin.
+```text
+Select "Install now". You'll then need to restart Claude Code in order to use the new plugin.
+```
 
     ```shell Try your new command theme={null}
     /hello
     ```
 
-    You'll see Claude use your greeting command! Check `/help` to see your new command listed.
+```text
+You'll see Claude use your greeting command! Check `/help` to see your new command listed.
+```
 
   </Step>
 </Steps>
@@ -123,7 +137,7 @@ You've successfully created and tested a plugin with these key components:
 
 Your plugin follows this basic structure:
 
-```
+```text
 my-first-plugin/
 ├── .claude-plugin/
 │   └── plugin.json          # Plugin metadata
@@ -255,9 +269,11 @@ When developing plugins, use a local marketplace to test changes iteratively. Th
     mkdir my-plugin
     ```
 
-    This creates:
+```text
+This creates:
+```
 
-    ```
+    ```text
     dev-marketplace/
     ├── .claude-plugin/marketplace.json  (you'll create this)
     └── my-plugin/                        (your plugin under development)
@@ -270,6 +286,7 @@ When developing plugins, use a local marketplace to test changes iteratively. Th
   </Step>
 
   <Step title="Create the marketplace manifest">
+
     ```bash Create marketplace.json theme={null}
     mkdir .claude-plugin
     cat > .claude-plugin/marketplace.json << 'EOF'
@@ -288,9 +305,11 @@ When developing plugins, use a local marketplace to test changes iteratively. Th
     }
     EOF
     ```
+
   </Step>
 
   <Step title="Install and test">
+
     ```bash Start Claude Code from parent directory theme={null}
     cd ..
     claude
@@ -304,11 +323,13 @@ When developing plugins, use a local marketplace to test changes iteratively. Th
     /plugin install my-plugin@dev-marketplace
     ```
 
-    Test your plugin components:
+```text
+Test your plugin components:
+```
 
-    * Try your commands with `/command-name`
-    * Check that agents appear in `/agents`
-    * Verify hooks work as expected
+- Try your commands with `/command-name`
+- Check that agents appear in `/agents`
+- Verify hooks work as expected
 
   </Step>
 

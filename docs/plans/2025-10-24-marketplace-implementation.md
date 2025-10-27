@@ -1980,6 +1980,8 @@ See [docs/plans/](docs/plans/) for detailed design and implementation documentat
 
 ```
 
+```text
+
 ```bash
 git add README.md
 git commit -m "docs: update README with marketplace documentation

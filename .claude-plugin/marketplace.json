@@ -21,6 +21,17 @@
       }
     },
     {
+      "name": "claude-dev-sandbox",
+      "source": "./plugins/meta/claude-dev-sandbox",
+      "description": "Development sandbox for testing and prototyping Claude Code components (hooks, skills, commands, agents) before promoting to production plugins",
+      "version": "0.1.0",
+      "category": "meta",
+      "keywords": ["development", "testing", "sandbox", "prototype"],
+      "author": {
+        "name": "basher83"
+      }
+    },
+    {
       "name": "ansible-best-practices",
       "source": "./plugins/infrastructure/ansible-best-practices",
       "description": "Ansible playbook refactoring, role development, testing, and best practices with Infisical secrets management",

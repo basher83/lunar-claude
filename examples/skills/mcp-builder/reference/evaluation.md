@@ -90,16 +90,16 @@ Create 10 human-readable questions requiring ONLY READ-ONLY, INDEPENDENT, NON-DE
   - URLs, GIDs, etc.
 - Should probe the tool's ability to return all useful forms of data
 
-2. **Questions should MOSTLY reflect real human use cases**
+1. **Questions should MOSTLY reflect real human use cases**
 
 - The kinds of information retrieval tasks that HUMANS assisted by an LLM would care about
 
-3. **Questions may require dozens of tool calls**
+1. **Questions may require dozens of tool calls**
 
 - This challenges LLMs with limited context
 - Encourages MCP server tools to reduce information returned
 
-4. **Include ambiguous questions**
+1. **Include ambiguous questions**
 
 - May be ambiguous OR require difficult decisions on which tools to call
 - Force the LLM to potentially make mistakes or misinterpret

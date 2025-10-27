@@ -55,8 +55,8 @@ mise run changelog-bump <version>
 ### Structure Verification
 
 ```bash
-# Verify marketplace and plugin structure
-./scripts/verify-structure.sh
+# Verify marketplace and plugin structure (validates plugin.json schema)
+./scripts/verify-structure.py
 ```
 
 ### Local Plugin Testing
@@ -155,7 +155,7 @@ cp -r templates/plugin-template/ plugins/<category>/<plugin-name>/
 # Add entry to "plugins" array
 
 # 4. Verify structure
-./scripts/verify-structure.sh
+./scripts/verify-structure.py
 ```
 
 ## Key Files

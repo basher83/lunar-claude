@@ -11,3 +11,11 @@
 <https://docs.claude.com/en/docs/claude-code/plugins> - Claude Code Plugins
 <https://docs.claude.com/en/docs/claude-code/plugins-reference> - Plugins Reference
 <https://docs.claude.com/en/docs/claude-code/plugin-marketplaces> - Plugin Marketplaces
+
+<https://docs.astral.sh/uv/guides/scripts/#next-steps>
+<https://docs.astral.sh/uv/guides/scripts/#running-a-script-with-dependencies>
+<https://docs.astral.sh/uv>
+
+<https://raw.githubusercontent.com/astral-sh/uv/refs/heads/main/docs/guides/scripts.md>
+<https://raw.githubusercontent.com/pypa/packaging.python.org/refs/heads/main/source/specifications/inline-script-metadata.rst>
+<https://thisdavej.com/share-python-scripts-like-a-pro-uv-and-pep-723-for-easy-deployment/>

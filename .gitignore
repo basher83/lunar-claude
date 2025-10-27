@@ -4,3 +4,5 @@
 .venv
 .worktrees/
 .rumdl-cache
+*.pyc
+mise.local.toml

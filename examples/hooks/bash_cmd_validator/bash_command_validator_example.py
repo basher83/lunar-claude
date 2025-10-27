@@ -1,7 +1,11 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run --script
+# /// script
+# requires-python = ">=3.11"
+# dependencies = []
+# ///
 """
 Claude Code Hook: Bash Command Validator
-=========================================
+
 This hook runs as a PreToolUse hook for the Bash tool.
 It validates bash commands against a set of rules before execution.
 In this case it changes grep calls to using rg.
@@ -10,6 +14,7 @@ Read more about hooks here: https://docs.anthropic.com/en/docs/claude-code/hooks
 
 Make sure to change your path to your actual script.
 
+Hook Configuration:
 {
   "hooks": {
     "PreToolUse": [
@@ -26,6 +31,14 @@ Make sure to change your path to your actual script.
   }
 }
 
+Usage:
+    This script is designed to be called by Claude Code's hook system.
+    It reads JSON from stdin containing tool invocation data.
+
+Exit Codes:
+    0 - Validation passed or not applicable
+    1 - JSON parsing error (shows stderr to user, not Claude)
+    2 - Validation failed (blocks tool call, shows stderr to Claude)
 """
 
 import json
@@ -46,6 +59,15 @@ _VALIDATION_RULES = [
 
 
 def _validate_command(command: str) -> list[str]:
+    """
+    Validate a bash command against defined rules.
+
+    Args:
+        command: The bash command string to validate
+
+    Returns:
+        List of validation issue messages (empty if no issues)
+    """
     issues = []
     for pattern, message in _VALIDATION_RULES:
         if re.search(pattern, command):
@@ -54,6 +76,7 @@ def _validate_command(command: str) -> list[str]:
 
 
 def main():
+    """Main entry point for the hook validator."""
     try:
         input_data = json.load(sys.stdin)
     except json.JSONDecodeError as e:

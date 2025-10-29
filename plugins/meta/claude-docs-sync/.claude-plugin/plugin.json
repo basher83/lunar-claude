@@ -1,0 +1,11 @@
+{
+  "name": "claude-docs-sync",
+  "version": "0.1.0",
+  "description": "Automatically sync Claude Code documentation for fresh AI context",
+  "author": {
+    "name": "basher83",
+    "email": "basher83@mail.spaceships.work"
+  },
+  "keywords": ["documentation", "sync", "meta", "automation"],
+  "license": "MIT"
+}

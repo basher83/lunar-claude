@@ -93,20 +93,40 @@ plugins/meta/claude-docs-sync/
 
 ### 3. Skill
 
-**File:** `skills/documentation-awareness/SKILL.md`
+**File:** `skills/claude-code-documentation/SKILL.md`
 
 **Purpose:**
 
-- Teaches Claude what the documentation contains
-- Guides Claude on when to suggest manual updates
-- Explains the value of fresh documentation for accurate context
-- Triggered when user asks about Claude Code features or capabilities
+Minimal skill that triggers when users ask about Claude Code features. Reminds
+Claude to check ai_docs/ for fresh official documentation instead of relying on
+potentially outdated training data.
 
-**Key Points:**
+**Content (≈40 tokens):**
 
-- Documentation covers: plugins, skills, agents, hooks, commands, settings
-- Fresh docs ensure accurate API references and current best practices
-- User can always run `/update-docs` manually
+```markdown
+---
+name: claude-code-documentation
+description: Official Claude Code documentation in ai_docs/. Use when user
+asks about plugins, skills, agents, hooks, commands, settings, or Claude Code
+features.
+---
+
+# Claude Code Documentation
+
+Official Claude Code documentation is in `ai_docs/`.
+
+**Discovery**: `ls ai_docs/` to see available docs
+**Usage**: Read relevant files for current task
+
+Updated automatically by claude-docs-sync plugin.
+```
+
+**Design Rationale:**
+
+- Activation trigger, not content provider
+- Progressive disclosure: Claude discovers docs via `ls`, reads on-demand
+- Minimal token cost (~40 tokens)
+- High freedom: Claude decides which docs to read based on task
 
 ### 4. Script
 

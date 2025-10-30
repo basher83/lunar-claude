@@ -357,20 +357,20 @@ def download_page(
 
 def find_or_create_ai_docs_dir() -> Path:
     """
-    Get ai_docs directory relative to the script's location.
+    Get reference docs directory for the claude-code-documentation skill.
 
-    Returns ../ai_docs relative to where the script file is located.
+    Returns ../skills/claude-code-documentation/reference/ relative to the script.
     Example: if script is at /project/scripts/claude_docs.py,
-    returns /project/ai_docs/
+    returns /project/skills/claude-code-documentation/reference/
 
     Returns:
-        Path to ai_docs directory
+        Path to skill reference directory
     """
     # Get the directory where this script file is located
     script_dir = Path(__file__).parent
 
-    # Return parent directory's ai_docs
-    return script_dir.parent / "ai_docs"
+    # Return path to skill's reference subdirectory
+    return script_dir.parent / "skills" / "claude-code-documentation" / "reference"
 
 
 def main(
@@ -416,12 +416,9 @@ def main(
     offline reference and AI context enhancement.
     """
     # Configure console based on output format
-    # In JSON mode, redirect rich output to stderr to keep stdout clean
+    # In JSON mode, suppress rich output entirely (errors still go to stderr)
     global console
-    if format == OutputFormat.JSON:
-        console = Console(file=sys.stderr)
-    else:
-        console = Console()
+    console = Console()
 
     # Determine output directory (auto-detect or use provided)
     if output_dir is None:
@@ -437,38 +434,45 @@ def main(
     # Determine which pages to download
     with httpx.Client() as client:
         if all_pages:
-            console.print("[cyan]Discovering all pages from docs map...[/cyan]")
+            if format == OutputFormat.RICH:
+                console.print("[cyan]Discovering all pages from docs map...[/cyan]")
             pages = discover_all_pages(client)
-            console.print(f"[dim]Found {len(pages)} pages[/dim]\n")
+            if format == OutputFormat.RICH:
+                console.print(f"[dim]Found {len(pages)} pages[/dim]\n")
         elif interactive:
-            # Fetch all available pages first
-            all_available = discover_all_pages(client)
-            console.print(f"[cyan]Available pages ({len(all_available)}):[/cyan]")
-            for idx, (section, page) in enumerate(all_available, 1):
-                console.print(f"  {idx}. [{section}] {page}")
-            console.print("\n[yellow]Enter page numbers to download (comma-separated)[/yellow]")
-            console.print("[dim]Or press Enter to use defaults[/dim]")
-
-            selection = input("> ").strip()
-
-            if not selection:
+            if format == OutputFormat.JSON:
+                # Interactive mode not supported in JSON format, use defaults
                 pages = DEFAULT_PAGES
-                console.print(f"[dim]Using default {len(pages)} pages[/dim]\n")
             else:
-                try:
-                    indices = [int(x.strip()) - 1 for x in selection.split(",")]
-                    pages = [all_available[i] for i in indices if 0 <= i < len(all_available)]
-                    console.print(f"[green]Selected {len(pages)} pages[/green]\n")
-                except (ValueError, IndexError) as e:
-                    console.print(f"[red]Invalid selection: {e}[/red]")
-                    console.print("[yellow]Using defaults instead[/yellow]\n")
+                # Fetch all available pages first
+                all_available = discover_all_pages(client)
+                console.print(f"[cyan]Available pages ({len(all_available)}):[/cyan]")
+                for idx, (section, page) in enumerate(all_available, 1):
+                    console.print(f"  {idx}. [{section}] {page}")
+                console.print("\n[yellow]Enter page numbers to download (comma-separated)[/yellow]")
+                console.print("[dim]Or press Enter to use defaults[/dim]")
+
+                selection = input("> ").strip()
+
+                if not selection:
                     pages = DEFAULT_PAGES
+                    console.print(f"[dim]Using default {len(pages)} pages[/dim]\n")
+                else:
+                    try:
+                        indices = [int(x.strip()) - 1 for x in selection.split(",")]
+                        pages = [all_available[i] for i in indices if 0 <= i < len(all_available)]
+                        console.print(f"[green]Selected {len(pages)} pages[/green]\n")
+                    except (ValueError, IndexError) as e:
+                        console.print(f"[red]Invalid selection: {e}[/red]")
+                        console.print("[yellow]Using defaults instead[/yellow]\n")
+                        pages = DEFAULT_PAGES
         else:
             pages = DEFAULT_PAGES
 
-    console.print(
-        f"[cyan]{'Checking' if check_only else 'Downloading'} Claude Code documentation to {output_dir.absolute()}/[/cyan]")
-    console.print(f"[dim]Pages: {len(pages)} | Max retries: {retries}{' | DRY RUN' if check_only else ''}[/dim]\n")
+    if format == OutputFormat.RICH:
+        console.print(
+            f"[cyan]{'Checking' if check_only else 'Downloading'} Claude Code documentation to {output_dir.absolute()}/[/cyan]")
+        console.print(f"[dim]Pages: {len(pages)} | Max retries: {retries}{' | DRY RUN' if check_only else ''}[/dim]\n")
 
     start_time = time.time()
     success_count = 0
@@ -478,20 +482,72 @@ def main(
     download_times = []
 
     with httpx.Client() as client:
-        with Progress(
-            SpinnerColumn(),
-            TextColumn("[progress.description]{task.description}"),
-            console=console,
-        ) as progress:
-            task = progress.add_task(
-                "[cyan]Checking pages...", total=len(pages))
+        if format == OutputFormat.RICH:
+            # Rich mode: Use progress bar and status messages
+            with Progress(
+                SpinnerColumn(),
+                TextColumn("[progress.description]{task.description}"),
+                console=console,
+            ) as progress:
+                task = progress.add_task(
+                    "[cyan]Checking pages...", total=len(pages))
 
+                for section, page in pages:
+                    progress.update(task, description=f"[cyan]Checking {page}...")
+
+                    # Flatten filename for display and saving
+                    flat_filename = page.replace("/", "-")
+
+                    # Check if file needs updating
+                    cached_meta = cache.get(page)
+                    should_update, etag, last_modified = needs_update(
+                        client, section, page, cached_meta)
+
+                    if not should_update:
+                        # File hasn't changed, skip download
+                        console.print(
+                            f"[dim]⊙[/dim] {flat_filename}.md [dim](unchanged, skipped)[/dim]")
+                        skipped_count += 1
+                        progress.advance(task)
+                        continue
+
+                    # In check-only mode, just report that update is needed
+                    if check_only:
+                        console.print(
+                            f"[yellow]↻[/yellow] {flat_filename}.md [yellow](update available)[/yellow]"
+                        )
+                        success_count += 1  # Count as "needs update"
+                        progress.advance(task)
+                        continue
+
+                    # Download the file
+                    progress.update(
+                        task, description=f"[cyan]Downloading {page}...")
+                    success, duration, size_bytes, metadata = download_page(
+                        client, section, page, output_dir, max_retries=retries,
+                        etag=etag, last_modified=last_modified
+                    )
+
+                    if success:
+                        size_kb = size_bytes / 1024
+                        speed_kbps = (size_bytes / 1024) / \
+                            duration if duration > 0 else 0
+                        console.print(
+                            f"[green]✓[/green] {flat_filename}.md "
+                            f"[dim]({size_kb:.1f}KB in {duration:.2f}s @ {speed_kbps:.1f}KB/s)[/dim]"
+                        )
+                        success_count += 1
+                        total_bytes += size_bytes
+                        download_times.append(duration)
+                        # Update cache with new metadata
+                        cache[page] = metadata
+                    else:
+                        failed_count += 1
+
+                    progress.advance(task)
+        else:
+            # JSON mode: Silent operation, no progress bar or status messages
             for section, page in pages:
-                progress.update(task, description=f"[cyan]Checking {page}...")
-
-                # Flatten filename for display and saving
-                flat_filename = page.replace("/", "-")
-
                 # Check if file needs updating
                 cached_meta = cache.get(page)
                 should_update, etag, last_modified = needs_update(
@@ -499,37 +555,21 @@ def main(
 
                 if not should_update:
                     # File hasn't changed, skip download
-                    console.print(
-                        f"[dim]⊙[/dim] {flat_filename}.md [dim](unchanged, skipped)[/dim]")
                     skipped_count += 1
-                    progress.advance(task)
                     continue
 
-                # In check-only mode, just report that update is needed
+                # In check-only mode, just count that update is needed
                 if check_only:
-                    console.print(
-                        f"[yellow]↻[/yellow] {flat_filename}.md [yellow](update available)[/yellow]"
-                    )
                     success_count += 1  # Count as "needs update"
-                    progress.advance(task)
                     continue
 
                 # Download the file
-                progress.update(
-                    task, description=f"[cyan]Downloading {page}...")
                 success, duration, size_bytes, metadata = download_page(
                     client, section, page, output_dir, max_retries=retries,
                     etag=etag, last_modified=last_modified
                 )
 
                 if success:
-                    size_kb = size_bytes / 1024
-                    speed_kbps = (size_bytes / 1024) / \
-                        duration if duration > 0 else 0
-                    console.print(
-                        f"[green]✓[/green] {flat_filename}.md "
-                        f"[dim]({size_kb:.1f}KB in {duration:.2f}s @ {speed_kbps:.1f}KB/s)[/dim]"
-                    )
                     success_count += 1
                     total_bytes += size_bytes
                     download_times.append(duration)
@@ -537,8 +577,6 @@ def main(
                     cache[page] = metadata
                 else:
                     failed_count += 1
-
-                progress.advance(task)
 
     # Save updated cache
     save_cache(cache_file, cache)

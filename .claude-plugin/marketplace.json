@@ -32,6 +32,17 @@
       }
     },
     {
+      "name": "claude-docs",
+      "source": "./plugins/meta/claude-docs",
+      "description": "Auto-sync official Claude Code docs as a skill with fresh reference material",
+      "version": "0.1.0",
+      "category": "meta",
+      "keywords": ["documentation", "sync", "meta", "automation", "skills"],
+      "author": {
+        "name": "basher83"
+      }
+    },
+    {
       "name": "ansible-best-practices",
       "source": "./plugins/infrastructure/ansible-best-practices",
       "description": "Ansible playbook refactoring, role development, testing, and best practices with Infisical secrets management",

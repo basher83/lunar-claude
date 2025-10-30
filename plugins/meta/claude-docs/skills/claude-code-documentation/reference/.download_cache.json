@@ -1,0 +1,86 @@
+{
+  "sub-agents": {
+    "etag": null,
+    "last_modified": "Wed, 29 Oct 2025 20:23:42 GMT",
+    "size": 15393,
+    "downloaded_at": 1761789328.436526
+  },
+  "plugins": {
+    "etag": null,
+    "last_modified": "Wed, 29 Oct 2025 20:23:38 GMT",
+    "size": 13475,
+    "downloaded_at": 1761789328.479211
+  },
+  "skills": {
+    "etag": null,
+    "last_modified": "Wed, 29 Oct 2025 20:27:49 GMT",
+    "size": 15254,
+    "downloaded_at": 1761789328.55326
+  },
+  "output-styles": {
+    "etag": null,
+    "last_modified": "Wed, 29 Oct 2025 20:27:22 GMT",
+    "size": 6631,
+    "downloaded_at": 1761789328.638998
+  },
+  "hooks-guide": {
+    "etag": null,
+    "last_modified": "Wed, 29 Oct 2025 20:55:46 GMT",
+    "size": 9649,
+    "downloaded_at": 1761789328.7258859
+  },
+  "plugin-marketplaces": {
+    "etag": null,
+    "last_modified": "Wed, 29 Oct 2025 20:40:00 GMT",
+    "size": 14373,
+    "downloaded_at": 1761789328.782856
+  },
+  "settings": {
+    "etag": null,
+    "last_modified": "Wed, 29 Oct 2025 20:26:05 GMT",
+    "size": 46013,
+    "downloaded_at": 1761789328.8683012
+  },
+  "statusline": {
+    "etag": null,
+    "last_modified": "Wed, 29 Oct 2025 20:52:13 GMT",
+    "size": 5796,
+    "downloaded_at": 1761789328.942216
+  },
+  "slash-commands": {
+    "etag": null,
+    "last_modified": "Wed, 29 Oct 2025 20:24:16 GMT",
+    "size": 21065,
+    "downloaded_at": 1761789329.01343
+  },
+  "hooks": {
+    "etag": null,
+    "last_modified": "Wed, 29 Oct 2025 20:26:14 GMT",
+    "size": 27352,
+    "downloaded_at": 1761789329.084241
+  },
+  "plugins-reference": {
+    "etag": null,
+    "last_modified": "Wed, 29 Oct 2025 20:24:36 GMT",
+    "size": 13067,
+    "downloaded_at": 1761789329.156905
+  },
+  "agent-skills/overview": {
+    "etag": null,
+    "last_modified": "Wed, 29 Oct 2025 22:58:11 GMT",
+    "size": 20290,
+    "downloaded_at": 1761789329.2327511
+  },
+  "agent-skills/quickstart": {
+    "etag": null,
+    "last_modified": "Thu, 30 Oct 2025 00:10:50 GMT",
+    "size": 15765,
+    "downloaded_at": 1761789329.291221
+  },
+  "agent-skills/best-practices": {
+    "etag": null,
+    "last_modified": "Thu, 30 Oct 2025 00:02:32 GMT",
+    "size": 46411,
+    "downloaded_at": 1761789329.355361
+  }
+}

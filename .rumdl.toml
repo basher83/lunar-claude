@@ -28,6 +28,12 @@ exclude = [
     # Specific files or patterns
     "CHANGELOG.md",
     "LICENSE.md",
+
+    # Downloaded reference documentation (from external sources)
+    "**/reference/*.md",
+
+    # Implementation plans (working documents)
+    "docs/plans/**/*.md",
 ]
 
 # Respect .gitignore files when scanning directories (default: true)
@@ -48,11 +54,11 @@ respect-gitignore = true
 # [MD007]
 # indent = 4  # Unordered list indentation
 
-# [MD013]
-# line-length = 100  # Line length
-# code-blocks = false  # Exclude code blocks from line length check
-# tables = false  # Exclude tables from line length check
-# headings = true  # Include headings in line length check
+[MD013]
+line-length = 100  # Line length
+code-blocks = false  # Exclude code blocks from line length check
+tables = false  # Exclude tables from line length check
+headings = true  # Include headings in line length check
 
 # [MD044]
 # names = ["rumdl", "Markdown", "GitHub"]  # Proper names that should be capitalized correctly

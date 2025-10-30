@@ -1,0 +1,13 @@
+{
+  "name": "claude-docs",
+  "version": "0.1.0",
+  "description": "Auto-sync official Claude Code docs as a skill with fresh reference material",
+  "author": {
+    "name": "basher83",
+    "email": "basher83@mail.spaceships.work"
+  },
+  "keywords": ["documentation", "sync", "meta", "automation", "skills"],
+  "license": "MIT",
+  "repository": "https://github.com/basher8383/lunar-claude",
+  "homepage": "https://github.com/basher8383/lunar-claude/tree/main/plugins/meta/claude-docs"
+}

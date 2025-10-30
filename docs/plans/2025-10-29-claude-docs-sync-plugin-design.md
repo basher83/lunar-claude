@@ -25,7 +25,7 @@ plugins/meta/claude-docs-sync/
 ├── commands/
 │   └── update-docs.md
 ├── hooks/
-│   └── check-docs-staleness.json
+│   └── hooks.json
 ├── tools/
 │   └── claude_docs.py
 └── README.md
@@ -35,17 +35,24 @@ plugins/meta/claude-docs-sync/
 
 ### 1. SessionStart Hook
 
-**File:** `hooks/check-docs-staleness.json`
+**File:** `hooks/hooks.json`
 
 **Configuration:**
 
 ```json
 {
-  "name": "check-docs-staleness",
-  "trigger": "SessionStart",
-  "config": {
-    "mode": "interactive",
-    "staleness_days": 7
+  "description": "Claude docs sync plugin hooks",
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/tools/claude_docs.py --format json"
+          }
+        ]
+      }
+    ]
   }
 }
 ```

@@ -19,7 +19,10 @@ A plugin for Claude to help with meta tasks.
 ## Hooks
 
 - Claude Code Hook: Bash Command Validator. [Example](examples/hooks/bash_cmd_validator/hook.json) This hook runs as a PreToolUse hook for the Bash tool. It validates bash commands against a set of rules before execution. In this case it changes grep calls to using rg.
+
 - Claude Code Hook: Lint on Save. [Example](examples/hooks/lint-on-save/lint-on-save.json) This hook runs as a PostToolUse hook for the Edit and MultiEdit tools. It runs the Ruff linter on Python files after they are edited.
+
+- Save results from MCP calls.
 
 ## Slash commands
 

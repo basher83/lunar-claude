@@ -1,11 +1,12 @@
 ---
 name: python-uv-scripts
-description: Create production-ready Python scripts with uv and PEP 723. Prevents invalid patterns like [tool.uv.metadata]. Use when creating scripts, converting bash, or debugging PEP 723 errors.
+description: Create production-ready Python scripts with uv and PEP 723.
 ---
 
 # Python uv Scripts
 
-Expert guidance for creating production-ready, self-contained Python scripts using uv's inline dependency management (PEP 723).
+Expert guidance for creating production-ready, self-contained Python scripts
+using uv's inline dependency management (PEP 723).
 
 ## Overview
 

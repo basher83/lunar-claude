@@ -23,6 +23,7 @@ import json
 import sys
 import time
 from dataclasses import dataclass
+from enum import Enum
 from pathlib import Path
 from typing import Optional
 
@@ -31,6 +32,13 @@ import typer
 from rich.console import Console
 from rich.progress import Progress, SpinnerColumn, TextColumn
 from rich.table import Table
+
+
+class OutputFormat(str, Enum):
+    """Output format options for the script."""
+    RICH = "rich"
+    JSON = "json"
+
 
 console = Console()
 
@@ -237,7 +245,6 @@ def needs_update(
 
     except Exception as e:
         # If HEAD request fails, assume we need to try downloading
-        import sys
         from rich.console import Console
         stderr_console = Console(stderr=True)
         stderr_console.print(
@@ -396,8 +403,8 @@ def main(
         "--interactive", "-i",
         help="Interactively select which pages to download",
     ),
-    format: str = typer.Option(
-        "rich",
+    format: OutputFormat = typer.Option(
+        OutputFormat.RICH,
         "--format",
         help="Output format: 'rich' for human-readable or 'json' for machine-readable",
     ),
@@ -408,6 +415,14 @@ def main(
     This script fetches markdown documentation and saves it locally for
     offline reference and AI context enhancement.
     """
+    # Configure console based on output format
+    # In JSON mode, redirect rich output to stderr to keep stdout clean
+    global console
+    if format == OutputFormat.JSON:
+        console = Console(file=sys.stderr)
+    else:
+        console = Console()
+
     # Determine output directory (auto-detect or use provided)
     if output_dir is None:
         output_dir = find_or_create_ai_docs_dir()
@@ -434,7 +449,6 @@ def main(
             console.print("\n[yellow]Enter page numbers to download (comma-separated)[/yellow]")
             console.print("[dim]Or press Enter to use defaults[/dim]")
 
-            import sys
             selection = input("> ").strip()
 
             if not selection:
@@ -542,7 +556,7 @@ def main(
     )
 
     # Output based on format
-    if format == "json":
+    if format == OutputFormat.JSON:
         # Machine-readable JSON output (single line)
         output = {
             "status": result.status,

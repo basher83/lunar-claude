@@ -1,86 +1,86 @@
 {
   "sub-agents": {
     "etag": null,
-    "last_modified": "Wed, 29 Oct 2025 20:23:42 GMT",
+    "last_modified": "Fri, 31 Oct 2025 14:34:01 GMT",
     "size": 15393,
-    "downloaded_at": 1761789328.436526
+    "downloaded_at": 1761942400.637557
   },
   "plugins": {
     "etag": null,
-    "last_modified": "Wed, 29 Oct 2025 20:23:38 GMT",
+    "last_modified": "Fri, 31 Oct 2025 14:37:33 GMT",
     "size": 13475,
-    "downloaded_at": 1761789328.479211
+    "downloaded_at": 1761942400.685856
   },
   "skills": {
     "etag": null,
-    "last_modified": "Wed, 29 Oct 2025 20:27:49 GMT",
+    "last_modified": "Fri, 31 Oct 2025 14:32:49 GMT",
     "size": 15254,
-    "downloaded_at": 1761789328.55326
+    "downloaded_at": 1761942400.736215
   },
   "output-styles": {
     "etag": null,
-    "last_modified": "Wed, 29 Oct 2025 20:27:22 GMT",
+    "last_modified": "Fri, 31 Oct 2025 14:57:35 GMT",
     "size": 6631,
-    "downloaded_at": 1761789328.638998
+    "downloaded_at": 1761942400.782309
   },
   "hooks-guide": {
     "etag": null,
-    "last_modified": "Wed, 29 Oct 2025 20:55:46 GMT",
+    "last_modified": "Fri, 31 Oct 2025 14:57:36 GMT",
     "size": 9649,
-    "downloaded_at": 1761789328.7258859
+    "downloaded_at": 1761942400.8312929
   },
   "plugin-marketplaces": {
     "etag": null,
-    "last_modified": "Wed, 29 Oct 2025 20:40:00 GMT",
+    "last_modified": "Fri, 31 Oct 2025 14:45:33 GMT",
     "size": 14373,
-    "downloaded_at": 1761789328.782856
+    "downloaded_at": 1761942400.876825
   },
   "settings": {
     "etag": null,
-    "last_modified": "Wed, 29 Oct 2025 20:26:05 GMT",
-    "size": 46013,
-    "downloaded_at": 1761789328.8683012
+    "last_modified": "Fri, 31 Oct 2025 14:28:52 GMT",
+    "size": 48517,
+    "downloaded_at": 1761942400.9346921
   },
   "statusline": {
     "etag": null,
-    "last_modified": "Wed, 29 Oct 2025 20:52:13 GMT",
+    "last_modified": "Fri, 31 Oct 2025 14:41:25 GMT",
     "size": 5796,
-    "downloaded_at": 1761789328.942216
+    "downloaded_at": 1761942400.9958742
   },
   "slash-commands": {
     "etag": null,
-    "last_modified": "Wed, 29 Oct 2025 20:24:16 GMT",
+    "last_modified": "Fri, 31 Oct 2025 14:31:23 GMT",
     "size": 21065,
-    "downloaded_at": 1761789329.01343
+    "downloaded_at": 1761942401.0591118
   },
   "hooks": {
     "etag": null,
-    "last_modified": "Wed, 29 Oct 2025 20:26:14 GMT",
+    "last_modified": "Fri, 31 Oct 2025 14:28:51 GMT",
     "size": 27352,
-    "downloaded_at": 1761789329.084241
+    "downloaded_at": 1761942401.107446
   },
   "plugins-reference": {
     "etag": null,
-    "last_modified": "Wed, 29 Oct 2025 20:24:36 GMT",
+    "last_modified": "Fri, 31 Oct 2025 14:53:07 GMT",
     "size": 13067,
-    "downloaded_at": 1761789329.156905
+    "downloaded_at": 1761942401.15271
   },
   "agent-skills/overview": {
     "etag": null,
-    "last_modified": "Wed, 29 Oct 2025 22:58:11 GMT",
+    "last_modified": "Fri, 31 Oct 2025 15:19:53 GMT",
     "size": 20290,
-    "downloaded_at": 1761789329.2327511
+    "downloaded_at": 1761942401.200576
   },
   "agent-skills/quickstart": {
     "etag": null,
-    "last_modified": "Thu, 30 Oct 2025 00:10:50 GMT",
+    "last_modified": "Fri, 31 Oct 2025 15:19:59 GMT",
     "size": 15765,
-    "downloaded_at": 1761789329.291221
+    "downloaded_at": 1761942401.246923
   },
   "agent-skills/best-practices": {
     "etag": null,
-    "last_modified": "Thu, 30 Oct 2025 00:02:32 GMT",
+    "last_modified": "Fri, 31 Oct 2025 15:19:23 GMT",
     "size": 46411,
-    "downloaded_at": 1761789329.355361
+    "downloaded_at": 1761942401.303951
   }
 }

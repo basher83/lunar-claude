@@ -7,10 +7,6 @@
 #   "rich>=13.0.0",
 #   "typer>=0.9.0",
 # ]
-# [tool.uv.metadata]
-# purpose = "netbox-api-client"
-# team = "infrastructure"
-# author = "devops@spaceships.work"
 # ///
 
 """
@@ -94,7 +90,8 @@ def get_netbox_client() -> pynetbox.api:
         client_secret = os.getenv("INFISICAL_CLIENT_SECRET")
 
         if not client_id or not client_secret:
-            console.print("[red]INFISICAL_CLIENT_ID and INFISICAL_CLIENT_SECRET environment variables required[/red]")
+            console.print(
+                "[red]INFISICAL_CLIENT_ID and INFISICAL_CLIENT_SECRET environment variables required[/red]")
             raise typer.Exit(1)
 
         client.auth.universal_auth.login(
@@ -175,7 +172,8 @@ def sites_list(
                     str(site.id),
                     site.name,
                     site.slug,
-                    site.status.value if hasattr(site.status, 'value') else str(site.status),
+                    site.status.value if hasattr(
+                        site.status, 'value') else str(site.status),
                     site.description or ""
                 )
 
@@ -256,7 +254,8 @@ def devices_list(
         if tag:
             filters['tag'] = tag
 
-        devices = nb.dcim.devices.filter(**filters) if filters else nb.dcim.devices.all()
+        devices = nb.dcim.devices.filter(
+            **filters) if filters else nb.dcim.devices.all()
 
         if output == "json":
             import json
@@ -287,12 +286,14 @@ def devices_list(
                     device.name,
                     device.site.name if device.site else "N/A",
                     device.device_role.name if device.device_role else "N/A",
-                    device.status.value if hasattr(device.status, 'value') else str(device.status),
+                    device.status.value if hasattr(
+                        device.status, 'value') else str(device.status),
                     str(device.primary_ip4.address) if device.primary_ip4 else "N/A"
                 )
 
             console.print(table)
-            console.print(f"\n[green]Total devices: {len(list(devices))}[/green]")
+            console.print(
+                f"\n[green]Total devices: {len(list(devices))}[/green]")
 
     except Exception as e:
         console.print(f"[red]Error listing devices: {e}[/red]")
@@ -360,7 +361,8 @@ def devices_get(
                 for iface in interfaces:
                     iface_table.add_row(
                         iface.name,
-                        iface.type.value if hasattr(iface.type, 'value') else str(iface.type),
+                        iface.type.value if hasattr(
+                            iface.type, 'value') else str(iface.type),
                         "✓" if iface.enabled else "✗",
                         str(iface.mtu) if iface.mtu else "default"
                     )
@@ -395,7 +397,8 @@ def vms_list(
         if tag:
             filters['tag'] = tag
 
-        vms = nb.virtualization.virtual_machines.filter(**filters) if filters else nb.virtualization.virtual_machines.all()
+        vms = nb.virtualization.virtual_machines.filter(
+            **filters) if filters else nb.virtualization.virtual_machines.all()
 
         if output == "json":
             import json
@@ -429,7 +432,8 @@ def vms_list(
                     vm.cluster.name if vm.cluster else "N/A",
                     str(vm.vcpus) if vm.vcpus else "N/A",
                     str(vm.memory) if vm.memory else "N/A",
-                    vm.status.value if hasattr(vm.status, 'value') else str(vm.status),
+                    vm.status.value if hasattr(
+                        vm.status, 'value') else str(vm.status),
                     str(vm.primary_ip4.address) if vm.primary_ip4 else "N/A"
                 )
 
@@ -457,7 +461,8 @@ def vms_get(
             sys.exit(1)
 
         # Get interfaces
-        interfaces = nb.virtualization.interfaces.filter(virtual_machine_id=vm.id)
+        interfaces = nb.virtualization.interfaces.filter(
+            virtual_machine_id=vm.id)
 
         if output == "json":
             import json
@@ -522,7 +527,8 @@ ips_app = typer.Typer(help="Manage NetBox IP addresses")
 
 @ips_app.command("query")
 def ips_query(
-    dns_name: Optional[str] = typer.Option(None, help="Filter by DNS name (partial match)"),
+    dns_name: Optional[str] = typer.Option(
+        None, help="Filter by DNS name (partial match)"),
     address: Optional[str] = typer.Option(None, help="Filter by IP address"),
     tag: Optional[str] = typer.Option(None, help="Filter by tag"),
     output: str = typer.Option("table", help="Output format: table or json")
@@ -540,7 +546,8 @@ def ips_query(
             filters['tag'] = tag
 
         if not filters:
-            console.print("[yellow]Please provide at least one filter[/yellow]")
+            console.print(
+                "[yellow]Please provide at least one filter[/yellow]")
             sys.exit(0)
 
         ips = nb.ipam.ip_addresses.filter(**filters)
@@ -571,7 +578,8 @@ def ips_query(
                     str(ip.id),
                     str(ip.address),
                     ip.dns_name or "",
-                    ip.status.value if hasattr(ip.status, 'value') else str(ip.status),
+                    ip.status.value if hasattr(
+                        ip.status, 'value') else str(ip.status),
                     ip.assigned_object.name if ip.assigned_object else "N/A"
                 )
 
@@ -613,12 +621,14 @@ def prefixes_available(
             print(json.dumps([str(ip.address) for ip in available], indent=2))
         else:
             console.print(f"\n[green]Prefix:[/green] {prefix}")
-            console.print(f"[green]Available IPs (showing first {limit}):[/green]\n")
+            console.print(
+                f"[green]Available IPs (showing first {limit}):[/green]\n")
 
             for ip in available:
                 console.print(f"  • {ip.address}")
 
-            console.print(f"\n[yellow]Total available: {len(available)}+[/yellow]")
+            console.print(
+                f"\n[yellow]Total available: {len(available)}+[/yellow]")
 
     except Exception as e:
         console.print(f"[red]Error getting available IPs: {e}[/red]")

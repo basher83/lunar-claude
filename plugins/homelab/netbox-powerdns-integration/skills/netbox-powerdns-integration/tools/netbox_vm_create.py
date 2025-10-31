@@ -7,10 +7,6 @@
 #   "rich>=13.0.0",
 #   "typer>=0.9.0",
 # ]
-# [tool.uv.metadata]
-# purpose = "netbox-vm-provisioning"
-# team = "infrastructure"
-# author = "devops@spaceships.work"
 # ///
 
 """
@@ -91,7 +87,8 @@ def get_netbox_client() -> pynetbox.api:
         client_secret = os.getenv("INFISICAL_CLIENT_SECRET")
 
         if not client_id or not client_secret:
-            console.print("[red]INFISICAL_CLIENT_ID and INFISICAL_CLIENT_SECRET environment variables required[/red]")
+            console.print(
+                "[red]INFISICAL_CLIENT_ID and INFISICAL_CLIENT_SECRET environment variables required[/red]")
             raise typer.Exit(1)
 
         client.auth.universal_auth.login(
@@ -157,17 +154,23 @@ def validate_vm_name(name: str) -> bool:
 
 @app.command()
 def main(
-    name: str = typer.Option(..., help="VM name (e.g., docker-02, k8s-01-master)"),
+    name: str = typer.Option(...,
+                             help="VM name (e.g., docker-02, k8s-01-master)"),
     cluster: str = typer.Option("matrix", help="Cluster name"),
     vcpus: int = typer.Option(2, help="Number of vCPUs"),
     memory: int = typer.Option(2048, help="Memory in MB"),
     disk: int = typer.Option(20, help="Disk size in GB"),
-    ip: Optional[str] = typer.Option(None, help="Specific IP address (e.g., 192.168.3.50/24)"),
-    prefix: str = typer.Option("192.168.3.0/24", help="Prefix for auto IP assignment"),
-    dns_name: Optional[str] = typer.Option(None, help="Custom DNS name (FQDN)"),
+    ip: Optional[str] = typer.Option(
+        None, help="Specific IP address (e.g., 192.168.3.50/24)"),
+    prefix: str = typer.Option(
+        "192.168.3.0/24", help="Prefix for auto IP assignment"),
+    dns_name: Optional[str] = typer.Option(
+        None, help="Custom DNS name (FQDN)"),
     description: Optional[str] = typer.Option(None, help="VM description"),
-    tags: str = typer.Option("terraform,production-dns", help="Comma-separated tags"),
-    dry_run: bool = typer.Option(False, help="Show what would be created without creating")
+    tags: str = typer.Option("terraform,production-dns",
+                             help="Comma-separated tags"),
+    dry_run: bool = typer.Option(
+        False, help="Show what would be created without creating")
 ):
     """
     Create a VM in NetBox with automatic IP assignment and DNS.
@@ -177,7 +180,8 @@ def main(
     # Validate VM name
     if not validate_vm_name(name):
         console.print(f"[red]Invalid VM name: {name}[/red]")
-        console.print("[yellow]VM name must contain only lowercase letters, numbers, and hyphens[/yellow]")
+        console.print(
+            "[yellow]VM name must contain only lowercase letters, numbers, and hyphens[/yellow]")
         raise typer.Exit(1)
 
     # Generate DNS name if not provided
@@ -187,8 +191,10 @@ def main(
     # Validate DNS name
     if not validate_dns_name(dns_name):
         console.print(f"[red]Invalid DNS name: {dns_name}[/red]")
-        console.print("[yellow]DNS name must follow pattern: service-NN[-purpose].domain[/yellow]")
-        console.print("[yellow]Examples: docker-01.spaceships.work or docker-01-nexus.spaceships.work[/yellow]")
+        console.print(
+            "[yellow]DNS name must follow pattern: service-NN[-purpose].domain[/yellow]")
+        console.print(
+            "[yellow]Examples: docker-01.spaceships.work or docker-01-nexus.spaceships.work[/yellow]")
         raise typer.Exit(1)
 
     # Parse tags
@@ -230,10 +236,12 @@ def main(
         console.print(f"[green]✓ Found cluster: {cluster_obj.name}[/green]")
 
         # 2. Check if VM already exists
-        console.print(f"\n[cyan]2. Checking if VM '{name}' already exists...[/cyan]")
+        console.print(
+            f"\n[cyan]2. Checking if VM '{name}' already exists...[/cyan]")
         existing_vm = nb.virtualization.virtual_machines.get(name=name)
         if existing_vm:
-            console.print(f"[red]VM '{name}' already exists (ID: {existing_vm.id})[/red]")
+            console.print(
+                f"[red]VM '{name}' already exists (ID: {existing_vm.id})[/red]")
             raise typer.Exit(1)
         console.print("[green]✓ VM name available[/green]")
 
@@ -260,7 +268,8 @@ def main(
             enabled=True,
             mtu=1500
         )
-        console.print(f"[green]✓ Created interface (ID: {vm_iface.id})[/green]")
+        console.print(
+            f"[green]✓ Created interface (ID: {vm_iface.id})[/green]")
 
         # 5. Assign IP
         # Validate IP format if provided
@@ -269,7 +278,8 @@ def main(
                 ipaddress.ip_interface(ip)
             except ValueError:
                 console.print(f"[red]Invalid IP address format: {ip}[/red]")
-                console.print("[yellow]Expected format: 192.168.3.50/24[/yellow]")
+                console.print(
+                    "[yellow]Expected format: 192.168.3.50/24[/yellow]")
                 # Rollback
                 vm_iface.delete()
                 vm.delete()
@@ -289,7 +299,8 @@ def main(
                 )
             else:
                 # Auto-assign from prefix
-                console.print(f"\n[cyan]5. Getting next available IP from {prefix}...[/cyan]")
+                console.print(
+                    f"\n[cyan]5. Getting next available IP from {prefix}...[/cyan]")
                 prefix_obj = nb.ipam.prefixes.get(prefix=prefix)
                 if not prefix_obj:
                     console.print(f"[red]Prefix '{prefix}' not found[/red]")
@@ -309,7 +320,8 @@ def main(
             console.print(f"[green]✓ Assigned IP: {vm_ip.address}[/green]")
         except Exception as e:
             console.print(f"[red]Failed to assign IP: {e}[/red]")
-            console.print("[yellow]Rolling back: deleting interface and VM...[/yellow]")
+            console.print(
+                "[yellow]Rolling back: deleting interface and VM...[/yellow]")
             try:
                 vm_iface.delete()
                 vm.delete()
@@ -318,7 +330,8 @@ def main(
             raise typer.Exit(1)
 
         # 6. Set as primary IP
-        console.print(f"\n[cyan]6. Setting {vm_ip.address} as primary IP...[/cyan]")
+        console.print(
+            f"\n[cyan]6. Setting {vm_ip.address} as primary IP...[/cyan]")
         vm.primary_ip4 = vm_ip.id
         vm.save()
         console.print("[green]✓ Set primary IP[/green]")
@@ -339,8 +352,10 @@ def main(
             border_style="green"
         ))
 
-        console.print("\n[yellow]Note:[/yellow] DNS record will be automatically created by NetBox PowerDNS sync plugin")
-        console.print(f"[yellow]DNS:[/yellow] {dns_name} → {vm_ip.address.split('/')[0]}")
+        console.print(
+            "\n[yellow]Note:[/yellow] DNS record will be automatically created by NetBox PowerDNS sync plugin")
+        console.print(
+            f"[yellow]DNS:[/yellow] {dns_name} → {vm_ip.address.split('/')[0]}")
 
     except pynetbox.RequestError as e:
         console.print(f"\n[red]NetBox API Error: {e.error}[/red]")

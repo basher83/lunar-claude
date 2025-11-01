@@ -1,0 +1,81 @@
+# Ruff configuration for lunar-claude
+# See: https://docs.astral.sh/ruff/configuration/
+
+# Exclude common directories
+exclude = [
+    ".bzr",
+    ".direnv",
+    ".eggs",
+    ".git",
+    ".git-rewrite",
+    ".hg",
+    ".ipynb_checkpoints",
+    ".mypy_cache",
+    ".nox",
+    ".pants.d",
+    ".pyenv",
+    ".pytest_cache",
+    ".pytype",
+    ".ruff_cache",
+    ".svn",
+    ".tox",
+    ".venv",
+    ".vscode",
+    "__pycache__",
+    "__pypackages__",
+    "_build",
+    "buck-out",
+    "build",
+    "dist",
+    "node_modules",
+    "site-packages",
+    "venv",
+]
+
+# Slightly wider than Black's default
+line-length = 100
+indent-width = 4
+
+# Require Python 3.11+
+target-version = "py311"
+
+[lint]
+# Enable comprehensive linting rules
+select = [
+    "E",    # pycodestyle errors
+    "F",    # Pyflakes
+    "UP",   # pyupgrade - modernize Python syntax
+    "B",    # flake8-bugbear - common bugs
+    "SIM",  # flake8-simplify - simplification suggestions
+    "I",    # isort - import sorting
+]
+
+ignore = [
+    "E501",  # Line too long (handled by formatter)
+]
+
+# Allow fix for all enabled rules
+fixable = ["ALL"]
+unfixable = []
+
+# Allow unused variables when underscore-prefixed
+dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+
+[format]
+# Use double quotes for strings (Black-compatible)
+quote-style = "double"
+
+# Use spaces for indentation
+indent-style = "space"
+
+# Respect magic trailing commas
+skip-magic-trailing-comma = false
+
+# Auto-detect line endings
+line-ending = "auto"
+
+# Enable auto-formatting of code examples in docstrings
+docstring-code-format = false
+
+# Dynamic line length for docstring code examples
+docstring-code-line-length = "dynamic"

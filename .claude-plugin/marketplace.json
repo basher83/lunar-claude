@@ -65,12 +65,12 @@
       }
     },
     {
-      "name": "python-uv-tools",
-      "source": "./plugins/devops/python-uv-tools",
-      "description": "Python single-file script development using uv and PEP 723 inline metadata",
+      "name": "python-tools",
+      "source": "./plugins/devops/python-tools",
+      "description": "Comprehensive Python development toolkit covering scripting (uv), code quality (ruff/pyright), and common patterns (JSON parsing)",
       "version": "1.0.0",
       "category": "devops",
-      "keywords": ["python", "uv", "scripting", "development", "pep-723"],
+      "keywords": ["python", "uv", "scripting", "ruff", "pyright", "code-quality", "json", "patterns", "best-practices"],
       "author": {
         "name": "basher83"
       }

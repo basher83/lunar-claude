@@ -1,11 +1,11 @@
 {
-  "name": "python-uv-tools",
+  "name": "python-tools",
   "version": "1.0.0",
-  "description": "Python single-file script development using uv and PEP 723 inline metadata",
+  "description": "Comprehensive Python development toolkit covering scripting (uv), code quality (ruff/pyright), and common patterns (JSON parsing)",
   "author": {
     "name": "basher83",
     "email": "basher83@mail.spaceships.work"
   },
-  "keywords": ["python", "uv", "scripting", "development", "pep-723"],
+  "keywords": ["python", "uv", "scripting", "ruff", "pyright", "code-quality", "json", "patterns", "best-practices"],
   "homepage": "https://github.com/basher83/lunar-claude"
 }

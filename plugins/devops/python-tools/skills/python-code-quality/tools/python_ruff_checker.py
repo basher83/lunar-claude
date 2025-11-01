@@ -18,9 +18,9 @@ Features:
     - Non-blocking (exits with code 0 even if ruff finds issues)
 """
 import json
-import sys
 import os
 import subprocess
+import sys
 
 
 def check_python_file(file_path):

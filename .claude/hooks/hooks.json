@@ -10,7 +10,7 @@
                     },
                     {
                         "type": "command",
-                        "command": "uv run \"$CLAUDE_PROJECT_DIR\"/scripts/python_formatter.py --blocking"
+                        "command": "uv run \"$CLAUDE_PROJECT_DIR\"/plugins/devops/python-tools/skills/python-code-quality/tools/python_formatter.py --blocking"
                     }
                 ]
             }

@@ -25,9 +25,9 @@ Features:
     - Blocking mode option for immediate Claude feedback
 """
 import json
-import sys
 import os
 import subprocess
+import sys
 
 
 def format_python_file(file_path, blocking=False):

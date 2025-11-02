@@ -1,0 +1,10 @@
+[rumdl]
+line_length = 120
+
+[rules]
+MD013 = true  # Line length
+MD025 = true  # Multiple top-level headings
+MD033 = true  # Inline HTML
+MD036 = true  # Emphasis used instead of heading
+MD041 = true  # First line should be heading
+MD053 = true  # Link reference unused

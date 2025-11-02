@@ -207,7 +207,12 @@ async def spawn_investigator(assignment: dict[str, Any]) -> dict[str, Any]:
     with open(agent_path) as f:
         agent_content = f.read()
         # Extract system prompt (everything after frontmatter)
-        system_prompt = agent_content.split("---", 2)[2].strip()
+        parts = agent_content.split("---")
+        if len(parts) < 3:
+            raise ValueError(
+                f"Invalid agent definition in {agent_path}: missing or malformed frontmatter"
+            )
+        system_prompt = parts[2].strip()
 
     # Build investigation prompt
     prompt = f"""Investigate the following markdown linting errors and determine if they are fixable or false positives.
@@ -246,6 +251,7 @@ Analyze each error using your tools (Read, Grep, Glob, Bash) and provide a struc
         investigation_report = json.loads(json_text)
     except json.JSONDecodeError as e:
         print(f"❌ Failed to parse investigation report: {e}")
+        print(f"Assignment was: {json.dumps(assignment, indent=2)}")
         print(f"Response: {response_text}")
         raise
 
@@ -278,7 +284,12 @@ async def spawn_fixer(assignment: dict[str, Any]) -> dict[str, Any]:
     with open(agent_path) as f:
         agent_content = f.read()
         # Extract system prompt (everything after frontmatter)
-        system_prompt = agent_content.split("---", 2)[2].strip()
+        parts = agent_content.split("---")
+        if len(parts) < 3:
+            raise ValueError(
+                f"Invalid agent definition in {agent_path}: missing or malformed frontmatter"
+            )
+        system_prompt = parts[2].strip()
 
     # Build fixing prompt
     prompt = f"""Fix the following markdown linting errors using the provided investigation context.
@@ -321,6 +332,7 @@ For each file:
         fix_report = json.loads(json_text)
     except json.JSONDecodeError as e:
         print(f"❌ Failed to parse fix report: {e}")
+        print(f"Assignment was: {json.dumps(assignment, indent=2)}")
         print(f"Response: {response_text}")
         raise
 

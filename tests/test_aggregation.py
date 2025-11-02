@@ -1,60 +1,23 @@
 #!/usr/bin/env python3
 """Test investigation result aggregation."""
 
+import importlib.util
+import sys
+from unittest.mock import MagicMock
 
-def aggregate_investigation_results(simple_files, investigation_report):
-    """
-    Aggregate simple errors and investigation results into single Fixer assignment.
+# Mock the anthropic module to avoid dependency issues during testing
+sys.modules["anthropic"] = MagicMock()
 
-    This is a copy of the function from intelligent-markdown-lint.py for testing purposes.
-    """
-    # Start with simple errors (add context)
-    fixer_files = {}
+# Load the module from the script with hyphens in the name
+spec = importlib.util.spec_from_file_location(
+    "intelligent_markdown_lint",
+    "scripts/intelligent-markdown-lint.py",
+)
+module = importlib.util.module_from_spec(spec)
+sys.modules["intelligent_markdown_lint"] = module
+spec.loader.exec_module(module)
 
-    for file_data in simple_files:
-        path = file_data["file"]
-        fixer_files[path] = {
-            "path": path,
-            "errors": [
-                {**error, "context": f"Simple error - always fixable (code: {error['code']})"}
-                for error in file_data["errors"]
-            ],
-        }
-
-    # Add investigated errors that are fixable
-    investigated_fixable = 0
-    false_positives = 0
-
-    for investigation in investigation_report.get("investigations", []):
-        file_path = investigation["file"]
-
-        for result in investigation.get("results", []):
-            if result["verdict"] == "fixable":
-                investigated_fixable += 1
-
-                # Add to fixer assignment with investigation context
-                if file_path not in fixer_files:
-                    fixer_files[file_path] = {"path": file_path, "errors": []}
-
-                fixer_files[file_path]["errors"].append(
-                    {**result["error"], "context": result["reasoning"]}
-                )
-
-            elif result["verdict"] == "false_positive":
-                false_positives += 1
-
-    assignment = list(fixer_files.values())
-    simple_errors = sum(len(f["errors"]) for f in simple_files)
-
-    return {
-        "assignment": assignment,
-        "stats": {
-            "simple_errors": simple_errors,
-            "investigated_fixable": investigated_fixable,
-            "total_fixable": simple_errors + investigated_fixable,
-            "false_positives": false_positives,
-        },
-    }
+aggregate_investigation_results = module.aggregate_investigation_results
 
 
 def test_aggregate_simple_and_investigated():

@@ -1,10 +1,12 @@
 # Cluster Automation Patterns
 
-Best practices for automating Proxmox cluster formation with idempotent, production-ready Ansible playbooks.
+Best practices for automating Proxmox cluster formation with idempotent,
+production-ready Ansible playbooks.
 
 ## Pattern: Idempotent Cluster Status Detection
 
-**Problem**: Cluster formation commands (`pvecm create`, `pvecm add`) fail if run on nodes already in a cluster, making automation brittle.
+**Problem**: Cluster formation commands (`pvecm create`, `pvecm add`) fail if run
+on nodes already in a cluster, making automation brittle.
 
 **Solution**: Always check cluster status before attempting destructive operations.
 
@@ -59,7 +61,8 @@ Best practices for automating Proxmox cluster formation with idempotent, product
 
 ## Pattern: Hostname Resolution Verification
 
-**Problem**: Cluster formation fails if nodes cannot resolve each other's hostnames, but errors are cryptic.
+**Problem**: Cluster formation fails if nodes cannot resolve each other's
+hostnames, but errors are cryptic.
 
 **Solution**: Verify /etc/hosts configuration and DNS resolution before cluster operations.
 

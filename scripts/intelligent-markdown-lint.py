@@ -26,9 +26,11 @@ Examples:
     ./scripts/intelligent-markdown-lint.py --dry-run
 """
 
+import argparse
 import asyncio
 import json
 import subprocess
+import sys
 from typing import Any
 
 
@@ -38,14 +40,24 @@ def run_rumdl_check() -> str:
 
     Returns:
         Raw stdout/stderr from rumdl check
+
+    Raises:
+        SystemExit: If rumdl command is not found
     """
-    result = subprocess.run(
-        ["rumdl", "check", "."],
-        capture_output=True,
-        text=True,
-    )
-    # Combine stdout and stderr (rumdl writes to stderr)
-    return result.stdout + result.stderr
+    try:
+        result = subprocess.run(
+            ["rumdl", "check", "."],
+            capture_output=True,
+            text=True,
+        )
+        # Combine stdout and stderr (rumdl writes to stderr)
+        return result.stdout + result.stderr
+    except FileNotFoundError:
+        print("❌ Error: 'rumdl' command not found", file=sys.stderr)
+        print("\nInstallation instructions:", file=sys.stderr)
+        print("  cargo install rumdl", file=sys.stderr)
+        print("\nOr visit: https://github.com/spacedriveapp/rumdl", file=sys.stderr)
+        sys.exit(1)
 
 
 def parse_rumdl_output(output: str) -> dict[str, Any]:
@@ -213,7 +225,21 @@ async def spawn_fixer(assignment: dict[str, Any]) -> dict[str, Any]:
 
 async def main() -> None:
     """Main orchestrator workflow."""
+    # Parse command-line arguments
+    parser = argparse.ArgumentParser(
+        description="Intelligent Markdown Linting Orchestrator",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Analyze only (no fixes applied)",
+    )
+    args = parser.parse_args()
+
     print("🚀 Intelligent Markdown Linting Orchestrator")
+    if args.dry_run:
+        print("(DRY-RUN MODE: Analysis only, no fixes will be applied)")
     print("=" * 60)
 
     # Phase 1: Discovery
@@ -251,35 +277,45 @@ async def main() -> None:
     print(f"Total fixable errors: {total_fixable}")
 
     # Phase 4: Fixing
-    print("\n🔧 Phase 4: Fixing")
-    print("-" * 60)
-
-    if total_fixable > 0:
-        # TODO: Merge simple + investigated fixable errors
-        fixer_assignment = {
-            "assignment": [{"path": f["file"], "errors": f["errors"]} for f in triaged["simple"]]
-        }
-
-        fix_report = await spawn_fixer(fixer_assignment)
-        print(f"Fixes applied: {fix_report}")
+    if args.dry_run:
+        print("\n⏭️  Phase 4: Fixing (SKIPPED - dry-run mode)")
+        print("-" * 60)
+        print("Dry-run mode: Skipping fixes.")
+        print(f"Total fixable errors identified: {total_fixable}")
     else:
-        print("No fixable errors found.")
+        print("\n🔧 Phase 4: Fixing")
+        print("-" * 60)
 
-    # Phase 5: Verification
-    print("\n✅ Phase 5: Verification")
-    print("-" * 60)
+        if total_fixable > 0:
+            # TODO: Merge simple + investigated fixable errors
+            fixer_assignment = {
+                "assignment": [
+                    {"path": f["file"], "errors": f["errors"]} for f in triaged["simple"]
+                ]
+            }
 
-    final_output = run_rumdl_check()
-    final_parsed = parse_rumdl_output(final_output)
+            fix_report = await spawn_fixer(fixer_assignment)
+            print(f"Fixes applied: {fix_report}")
+        else:
+            print("No fixable errors found.")
 
-    print(f"Errors before: {parsed['total_errors']}")
-    print(f"Errors after: {final_parsed['total_errors']}")
+        # Phase 5: Verification
+        print("\n✅ Phase 5: Verification")
+        print("-" * 60)
 
-    if parsed["total_errors"] > 0:
-        fix_rate = (
-            (parsed["total_errors"] - final_parsed["total_errors"]) / parsed["total_errors"] * 100
-        )
-        print(f"Fix rate: {fix_rate:.1f}%")
+        final_output = run_rumdl_check()
+        final_parsed = parse_rumdl_output(final_output)
+
+        print(f"Errors before: {parsed['total_errors']}")
+        print(f"Errors after: {final_parsed['total_errors']}")
+
+        if parsed["total_errors"] > 0:
+            fix_rate = (
+                (parsed["total_errors"] - final_parsed["total_errors"])
+                / parsed["total_errors"]
+                * 100
+            )
+            print(f"Fix rate: {fix_rate:.1f}%")
 
 
 if __name__ == "__main__":

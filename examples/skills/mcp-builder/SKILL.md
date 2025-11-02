@@ -1,6 +1,8 @@
 ---
 name: mcp-builder
-description: Guide for creating high-quality MCP (Model Context Protocol) servers that enable LLMs to interact with external services through well-designed tools. Use when building MCP servers to integrate external APIs or services, whether in Python (FastMCP) or Node/TypeScript (MCP SDK).
+description: Guide for creating high-quality MCP (Model Context Protocol) servers that enable LLMs
+  to interact with external services through well-designed tools. Use when building MCP servers to
+  integrate external APIs or services, whether in Python (FastMCP) or Node/TypeScript (MCP SDK).
 license: Complete terms in LICENSE.txt
 ---
 
@@ -8,7 +10,10 @@ license: Complete terms in LICENSE.txt
 
 ## Overview
 
-To create high-quality MCP (Model Context Protocol) servers that enable LLMs to effectively interact with external services, use this skill. An MCP server provides tools that allow LLMs to access external services and APIs. The quality of an MCP server is measured by how well it enables LLMs to accomplish real-world tasks using the tools provided.
+To create high-quality MCP (Model Context Protocol) servers that enable LLMs to effectively interact
+with external services, use this skill. An MCP server provides tools that allow LLMs to access
+external services and APIs. The quality of an MCP server is measured by how well it enables LLMs to
+accomplish real-world tasks using the tools provided.
 
 ---
 
@@ -115,7 +120,8 @@ Based on your research, create a detailed plan that includes:
 **Input/Output Design:**
 
 - Define input validation models (Pydantic for Python, Zod for TypeScript)
-- Design consistent response formats (e.g., JSON or Markdown), and configurable levels of detail (e.g., Detailed or Concise)
+- Design consistent response formats (e.g., JSON or Markdown), and configurable levels of detail
+  (e.g., Detailed or Concise)
 - Plan for large-scale usage (thousands of users/resources)
 - Implement character limits and truncation strategies (e.g., 25,000 tokens)
 
@@ -234,7 +240,9 @@ To ensure quality, review the code for:
 
 #### 3.2 Test and Build
 
-**Important:** MCP servers are long-running processes that wait for requests over stdio/stdin or sse/http. Running them directly in your main process (e.g., `python server.py` or `node dist/index.js`) will cause your process to hang indefinitely.
+**Important:** MCP servers are long-running processes that wait for requests over stdio/stdin or
+sse/http. Running them directly in your main process (e.g., `python server.py` or
+`node dist/index.js`) will cause your process to hang indefinitely.
 
 **Safe ways to test the server:**
 

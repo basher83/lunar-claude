@@ -24,13 +24,14 @@ Features:
     - Reports what was changed
     - Blocking mode option for immediate Claude feedback
 """
+
 import json
 import os
 import subprocess
 import sys
 
 
-def format_python_file(file_path, blocking=False):
+def format_python_file(file_path: str, blocking: bool = False) -> bool:
     """Format and fix a Python file using ruff.
 
     Args:
@@ -45,10 +46,7 @@ def format_python_file(file_path, blocking=False):
     try:
         # Run ruff format
         format_result = subprocess.run(
-            ["ruff", "format", file_path],
-            capture_output=True,
-            text=True,
-            timeout=30
+            ["ruff", "format", file_path], capture_output=True, text=True, timeout=30
         )
 
         # Check if formatting made changes
@@ -60,10 +58,7 @@ def format_python_file(file_path, blocking=False):
 
         # Run ruff check --fix to auto-fix linting issues
         fix_result = subprocess.run(
-            ["ruff", "check", "--fix", file_path],
-            capture_output=True,
-            text=True,
-            timeout=30
+            ["ruff", "check", "--fix", file_path], capture_output=True, text=True, timeout=30
         )
 
         # Check if fixes were applied

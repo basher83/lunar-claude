@@ -17,20 +17,18 @@ Features:
     - Provides feedback on code quality issues
     - Non-blocking (exits with code 0 even if ruff finds issues)
 """
+
 import json
 import os
 import subprocess
 import sys
 
 
-def check_python_file(file_path):
+def check_python_file(file_path: str) -> None:
     """Run ruff check on a Python file."""
     try:
         result = subprocess.run(
-            ["ruff", "check", file_path],
-            capture_output=True,
-            text=True,
-            timeout=30
+            ["ruff", "check", file_path], capture_output=True, text=True, timeout=30
         )
 
         if result.returncode == 0:
@@ -56,9 +54,9 @@ try:
     else:
         # Read from stdin (hook mode)
         input_data = json.load(sys.stdin)
-        file_path = input_data.get('tool_input', {}).get('file_path', '')
+        file_path = input_data.get("tool_input", {}).get("file_path", "")
 
-    if not file_path.endswith('.py'):
+    if not file_path.endswith(".py"):
         sys.exit(0)  # Not a Python file
 
     if os.path.exists(file_path):

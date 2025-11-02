@@ -14,22 +14,22 @@ Checks Python scripts for:
 - Security issues
 
 Usage:
-    python validate_script.py <script.py>
-    python validate_script.py --strict <script.py>
-    python validate_script.py --force <script>
+    validate_script.py <script.py>
+    validate_script.py --strict <script.py>
+    validate_script.py --force <script>
 
 Examples:
     # Basic validation
-    python validate_script.py my_script.py
+    validate_script.py my_script.py
 
     # Strict mode (all best practices)
-    python validate_script.py --strict my_script.py
+    validate_script.py --strict my_script.py
 
     # Validate executable Python script without .py extension
-    python validate_script.py my_script
+    validate_script.py my_script
 
     # Force validation, skip extension check
-    python validate_script.py --force my_script
+    validate_script.py --force my_script
 
     # Validate all scripts in directory
     find . -name '*.py' -exec python validate_script.py {} \\;
@@ -107,7 +107,8 @@ def validate_toml_syntax(toml_content: str) -> list[str]:
             # Validate each dependency item
             for idx, dep in enumerate(dependencies):
                 if not isinstance(dep, str):
-                    errors.append(f"Dependency at index {idx} must be a string, got {type(dep).__name__}")
+                    errors.append(
+                        f"Dependency at index {idx} must be a string, got {type(dep).__name__}")
 
     return errors
 
@@ -155,11 +156,13 @@ def check_security_issues(content: str) -> list[str]:
 
     # Check for shell=True
     if re.search(r'shell\s*=\s*True', content):
-        warnings.append("Security: subprocess.run with shell=True (command injection risk)")
+        warnings.append(
+            "Security: subprocess.run with shell=True (command injection risk)")
 
     # Check for eval/exec
     if re.search(r'\b(eval|exec)\s*\(', content):
-        warnings.append("Security: Use of eval() or exec() (code injection risk)")
+        warnings.append(
+            "Security: Use of eval() or exec() (code injection risk)")
 
     return warnings
 
@@ -247,10 +250,12 @@ def validate_script(script_path: Path, strict: bool = False) -> ValidationResult
         result.has_docstring = module_docstring is not None
     except SyntaxError as e:
         result.has_docstring = False
-        result.warnings.append(f"Could not parse file for docstring check: {e}")
+        result.warnings.append(
+            f"Could not parse file for docstring check: {e}")
 
     if strict and not result.has_docstring:
-        result.warnings.append("Missing module docstring (recommended in strict mode)")
+        result.warnings.append(
+            "Missing module docstring (recommended in strict mode)")
 
     # Security checks (always warnings, never errors - these are heuristic checks)
     security_warnings = check_security_issues(content)
@@ -269,8 +274,10 @@ def main():
         epilog=__doc__
     )
     parser.add_argument('script', help='Python script to validate')
-    parser.add_argument('--strict', action='store_true', help='Enable strict validation')
-    parser.add_argument('--force', action='store_true', help='Skip Python file extension check')
+    parser.add_argument('--strict', action='store_true',
+                        help='Enable strict validation')
+    parser.add_argument('--force', action='store_true',
+                        help='Skip Python file extension check')
 
     args = parser.parse_args()
 
@@ -283,21 +290,25 @@ def main():
     # Check if file is a Python file
     if script_path.suffix != '.py':
         if args.force:
-            print(f"Warning: File lacks .py extension, but --force was specified", file=sys.stderr)
+            print(
+                f"Warning: File lacks .py extension, but --force was specified", file=sys.stderr)
         else:
             # Check if it's a valid Python file by other means
             is_valid, reason = is_valid_python_file(script_path)
             if not is_valid:
-                print(f"Error: Not a Python file: {script_path}", file=sys.stderr)
+                print(
+                    f"Error: Not a Python file: {script_path}", file=sys.stderr)
                 print(f"  Reason: {reason}", file=sys.stderr)
                 print(f"  Hint: File must either:", file=sys.stderr)
                 print(f"    - Have a .py extension, OR", file=sys.stderr)
-                print(f"    - Be executable with a Python shebang, OR", file=sys.stderr)
+                print(f"    - Be executable with a Python shebang, OR",
+                      file=sys.stderr)
                 print(f"    - Contain valid Python syntax", file=sys.stderr)
                 print(f"  Use --force to skip this check", file=sys.stderr)
                 sys.exit(1)
             else:
-                print(f"Info: File accepted as Python ({reason})", file=sys.stderr)
+                print(
+                    f"Info: File accepted as Python ({reason})", file=sys.stderr)
 
     # Validate
     result = validate_script(script_path, strict=args.strict)

@@ -1,0 +1,33 @@
+{
+  "include": [
+    "scripts",
+    "plugins"
+  ],
+
+  "exclude": [
+    "**/__pycache__",
+    "**/.ruff_cache",
+    "scripts/*_example.py",
+    "plugins/**/examples/**",
+    "plugins/**/assets/templates/**",
+    "plugins/**/tools/**",
+    "plugins/**/scripts/**"
+  ],
+
+  "venvPath": ".",
+  "venv": ".venv",
+
+  "typeCheckingMode": "standard",
+  "pythonVersion": "3.13",
+
+  "reportMissingImports": "error",
+  "reportMissingTypeStubs": "warning",
+  "reportUnusedImport": "warning",
+  "reportUnusedVariable": "warning",
+  "reportMissingParameterType": "warning",
+  "reportUnknownParameterType": "warning",
+  "reportUnknownVariableType": "warning",
+  "reportUnnecessaryIsInstance": "warning",
+  "reportUnnecessaryCast": "warning",
+  "reportImplicitStringConcatenation": "warning"
+}

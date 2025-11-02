@@ -1,0 +1,16 @@
+[project]
+name = "lunar-claude"
+version = "0.1.0"
+description = "Claude Code marketplace"
+requires-python = ">=3.13"
+dependencies = [
+    "jsonschema>=4.20.0",
+    "rich>=13.0.0",
+    "firecrawl-py>=1.0.0",
+]
+
+[dependency-groups]
+dev = []
+
+[tool.uv]
+package = false

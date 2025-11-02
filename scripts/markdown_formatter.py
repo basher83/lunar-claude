@@ -24,7 +24,7 @@ import re
 import sys
 
 
-def detect_language(code):
+def detect_language(code: str) -> str:
     """Best-effort language detection from code content."""
     s = code.strip()
 
@@ -59,11 +59,11 @@ def detect_language(code):
     return "text"
 
 
-def format_markdown(content):
+def format_markdown(content: str) -> str:
     """Format markdown content with language detection."""
 
     # Fix unlabeled code fences
-    def add_lang_to_fence(match):
+    def add_lang_to_fence(match: re.Match[str]) -> str:
         indent, info, body, closing = match.groups()
         if not info.strip():
             lang = detect_language(body)

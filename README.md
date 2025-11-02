@@ -122,6 +122,37 @@ NetBox IPAM and PowerDNS integration for automated DNS record management and inf
 
 See [plugins/homelab/netbox-powerdns-integration/README.md](plugins/homelab/netbox-powerdns-integration/README.md) for details.
 
+## Markdown Linting
+
+### Intelligent Linting (Agent-Based)
+
+Uses autonomous Claude agents to analyze and fix markdown errors with contextual understanding:
+
+```bash
+/intelligent-lint
+```
+
+**Features:**
+
+- 80% fix rate (vs 40% with regex)
+- Context-aware error analysis
+- Distinguishes intentional patterns from errors
+- Autonomous investigation with full repository access
+
+**Architecture:** Three-layer agent system (Orchestrator → Investigator → Fixer)
+
+See: `docs/architecture/intelligent-markdown-linting-agent.md`
+
+### Legacy Linting (Regex-Based)
+
+Fast parallel fixing with conservative regex rules:
+
+```bash
+/fix-markdown-linting
+```
+
+See: `.claude/commands/fix-markdown-linting.md`
+
 ## Development
 
 ### Creating New Plugins

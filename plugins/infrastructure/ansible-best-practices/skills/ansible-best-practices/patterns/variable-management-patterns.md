@@ -19,16 +19,23 @@ Analyzed 7 geerlingguy roles: security, users, docker, postgresql, nginx, pip, g
 
 **Contextual Patterns (Varies by requirements):**
 
-- vars/ directory presence: only when OS-specific non-configurable data needed (4/7 roles have it)
-- Variable count scales with role complexity: minimal roles have 3-5 variables, complex roles have 20+
-- Complex list-of-dict structures: database/service roles (postgresql, nginx) vs simple list variables (pip, git)
-- Conditional variable groups: feature-toggle variables activate groups of related configuration (git_install_from_source)
+- vars/ directory presence: only when OS-specific non-configurable data needed
+  (4/7 roles have it)
+- Variable count scales with role complexity: minimal roles have 3-5 variables,
+  complex roles have 20+
+- Complex list-of-dict structures: database/service roles (postgresql, nginx) vs
+  simple list variables (pip, git)
+- Conditional variable groups: feature-toggle variables activate groups of
+  related configuration (git_install_from_source)
 
 **Evolving Patterns (Newer roles improved):**
 
-- PostgreSQL demonstrates best practice for complex dict structures: show ALL possible keys with inline comments, mark required vs optional vs defaults
-- Flexible dict patterns: item.name | default(item) supports both simple strings and complex dicts (github-users role)
-- Advanced variable loading: first_found lookup (docker) vs simple include_vars (security) for better fallback support
+- PostgreSQL demonstrates best practice for complex dict structures: show ALL
+  possible keys with inline comments, mark required vs optional vs defaults
+- Flexible dict patterns: item.name | default(item) supports both simple strings
+  and complex dicts (github-users role)
+- Advanced variable loading: first_found lookup (docker) vs simple include_vars
+  (security) for better fallback support
 
 **Sources:**
 
@@ -56,34 +63,50 @@ Analyzed 2 geerlingguy roles: security, github-users
 
 **Universal Patterns (Both roles use identical approach):**
 
-1. ✅ **Role-prefixed variable names** - All variables start with role name (security_*, github_users_*)
+1. ✅ **Role-prefixed variable names** - All variables start with role name
+   (security_*, github_users_*)
 2. ✅ **Snake_case naming** - Consistent use of underscores, never camelCase
-3. ✅ **Feature grouping** - Related variables share prefix (security_ssh_*, github_users_authorized_keys_*)
-4. ✅ **Empty lists as defaults** - Default to `[]` for list variables, not undefined
+3. ✅ **Feature grouping** - Related variables share prefix
+   (security_ssh_*, github_users_authorized_keys_*)
+4. ✅ **Empty lists as defaults** - Default to `[]` for list variables,
+   not undefined
 5. ✅ **Boolean defaults** - Use lowercase `true`/`false` for Ansible booleans
-6. ✅ **String booleans for configs** - Quote yes/no when they're config values (e.g., `"no"` for SSH config)
-7. ✅ **Descriptive full names** - No abbreviations (security_ssh_port, not security_ssh_prt)
-8. ✅ **defaults/ for user config** - All user-overridable values in defaults/main.yml
-9. ✅ **Inline variable documentation** - Comments in defaults/ file with examples
+6. ✅ **String booleans for configs** - Quote yes/no when they're config values
+   (e.g., `"no"` for SSH config)
+7. ✅ **Descriptive full names** - No abbreviations
+   (security_ssh_port, not security_ssh_prt)
+8. ✅ **defaults/ for user config** - All user-overridable values in
+   defaults/main.yml
+9. ✅ **Inline variable documentation** - Comments in defaults/ file with
+   examples
 
 **Contextual Patterns (Varies by role requirements):**
 
-1. ⚠️  **vars/ for OS-specific values** - security uses vars/{Debian,RedHat}.yml, github-users doesn't need OS-specific vars
-2. ⚠️  **Complex variable structures** - security has simple scalars/lists, github-users uses list of strings OR dicts pattern
-3. ⚠️  **Variable count** - security has ~20 variables (complex role), github-users has 4 (simple role)
-4. ⚠️  **Default URL patterns** - github-users has configurable URL (github_url), security doesn't need this pattern
+1. ⚠️  **vars/ for OS-specific values** - security uses vars/{Debian,RedHat}.yml,
+   github-users doesn't need OS-specific vars
+2. ⚠️  **Complex variable structures** - security has simple scalars/lists,
+   github-users uses list of strings OR dicts pattern
+3. ⚠️  **Variable count** - security has ~20 variables (complex role),
+   github-users has 4 (simple role)
+4. ⚠️  **Default URL patterns** - github-users has configurable URL (github_url),
+   security doesn't need this pattern
 
-**Key Finding:** Variable management is highly consistent. The role name prefix pattern prevents ALL variable conflicts in complex playbooks.
+**Key Finding:** Variable management is highly consistent. The role name prefix
+pattern prevents ALL variable conflicts in complex playbooks.
 
 ## Overview
 
-This document captures variable management patterns from production-grade Ansible roles, demonstrating how to organize, name, and document variables for clarity and maintainability.
+This document captures variable management patterns from production-grade Ansible
+roles, demonstrating how to organize, name, and document variables for clarity
+and maintainability.
 
 ## Pattern: defaults/ vs vars/ Usage
 
 ### Description
 
-Use **defaults/** for user-configurable values (low precedence, easily overridden) and **vars/** for internal/OS-specific values (high precedence, should not be overridden).
+Use **defaults/** for user-configurable values (low precedence, easily
+overridden) and **vars/** for internal/OS-specific values (high precedence,
+should not be overridden).
 
 ### File Paths
 
@@ -227,16 +250,23 @@ Use a consistent, hierarchical naming pattern: `{role_name}_{feature}_{attribute
 ### Examples from security role
 
 - `security_ssh_port` - Role: security, Feature: ssh, Attribute: port
-- `security_ssh_password_authentication` - Role: security, Feature: ssh, Attribute: password_authentication
-- `security_fail2ban_enabled` - Role: security, Feature: fail2ban, Attribute: enabled
-- `security_autoupdate_reboot_time` - Role: security, Feature: autoupdate, Attribute: reboot_time
-- `security_ssh_restart_handler_state` - Role: security, Feature: ssh, Attribute: restart_handler_state
+- `security_ssh_password_authentication` - Role: security, Feature: ssh,
+  Attribute: password_authentication
+- `security_fail2ban_enabled` - Role: security, Feature: fail2ban,
+  Attribute: enabled
+- `security_autoupdate_reboot_time` - Role: security, Feature: autoupdate,
+  Attribute: reboot_time
+- `security_ssh_restart_handler_state` - Role: security, Feature: ssh,
+  Attribute: restart_handler_state
 
 ### Examples from github-users role
 
-- `github_users` - Role: github-users (shortened to github), Feature: users (implicit)
-- `github_users_absent` - Role: github, Feature: users, Attribute: absent
-- `github_users_authorized_keys_exclusive` - Role: github, Feature: users, Attribute: authorized_keys_exclusive
+- `github_users` - Role: github-users (shortened to github),
+  Feature: users (implicit)
+- `github_users_absent` - Role: github, Feature: users,
+  Attribute: absent
+- `github_users_authorized_keys_exclusive` - Role: github, Feature: users,
+  Attribute: authorized_keys_exclusive
 - `github_url` - Role: github, Feature: url (API endpoint)
 
 ### Naming Guidelines
@@ -245,29 +275,36 @@ Use a consistent, hierarchical naming pattern: `{role_name}_{feature}_{attribute
 2. **Use full words** - No abbreviations (password not pwd, configuration not cfg)
 3. **Snake_case only** - Underscores, never camelCase or kebab-case
 4. **Feature grouping** - Related vars share feature prefix for logical grouping
-5. **Hierarchical structure** - General to specific (ssh → password → authentication)
-6. **Boolean naming** - Use `_enabled`, `_disabled`, or descriptive names (not just `_flag`)
+5. **Hierarchical structure** - General to specific
+   (ssh → password → authentication)
+6. **Boolean naming** - Use `_enabled`, `_disabled`, or descriptive names
+   (not just `_flag`)
 7. **Descriptive, not cryptic** - Variable name should explain purpose
 
 ### When to Use
 
 - All role variables without exception
-- Internal variables (loop vars, registered results) can skip prefix if scope is limited
+- Internal variables (loop vars, registered results) can skip prefix if scope is
+  limited
 - Consistently apply pattern across all variables in the role
 
 ### Anti-pattern
 
-- ❌ Generic names: `port`, `enabled`, `users` (conflicts in complex playbooks)
+- ❌ Generic names: `port`, `enabled`, `users`
+  (conflicts in complex playbooks)
 - ❌ Abbreviations: `cfg`, `pwd`, `usr` (harder to read)
 - ❌ camelCase: `githubUsersAbsent` (not Ansible convention)
 - ❌ Inconsistent prefixes: Some vars with prefix, some without
-- ❌ Overly long names: `security_ssh_configuration_password_authentication_setting` (be descriptive, not verbose)
+- ❌ Overly long names:
+  `security_ssh_configuration_password_authentication_setting`
+  (be descriptive, not verbose)
 
 ## Pattern: Boolean vs String Values
 
 ### Description
 
-Distinguish between Ansible booleans and configuration file string values. Quote strings that look like booleans.
+Distinguish between Ansible booleans and configuration file string values.
+Quote strings that look like booleans.
 
 ### Ansible Booleans (unquoted)
 
@@ -299,16 +336,21 @@ security_autoupdate_reboot: "false"
 
 **Rationale:**
 
-When Ansible sees `no` or `false` without quotes, it converts to boolean. When this boolean is then written to a config file (via lineinfile or template), it becomes `False` or `false`, which might not match the config file's expected format (e.g., SSH expects `no`/`yes`).
+When Ansible sees `no` or `false` without quotes, it converts to boolean. When
+this boolean is then written to a config file (via lineinfile or template), it
+becomes `False` or `false`, which might not match the config file's expected
+format (e.g., SSH expects `no`/`yes`).
 
 ### Pattern from security role
 
 ```yaml
 # Ansible boolean (role logic)
-security_fail2ban_enabled: true  # Controls whether to install fail2ban
+# Controls whether to install fail2ban
+security_fail2ban_enabled: true
 
 # Config string (written to /etc/ssh/sshd_config)
-security_ssh_password_authentication: "no"  # Literal string "no" for SSH
+# Literal string "no" for SSH
+security_ssh_password_authentication: "no"
 ```
 
 ### When to Use
@@ -379,8 +421,10 @@ github_users:
 ```yaml
 - name: Ensure GitHub user accounts are present.
   user:
-    name: "{{ item.name | default(item) }}"  # Handles both dict and string
-    groups: "{{ item.groups | default(omit) }}"  # Optional attribute
+    # Handles both dict and string
+    name: "{{ item.name | default(item) }}"
+    # Optional attribute
+    groups: "{{ item.groups | default(omit) }}"
 ```
 
 **Key technique:** `{{ item.name | default(item) }}`
@@ -427,7 +471,8 @@ This pattern is less common in geerlingguy roles (flat variables preferred for s
 ### Anti-pattern
 
 - ❌ Deep nesting (3+ levels) - Hard to override, hard to document
-- ❌ Inconsistent structure - Some items as strings, others as dicts without handling
+- ❌ Inconsistent structure - Some items as strings, others as dicts without
+  handling
 - ❌ Required attributes in complex structures without defaults
 - ❌ Over-engineering simple use cases
 
@@ -547,8 +592,10 @@ system_user_state: present
 
 **Gaps:**
 
-- ⚠️  No feature grouping (all variables are related to user management, so not needed)
-- ⚠️  Could use string for sudo_access ("full", "commands", "none" vs full/limited)
+- ⚠️  No feature grouping (all variables are related to user management,
+  so not needed)
+- ⚠️  Could use string for sudo_access
+  ("full", "commands", "none" vs full/limited)
 - ✅ No vars/ directory needed (no OS-specific values)
 
 **Pattern Match:** 95% - Excellent variable management
@@ -640,12 +687,14 @@ proxmox_network_verify_connectivity: true
 
 - **Pattern: Role prefix on ALL variables** - ✅ **Confirmed**
   - PostgreSQL: All variables start with `postgresql_`
-  - Examples: postgresql_databases, postgresql_users, postgresql_hba_entries, postgresql_global_config_options
+  - Examples: postgresql_databases, postgresql_users, postgresql_hba_entries,
+    postgresql_global_config_options
   - **4/4 roles confirm this is universal**
 
 ### Complex Data Structures
 
-- **Pattern: List of dicts with comprehensive inline documentation** - ✅ **EXCELLENT EXAMPLE**
+- **Pattern: List of dicts with comprehensive inline documentation** -
+  ✅ **EXCELLENT EXAMPLE**
   - PostgreSQL has multiple complex list-of-dict variables:
 
   ```yaml
@@ -669,14 +718,19 @@ proxmox_network_verify_connectivity: true
   #   state: # defaults to 'present'
   ```
 
-  - **Validates:** Complex dict structures work beautifully with inline documentation
-  - **Best practice:** Show ALL possible keys, mark required vs optional, document defaults
+  - **Validates:** Complex dict structures work beautifully with inline
+    documentation
+  - **Best practice:** Show ALL possible keys, mark required vs optional,
+    document defaults
 
 ### defaults/ vs vars/ Usage
 
-- **Pattern: defaults/ for user config, vars/ for OS-specific** - ✅ **Confirmed**
-  - defaults/main.yml: 100+ lines of user-configurable variables with extensive inline docs
-  - vars/{Archlinux,Debian,RedHat}.yml: OS-specific package names, paths, service names, versions
+- **Pattern: defaults/ for user config, vars/ for OS-specific** -
+  ✅ **Confirmed**
+  - defaults/main.yml: 100+ lines of user-configurable variables with extensive
+    inline docs
+  - vars/{Archlinux,Debian,RedHat}.yml: OS-specific package names, paths,
+    service names, versions
   - **4/4 roles follow this pattern exactly**
 
 ### Empty List Defaults
@@ -693,11 +747,13 @@ proxmox_network_verify_connectivity: true
   - postgresql_global_config_* for server configuration
   - postgresql_hba_* for host-based authentication
   - postgresql_unix_socket_* for socket configuration
-  - **Demonstrates:** Feature grouping scales to large variable sets (20+ variables)
+  - **Demonstrates:** Feature grouping scales to large variable sets
+    (20+ variables)
 
 ### Variable Documentation Pattern
 
-- **Pattern: Inline comments in defaults/main.yml** - ✅ **BEST PRACTICE EXAMPLE**
+- **Pattern: Inline comments in defaults/main.yml** -
+  ✅ **BEST PRACTICE EXAMPLE**
   - Every complex variable has commented examples
   - Shows required vs optional keys
   - Documents default values inline
@@ -758,13 +814,15 @@ proxmox_network_verify_connectivity: true
   - **Key finding:** Minimal roles maintain same naming discipline
 
 - **Pattern: String defaults with alternatives** - ✅ **Confirmed**
-  - pip_package: `python3-pip` (shows python-pip alternative in README)
+  - pip_package: `python3-pip`
+    (shows python-pip alternative in README)
   - pip_executable: `pip3` (auto-detected, can override)
   - **6/6 roles document alternatives in README or comments**
 
 - **Pattern: List variable with dict options** - ✅ **Confirmed**
   - pip_install_packages: defaults to `[]`
-  - Supports simple strings or dicts with keys: name, version, state, virtualenv, extra_args
+  - Supports simple strings or dicts with keys: name, version, state, virtualenv,
+    extra_args
   - **Validates:** List-of-string-or-dict pattern is universal
 
 ### Utility Role Variables Pattern (git role)
@@ -781,7 +839,8 @@ proxmox_network_verify_connectivity: true
   - **Validates:** Conditional features have grouped variables
 
 - **Pattern: Platform-specific vars/** - ✅ **Confirmed**
-  - git role uses vars/Debian.yml and vars/RedHat.yml (implied from structure)
+  - git role uses vars/Debian.yml and vars/RedHat.yml
+    (implied from structure)
   - vars/ contains non-configurable OS-specific data
   - defaults/ contains all user-configurable options
   - **7/7 roles use vars/ for OS-specific package lists**
@@ -805,13 +864,21 @@ proxmox_network_verify_connectivity: true
 - **Empty list defaults:** UNIVERSAL (7/7 roles use [])
 - **defaults/ vs vars/:** UNIVERSAL (7/7 roles follow pattern)
 - **Boolean feature toggles:** UNIVERSAL (7/7 roles use them)
-- **Conditional variable groups:** VALIDATED (git proves pattern for optional features)
-- **Minimal variables principle:** CONFIRMED (pip shows simplicity is acceptable)
+- **Conditional variable groups:** VALIDATED
+  (git proves pattern for optional features)
+- **Minimal variables principle:** CONFIRMED
+  (pip shows simplicity is acceptable)
 
 **Virgo-Core Assessment:**
 
-All three Virgo-Core roles demonstrate excellent variable management practices. They follow geerlingguy patterns closely and have no critical gaps. Minor enhancements could include more inline documentation in defaults/ files, especially for any complex dict structures.
+All three Virgo-Core roles demonstrate excellent variable management practices.
+They follow geerlingguy patterns closely and have no critical gaps. Minor
+enhancements could include more inline documentation in defaults/ files,
+especially for any complex dict structures.
 
 **Next Steps:**
 
-Apply these patterns rigorously in new roles. The variable management discipline in existing roles should be maintained and used as a template. For any future roles with complex variables, follow the postgresql pattern of comprehensive inline documentation.
+Apply these patterns rigorously in new roles. The variable management discipline
+in existing roles should be maintained and used as a template. For any future
+roles with complex variables, follow the postgresql pattern of comprehensive
+inline documentation.

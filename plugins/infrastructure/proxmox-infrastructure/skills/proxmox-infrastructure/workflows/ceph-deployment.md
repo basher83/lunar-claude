@@ -1,6 +1,7 @@
 # CEPH Storage Deployment Workflow
 
-Complete guide to deploying CEPH storage on a Proxmox VE cluster with automated OSD creation, pool configuration, and health verification.
+Complete guide to deploying CEPH storage on a Proxmox VE cluster with automated OSD creation, pool
+configuration, and health verification.
 
 ## Overview
 

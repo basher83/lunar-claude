@@ -2,7 +2,8 @@
 
 ## Overview
 
-This guide catalogs common mistakes found in Ansible playbooks and provides corrected examples based on Virgo-Core repository best practices.
+This guide catalogs common mistakes found in Ansible playbooks and provides corrected examples based on Virgo-Core
+repository best practices.
 
 ## 1. Not Using `set -euo pipefail` in Shell Scripts
 

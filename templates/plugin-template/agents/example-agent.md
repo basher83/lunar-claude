@@ -5,7 +5,8 @@ capabilities: ["task-type-1", "task-type-2", "task-type-3"]
 
 # Example Agent
 
-This agent demonstrates the proper structure for Claude Code agents. Replace this content with your agent's actual purpose and capabilities.
+This agent demonstrates the proper structure for Claude Code agents. Replace this content with your agent's actual
+purpose and capabilities.
 
 ## Capabilities
 
@@ -25,12 +26,12 @@ Claude should invoke this agent when:
 
 Provide concrete examples of when this agent should be used:
 
-**Example 1: Scenario Name**
+### Example 1: Scenario Name
 
 User asks: "Help me with X"
 
 This agent provides: Specific assistance with X using its capabilities
 
-**Example 2: Another Scenario**
+### Example 2: Another Scenario
 
 When project has Y characteristic, this agent can help by doing Z.

@@ -7,7 +7,8 @@ description: Scaffolds slash commands with proper frontmatter, structure, and us
 
 ## Overview
 
-Creates slash commands for Claude Code plugins. Commands are user-invoked prompts that expand into detailed instructions for Claude.
+Creates slash commands for Claude Code plugins. Commands are user-invoked prompts that
+expand into detailed instructions for Claude.
 
 **When to use:** User wants to create a command, add command to plugin, or needs command structure help.
 
@@ -90,7 +91,7 @@ Check `ai_docs/plugins-referance.md` for command specifications.
 
 ## Examples
 
-**Example 1: Test Generator Command**
+### Example 1: Test Generator Command
 
 User: "Create command to generate tests for a file"
 
@@ -127,7 +128,7 @@ Present the generated tests and explain coverage.
 
 Invoked with: `/generate-tests`
 
-**Example 2: PR Review Command**
+### Example 2: PR Review Command
 
 User: "Create command for reviewing pull requests"
 

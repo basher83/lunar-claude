@@ -1,6 +1,7 @@
 # NetBox PowerDNS Integration
 
-Expert guidance for implementing NetBox as your source of truth for infrastructure documentation and automating DNS record management with PowerDNS.
+Expert guidance for implementing NetBox as your source of truth for infrastructure documentation and automating DNS
+record management with PowerDNS.
 
 ## Installation
 

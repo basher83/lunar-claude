@@ -2,7 +2,8 @@
 
 ## Overview
 
-This repository uses **Infisical** for centralized secrets management in Ansible playbooks. This pattern eliminates hard-coded credentials and provides audit trails for secret access.
+This repository uses **Infisical** for centralized secrets management in Ansible playbooks.
+This pattern eliminates hard-coded credentials and provides audit trails for secret access.
 
 ## Architecture
 

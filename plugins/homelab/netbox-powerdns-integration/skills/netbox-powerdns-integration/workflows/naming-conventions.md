@@ -2,7 +2,8 @@
 
 ## Overview
 
-Consistent DNS naming is critical for automation and infrastructure documentation. This document defines the naming conventions used in the Virgo-Core infrastructure.
+Consistent DNS naming is critical for automation and infrastructure documentation. This document defines the naming
+conventions used in the Virgo-Core infrastructure.
 
 ## Standard Pattern
 

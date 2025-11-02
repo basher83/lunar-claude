@@ -6,7 +6,8 @@ Analyzed 7 geerlingguy roles: security, users, docker, postgresql, nginx, pip, g
 
 **Universal Patterns (All 7 roles):**
 
-- Consistent README structure: Title + Badge → Description → Requirements → Variables → Dependencies → Example → License → Author (7/7 roles)
+- Consistent README structure: Title + Badge → Description → Requirements → Variables → Dependencies → Example →
+  License → Author (7/7 roles)
 - CI badge showing test status with link to workflow (7/7 roles)
 - Code-formatted variable defaults with detailed descriptions (7/7 roles)
 - Example playbook section with working examples (7/7 roles)
@@ -19,14 +20,17 @@ Analyzed 7 geerlingguy roles: security, users, docker, postgresql, nginx, pip, g
 **Contextual Patterns (Varies by complexity):**
 
 - Warning/caveat sections: security-critical roles have prominent warnings, simple roles don't need them
-- Variable documentation depth: complex roles (postgresql) have extensive inline docs, simple roles (pip) are more concise
+- Variable documentation depth: complex roles (postgresql) have extensive inline docs, simple roles (pip) are
+  more concise
 - Example complexity: simple roles show basic examples, complex roles show multiple scenarios
-- Troubleshooting sections: recommended for roles that modify critical services (SSH, networking), optional for simple roles
+- Troubleshooting sections: recommended for roles that modify critical services (SSH, networking), optional for
+  simple roles
 - Complex variable documentation: roles with 5+ optional dict attributes show ALL keys with inline comments
 
 **Evolving Patterns (Newer roles improved):**
 
-- PostgreSQL shows best practices for complex variable documentation: show all keys, mark required vs optional, document defaults
+- PostgreSQL shows best practices for complex variable documentation: show all keys, mark required vs optional,
+  document defaults
 - nginx demonstrates template extensibility documentation (Jinja2 block inheritance)
 - Complex roles provide comprehensive inline examples in defaults/ files as primary documentation
 
@@ -56,7 +60,8 @@ Analyzed 2 geerlingguy roles: security, github-users
 
 **Universal Patterns (Both roles use identical approach):**
 
-1. ✅ **README structure** - Both follow: Title + Badge → Description → Requirements → Variables → Dependencies → Example → License → Author
+1. ✅ **README structure** - Both follow: Title + Badge → Description → Requirements → Variables → Dependencies →
+   Example → License → Author
 2. ✅ **CI badge** - Both include GitHub Actions CI badge with link to workflow
 3. ✅ **Variable documentation format** - Code-formatted default + detailed description
 4. ✅ **Example playbook section** - Both show minimal working example with vars
@@ -68,22 +73,27 @@ Analyzed 2 geerlingguy roles: security, github-users
 
 **Contextual Patterns (Varies by role complexity):**
 
-1. ⚠️  **Warning/caveat section** - security has prominent security warning, github-users doesn't need one
-2. ⚠️  **Variable detail level** - security has extensive variable docs with warnings, github-users is more concise (fewer variables)
+1. ⚠️  **Warning/caveat section** - security has prominent security warning, github-users doesn't need
+   one
+2. ⚠️  **Variable detail level** - security has extensive variable docs with warnings, github-users is more
+   concise (fewer variables)
 3. ⚠️  **Example complexity** - security shows vars_files pattern, github-users shows inline vars (simpler)
 4. ⚠️  **Troubleshooting section** - Neither role has explicit troubleshooting (could be added)
 
-**Key Finding:** README documentation follows a strict template across roles. Only the caveat/warning section varies based on role risk profile.
+**Key Finding:** README documentation follows a strict template across roles. Only the caveat/warning section varies
+based on role risk profile.
 
 ## Overview
 
-This document captures documentation patterns from production-grade Ansible roles, demonstrating how to create clear, comprehensive README files that help users understand and use the role effectively.
+This document captures documentation patterns from production-grade Ansible roles, demonstrating how to create
+clear, comprehensive README files that help users understand and use the role effectively.
 
 ## README Structure
 
 ### Pattern: Comprehensive README Template
 
-**Description:** A well-structured README that follows a consistent format, providing all necessary information for users to understand and use the role.
+**Description:** A well-structured README that follows a consistent format, providing all necessary information for
+users to understand and use the role.
 
 **File Path:** `README.md`
 
@@ -324,7 +334,8 @@ For each variable:
 
 ### Pattern: Variable Table Format (Alternative)
 
-**Description:** Some roles use a table format for variable documentation. While geerlingguy.security doesn't use this, it's a valid alternative pattern.
+**Description:** Some roles use a table format for variable documentation. While geerlingguy.security doesn't use
+this, it's a valid alternative pattern.
 
 **Example Table Format:**
 
@@ -353,7 +364,8 @@ For each variable:
 
 **Virgo-Core Preference:**
 
-Use text format with examples (matches geerlingguy pattern) for main documentation, optionally add table for quick reference.
+Use text format with examples (matches geerlingguy pattern) for main documentation, optionally add table for quick
+reference.
 
 ### Section 5: Dependencies
 
@@ -511,7 +523,8 @@ author of [Ansible for DevOps](https://www.ansiblefordevops.com/).
 
 ### Pattern: Troubleshooting Section
 
-**Description:** While geerlingguy.security doesn't include a troubleshooting section, more complex roles should include one.
+**Description:** While geerlingguy.security doesn't include a troubleshooting section, more complex roles should
+include one.
 
 **Example Troubleshooting Section:**
 
@@ -716,7 +729,8 @@ This role was created by [Author Name](link), [additional context].
 ### README Structure
 
 - **Pattern: Comprehensive README template** - ✅ **Confirmed**
-  - PostgreSQL follows same structure: Title + Badge → Description → Requirements → Variables → Dependencies → Example → License → Author
+  - PostgreSQL follows same structure: Title + Badge → Description → Requirements → Variables → Dependencies →
+    Example → License → Author
   - **4/4 roles follow identical README structure**
 
 ### Variable Documentation

@@ -7,7 +7,8 @@
 This is the "holy grail" of infrastructure automation - deploy infrastructure and have DNS automatically configured:
 
 ```text
-Terraform Deploy → Proxmox VM Created → NetBox IP Registered → PowerDNS Records Auto-Created → Ready for Ansible
+Terraform Deploy → Proxmox VM Created → NetBox IP Registered
+→ PowerDNS Records Auto-Created → Ready for Ansible
 ```
 
 **Benefits:**
@@ -119,35 +120,35 @@ tofu apply
 
 ### 4. Verify Complete Workflow
 
-**Step 1: Check VM exists**
+#### Step 1: Check VM exists
 
 ```bash
 # On Proxmox node
 qm status $(terraform output -raw vm_id)
 ```
 
-**Step 2: Check NetBox registration**
+#### Step 2: Check NetBox registration
 
 ```bash
 curl -H "Authorization: Token $NETBOX_API_TOKEN" \
   "https://netbox.spaceships.work/api/ipam/ip-addresses/?address=192.168.1.100" | jq
 ```
 
-**Step 3: Verify DNS forward resolution**
+#### Step 3: Verify DNS forward resolution
 
 ```bash
 dig @192.168.3.1 docker-01-nexus.spaceships.work +short
 # Expected: 192.168.1.100
 ```
 
-**Step 4: Verify DNS reverse resolution**
+#### Step 4: Verify DNS reverse resolution
 
 ```bash
 dig @192.168.3.1 -x 192.168.1.100 +short
 # Expected: docker-01-nexus.spaceships.work.
 ```
 
-**Step 5: SSH into VM**
+#### Step 5: SSH into VM
 
 ```bash
 ssh ansible@docker-01-nexus.spaceships.work

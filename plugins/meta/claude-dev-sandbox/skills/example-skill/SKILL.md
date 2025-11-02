@@ -7,7 +7,8 @@ description: Example skill demonstrating proper structure - replace with your sk
 
 ## Overview
 
-This skill demonstrates the proper structure for Claude Code skills. Skills are model-invoked—Claude uses them autonomously based on task context.
+This skill demonstrates the proper structure for Claude Code skills. Skills are model-invoked—Claude uses them
+autonomously based on task context.
 
 **When to use:** Describe when Claude should invoke this skill
 
@@ -53,13 +54,13 @@ Verification steps:
 
 ## Examples
 
-**Example 1: Common Use Case**
+### Example 1: Common Use Case
 
 Input: User requests X
 Process: Skill does Y
 Output: Result Z
 
-**Example 2: Edge Case**
+### Example 2: Edge Case
 
 Input: User requests A with constraint B
 Process: Skill adapts by doing C

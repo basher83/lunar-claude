@@ -4,7 +4,8 @@ Best practices for declarative network configuration in Proxmox VE environments 
 
 ## Pattern: Declarative Network Interface Configuration
 
-**Problem**: Network configuration is complex, error-prone when done manually, and difficult to maintain across multiple nodes.
+**Problem**: Network configuration is complex, error-prone when done manually, and difficult to maintain across
+multiple nodes.
 
 **Solution**: Use declarative configuration with data structures that describe desired state.
 

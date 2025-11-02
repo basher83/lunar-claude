@@ -4,7 +4,8 @@
 
 ## Overview
 
-Patterns for data analysis, ETL, and processing using Polars, pandas, and other data libraries in UV single-file scripts.
+Patterns for data analysis, ETL, and processing using Polars, pandas, and other data libraries in UV single-file
+scripts.
 
 ## Topics to Cover
 

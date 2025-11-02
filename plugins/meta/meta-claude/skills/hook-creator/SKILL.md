@@ -7,7 +7,9 @@ description: Creates hook configurations following Claude Code event handling pa
 
 ## Overview
 
-Creates hook configurations that respond to Claude Code events automatically. Hooks enable automation like formatting on save, running tests after edits, or custom session initialization.
+Creates hook configurations that respond to Claude Code events automatically. Hooks
+enable automation like formatting on save, running tests after edits, or custom session
+initialization.
 
 **When to use:** User wants to automate workflows, needs event-driven behavior, or requests hooks for their plugin.
 
@@ -101,7 +103,7 @@ Check `ai_docs/plugins-referance.md` for:
 
 ## Examples
 
-**Example 1: Code Formatting Hook**
+### Example 1: Code Formatting Hook
 
 User: "Auto-format code after I edit files"
 
@@ -127,7 +129,7 @@ Hook configuration:
 
 Creates `scripts/format-code.sh` that runs formatter on modified files.
 
-**Example 2: Session Welcome Message**
+### Example 2: Session Welcome Message
 
 User: "Show a message when Claude starts"
 
@@ -152,7 +154,7 @@ Hook configuration:
 
 Simple command hook, no external script needed.
 
-**Example 3: Test Runner Hook**
+### Example 3: Test Runner Hook
 
 User: "Run tests after I modify test files"
 

@@ -4,7 +4,8 @@
 
 ## Overview
 
-Security patterns and best practices for handling secrets, authentication, and input validation in UV single-file Python scripts.
+Security patterns and best practices for handling secrets, authentication, and input validation in UV single-file
+Python scripts.
 
 ## Topics to Cover
 

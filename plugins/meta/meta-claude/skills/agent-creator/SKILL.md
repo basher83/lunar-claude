@@ -7,7 +7,8 @@ description: Generates properly formatted Claude Code subagent definitions with 
 
 ## Overview
 
-Creates subagent definitions for Claude Code plugins. Subagents are specialized assistants that Claude can invoke for specific tasks.
+Creates subagent definitions for Claude Code plugins. Subagents are specialized assistants
+that Claude can invoke for specific tasks.
 
 **When to use:** User requests an agent, wants to add specialized subagent to plugin, or needs agent structure guidance.
 
@@ -102,7 +103,7 @@ Check `ai_docs/plugins-referance.md` for current agent specification.
 
 ## Examples
 
-**Example 1: Security Reviewer Agent**
+### Example 1: Security Reviewer Agent
 
 User: "Create an agent for security reviews"
 
@@ -116,7 +117,7 @@ Process:
 
 Output: Agent that Claude invokes for security-related code review
 
-**Example 2: Performance Tester Agent**
+### Example 2: Performance Tester Agent
 
 User: "I need an agent for performance testing"
 

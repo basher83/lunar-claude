@@ -2,7 +2,8 @@
 
 ## Overview
 
-This guide covers end-to-end workflows for automating DNS record management using NetBox as the source of truth and PowerDNS as the authoritative DNS server.
+This guide covers end-to-end workflows for automating DNS record management using NetBox as the
+source of truth and PowerDNS as the authoritative DNS server.
 
 ## Architecture
 
@@ -548,7 +549,7 @@ dig @192.168.3.1 -x <ip> +short
 
 ### DNS Records Not Created
 
-**Check 1: Tag matching**
+#### Check 1: Tag matching
 
 ```bash
 # Verify IP has production-dns tag
@@ -556,14 +557,14 @@ curl -H "Authorization: Token $NETBOX_TOKEN" \
   "$NETBOX_URL/api/ipam/ip-addresses/?address=192.168.1.100" | jq '.results[0].tags'
 ```
 
-**Check 2: Plugin configuration**
+#### Check 2: Plugin configuration
 
 ```python
 # In NetBox: Plugins → NetBox PowerDNS Sync → Zones
 # Verify zone exists and tag rules match
 ```
 
-**Check 3: Manual sync**
+#### Check 3: Manual sync
 
 ```bash
 # In NetBox UI: Plugins → NetBox PowerDNS Sync → Zones → <zone> → Sync Now

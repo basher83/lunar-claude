@@ -1,11 +1,15 @@
 ---
 name: proxmox-infrastructure
-description: Proxmox VE cluster management including VM provisioning, template creation with cloud-init, QEMU guest agent integration, storage pool management, VLAN-aware bridge configuration, and Proxmox API interactions. Use when working with Proxmox VE, creating VM templates, configuring Proxmox networking, managing CEPH storage, troubleshooting VM deployment issues, or interacting with Proxmox API.
+description: Proxmox VE cluster management including VM provisioning, template creation with cloud-init, QEMU guest
+  agent integration, storage pool management, VLAN-aware bridge configuration, and Proxmox API interactions. Use when
+  working with Proxmox VE, creating VM templates, configuring Proxmox networking, managing CEPH storage, troubleshooting
+  VM deployment issues, or interacting with Proxmox API.
 ---
 
 # Proxmox Infrastructure Management
 
-Expert guidance for managing Proxmox VE clusters, creating templates, provisioning VMs, and configuring network infrastructure.
+Expert guidance for managing Proxmox VE clusters, creating templates, provisioning VMs, and configuring network
+infrastructure.
 
 ## Quick Start
 
@@ -50,11 +54,11 @@ Activate this skill when:
 
 ### 1. Template Creation
 
-**Method 1: Using Ansible (Recommended)**
+#### Method 1: Using Ansible (Recommended)
 
 See [tools/build-template.yml](tools/build-template.yml) for complete automation.
 
-**Method 2: Manual CLI**
+#### Method 2: Manual CLI
 
 See [reference/cloud-init-patterns.md](reference/cloud-init-patterns.md) for detailed steps.
 
@@ -176,9 +180,15 @@ See [examples/](examples/) directory.
 
 **Real Examples from Repository**:
 
-- **Multi-VM Cluster**: [../../terraform/examples/microk8s-cluster](../../terraform/examples/microk8s-cluster) - Comprehensive 3-node MicroK8s deployment using `for_each` pattern, cross-node cloning, **dual NIC with VLAN** (VLAN 30 primary, VLAN 2 secondary), Ansible integration
-- **Template with Cloud-Init**: [../../terraform/examples/template-with-custom-cloudinit](../../terraform/examples/template-with-custom-cloudinit) - Custom cloud-init snippet configuration
-- **VLAN Bridge Configuration**: [../../ansible/playbooks/proxmox-enable-vlan-bridging.yml](../../ansible/playbooks/proxmox-enable-vlan-bridging.yml) - Enable VLAN-aware bridging on Proxmox nodes (supports VLANs 2-4094)
+- **Multi-VM Cluster**: [../../terraform/examples/microk8s-cluster](../../terraform/examples/microk8s-cluster) - Comprehensive
+  3-node MicroK8s deployment using `for_each` pattern, cross-node cloning, **dual NIC with VLAN** (VLAN 30 primary,
+  VLAN 2 secondary), Ansible integration
+- **Template with Cloud-Init**:
+  [../../terraform/examples/template-with-custom-cloudinit](../../terraform/examples/template-with-custom-cloudinit) -
+  Custom cloud-init snippet configuration
+- **VLAN Bridge Configuration**:
+  [../../ansible/playbooks/proxmox-enable-vlan-bridging.yml](../../ansible/playbooks/proxmox-enable-vlan-bridging.yml) -
+  Enable VLAN-aware bridging on Proxmox nodes (supports VLANs 2-4094)
 
 ## Troubleshooting
 
@@ -274,7 +284,8 @@ For deeper knowledge:
 
 ### Anti-Patterns & Common Mistakes
 
-- [Common Mistakes](anti-patterns/common-mistakes.md) - Real-world pitfalls from OpenTofu/Ansible deployments, template creation, and remote backend configuration
+- [Common Mistakes](anti-patterns/common-mistakes.md) - Real-world pitfalls from OpenTofu/Ansible deployments, template
+  creation, and remote backend configuration
 
 ## Related Skills
 

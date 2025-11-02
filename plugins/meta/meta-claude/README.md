@@ -63,7 +63,9 @@ Walks through:
 
 ## How It Works
 
-Creator skills reference official Claude Code documentation in `ai_docs/` to ensure generated components follow current specifications. This extends Anthropic's base skill-creator with plugin-specific knowledge.
+Creator skills reference official Claude Code documentation in `ai_docs/` to ensure
+generated components follow current specifications. This extends Anthropic's base
+skill-creator with plugin-specific knowledge.
 
 ## Version History
 

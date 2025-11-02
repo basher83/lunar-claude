@@ -137,14 +137,14 @@ See [workflows/naming-conventions.md](workflows/naming-conventions.md) for compl
 
 ### 3. NetBox + PowerDNS Sync Setup
 
-**Step 1: Install Plugin**
+#### Step 1: Install Plugin
 
 ```bash
 # In NetBox virtualenv
 pip install netbox-powerdns-sync
 ```
 
-**Step 2: Configure Plugin**
+#### Step 2: Configure Plugin
 
 ```python
 # /opt/netbox/netbox/netbox/configuration.py
@@ -158,7 +158,7 @@ PLUGINS_CONFIG = {
 }
 ```
 
-**Step 3: Create Zones in NetBox**
+#### Step 3: Create Zones in NetBox
 
 Configure zones with:
 
@@ -340,20 +340,20 @@ See [examples/](examples/) directory.
 
 ### DNS Records Not Syncing
 
-**Check 1: Tag Matching**
+#### Check 1: Tag Matching
 
 ```bash
 # Verify IP has correct tags
 ./tools/netbox_query.py --ip 192.168.1.100 | jq '.tags'
 ```
 
-**Check 2: Zone Configuration**
+#### Check 2: Zone Configuration
 
 - Ensure zone exists in NetBox
 - Verify tag rules match
 - Check PowerDNS server connectivity
 
-**Check 3: Sync Results**
+#### Check 3: Sync Results
 
 ```bash
 ./tools/powerdns_sync_check.py --zone spaceships.work --verbose
@@ -460,7 +460,8 @@ For deeper knowledge:
 
 ### Anti-Patterns & Common Mistakes
 
-- [Common Mistakes](anti-patterns/common-mistakes.md) - DNS naming violations, cluster domain errors, master node targeting, and NetBox integration pitfalls for spaceships.work infrastructure
+- [Common Mistakes](anti-patterns/common-mistakes.md) - DNS naming violations, cluster domain errors, master node targeting,
+  and NetBox integration pitfalls for spaceships.work infrastructure
 
 ## Related Skills
 

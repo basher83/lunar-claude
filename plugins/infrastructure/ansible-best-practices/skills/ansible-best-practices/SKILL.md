@@ -1,11 +1,17 @@
 ---
 name: ansible-best-practices
-description: Ansible playbook refactoring, role development, testing, and best practices. Covers role vs playbook organization, variable precedence, idempotency patterns (changed_when, failed_when), testing with molecule and ansible-lint, secrets management with Infisical, proper use of ansible.builtin vs community modules, and task complexity analysis. Use when refactoring Ansible playbooks, creating roles, improving idempotency, implementing Ansible testing, managing secrets with Infisical, analyzing playbook complexity, or following Ansible best practices.
+description: Ansible playbook refactoring, role development, testing, and best practices. Covers
+  role vs playbook organization, variable precedence, idempotency patterns (changed_when,
+  failed_when), testing with molecule and ansible-lint, secrets management with Infisical, proper
+  use of ansible.builtin vs community modules, and task complexity analysis. Use when refactoring
+  Ansible playbooks, creating roles, improving idempotency, implementing Ansible testing, managing
+  secrets with Infisical, analyzing playbook complexity, or following Ansible best practices.
 ---
 
 # Ansible Playbook Best Practices
 
-Expert guidance for writing maintainable, idempotent, and testable Ansible playbooks based on real-world patterns from this repository.
+Expert guidance for writing maintainable, idempotent, and testable Ansible playbooks based on
+real-world patterns from this repository.
 
 ## Quick Start
 

@@ -1,10 +1,11 @@
 # Playbook and Role Design Patterns
 
-Best practices for structuring playbooks and roles based on production patterns from community roles like `geerlingguy.docker` and this repository.
+Best practices for structuring playbooks and roles based on production patterns from community roles like
+`geerlingguy.docker` and this repository.
 
 ## Pattern 1: State-Based Playbooks (Not Separate Create/Delete)
 
-**Anti-Pattern: Separate playbooks for each operation**
+### Anti-Pattern: Separate playbooks for each operation
 
 ```text
 ❌ BAD:
@@ -13,7 +14,7 @@ playbooks/
 └── delete-user.yml
 ```
 
-**Best Practice: Single playbook with state variable**
+### Best Practice: Single playbook with state variable
 
 ```text
 ✅ GOOD:

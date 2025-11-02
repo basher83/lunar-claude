@@ -2,7 +2,8 @@
 
 ## Overview
 
-Proper error handling in Ansible ensures playbooks are robust, idempotent, and provide clear failure messages. This guide covers patterns from the Virgo-Core repository.
+Proper error handling in Ansible ensures playbooks are robust, idempotent, and provide clear failure
+messages. This guide covers patterns from the Virgo-Core repository.
 
 ## Core Concepts
 

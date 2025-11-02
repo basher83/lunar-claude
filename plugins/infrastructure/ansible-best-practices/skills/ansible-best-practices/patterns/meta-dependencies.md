@@ -19,15 +19,18 @@ Analyzed 7 geerlingguy roles: security, users, docker, postgresql, nginx, pip, g
 
 **Contextual Patterns (Varies by role scope):**
 
-- Platform coverage breadth: utility roles have BROADER support (4+ OS families) than complex roles (focused on tested platforms)
+- Platform coverage breadth: utility roles have BROADER support (4+ OS families) than complex roles (focused on tested
+  platforms)
 - Version specification: specific versions (EL 8, 9) vs "all" versions vs version ranges ("xenial-jammy")
 - Tag count: focused roles use 3-5 tags, broader roles use 5-7 tags
-- Tag specificity: database tags (postgresql, rdbms), security tags (security, ssh, fail2ban), utility tags (development, vcs)
+- Tag specificity: database tags (postgresql, rdbms), security tags (security, ssh, fail2ban), utility tags
+  (development, vcs)
 - Platform families: service roles test specific versions, user management roles support GenericLinux/GenericUNIX
 
 **Evolving Patterns (Newer roles improved):**
 
-- Version ranges for long-lived roles: "xenial-jammy" (Ubuntu 16.04-22.04) more readable than listing every version (postgresql pattern)
+- Version ranges for long-lived roles: "xenial-jammy" (Ubuntu 16.04-22.04) more readable than listing every version
+  (postgresql pattern)
 - ArchLinux inclusion for bleeding-edge testing in database roles (postgresql)
 - Platform specificity signals tested compatibility vs aspirational support
 
@@ -72,17 +75,20 @@ Analyzed 2 geerlingguy roles: security, github-users
 2. ⚠️  **Tag specificity** - security: security/ssh focused, github-users: user/github focused
 3. ⚠️  **Dependency count** - Both have zero, but complex roles might have dependencies
 
-**Key Finding:** meta/main.yml is critical for Galaxy publication and role discovery. The structure is standardized, but content varies based on role purpose and supported platforms.
+**Key Finding:** meta/main.yml is critical for Galaxy publication and role discovery. The structure is standardized,
+but content varies based on role purpose and supported platforms.
 
 ## Overview
 
-This document captures metadata and dependency patterns from production-grade Ansible roles, demonstrating how to properly configure meta/main.yml for Galaxy publication and role dependency management.
+This document captures metadata and dependency patterns from production-grade Ansible roles, demonstrating how to
+properly configure meta/main.yml for Galaxy publication and role dependency management.
 
 ## Pattern: Complete galaxy_info Structure
 
 ### Description
 
-Define comprehensive Galaxy metadata in meta/main.yml to enable Galaxy publication, support version constraints, and improve discoverability.
+Define comprehensive Galaxy metadata in meta/main.yml to enable Galaxy publication, support version constraints, and
+improve discoverability.
 
 ### Full galaxy_info Template
 
@@ -254,7 +260,8 @@ galaxy_info:
 
 ### Description
 
-Define supported operating systems and versions in the platforms list. Be as specific as necessary for accurate compatibility information.
+Define supported operating systems and versions in the platforms list. Be as specific as necessary for accurate
+compatibility information.
 
 ### Platform Naming
 

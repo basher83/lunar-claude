@@ -10,7 +10,8 @@ description: >
 
 # Python Single-File Scripts with uv
 
-Expert guidance for creating production-ready, self-contained Python scripts using uv's inline dependency management (PEP 723).
+Expert guidance for creating production-ready, self-contained Python scripts using uv's inline dependency management
+(PEP 723).
 
 ## Quick Start
 

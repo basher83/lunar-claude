@@ -1,6 +1,7 @@
 # Proxmox Infrastructure Management
 
-Expert guidance for managing Proxmox VE clusters, creating templates, provisioning VMs, and configuring network infrastructure.
+Expert guidance for managing Proxmox VE clusters, creating templates, provisioning VMs, and configuring network
+infrastructure.
 
 ## Installation
 

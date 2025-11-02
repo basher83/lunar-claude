@@ -67,17 +67,20 @@ Analyzed 2 geerlingguy roles: security, github-users
 
 **Contextual Patterns (Varies by role complexity):**
 
-1. ⚠️  **Task file organization** - security splits tasks (ssh.yml, fail2ban.yml), github-users keeps single main.yml (role is simpler)
+1. ⚠️  **Task file organization** - security splits tasks (ssh.yml, fail2ban.yml), github-users keeps single
+   main.yml (role is simpler)
 2. ⚠️  **vars/ directory** - security has OS-specific vars files, github-users doesn't need them
 3. ⚠️  **templates/ usage** - security uses templates for fail2ban config, github-users has no templates
 4. ⚠️  **handlers/** - security has 3 handlers (services to restart), github-users has none (no services managed)
 5. ⚠️  **Conditional task execution** - security uses OS-family conditionals, github-users is OS-agnostic
 
-**Key Finding:** Simple roles (like github-users) can keep all tasks in main.yml. Complex roles (like security) should split into feature-based files when tasks exceed ~30-40 lines.
+**Key Finding:** Simple roles (like github-users) can keep all tasks in main.yml. Complex roles (like security)
+should split into feature-based files when tasks exceed ~30-40 lines.
 
 ## Overview
 
-This document captures role structure and organization patterns from production-grade Ansible roles, demonstrating how to organize tasks, variables, handlers, and templates for maintainability and clarity.
+This document captures role structure and organization patterns from production-grade Ansible roles,
+demonstrating how to organize tasks, variables, handlers, and templates for maintainability and clarity.
 
 ## Directory Organization
 
@@ -151,7 +154,8 @@ ansible-role-security/
 
 ### Pattern: Main Task File as Router
 
-**Description:** Use tasks/main.yml as a routing file that includes other task files based on conditions. This keeps the main file simple and delegates work to focused task files.
+**Description:** Use tasks/main.yml as a routing file that includes other task files based on conditions.
+This keeps the main file simple and delegates work to focused task files.
 
 **File Path:** `tasks/main.yml`
 
@@ -1178,4 +1182,5 @@ proxmox_network/
 
 **Next Steps:**
 
-All three Virgo-Core roles follow good structure patterns. Primary gaps are testing infrastructure (covered in testing-comprehensive.md) and CI/CD automation.
+All three Virgo-Core roles follow good structure patterns. Primary gaps are testing infrastructure
+(covered in testing-comprehensive.md) and CI/CD automation.

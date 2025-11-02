@@ -2,7 +2,8 @@
 
 ## Overview
 
-Use NetBox as a dynamic inventory source for Ansible, eliminating the need for static inventory files and ensuring your automation always has up-to-date infrastructure data.
+Use NetBox as a dynamic inventory source for Ansible, eliminating the need for static inventory
+files and ensuring your automation always has up-to-date infrastructure data.
 
 ## Architecture
 

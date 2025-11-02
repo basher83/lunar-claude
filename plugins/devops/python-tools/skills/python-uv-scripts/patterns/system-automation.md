@@ -4,7 +4,8 @@
 
 ## Overview
 
-Patterns for system administration, monitoring, and automation using psutil, subprocess, and system libraries in UV single-file scripts.
+Patterns for system administration, monitoring, and automation using psutil, subprocess, and system libraries in UV
+single-file scripts.
 
 ## Topics to Cover
 

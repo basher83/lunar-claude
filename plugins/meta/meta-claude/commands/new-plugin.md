@@ -112,7 +112,7 @@ Next steps:
 
 ## Examples
 
-**Example: Creating infrastructure plugin**
+### Example: Creating infrastructure plugin
 
 User input:
 
@@ -128,7 +128,7 @@ Result:
 - Added to marketplace.json under infrastructure category
 - Ready for component development
 
-**Example: Creating homelab plugin**
+### Example: Creating homelab plugin
 
 User input:
 

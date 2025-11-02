@@ -340,6 +340,89 @@ For each file:
     return fix_report
 
 
+def aggregate_investigation_results(
+    simple_files: list[dict[str, Any]],
+    investigation_report: dict[str, Any],
+) -> dict[str, Any]:
+    """
+    Aggregate simple errors and investigation results into single Fixer assignment.
+
+    Args:
+        simple_files: Files with simple (directly fixable) errors
+        investigation_report: Investigator's verdict report
+
+    Returns:
+        {
+            "assignment": [
+                {
+                    "path": str,
+                    "errors": [
+                        {
+                            "line": int,
+                            "code": str,
+                            "message": str,
+                            "context": str  # Investigation reasoning or "Always fixable"
+                        }
+                    ]
+                }
+            ],
+            "stats": {
+                "simple_errors": int,
+                "investigated_fixable": int,
+                "total_fixable": int,
+                "false_positives": int
+            }
+        }
+    """
+    # Start with simple errors (add context)
+    fixer_files = {}
+
+    for file_data in simple_files:
+        path = file_data["file"]
+        fixer_files[path] = {
+            "path": path,
+            "errors": [
+                {**error, "context": f"Simple error - always fixable (code: {error['code']})"}
+                for error in file_data["errors"]
+            ],
+        }
+
+    # Add investigated errors that are fixable
+    investigated_fixable = 0
+    false_positives = 0
+
+    for investigation in investigation_report.get("investigations", []):
+        file_path = investigation["file"]
+
+        for result in investigation.get("results", []):
+            if result["verdict"] == "fixable":
+                investigated_fixable += 1
+
+                # Add to fixer assignment with investigation context
+                if file_path not in fixer_files:
+                    fixer_files[file_path] = {"path": file_path, "errors": []}
+
+                fixer_files[file_path]["errors"].append(
+                    {**result["error"], "context": result["reasoning"]}
+                )
+
+            elif result["verdict"] == "false_positive":
+                false_positives += 1
+
+    assignment = list(fixer_files.values())
+    simple_errors = sum(len(f["errors"]) for f in simple_files)
+
+    return {
+        "assignment": assignment,
+        "stats": {
+            "simple_errors": simple_errors,
+            "investigated_fixable": investigated_fixable,
+            "total_fixable": simple_errors + investigated_fixable,
+            "false_positives": false_positives,
+        },
+    }
+
+
 async def main() -> None:
     """Main orchestrator workflow."""
     # Parse command-line arguments
@@ -389,30 +472,29 @@ async def main() -> None:
     print("\n📊 Phase 3: Calculate Workload")
     print("-" * 60)
 
-    # TODO: Aggregate investigation results
-    total_fixable = triaged["simple_count"]  # + investigated fixable
-    print(f"Total fixable errors: {total_fixable}")
+    aggregated = aggregate_investigation_results(triaged["simple"], investigation_report)
+
+    stats = aggregated["stats"]
+    print(f"Simple errors: {stats['simple_errors']}")
+    print(f"Investigated fixable: {stats['investigated_fixable']}")
+    print(f"False positives preserved: {stats['false_positives']}")
+    print(f"Total fixable: {stats['total_fixable']}")
 
     # Phase 4: Fixing
     if args.dry_run:
         print("\n⏭️  Phase 4: Fixing (SKIPPED - dry-run mode)")
         print("-" * 60)
         print("Dry-run mode: Skipping fixes.")
-        print(f"Total fixable errors identified: {total_fixable}")
+        print(f"Total fixable errors identified: {stats['total_fixable']}")
     else:
         print("\n🔧 Phase 4: Fixing")
         print("-" * 60)
 
-        if total_fixable > 0:
-            # TODO: Merge simple + investigated fixable errors
-            fixer_assignment = {
-                "assignment": [
-                    {"path": f["file"], "errors": f["errors"]} for f in triaged["simple"]
-                ]
-            }
+        if stats["total_fixable"] > 0:
+            fix_report = await spawn_fixer(aggregated)
 
-            fix_report = await spawn_fixer(fixer_assignment)
-            print(f"Fixes applied: {fix_report}")
+            total_fixed = sum(r["fixed"] for r in fix_report["results"])
+            print(f"✅ Fixed {total_fixed} errors across {len(fix_report['results'])} files")
         else:
             print("No fixable errors found.")
 

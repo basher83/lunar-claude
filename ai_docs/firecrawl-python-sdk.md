@@ -19,7 +19,8 @@ firecrawl = Firecrawl(api_key="fc-YOUR-API-KEY")
 ## Usage
 
 1. Get an API key from [firecrawl.dev](https://firecrawl.dev)
-2. Set the API key as an environment variable named `FIRECRAWL_API_KEY` or pass it as a parameter to the `Firecrawl` class.
+2. Set the API key as an environment variable named `FIRECRAWL_API_KEY` or pass it as a parameter to the `Firecrawl`
+   class.
 
 Here's an example of how to use the SDK:
 
@@ -58,7 +59,9 @@ print(scrape_result)
 
 ### Crawl a Website
 
-To crawl a website, use the `crawl` method. It takes the starting URL and optional options as arguments. The options allow you to specify additional settings for the crawl job, such as the maximum number of pages to crawl, allowed domains, and the output format. See [Pagination](#pagination) for auto/manual pagination and limiting.
+To crawl a website, use the `crawl` method. It takes the starting URL and optional options as arguments. The options
+allow you to specify additional settings for the crawl job, such as the maximum number of pages to crawl, allowed
+domains, and the output format. See [Pagination](#pagination) for auto/manual pagination and limiting.
 
 ```python Python theme={null}
 job = firecrawl.crawl(url="https://docs.firecrawl.dev", limit=5, poll_interval=1, timeout=120)
@@ -69,7 +72,8 @@ print(job)
 
 <Tip>Prefer non-blocking? Check out the [Async Class](#async-class) section below.</Tip>
 
-Start a job without waiting using `start_crawl`. It returns a job `ID` you can use to check status. Use `crawl` when you want a waiter that blocks until completion. See [Pagination](#pagination) for paging behavior and limits.
+Start a job without waiting using `start_crawl`. It returns a job `ID` you can use to check status. Use `crawl` when
+you want a waiter that blocks until completion. See [Pagination](#pagination) for paging behavior and limits.
 
 ```python Python theme={null}
 job = firecrawl.start_crawl(url="https://docs.firecrawl.dev", limit=10)
@@ -78,7 +82,8 @@ print(job)
 
 ### Checking Crawl Status
 
-To check the status of a crawl job, use the `get_crawl_status` method. It takes the job ID as a parameter and returns the current status of the crawl job.
+To check the status of a crawl job, use the `get_crawl_status` method. It takes the job ID as a parameter and returns
+the current status of the crawl job.
 
 ```python Python theme={null}
 status = firecrawl.get_crawl_status("<crawl-id>")
@@ -87,7 +92,8 @@ print(status)
 
 ### Cancelling a Crawl
 
-To cancel an crawl job, use the `cancel_crawl` method. It takes the job ID of the `start_crawl` as a parameter and returns the cancellation status.
+To cancel an crawl job, use the `cancel_crawl` method. It takes the job ID of the `start_crawl` as a parameter and
+returns the cancellation status.
 
 ```python Python theme={null}
 ok = firecrawl.cancel_crawl("<crawl-id>")
@@ -96,7 +102,8 @@ print("Cancelled:", ok)
 
 ### Map a Website
 
-Use `map` to generate a list of URLs from a website. The options let you customize the mapping process, including excluding subdomains or utilizing the sitemap.
+Use `map` to generate a list of URLs from a website. The options let you customize the mapping process, including
+excluding subdomains or utilizing the sitemap.
 
 ```python Python theme={null}
 res = firecrawl.map(url="https://firecrawl.dev", limit=10)
@@ -105,7 +112,8 @@ print(res)
 
 ### Crawling a Website with WebSockets
 
-To crawl a website with WebSockets, start the job with `start_crawl` and subscribe using the `watcher` helper. Create a watcher with the job ID and attach handlers (e.g., for page, completed, failed) before calling `start()`.
+To crawl a website with WebSockets, start the job with `start_crawl` and subscribe using the `watcher` helper. Create a
+watcher with the job ID and attach handlers (e.g., for page, completed, failed) before calling `start()`.
 
 ```python Python theme={null}
 import asyncio
@@ -133,7 +141,9 @@ asyncio.run(main())
 
 ### Pagination
 
-Firecrawl endpoints for crawl and batch return a `next` URL when more data is available. The Python SDK auto-paginates by default and aggregates all documents; in that case `next` will be `None`. You can disable auto-pagination or set limits.
+Firecrawl endpoints for crawl and batch return a `next` URL when more data is available. The Python SDK auto-paginates
+by default and aggregates all documents; in that case `next` will be `None`. You can disable auto-pagination or set
+limits.
 
 #### Crawl
 
@@ -198,11 +208,13 @@ print("batch limited:", status.status, "docs:", len(status.data), "next:", statu
 
 ## Error Handling
 
-The SDK handles errors returned by the Firecrawl API and raises appropriate exceptions. If an error occurs during a request, an exception will be raised with a descriptive error message.
+The SDK handles errors returned by the Firecrawl API and raises appropriate exceptions. If an error occurs during a
+request, an exception will be raised with a descriptive error message.
 
 ## Async Class
 
-For async operations, use the `AsyncFirecrawl` class. Its methods mirror `Firecrawl`, but they don't block the main thread.
+For async operations, use the `AsyncFirecrawl` class. Its methods mirror `Firecrawl`, but they don't block the main
+thread.
 
 ```python Python theme={null}
 import asyncio

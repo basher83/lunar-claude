@@ -2,7 +2,9 @@
 
 ## Overview
 
-This repository uses [git-cliff](https://git-cliff.org/) to automatically generate and maintain `CHANGELOG.md` from Git commit history. The configuration follows best practices for conventional commits, GitHub integration, and semantic versioning.
+This repository uses [git-cliff](https://git-cliff.org/) to automatically generate and maintain `CHANGELOG.md` from Git
+commit history. The configuration follows best practices for conventional commits, GitHub integration, and semantic
+versioning.
 
 ## Why git-cliff?
 
@@ -27,7 +29,8 @@ conventional_commits = true
 filter_unconventional = true
 ```
 
-**Why**: Conventional commits provide a structured format that enables automated changelog generation, semantic versioning, and clear communication about change types.
+**Why**: Conventional commits provide a structured format that enables automated changelog generation, semantic
+versioning, and clear communication about change types.
 
 **Supported commit types**:
 
@@ -73,9 +76,11 @@ commit_parsers = [
 ]
 ```
 
-**Why**: Release commits and automated dependency updates clutter changelogs. Contributors can explicitly skip commits using `changelog: ignore` in the commit footer.
+**Why**: Release commits and automated dependency updates clutter changelogs. Contributors can explicitly skip commits
+using `changelog: ignore` in the commit footer.
 
-**Dependency updates exception**: While automated dependency PRs (like Renovate) are skipped by default, significant dependency upgrades should use `feat(deps):` or `fix(deps):` to be included.
+**Dependency updates exception**: While automated dependency PRs (like Renovate) are skipped by default, significant
+dependency upgrades should use `feat(deps):` or `fix(deps):` to be included.
 
 ### 4. GitHub Integration for Attribution
 
@@ -92,7 +97,8 @@ repo = "lunar-claude"
 - **Contributor recognition**: First-time contributors are highlighted
 - **Issue linking**: `#123` references become clickable links
 
-**Security note**: GitHub token should be provided via `GITHUB_TOKEN` environment variable, never hardcoded in `cliff.toml`.
+**Security note**: GitHub token should be provided via `GITHUB_TOKEN` environment variable, never hardcoded in
+`cliff.toml`.
 
 ### 5. Template Customization for Context
 
@@ -108,7 +114,8 @@ repo = "lunar-claude"
 
 - **Scope highlighting**: Scopes (e.g., `feat(api):`) are bolded for clarity
 - **Capitalization**: First letter capitalized for professional appearance
-- **Merge commit filtering**: `filter(attribute="merge_commit", value=false)` removes noisy merge entries
+- **Merge commit filtering**: `filter(attribute="merge_commit", value=false)` removes noisy merge
+  entries
 
 ### 6. Preprocessing for Clean Messages
 
@@ -123,7 +130,8 @@ commit_preprocessors = [
 
 **Why**:
 
-- **Gitmoji removal**: While emojis are useful in commits, they're redundant in the changelog (we use group emojis instead)
+- **Gitmoji removal**: While emojis are useful in commits, they're redundant in the changelog (we use group emojis
+  instead)
 - **Message normalization**: Standardize merge commit messages for consistency
 
 ### 7. Link Parsers for Navigation
@@ -243,7 +251,8 @@ export GITHUB_TOKEN="ghp_..."
 mise run changelog
 ```
 
-**Token permissions**: No special permissions required - even a token with no scopes works (just for rate limit increase from 60 to 5000 requests/hour).
+**Token permissions**: No special permissions required - even a token with no scopes works (just for rate limit
+increase from 60 to 5000 requests/hour).
 
 ### Skipping Commits from Changelog
 
@@ -375,7 +384,8 @@ Based on commit types:
 - **PATCH** (0.1.0 → 0.1.1): `fix:`, `perf:`
 - **No version change**: `docs:`, `chore:`, `refactor:`, `test:`, `ci:`, `build:`, `style:`
 
-**Note**: git-cliff itself doesn't bump versions - it generates changelogs. Version bumping must be done manually via `mise run changelog-bump <version>`.
+**Note**: git-cliff itself doesn't bump versions - it generates changelogs. Version bumping must be done manually via
+`mise run changelog-bump <version>`.
 
 ## Customization
 
@@ -413,7 +423,9 @@ Remove emoji prefixes from group names:
 
 ### Custom Templates
 
-The `body` template can be completely customized. See [git-cliff template documentation](https://git-cliff.org/docs/configuration/template) for available variables and filters.
+The `body` template can be completely customized. See
+[git-cliff template documentation](https://git-cliff.org/docs/configuration/template) for available variables and
+filters.
 
 ## Troubleshooting
 
@@ -440,7 +452,8 @@ The `body` template can be completely customized. See [git-cliff template docume
 
 **Cause**: Commits were pushed directly, not via pull request
 
-**Solution**: This is normal for direct commits. The template handles this gracefully by showing "made their first contribution" without PR link.
+**Solution**: This is normal for direct commits. The template handles this gracefully by showing "made their first
+contribution" without PR link.
 
 ### GitHub rate limit errors
 
@@ -470,4 +483,5 @@ The git-cliff configuration in this repository is optimized for:
 - **Flexibility**: Customizable grouping and filtering for different needs
 - **Professionalism**: Clean, consistent changelog format following industry standards
 
-By following conventional commits and using the provided mise tasks, changelog maintenance becomes a natural part of the development workflow rather than a manual chore.
+By following conventional commits and using the provided mise tasks, changelog maintenance becomes a natural part of
+the development workflow rather than a manual chore.

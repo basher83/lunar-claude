@@ -1,10 +1,13 @@
 # Building a Documentation Maintenance Agent with Claude Agent SDK in Python
 
-Given your Python background and specific requirements, here's a comprehensive approach to building an automated GitHub documentation maintenance agent using the Claude Agent SDK.
+Given your Python background and specific requirements, here's a comprehensive approach to
+building an automated GitHub documentation maintenance agent using the Claude Agent SDK.
 
 ## **Recommended Architecture: Multi-Agent Orchestration Pattern**
 
-For your use case, you should implement a **multi-agent orchestration workflow** where a main orchestrator delegates specialized tasks to subagents. This approach achieves 90.2% better performance compared to single-agent systems and prevents context pollution.[^1][^2]
+For your use case, you should implement a **multi-agent orchestration workflow** where a main
+orchestrator delegates specialized tasks to subagents. This approach achieves 90.2% better
+performance compared to single-agent systems and prevents context pollution.[^1][^2]
 
 ### **Your Workflow Structure:**
 
@@ -101,7 +104,8 @@ asyncio.run(documentation_maintenance_agent("/path/to/your/repo"))
 
 ### **Step 3: Integrate MCP Servers for Specialized Tools**
 
-The Claude Agent SDK supports Model Context Protocol (MCP) for extending capabilities. You should integrate specialized MCP servers for markdown linting:[^5][^6]
+The Claude Agent SDK supports Model Context Protocol (MCP) for extending capabilities. You
+should integrate specialized MCP servers for markdown linting:[^5][^6]
 
 **Markdown Linting MCP Server**:[^6][^7][^5]
 
@@ -255,7 +259,9 @@ options = ClaudeAgentOptions(
 
 ### **4. Maintain Separate Context Windows**[^2][^1]
 
-Each subagent gets its own 200K token context window, preventing context pollution when analyzing large documentation sets. The orchestrator maintains global state while subagents work independently.
+Each subagent gets its own 200K token context window, preventing context pollution when
+analyzing large documentation sets. The orchestrator maintains global state while subagents work
+independently.
 
 ## **Tools and Integrations**
 
@@ -267,15 +273,20 @@ Each subagent gets its own 200K token context window, preventing context polluti
 
 ### **Grammar and Style Checking**
 
-Since you're working in Python, integrate AI-powered grammar checking through the agent's natural language capabilities rather than external tools. Claude Sonnet 4.5 has strong grammar and writing quality analysis built-in.[^14][^15]
+Since you're working in Python, integrate AI-powered grammar checking through the agent's
+natural language capabilities rather than external tools. Claude Sonnet 4.5 has strong grammar
+and writing quality analysis built-in.[^14][^15]
 
 ### **Link Validation Strategy**
 
 For link validation, use a combination approach:
 
-1. **Internal links**: Use filesystem tools (Read, Grep, Glob) to verify file existence[^12]
-2. **External links**: Use WebFetch tool or Bash with curl to check HTTP status codes[^16][^17]
-3. **GitHub Actions integration**: Run `gaurav-nelson/github-action-markdown-link-check` for automated CI/CD validation[^17][^18]
+1. **Internal links**: Use filesystem tools (Read, Grep, Glob) to verify file
+   existence[^12]
+2. **External links**: Use WebFetch tool or Bash with curl to check HTTP status
+   codes[^16][^17]
+3. **GitHub Actions integration**: Run `gaurav-nelson/github-action-markdown-link-check` for
+   automated CI/CD validation[^17][^18]
 
 ## **Production Deployment Strategy**
 
@@ -289,7 +300,8 @@ Deploy GitHub Actions workflow with weekly scheduled runs, generating PR reports
 
 ### **Phase 3: Event-Driven Automation** (Week 5+)
 
-Trigger on PR events for real-time documentation validation, with auto-approval for low-risk fixes (markdown linting) and human review for content changes.[^9][^8]
+Trigger on PR events for real-time documentation validation, with auto-approval for low-risk
+fixes (markdown linting) and human review for content changes.[^9][^8]
 
 ## **Human-in-the-Loop Considerations**
 
@@ -299,7 +311,8 @@ Keep humans involved for critical decisions:[^19][^20]
 - **Require review**: Grammar changes, content rewrites, structural reorganization
 - **Flag for attention**: Missing documentation sections, broken external links
 
-Set `permission_mode='requestPermission'` for changes requiring human approval, or use `'acceptEdits'` for automated fixes.[^4][^3]
+Set `permission_mode='requestPermission'` for changes requiring human approval, or use
+`'acceptEdits'` for automated fixes.[^4][^3]
 
 ## **Cost and Performance Optimization**
 
@@ -345,8 +358,14 @@ Generated: 2025-10-24
 - Outdated: Deployment guide (references v1.2, current is v2.1)
 ```
 
-This comprehensive approach leverages the Claude Agent SDK's strengths in Python, uses proven multi-agent patterns, and provides a scalable foundation for maintaining documentation across multiple repositories.[^22][^15][^11][^10][^2]
-<span style="display:none">[^23][^24][^25][^26][^27][^28][^29][^30][^31][^32][^33][^34][^35][^36][^37][^38][^39][^40][^41][^42][^43][^44][^45][^46][^47][^48][^49][^50][^51][^52][^53][^54][^55][^56][^57][^58][^59][^60][^61][^62][^63][^64][^65][^66][^67][^68][^69][^70][^71][^72][^73]</span>
+This comprehensive approach leverages the Claude Agent SDK's strengths in Python, uses proven
+multi-agent patterns, and provides a scalable foundation for maintaining documentation across
+multiple repositories.[^22][^15][^11][^10][^2]
+<span style="display:none">
+[^23][^24][^25][^26][^27][^28][^29][^30][^31][^32][^33][^34][^35][^36][^37][^38][^39][^40][^41][^42][^43][^44][^45]
+[^46][^47][^48][^49][^50][^51][^52][^53][^54][^55][^56][^57][^58][^59][^60][^61][^62][^63][^64][^65][^66][^67][^68]
+[^69][^70][^71][^72][^73]
+</span>
 
 <div align="center">⁂</div>
 

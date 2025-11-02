@@ -8,7 +8,8 @@ Analyzed 7 geerlingguy roles: security, users, docker, postgresql, nginx, pip, g
 
 - Lowercase naming convention: "[action] [service]" (7/7 service-managing roles)
 - Simple, single-purpose handlers using one module (7/7 service roles)
-- Configurable handler behavior via variables (docker_restart_handler_state, security_ssh_restart_handler_state) (7/7 critical service handlers)
+- Configurable handler behavior via variables (docker_restart_handler_state,
+  security_ssh_restart_handler_state) (7/7 critical service handlers)
 - Reload preferred over restart when service supports it (nginx, fail2ban use reload) (7/7 applicable roles)
 - Handler deduplication: runs once per play despite multiple notifications (7/7 roles rely on this)
 - All handlers in handlers/main.yml (7/7 roles)
@@ -16,7 +17,8 @@ Analyzed 7 geerlingguy roles: security, users, docker, postgresql, nginx, pip, g
 
 **Contextual Patterns (Varies by role purpose):**
 
-- Handler presence decision matrix: service-managing roles have handlers (4/7), utility roles don't (3/7 roles: pip, git, users)
+- Handler presence decision matrix: service-managing roles have handlers (4/7), utility roles don't
+  (3/7 roles: pip, git, users)
 - Handler count scales with services: security has 3 handlers (systemd, ssh, fail2ban), simple service roles have 1-2
 - Conditional handler execution when service management is optional (docker: when: docker_service_manage | bool)
 - Both reload AND restart handlers for web servers providing flexibility (nginx pattern)
@@ -62,21 +64,28 @@ Analyzed 2 geerlingguy roles: security, github-users
 
 **Contextual Patterns (When handlers are needed vs not):**
 
-1. ⚠️  **Service management roles need handlers** - security has handlers (manages SSH, fail2ban), github-users has none (no services)
-2. ⚠️  **Handler count scales with services** - security has 3 handlers (systemd, ssh, fail2ban), simple roles may have 0-1
+1. ⚠️  **Service management roles need handlers** - security has handlers (manages SSH, fail2ban),
+   github-users has none (no services)
+2. ⚠️  **Handler count scales with services** - security has 3 handlers (systemd, ssh, fail2ban),
+   simple roles may have 0-1
 3. ⚠️  **Reload vs restart preference** - Use reload when possible (less disruptive), restart when necessary
 
-**Key Finding:** Not all roles need handlers. Handlers are only necessary when managing services, daemons, or reloadable configurations. User management roles (like github-users) typically don't need handlers.
+**Key Finding:** Not all roles need handlers. Handlers are only necessary when managing services,
+daemons, or reloadable configurations. User management roles (like github-users) typically don't
+need handlers.
 
 ## Overview
 
-This document captures handler patterns from production-grade Ansible roles, demonstrating when to use handlers, how to name them, and how to structure them for clarity and maintainability.
+This document captures handler patterns from production-grade Ansible roles, demonstrating when to
+use handlers, how to name them, and how to structure them for clarity and maintainability.
 
 ## Pattern: When to Use Handlers vs Tasks
 
 ### Description
 
-Handlers are event-driven tasks that run at the end of a play, only when notified and only once even if notified multiple times. Use handlers for service restarts, configuration reloads, and cleanup tasks.
+Handlers are event-driven tasks that run at the end of a play, only when notified and only once even
+if notified multiple times. Use handlers for service restarts, configuration reloads, and cleanup
+tasks.
 
 ### Use Handlers For
 
@@ -298,7 +307,8 @@ Keep handlers simple and focused. Each handler should perform one action using o
 
 ### Description
 
-Prefer `reload` over `restart` when the service supports it. Reloading is less disruptive and maintains active connections.
+Prefer `reload` over `restart` when the service supports it. Reloading is less disruptive and
+maintains active connections.
 
 ### Reload (Preferred When Available)
 

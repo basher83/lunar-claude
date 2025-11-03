@@ -106,3 +106,11 @@ run = "rumdl check ."
 [tasks.markdown-fix]
 description = "Fix Markdown files"
 run = "rumdl fmt ."
+
+[tasks.intelligent-lint]
+description = "Run intelligent markdown linting with AI agents"
+run = "./scripts/intelligent-markdown-lint.py"
+
+[tasks.intelligent-lint-dry-run]
+description = "Analyze markdown linting errors (no fixes)"
+run = "./scripts/intelligent-markdown-lint.py --dry-run"

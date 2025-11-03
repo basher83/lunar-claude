@@ -1,7 +1,10 @@
 #!/usr/bin/env -S uv run --script --quiet
 # /// script
 # requires-python = ">=3.11"
-# dependencies = ["anthropic>=0.40.0"]
+# dependencies = [
+#     "claude-agent-sdk>=0.1.6",
+#     "pyyaml>=6.0",
+# ]
 # ///
 """End-to-end test for intelligent markdown linting."""
 

@@ -1,7 +1,10 @@
 #!/usr/bin/env -S uv run --script --quiet
 # /// script
 # requires-python = ">=3.11"
-# dependencies = ["anthropic>=0.40.0"]
+# dependencies = [
+#     "claude-agent-sdk>=0.1.6",
+#     "pyyaml>=6.0",
+# ]
 # ///
 """
 Intelligent Markdown Linting Orchestrator
@@ -34,24 +37,107 @@ import subprocess
 import sys
 from typing import Any
 
-from anthropic import AsyncAnthropic
+import yaml
+from claude_agent_sdk import (
+    AgentDefinition,
+    AssistantMessage,
+    ClaudeAgentOptions,
+    ClaudeSDKClient,
+    TextBlock,
+)
 
 
-def get_anthropic_client() -> AsyncAnthropic:
+def load_agent_definition(path: str) -> AgentDefinition:
     """
-    Get configured Anthropic client.
+    Load agent definition from markdown file with YAML frontmatter.
+
+    Args:
+        path: Path to .md file with frontmatter
 
     Returns:
-        AsyncAnthropic client instance
+        AgentDefinition instance
+
+    Raises:
+        FileNotFoundError: If agent definition file not found
+        ValueError: If agent definition is invalid or missing required fields
+    """
+    if not os.path.exists(path):
+        raise FileNotFoundError(f"Agent definition not found: {path}")
+
+    with open(path) as f:
+        content = f.read()
+
+    # Parse frontmatter (expected format: ---\nYAML\n---\nContent)
+    parts = content.split("---")
+    if len(parts) < 3:
+        raise ValueError(
+            f"Invalid agent definition in {path}: "
+            "missing or malformed frontmatter (expected: ---\\nYAML\\n---\\nContent)"
+        )
+
+    # Parse YAML frontmatter
+    try:
+        frontmatter = yaml.safe_load(parts[1])
+    except yaml.YAMLError as e:
+        raise ValueError(f"Invalid YAML frontmatter in {path}: {e}") from e
+
+    # Extract system prompt (everything after second ---)
+    system_prompt = parts[2].strip()
+
+    # Validate required fields
+    if not frontmatter or "description" not in frontmatter:
+        raise ValueError(f"Agent definition in {path} missing required 'description' field")
+
+    # Parse tools - can be comma-separated string or array
+    tools_value = frontmatter.get("tools", frontmatter.get("allowedTools", []))
+    if isinstance(tools_value, str):
+        # Convert comma-separated string to list
+        tools = [t.strip() for t in tools_value.split(",")]
+    else:
+        tools = tools_value
+
+    return AgentDefinition(
+        description=frontmatter["description"],
+        prompt=system_prompt,
+        tools=tools,
+        model="inherit",  # Use orchestrator's model
+    )
+
+
+def get_sdk_options() -> ClaudeAgentOptions:
+    """
+    Create ClaudeAgentOptions with programmatically defined subagents.
+
+    Per SDK best practices, subagents are defined programmatically using
+    the agents parameter (not filesystem auto-discovery).
+
+    Returns:
+        Configured options for ClaudeSDKClient
 
     Raises:
         ValueError: If ANTHROPIC_API_KEY not set
+        FileNotFoundError: If agent definition files not found
     """
     api_key = os.getenv("ANTHROPIC_API_KEY")
     if not api_key:
         raise ValueError("ANTHROPIC_API_KEY environment variable not set")
 
-    return AsyncAnthropic(api_key=api_key)
+    # Load agent definitions from filesystem (for content)
+    # but register them programmatically (SDK best practice)
+    investigator_def = load_agent_definition(".claude/agents/markdown-investigator.md")
+    fixer_def = load_agent_definition(".claude/agents/markdown-fixer.md")
+
+    return ClaudeAgentOptions(
+        system_prompt="claude_code",  # Use Claude Code preset with Task tool knowledge
+        allowed_tools=["Bash", "Task", "Read", "Write"],  # Orchestrator tools
+        permission_mode="acceptEdits",  # Auto-accept file edits
+        agents={
+            "markdown-investigator": investigator_def,
+            "markdown-fixer": fixer_def,
+        },
+        cwd=os.getcwd(),
+        model="claude-sonnet-4-5-20250929",
+    )
 
 
 def run_rumdl_check() -> str:
@@ -184,10 +270,12 @@ def triage_errors(parsed_data: dict[str, Any]) -> dict[str, Any]:
 
 async def spawn_investigator(assignment: dict[str, Any]) -> dict[str, Any]:
     """
-    Spawn Investigator subagent to analyze ambiguous errors.
+    Spawn Investigator subagent using Claude Agent SDK.
 
-    Uses Claude Agent SDK to create a subagent with access to Read, Grep, Glob, Bash tools.
-    The agent has full autonomy to investigate errors and determine fixable vs false_positive.
+    The SDK handles:
+    - Loading agent definition
+    - Tool availability (Read, Grep, Glob, Bash)
+    - Response parsing and aggregation
 
     Args:
         assignment: Investigation assignment with files and errors
@@ -195,65 +283,75 @@ async def spawn_investigator(assignment: dict[str, Any]) -> dict[str, Any]:
     Returns:
         Investigation report with verdicts and reasoning
     """
-    client = get_anthropic_client()
-
     print("📊 Spawning Investigator subagent...")
 
-    # Load agent definition from file
-    agent_path = ".claude/agents/markdown-investigator.md"
-    if not os.path.exists(agent_path):
-        raise FileNotFoundError(f"Agent definition not found: {agent_path}")
+    options = get_sdk_options()
 
-    with open(agent_path) as f:
-        agent_content = f.read()
-        # Extract system prompt (everything after frontmatter)
-        parts = agent_content.split("---")
-        if len(parts) < 3:
-            raise ValueError(
-                f"Invalid agent definition in {agent_path}: missing or malformed frontmatter"
-            )
-        system_prompt = parts[2].strip()
+    # Build prompt for orchestrator to delegate to investigator
+    prompt = f"""Use the 'markdown-investigator' subagent to analyze these markdown linting errors.
 
-    # Build investigation prompt
-    prompt = f"""Investigate the following markdown linting errors and determine if they are fixable or false positives.
+The investigator has full autonomy to:
+- Read files to examine context
+- Search across the repository (Grep, Glob)
+- Execute bash commands for complex analysis
 
 Assignment:
 {json.dumps(assignment, indent=2)}
 
-Analyze each error using your tools (Read, Grep, Glob, Bash) and provide a structured JSON report with verdicts and reasoning.
+The investigator should return a JSON report with:
+- Per-file investigations
+- Per-error verdicts (fixable or false_positive)
+- Reasoning for each determination
+
+Wait for the investigator to complete and return its full report.
 """
 
-    # Call Claude with agent configuration
-    response = await client.messages.create(
-        model="claude-sonnet-4-5-20250929",
-        max_tokens=16000,
-        system=system_prompt,
-        messages=[
-            {
-                "role": "user",
-                "content": prompt,
-            }
-        ],
-    )
+    investigation_report = None
+    all_response_text = []
 
-    # Extract JSON from response
-    response_text = response.content[0].text
+    async with ClaudeSDKClient(options=options) as client:
+        await client.query(prompt)
 
-    # Try to parse JSON from response (handle markdown code blocks)
-    if "```json" in response_text:
-        json_start = response_text.find("```json") + 7
-        json_end = response_text.find("```", json_start)
-        json_text = response_text[json_start:json_end].strip()
-    else:
-        json_text = response_text
+        async for message in client.receive_response():
+            # SDK returns structured messages
+            if isinstance(message, AssistantMessage):
+                for block in message.content:
+                    if isinstance(block, TextBlock):
+                        text = block.text
+                        all_response_text.append(text)
 
-    try:
-        investigation_report = json.loads(json_text)
-    except json.JSONDecodeError as e:
-        print(f"❌ Failed to parse investigation report: {e}")
-        print(f"Assignment was: {json.dumps(assignment, indent=2)}")
-        print(f"Response: {response_text}")
-        raise
+                        # Try multiple JSON extraction strategies
+                        json_text = None
+
+                        # Strategy 1: Extract from markdown code block
+                        if "```json" in text:
+                            json_start = text.find("```json") + 7
+                            json_end = text.find("```", json_start)
+                            json_text = text[json_start:json_end].strip()
+                        # Strategy 2: Extract from plain code block
+                        elif "```\n{" in text:
+                            json_start = text.find("```\n") + 4
+                            json_end = text.find("```", json_start)
+                            json_text = text[json_start:json_end].strip()
+                        # Strategy 3: Find JSON object in text
+                        elif "{" in text and "}" in text:
+                            # Find the first { and last }
+                            first_brace = text.find("{")
+                            last_brace = text.rfind("}")
+                            if first_brace != -1 and last_brace != -1 and last_brace > first_brace:
+                                json_text = text[first_brace : last_brace + 1]
+
+                        if json_text:
+                            try:
+                                investigation_report = json.loads(json_text)
+                                break  # Successfully parsed JSON
+                            except json.JSONDecodeError as e:
+                                print(f"JSON parse error: {e}")
+                                print(f"Attempted JSON: {json_text[:200]}...")
+                                continue
+
+    if not investigation_report:
+        raise RuntimeError("Investigator did not return valid JSON report")
 
     print(f"✅ Investigation complete: analyzed {len(assignment['assignment'])} files")
     return investigation_report
@@ -261,10 +359,12 @@ Analyze each error using your tools (Read, Grep, Glob, Bash) and provide a struc
 
 async def spawn_fixer(assignment: dict[str, Any]) -> dict[str, Any]:
     """
-    Spawn Fixer subagent to execute fixes.
+    Spawn Fixer subagent using Claude Agent SDK.
 
-    Uses Claude Agent SDK to create a subagent with access to Read, Edit, Bash tools.
-    The agent fixes errors based on investigation context.
+    The SDK handles:
+    - Loading agent definition
+    - Tool availability (Read, Edit, Bash)
+    - Response parsing and aggregation
 
     Args:
         assignment: Fixer assignment with files, errors, and context
@@ -272,69 +372,79 @@ async def spawn_fixer(assignment: dict[str, Any]) -> dict[str, Any]:
     Returns:
         Fix report with results
     """
-    client = get_anthropic_client()
-
     print("🔧 Spawning Fixer subagent...")
 
-    # Load agent definition from file
-    agent_path = ".claude/agents/markdown-fixer.md"
-    if not os.path.exists(agent_path):
-        raise FileNotFoundError(f"Agent definition not found: {agent_path}")
+    options = get_sdk_options()
 
-    with open(agent_path) as f:
-        agent_content = f.read()
-        # Extract system prompt (everything after frontmatter)
-        parts = agent_content.split("---")
-        if len(parts) < 3:
-            raise ValueError(
-                f"Invalid agent definition in {agent_path}: missing or malformed frontmatter"
-            )
-        system_prompt = parts[2].strip()
+    # Build prompt for orchestrator to delegate to fixer
+    prompt = f"""Use the 'markdown-fixer' subagent to fix these markdown errors.
 
-    # Build fixing prompt
-    prompt = f"""Fix the following markdown linting errors using the provided investigation context.
+The fixer has access to:
+- Read tool (examine current file state)
+- Edit tool (apply fixes)
+- Bash tool (verify with rumdl check)
 
-Assignment:
+Assignment (includes investigation context):
 {json.dumps(assignment, indent=2)}
 
 For each file:
-1. Read the current content
-2. Apply fixes based on error codes and context
-3. Verify with rumdl check
-4. Report results as JSON
+1. Read current content
+2. Apply fixes based on error codes and investigation context
+3. Verify with: rumdl check [filepath]
+4. Report results
+
+The fixer should return a JSON report with:
+- Per-file fix results
+- Errors before/after counts
+- Verification status
+
+Wait for the fixer to complete and return its full report.
 """
 
-    # Call Claude with agent configuration
-    response = await client.messages.create(
-        model="claude-sonnet-4-5-20250929",
-        max_tokens=16000,
-        system=system_prompt,
-        messages=[
-            {
-                "role": "user",
-                "content": prompt,
-            }
-        ],
-    )
+    fix_report = None
+    all_response_text = []
 
-    # Extract JSON from response
-    response_text = response.content[0].text
+    async with ClaudeSDKClient(options=options) as client:
+        await client.query(prompt)
 
-    # Try to parse JSON from response (handle markdown code blocks)
-    if "```json" in response_text:
-        json_start = response_text.find("```json") + 7
-        json_end = response_text.find("```", json_start)
-        json_text = response_text[json_start:json_end].strip()
-    else:
-        json_text = response_text
+        async for message in client.receive_response():
+            if isinstance(message, AssistantMessage):
+                for block in message.content:
+                    if isinstance(block, TextBlock):
+                        text = block.text
+                        all_response_text.append(text)
 
-    try:
-        fix_report = json.loads(json_text)
-    except json.JSONDecodeError as e:
-        print(f"❌ Failed to parse fix report: {e}")
-        print(f"Assignment was: {json.dumps(assignment, indent=2)}")
-        print(f"Response: {response_text}")
-        raise
+                        # Try multiple JSON extraction strategies
+                        json_text = None
+
+                        # Strategy 1: Extract from markdown code block
+                        if "```json" in text:
+                            json_start = text.find("```json") + 7
+                            json_end = text.find("```", json_start)
+                            json_text = text[json_start:json_end].strip()
+                        # Strategy 2: Extract from plain code block
+                        elif "```\n{" in text:
+                            json_start = text.find("```\n") + 4
+                            json_end = text.find("```", json_start)
+                            json_text = text[json_start:json_end].strip()
+                        # Strategy 3: Find JSON object in text
+                        elif "{" in text and "}" in text:
+                            first_brace = text.find("{")
+                            last_brace = text.rfind("}")
+                            if first_brace != -1 and last_brace != -1 and last_brace > first_brace:
+                                json_text = text[first_brace : last_brace + 1]
+
+                        if json_text:
+                            try:
+                                fix_report = json.loads(json_text)
+                                break  # Successfully parsed JSON
+                            except json.JSONDecodeError as e:
+                                print(f"JSON parse error: {e}")
+                                print(f"Attempted JSON: {json_text[:200]}...")
+                                continue
+
+    if not fix_report:
+        raise RuntimeError("Fixer did not return valid JSON report")
 
     print(f"✅ Fixes complete: processed {len(assignment['assignment'])} files")
     return fix_report

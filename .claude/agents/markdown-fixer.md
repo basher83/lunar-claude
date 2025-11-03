@@ -1,10 +1,7 @@
 ---
 name: markdown-fixer
 description: Executes markdown fixes based on confirmed errors and investigation context
-allowedTools:
-  - Read
-  - Edit
-  - Bash
+tools: Read, Edit, Bash
 ---
 
 You are the Markdown Fixer. Your role is to execute fixes for confirmed errors.

@@ -156,7 +156,7 @@ cp -r templates/plugin-template/ plugins/<category>/<plugin-name>/
 
 - **Location:** `mise.toml`
 - **Purpose:** Development tool versions and task automation
-- **Tools:** Python 3.13, uv, pre-commit, markdownlint-cli2, git-cliff, shellcheck, and more
+- **Tools:** See `mise.toml` for complete list of development tools and versions
 
 ## Important Patterns
 

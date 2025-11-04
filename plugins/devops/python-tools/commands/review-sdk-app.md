@@ -3,7 +3,11 @@ description: Review and validate a Claude Agent SDK application against best pra
 argument-hint: [path-to-app]
 ---
 
-You are tasked with reviewing a Claude Agent SDK (Python) application to ensure it follows SDK best practices and official documentation patterns. Follow these steps carefully:
+# Review Claude Agent SDK Application
+
+You are tasked with reviewing a Claude Agent SDK (Python) application to ensure
+it follows SDK best practices and official documentation patterns. Follow these
+steps carefully:
 
 ## Reference Documentation
 
@@ -15,6 +19,7 @@ Before starting, load the **claude-agent-sdk skill** to access patterns, example
 ```
 
 The skill provides:
+
 - **Validation checklist**: `assets/sdk-validation-checklist.md` (comprehensive review guide)
 - **SDK patterns**: `SKILL.md` and `references/` (official best practices)
 - **Working examples**: `examples/` (reference implementations)
@@ -37,6 +42,7 @@ Launch the **agent-sdk-verifier-py** subagent for comprehensive automated review
 ```
 
 **Best for:**
+
 - Quick validation
 - New applications
 - Pre-deployment checks
@@ -47,6 +53,7 @@ Launch the **agent-sdk-verifier-py** subagent for comprehensive automated review
 Follow the validation checklist step-by-step with guided assistance.
 
 **Best for:**
+
 - Learning SDK patterns
 - Understanding specific issues
 - Deep dive into SDK concepts
@@ -61,7 +68,7 @@ Ask the user (if not provided via $ARGUMENTS):
    - Wait for response before continuing
 
 2. **Review type**: "Would you like:
-   - Automated validation (launch agent-sdk-verifier-py)
+   - Automated validation (launch agent-sdk-verifier)
    - Manual guided review (step-by-step checklist)
    - Both (automated first, then deep dive on issues)"
    - Wait for response before continuing
@@ -71,7 +78,7 @@ Ask the user (if not provided via $ARGUMENTS):
 If user chooses automated validation:
 
 1. **Launch verifier agent**:
-   - Use Task tool to launch `agent-sdk-verifier-py` subagent
+   - Use Task tool to launch `agent-sdk-verifier` subagent
    - Provide the application path to the agent
    - Wait for verification report
 
@@ -93,7 +100,8 @@ If user chooses automated validation:
 
 ## Manual Guided Review Flow
 
-If user chooses manual review, systematically work through the validation checklist (`assets/sdk-validation-checklist.md`):
+If user chooses manual review, systematically work through the validation
+checklist (`assets/sdk-validation-checklist.md`):
 
 ### Section 1: Imports & Dependencies
 

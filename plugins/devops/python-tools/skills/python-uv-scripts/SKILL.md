@@ -589,17 +589,6 @@ See [workflows/ci-cd-integration.md](workflows/ci-cd-integration.md).
 # - Preserves original script
 ```
 
-### Dependency Linting
-
-```bash
-# Check for security issues in dependencies
-./tools/lint_dependencies.py script.py
-
-# Output:
-# ⚠ httpx: CVE-2024-1234 (update to >=0.27.2)
-# ✓ rich: No known vulnerabilities
-```
-
 ## Progressive Disclosure
 
 For deeper knowledge:

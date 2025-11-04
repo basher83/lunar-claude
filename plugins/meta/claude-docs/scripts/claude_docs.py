@@ -81,6 +81,7 @@ CLAUDE_CODE_PAGES = [
     "slash-commands",
     "hooks",
     "plugins-reference",
+    "memory"
 ]
 
 # Agent Skills API documentation

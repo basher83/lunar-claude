@@ -111,7 +111,7 @@ echo 'Fix issue #$ARGUMENTS following our coding standards' > .claude/commands/f
 Access specific arguments individually using positional parameters (similar to shell scripts):
 
 ```bash  theme={null}
-# Command definition
+# Command definition  
 echo 'Review PR #$1 with priority $2 and assign to $3' > .claude/commands/review-pr.md
 
 # Usage

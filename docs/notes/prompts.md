@@ -110,3 +110,38 @@ Via a slash command?
 
   Am I understanding the core mission correctly? Please clarify any of the above, and I'll
   proceed immediately once I have your guidance.
+
+
+great. next task is an extremely important task. It is imperitive that you follow these steps exatcly. Review the ENTIRE offical referance plugins/meta/claude-docs/skills/claude-code-documentation/reference/sub-agents.md. to gain expert level knowledge of WHAT a
+  subagent is and HOW you effectivly and efficently create a new subagent. Only once you are absolutly confident that you can do this proceed to the next step. Next you MUST read the entire docs/notes/checklists-and-templates-best-practices.md and generate a new
+  checklist and template for the task of "validating a sub-agent". You MUST read each of these documents as many times as needed to ensure the resulting checklist and template are as accurate as possible. They should past the test of "If I were to provide this checklist
+  and template to a new subagent with zero context could they validate a sub-agent and provide actonable insights to the reviewer?" Addationally, be advised that you will be competing against a co-worker for an oppertunity to be promoted. Before you begin, do you have
+  any questions? Are your instructions clear? Do you have all the information you need to complete the task? This is your only oppertunity to get clarification prior to the start of the task.
+
+    Clarification Questions
+
+  1. Scope of Validation:
+    - Should the checklist validate just the subagent markdown file itself (structure, content, format)?
+    - Or also how it's integrated/referenced in the system?
+    - Or both?
+  2. Authoritative Sources:
+    - Is plugins/meta/claude-docs/skills/claude-code-documentation/reference/sub-agents.md THE authoritative source?
+    - Should I cross-reference with other official Claude Code documentation?
+    - Are there other subagent-related docs I should consult?
+  3. File Naming/Location:
+    - Should I create:
+        - docs/checklists/subagent-validation-checklist.md
+      - docs/templates/subagent-validation-report-template.md
+    - Or different naming conventions for subagents specifically?
+  4. Reference Examples:
+    - Should I examine existing subagents in .claude/agents/ as reference examples to validate my understanding?
+    - Or rely solely on the official documentation?
+  5. Validation Depth:
+    - Should the checklist cover only structural/format compliance (follows the spec)?
+    - Also functional effectiveness (is the subagent well-designed for its purpose)?
+    - Both?
+  6. Success Criteria:
+    - Is the test "zero-context subagent can validate ANY subagent in the wild"?
+    - Or "zero-context subagent can validate subagents in THIS codebase"?
+
+  Please clarify these points so I can create artifacts that precisely meet your requirements.

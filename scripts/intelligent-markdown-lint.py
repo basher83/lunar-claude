@@ -46,6 +46,10 @@ from claude_agent_sdk import (
     TextBlock,
 )
 
+# Agent name constants (prevent typos between registration and usage)
+AGENT_INVESTIGATOR = "markdown-investigator"
+AGENT_FIXER = "markdown-fixer"
+
 
 def load_agent_definition(path: str) -> AgentDefinition:
     """
@@ -111,16 +115,19 @@ def get_sdk_options() -> ClaudeAgentOptions:
     Per SDK best practices, subagents are defined programmatically using
     the agents parameter (not filesystem auto-discovery).
 
+    Authentication is handled automatically by the SDK through:
+    - ANTHROPIC_API_KEY environment variable (most common)
+    - AWS Bedrock (CLAUDE_CODE_USE_BEDROCK=1)
+    - Google Vertex AI (CLAUDE_CODE_USE_VERTEX=1)
+    - Claude Code CLI (if installed)
+
     Returns:
         Configured options for ClaudeSDKClient
 
     Raises:
-        ValueError: If ANTHROPIC_API_KEY not set
         FileNotFoundError: If agent definition files not found
     """
-    api_key = os.getenv("ANTHROPIC_API_KEY")
-    if not api_key:
-        raise ValueError("ANTHROPIC_API_KEY environment variable not set")
+    # SDK handles authentication automatically - no manual check needed
 
     # Load agent definitions from filesystem (for content)
     # but register them programmatically (SDK best practice)
@@ -131,9 +138,10 @@ def get_sdk_options() -> ClaudeAgentOptions:
         system_prompt="claude_code",  # Use Claude Code preset with Task tool knowledge
         allowed_tools=["Bash", "Task", "Read", "Write"],  # Orchestrator tools
         permission_mode="acceptEdits",  # Auto-accept file edits
+        setting_sources=["project"],  # Load CLAUDE.md for project context
         agents={
-            "markdown-investigator": investigator_def,
-            "markdown-fixer": fixer_def,
+            AGENT_INVESTIGATOR: investigator_def,
+            AGENT_FIXER: fixer_def,
         },
         cwd=os.getcwd(),
         model="claude-sonnet-4-5-20250929",
@@ -288,7 +296,7 @@ async def spawn_investigator(assignment: dict[str, Any]) -> dict[str, Any]:
     options = get_sdk_options()
 
     # Build prompt for orchestrator to delegate to investigator
-    prompt = f"""Use the 'markdown-investigator' subagent to analyze these markdown linting errors.
+    prompt = f"""Use the '{AGENT_INVESTIGATOR}' subagent to analyze these markdown linting errors.
 
 The investigator has full autonomy to:
 - Read files to examine context
@@ -308,20 +316,24 @@ Wait for the investigator to complete and return its full report.
 
     investigation_report = None
     all_response_text = []
+    found_report = False
 
     async with ClaudeSDKClient(options=options) as client:
         await client.query(prompt)
 
         async for message in client.receive_response():
+            if found_report:
+                continue  # Let iteration complete naturally (SDK best practice)
+
             # SDK returns structured messages
             if isinstance(message, AssistantMessage):
                 for block in message.content:
-                    if isinstance(block, TextBlock):
+                    if isinstance(block, TextBlock) and not found_report:
                         text = block.text
                         all_response_text.append(text)
 
                         # Try multiple JSON extraction strategies
-                        json_text = None
+                        json_text = ""
 
                         # Strategy 1: Extract from markdown code block
                         if "```json" in text:
@@ -344,11 +356,10 @@ Wait for the investigator to complete and return its full report.
                         if json_text:
                             try:
                                 investigation_report = json.loads(json_text)
-                                break  # Successfully parsed JSON
+                                found_report = True  # Mark as found, continue iteration
                             except json.JSONDecodeError as e:
                                 print(f"JSON parse error: {e}")
                                 print(f"Attempted JSON: {json_text[:200]}...")
-                                continue
 
     if not investigation_report:
         raise RuntimeError("Investigator did not return valid JSON report")
@@ -377,7 +388,7 @@ async def spawn_fixer(assignment: dict[str, Any]) -> dict[str, Any]:
     options = get_sdk_options()
 
     # Build prompt for orchestrator to delegate to fixer
-    prompt = f"""Use the 'markdown-fixer' subagent to fix these markdown errors.
+    prompt = f"""Use the '{AGENT_FIXER}' subagent to fix these markdown errors.
 
 The fixer has access to:
 - Read tool (examine current file state)
@@ -403,19 +414,23 @@ Wait for the fixer to complete and return its full report.
 
     fix_report = None
     all_response_text = []
+    found_report = False
 
     async with ClaudeSDKClient(options=options) as client:
         await client.query(prompt)
 
         async for message in client.receive_response():
+            if found_report:
+                continue  # Let iteration complete naturally (SDK best practice)
+
             if isinstance(message, AssistantMessage):
                 for block in message.content:
-                    if isinstance(block, TextBlock):
+                    if isinstance(block, TextBlock) and not found_report:
                         text = block.text
                         all_response_text.append(text)
 
                         # Try multiple JSON extraction strategies
-                        json_text = None
+                        json_text = ""
 
                         # Strategy 1: Extract from markdown code block
                         if "```json" in text:
@@ -437,11 +452,10 @@ Wait for the fixer to complete and return its full report.
                         if json_text:
                             try:
                                 fix_report = json.loads(json_text)
-                                break  # Successfully parsed JSON
+                                found_report = True  # Mark as found, continue iteration
                             except json.JSONDecodeError as e:
                                 print(f"JSON parse error: {e}")
                                 print(f"Attempted JSON: {json_text[:200]}...")
-                                continue
 
     if not fix_report:
         raise RuntimeError("Fixer did not return valid JSON report")
@@ -547,84 +561,97 @@ async def main() -> None:
     )
     args = parser.parse_args()
 
-    print("🚀 Intelligent Markdown Linting Orchestrator")
-    if args.dry_run:
-        print("(DRY-RUN MODE: Analysis only, no fixes will be applied)")
-    print("=" * 60)
+    try:
+        print("🚀 Intelligent Markdown Linting Orchestrator")
+        if args.dry_run:
+            print("(DRY-RUN MODE: Analysis only, no fixes will be applied)")
+        print("=" * 60)
 
-    # Phase 1: Discovery
-    print("\n📋 Phase 1: Discovery & Triage")
-    print("-" * 60)
-
-    rumdl_output = run_rumdl_check()
-    parsed = parse_rumdl_output(rumdl_output)
-    triaged = triage_errors(parsed)
-
-    print(f"Total errors found: {parsed['total_errors']}")
-    print(f"├─ Simple (directly fixable): {triaged['simple_count']}")
-    print(f"└─ Ambiguous (needs investigation): {triaged['ambiguous_count']}")
-
-    # Phase 2: Investigation
-    if triaged["ambiguous_count"] > 0:
-        print("\n🔍 Phase 2: Investigation")
+        # Phase 1: Discovery
+        print("\n📋 Phase 1: Discovery & Triage")
         print("-" * 60)
 
-        investigation_assignment = {
-            "assignment": [{"file": f["file"], "errors": f["errors"]} for f in triaged["ambiguous"]]
-        }
+        rumdl_output = run_rumdl_check()
+        parsed = parse_rumdl_output(rumdl_output)
+        triaged = triage_errors(parsed)
 
-        investigation_report = await spawn_investigator(investigation_assignment)
-        print(f"Investigation complete: {investigation_report}")
-    else:
-        investigation_report = {"investigations": []}
+        print(f"Total errors found: {parsed['total_errors']}")
+        print(f"├─ Simple (directly fixable): {triaged['simple_count']}")
+        print(f"└─ Ambiguous (needs investigation): {triaged['ambiguous_count']}")
 
-    # Phase 3: Calculate Workload
-    print("\n📊 Phase 3: Calculate Workload")
-    print("-" * 60)
+        # Phase 2: Investigation
+        if triaged["ambiguous_count"] > 0:
+            print("\n🔍 Phase 2: Investigation")
+            print("-" * 60)
 
-    aggregated = aggregate_investigation_results(triaged["simple"], investigation_report)
+            investigation_assignment = {
+                "assignment": [{"file": f["file"], "errors": f["errors"]} for f in triaged["ambiguous"]]
+            }
 
-    stats = aggregated["stats"]
-    print(f"Simple errors: {stats['simple_errors']}")
-    print(f"Investigated fixable: {stats['investigated_fixable']}")
-    print(f"False positives preserved: {stats['false_positives']}")
-    print(f"Total fixable: {stats['total_fixable']}")
-
-    # Phase 4: Fixing
-    if args.dry_run:
-        print("\n⏭️  Phase 4: Fixing (SKIPPED - dry-run mode)")
-        print("-" * 60)
-        print("Dry-run mode: Skipping fixes.")
-        print(f"Total fixable errors identified: {stats['total_fixable']}")
-    else:
-        print("\n🔧 Phase 4: Fixing")
-        print("-" * 60)
-
-        if stats["total_fixable"] > 0:
-            fix_report = await spawn_fixer(aggregated)
-
-            total_fixed = sum(r["fixed"] for r in fix_report["results"])
-            print(f"✅ Fixed {total_fixed} errors across {len(fix_report['results'])} files")
+            investigation_report = await spawn_investigator(investigation_assignment)
+            print(f"Investigation complete: {investigation_report}")
         else:
-            print("No fixable errors found.")
+            investigation_report = {"investigations": []}
 
-        # Phase 5: Verification
-        print("\n✅ Phase 5: Verification")
+        # Phase 3: Calculate Workload
+        print("\n📊 Phase 3: Calculate Workload")
         print("-" * 60)
 
-        final_output = run_rumdl_check()
-        final_parsed = parse_rumdl_output(final_output)
+        aggregated = aggregate_investigation_results(triaged["simple"], investigation_report)
 
-        print(f"Errors before: {parsed['total_errors']}")
-        print(f"Errors after: {final_parsed['total_errors']}")
+        stats = aggregated["stats"]
+        print(f"Simple errors: {stats['simple_errors']}")
+        print(f"Investigated fixable: {stats['investigated_fixable']}")
+        print(f"False positives preserved: {stats['false_positives']}")
+        print(f"Total fixable: {stats['total_fixable']}")
 
-        if parsed["total_errors"] > 0:
-            fix_rate = (
-                (parsed["total_errors"] - final_parsed["total_errors"])
-                / parsed["total_errors"]
-                * 100
-            )
-            print(f"Fix rate: {fix_rate:.1f}%")
+        # Phase 4: Fixing
+        if args.dry_run:
+            print("\n⏭️  Phase 4: Fixing (SKIPPED - dry-run mode)")
+            print("-" * 60)
+            print("Dry-run mode: Skipping fixes.")
+            print(f"Total fixable errors identified: {stats['total_fixable']}")
+        else:
+            print("\n🔧 Phase 4: Fixing")
+            print("-" * 60)
+
+            if stats["total_fixable"] > 0:
+                fix_report = await spawn_fixer(aggregated)
+
+                total_fixed = sum(r["fixed"] for r in fix_report["results"])
+                print(f"✅ Fixed {total_fixed} errors across {len(fix_report['results'])} files")
+            else:
+                print("No fixable errors found.")
+
+            # Phase 5: Verification
+            print("\n✅ Phase 5: Verification")
+            print("-" * 60)
+
+            final_output = run_rumdl_check()
+            final_parsed = parse_rumdl_output(final_output)
+
+            print(f"Errors before: {parsed['total_errors']}")
+            print(f"Errors after: {final_parsed['total_errors']}")
+
+            if parsed["total_errors"] > 0:
+                fix_rate = (
+                    (parsed["total_errors"] - final_parsed["total_errors"])
+                    / parsed["total_errors"]
+                    * 100
+                )
+                print(f"Fix rate: {fix_rate:.1f}%")
+
+    except CLINotFoundError:
+        print("❌ Error: Claude Code CLI not installed", file=sys.stderr)
+        print("Install from: https://claude.com/code", file=sys.stderr)
+        sys.exit(1)
+    except ProcessError as e:
+        print(f"❌ Authentication error: {e}", file=sys.stderr)
+        print("Set ANTHROPIC_API_KEY or install Claude Code CLI", file=sys.stderr)
+        sys.exit(1)
+    except FileNotFoundError as e:
+        print(f"❌ Agent definition file not found: {e}", file=sys.stderr)
+        sys.exit(1)
 
 
 if __name__ == "__main__":

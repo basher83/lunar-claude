@@ -40,6 +40,9 @@ exclude = [
 
     # Test fixtures (intentionally contain errors for testing)
     "tests/fixtures/**/*.md",
+
+    # Testing artifacts and verbose documentation notes
+    "docs/notes/**/*.md",
 ]
 
 # Respect .gitignore files when scanning directories (default: true)

@@ -32,7 +32,6 @@ repos:
     rev: v0.0.166  # Use the latest release tag
     hooks:
       - id: rumdl
-        exclude: ^(\.claude/|tests/fixtures/|docs/notes/)
         # To only check (default):
         # args: []
         # To automatically fix issues:

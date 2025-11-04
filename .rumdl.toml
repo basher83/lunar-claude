@@ -30,7 +30,7 @@ exclude = [
     "LICENSE.md",
 
     # Claude Code configuration (slash commands may have long frontmatter lines)
-    ".claude",
+    ".claude/**/*.md",
 
     # Downloaded reference documentation (from external sources)
     "**/reference/*.md",

@@ -12,7 +12,7 @@ CLAUDE.md Standards Compliance Review
 - Code style preferences and naming conventions
 - Important architectural patterns specific to your project
 
-  ---
+---
   Violations Found
 
   VIOLATION #1: Lines 1-4 - Introductory paragraph not formatted as bullet
@@ -28,7 +28,7 @@ CLAUDE.md Standards Compliance Review
 
   Proposed fix: Remove meta-commentary. CLAUDE.md purpose is self-evident. If kept, convert to bullet format.
 
-  ---
+---
   VIOLATION #2: Lines 7-10 - Project description paragraph not formatted as bullets
 
   Current:
@@ -48,7 +48,7 @@ CLAUDE.md Standards Compliance Review
 - **lunar-claude** is a personal Claude Code plugin marketplace for homelab and infrastructure automation
 - Provides reusable AI-powered tools organized into a structured plugin ecosystem
 
-  ---
+---
   VIOLATION #3: Lines 27-29 - Note paragraph not formatted as bullet
 
   Current:
@@ -67,7 +67,7 @@ CLAUDE.md Standards Compliance Review
 
 - See [docs/git-cliff-configuration.md](docs/git-cliff-configuration.md) for detailed information about changelog configuration, commit message conventions, and release workflow
 
-  ---
+---
   VIOLATION #4: Lines 31-36 - Code block without bullet introduction
 
   Current:
@@ -81,22 +81,29 @@ CLAUDE.md Standards Compliance Review
   **Standard violated:** Standard 1 (bullet formatting)
 
   **Proposed fix:**
-  ```markdown
-  ### Structure Verification
+```
 
-  - Verify marketplace and plugin structure:
+  ```markdown
+
+### Structure Verification
+
+- Verify marketplace and plugin structure:
     ```bash
     ./scripts/verify-structure.py
 
-  ---
+---
 
-  ### VIOLATION #5: Lines 38-49 - Code block without bullet introduction
+### VIOLATION #5: Lines 38-49 - Code block without bullet introduction
+
   **Current:**
   ```markdown
-  ### Local Plugin Testing
+
+### Local Plugin Testing
 
   ```bash
-  # Add marketplace locally
+
+## Add marketplace locally
+
   /plugin marketplace add /workspaces/lunar-claude
   ...
 
@@ -104,42 +111,48 @@ CLAUDE.md Standards Compliance Review
 
   **Proposed fix:**
   ```markdown
-  ### Local Plugin Testing
 
-  - Add marketplace locally:
+### Local Plugin Testing
+
+- Add marketplace locally:
     ```bash
     /plugin marketplace add /workspaces/lunar-claude
-  - Install a plugin for testing:
+
+- Install a plugin for testing:
   /plugin install plugin-name@lunar-claude
-  - Uninstall plugin:
+- Uninstall plugin:
   /plugin uninstall plugin-name@lunar-claude
 
-  ---
+---
 
-  ### VIOLATION #6: Lines 55-57 - Paragraph introduction not formatted as bullet
+## VIOLATION #6: Lines 55-57 - Paragraph introduction not formatted as bullet
+
   **Current:**
   ```markdown
-  ### Plugin Marketplace System
+
+### Plugin Marketplace System
 
   The marketplace uses a **central registry pattern**:
 
-  1. **Registry:** `.claude-plugin/marketplace.json` defines all plugins...
+1. **Registry:** `.claude-plugin/marketplace.json` defines all plugins...
 
   Standard violated: Standard 1 (bullet formatting)
 
   Proposed fix:
-  ### Plugin Marketplace System
 
-  - The marketplace uses a **central registry pattern**:
+### Plugin Marketplace System
+
+- The marketplace uses a **central registry pattern**:
     1. **Registry:** `.claude-plugin/marketplace.json` defines all plugins and maps them to source directories
     2. **Plugin Manifests:** Each plugin has `.claude-plugin/plugin.json` with metadata
     3. **Plugin Components:** Skills, commands, agents, and hooks reside in standard directories within each plugin
 
-  ---
+---
   VIOLATION #7: Lines 66-68 - Paragraph not formatted as bullet
 
   Current:
-  ### Plugin Structure
+
+### Plugin Structure
 
   Every plugin follows this structure:
 
@@ -150,18 +163,21 @@ CLAUDE.md Standards Compliance Review
 
   **Proposed fix:**
   ```markdown
-  ### Plugin Structure
 
-  - Every plugin follows this structure:
+### Plugin Structure
+
+- Every plugin follows this structure:
     ```text
     ...
 
-  ---
+---
 
-  ### VIOLATION #8: Lines 84-92 - Diagram without bullet introduction
+### VIOLATION #8: Lines 84-92 - Diagram without bullet introduction
+
   **Current:**
   ```markdown
-  ### Component Interaction Flow
+
+### Component Interaction Flow
 
   ```text
   User Request → Claude Code CLI → marketplace.json → Plugin Components
@@ -171,19 +187,22 @@ CLAUDE.md Standards Compliance Review
 
   **Proposed fix:**
   ```markdown
-  ### Component Interaction Flow
 
-  - Component interaction follows this flow:
+### Component Interaction Flow
+
+- Component interaction follows this flow:
     ```text
     User Request → Claude Code CLI → marketplace.json → Plugin Components
     ...
 
-  ---
+---
 
-  ### VIOLATION #9: Lines 95-110 - Multiple paragraphs not formatted as bullets
+### VIOLATION #9: Lines 95-110 - Multiple paragraphs not formatted as bullets
+
   **Current:**
   ```markdown
-  ### Skills Architecture Pattern
+
+### Skills Architecture Pattern
 
   Skills use a **layered documentation approach** for comprehensive AI context:
 
@@ -197,22 +216,28 @@ CLAUDE.md Standards Compliance Review
 
   **Proposed fix:**
   ```markdown
-  ### Skills Architecture Pattern
 
-  - Skills use a **layered documentation approach** for comprehensive AI context:
+### Skills Architecture Pattern
+
+- Skills use a **layered documentation approach** for comprehensive AI context:
     ```text
     ...
-  - This structure allows skills to provide deep, structured knowledge without overwhelming the main SKILL.md file
 
-  ---
+- This structure allows skills to provide deep, structured knowledge without overwhelming the main SKILL.md file
 
-  ### VIOLATION #10: Lines 114-122 - Code block without bullet introduction
+---
+
+### VIOLATION #10: Lines 114-122 - Code block without bullet introduction
+
   **Current:**
   ```markdown
-  ### Using meta-claude Plugin
+
+### Using meta-claude Plugin
 
   ```bash
-  # Install meta-claude if not already installed
+
+## Install meta-claude if not already installed
+
   /plugin install meta-claude@lunar-claude
   ...
 
@@ -220,22 +245,27 @@ CLAUDE.md Standards Compliance Review
 
   **Proposed fix:**
   ```markdown
-  ### Using meta-claude Plugin
 
-  - Install meta-claude if not already installed and run interactive plugin creation:
+### Using meta-claude Plugin
+
+- Install meta-claude if not already installed and run interactive plugin creation:
     ```bash
     /plugin install meta-claude@lunar-claude
     /new-plugin
 
-  ---
+---
 
-  ### VIOLATION #11: Lines 126-139 - Code block without bullet introduction
+## VIOLATION #11: Lines 126-139 - Code block without bullet introduction
+
   **Current:**
   ```markdown
-  ### Manual Creation
+
+### Manual Creation
 
   ```bash
-  # 1. Copy template
+
+## 1. Copy template
+
   cp -r templates/plugin-template/ plugins/<category>/<plugin-name>/
   ...
 
@@ -243,62 +273,81 @@ CLAUDE.md Standards Compliance Review
 
   **Proposed fix:**
   ```markdown
-  ### Manual Creation
 
-  - Follow these steps for manual plugin creation:
+### Manual Creation
+
+- Follow these steps for manual plugin creation:
     ```bash
-    # 1. Copy template
-    cp -r templates/plugin-template/ plugins/<category>/<plugin-name>/
-    ...
 
-  ---
+## 1. Copy template
 
-  ### VIOLATION #12: Lines 165-167 - Paragraph not formatted as bullet
+```
+cp -r templates/plugin-template/ plugins/<category>/<plugin-name>/
+...
+```
+
+---
+
+## VIOLATION #12: Lines 165-167 - Paragraph not formatted as bullet
+
   **Current:**
   ```markdown
-  ### SKILL.md Frontmatter
+
+### SKILL.md Frontmatter
 
   All skills must include YAML frontmatter:
 
   Standard violated: Standard 1 (bullet formatting)
 
   Proposed fix:
-  ### SKILL.md Frontmatter
 
-  - All skills must include YAML frontmatter:
+### SKILL.md Frontmatter
 
-  ---
+- All skills must include YAML frontmatter:
+
+---
   VIOLATION #13: Lines 177-198 - Code block without bullet introduction
 
   Current:
-  ## Release Process
+
+## Release Process
 
   ```bash
-  # 1. Update CHANGELOG.md
+
+## 1. Update CHANGELOG.md
+
   ...
 
   **Standard violated:** Standard 1 (bullet formatting)
 
   **Proposed fix:**
   ```markdown
-  ## Release Process
 
-  - Follow these steps for creating a release:
+## Release Process
+
+- Follow these steps for creating a release:
     ```bash
-    # 1. Update CHANGELOG.md
-    mise run changelog-bump 0.1.4
-    ...
 
-  ---
+## 1. Update CHANGELOG.md
 
-  ### VIOLATION #14: Lines 202-213 - Paragraph introductions not formatted as bullets
+```
+mise run changelog-bump 0.1.4
+...
+```
+
+---
+
+## VIOLATION #14: Lines 202-213 - Paragraph introductions not formatted as bullets
+
   **Current:**
   ```markdown
-  ## Working with Skills
+
+## Working with Skills
 
   When creating or modifying skills:
 
-  1. **Structure:** Use SKILL.md as the main entry point
+1. **Structure:** Use SKILL.md as the main entry point
+
   ...
 
   When Claude activates a skill, it reads SKILL.md and referenced documentation
@@ -307,14 +356,17 @@ CLAUDE.md Standards Compliance Review
   Standard violated: Standard 1 (bullet formatting)
 
   Proposed fix:
-  ## Working with Skills
 
-  - When creating or modifying skills:
+## Working with Skills
+
+- When creating or modifying skills:
     1. **Structure:** Use SKILL.md as the main entry point
-    ...
-  - When Claude activates a skill, it reads SKILL.md and referenced documentation to provide expert guidance
 
-  ---
+    ...
+
+- When Claude activates a skill, it reads SKILL.md and referenced documentation to provide expert guidance
+
+---
   VIOLATION #15: Missing code style preferences and naming conventions
 
   Current: CLAUDE.md documents SKILL.md frontmatter conventions but lacks general code style preferences for Python scripts, shell scripts, Markdown, etc.
@@ -322,33 +374,37 @@ CLAUDE.md Standards Compliance Review
   Standard violated: Standard 3 (content recommendation - line 80: "Document code style preferences and naming conventions")
 
   Proposed fix: Add a new section:
-  ## Code Style Standards
 
-  ### Python
-  - Use Python 3.13+ features
-  - Follow PEP 8 naming conventions
-  - Type hints required for all function signatures
-  - Use `uv` for dependency management in scripts (see python-uv-scripts skill)
+## Code Style Standards
 
-  ### Shell Scripts
-  - Use `#!/usr/bin/env bash` shebang
-  - Enable strict mode: `set -euo pipefail`
-  - Pass shellcheck validation
+### Python
 
-  ### Markdown
-  - Follow rumdl linting rules (see `.rumdl.toml`)
-  - Use ATX-style headings (`#` not underlines)
-  - One sentence per line for better git diffs
+- Use Python 3.13+ features
+- Follow PEP 8 naming conventions
+- Type hints required for all function signatures
+- Use `uv` for dependency management in scripts (see python-uv-scripts skill)
 
-  ---
+### Shell Scripts
+
+- Use `#!/usr/bin/env bash` shebang
+- Enable strict mode: `set -euo pipefail`
+- Pass shellcheck validation
+
+### Markdown
+
+- Follow rumdl linting rules (see `.rumdl.toml`)
+- Use ATX-style headings (`#` not underlines)
+- One sentence per line for better git diffs
+
+---
   Summary
 
   Total violations found: 15
 
   Breakdown:
-  - 14 violations of Standard 1 (bullet formatting structure)
-  - 1 violation of Standard 3 (missing code style preferences)
-  - 0 violations of Standard 2 (specificity - existing instructions are adequately specific)
+- 14 violations of Standard 1 (bullet formatting structure)
+- 1 violation of Standard 3 (missing code style preferences)
+- 0 violations of Standard 2 (specificity - existing instructions are adequately specific)
 
   Compliance rate: Approximately 32% (14 of 22 sections have formatting violations)
 
@@ -357,3 +413,4 @@ CLAUDE.md Standards Compliance Review
 
   All violations should be addressed to achieve full compliance with memory.md standards. The primary issue is structural - most content needs to be reformatted as bullet points under descriptive headings. This will make CLAUDE.md more scannable and aligned with how Claude Code
   expects memory files to be structured.
+```

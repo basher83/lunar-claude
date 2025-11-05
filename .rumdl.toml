@@ -43,6 +43,9 @@ exclude = [
 
     # Testing artifacts and verbose documentation notes
     "docs/notes/**/*.md",
+
+    # Review documents (may contain quoted violations for documentation)
+    "docs/reviews/**/*.md",
 ]
 
 # Respect .gitignore files when scanning directories (default: true)

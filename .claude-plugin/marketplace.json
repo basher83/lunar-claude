@@ -12,10 +12,10 @@
     {
       "name": "meta-claude",
       "source": "./plugins/meta/meta-claude",
-      "description": "Meta tools for creating skills, agents, hooks, and commands",
-      "version": "0.1.0",
+      "description": "Meta tools for creating and composing Claude Code components including skills, agents, hooks, commands, and multi-component system architecture",
+      "version": "0.2.0",
       "category": "meta",
-      "keywords": ["meta", "tooling", "development", "creator"],
+      "keywords": ["meta", "tooling", "development", "creator", "composition", "architecture"],
       "author": {
         "name": "basher83"
       }

@@ -1,11 +1,11 @@
 {
   "name": "meta-claude",
-  "version": "0.1.0",
-  "description": "Meta tools for creating Claude Code skills, agents, hooks, and commands",
+  "version": "0.2.0",
+  "description": "Meta tools for creating and composing Claude Code components including skills, agents, hooks, commands, and multi-component system architecture",
   "author": {
     "name": "basher83",
     "email": "basher83@mail.spaceships.work"
   },
-  "keywords": ["meta", "tooling", "development", "creator"],
+  "keywords": ["meta", "tooling", "development", "creator", "composition", "architecture"],
   "homepage": "https://github.com/basher83/lunar-claude"
 }

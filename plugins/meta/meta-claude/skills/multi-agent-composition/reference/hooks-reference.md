@@ -2,6 +2,26 @@
 
 **Lifecycle hooks for observability and control** - Execute commands at specific points in Claude Code's execution.
 
+## Table of Contents
+
+- [Overview](#overview)
+- [The Nine Lifecycle Hooks](#the-nine-lifecycle-hooks)
+  - [1. pre-tool-use](#1-pre-tool-use)
+  - [2. post-tool-use](#2-post-tool-use)
+  - [3. notification](#3-notification)
+  - [4. stop](#4-stop)
+  - [5. sub-agent-stop](#5-sub-agent-stop)
+  - [6. user-prompt-submit](#6-user-prompt-submit)
+  - [7. pre-compact](#7-pre-compact)
+  - [8. session-start](#8-session-start)
+  - [9. session-end](#9-session-end)
+- [Configuration](#configuration)
+- [Best Practices](#best-practices)
+- [Common Patterns](#common-patterns)
+- [The Two Killer Use Cases](#the-two-killer-use-cases)
+- [Philosophy](#philosophy)
+- [Next Steps](#next-steps)
+
 ## Overview
 
 Hooks enable you to:

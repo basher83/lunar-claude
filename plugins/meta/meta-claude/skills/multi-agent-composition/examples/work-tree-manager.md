@@ -199,6 +199,8 @@ Query: `GitHub:get_branch_status <branch-name>`
 ```
 
 ```text
+
+```text
 Prompt (Slash Command)
   └─→ Creates single work tree
 
@@ -328,6 +330,7 @@ List all work trees, check status, merge completed features, clean up stale ones
 
 ```bash
 Create work trees for features that:
+
 - Have passing CI (check via GitHub MCP)
 - Are approved by reviewers
 - Have no merge conflicts

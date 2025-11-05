@@ -1,5 +1,37 @@
 # Core Concepts: Claude Code Architecture
 
+## Table of Contents
+
+- [Executive Summary](#executive-summary)
+- [The Core 4 Framework](#the-core-4-framework)
+- [Component Definitions](#component-definitions)
+  - [Skills](#skills)
+  - [MCP Servers (External Data Sources)](#mcp-servers-external-data-sources)
+  - [Sub-Agents](#sub-agents)
+  - [Slash Commands (Custom Prompts)](#slash-commands-custom-prompts)
+- [Compositional Hierarchy](#compositional-hierarchy)
+- [Progressive Disclosure Architecture](#progressive-disclosure-architecture)
+  - [Three-Level Loading Mechanism](#three-level-loading-mechanism)
+- [How They Relate](#how-they-relate)
+- [When to Use Each Component](#when-to-use-each-component)
+  - [Use Skills When](#use-skills-when)
+  - [Use Sub-Agents When](#use-sub-agents-when)
+  - [Use Slash Commands When](#use-slash-commands-when)
+  - [Use MCP Servers When](#use-mcp-servers-when)
+- [Critical Insights and Warnings](#critical-insights-and-warnings)
+  - [1. Don't Convert All Slash Commands to Skills](#1-dont-convert-all-slash-commands-to-skills)
+  - [2. Skills Are Not Replacements](#2-skills-are-not-replacements)
+  - [3. One-Off Tasks Don't Need Skills](#3-one-off-tasks-dont-need-skills)
+  - [4. Master the Fundamentals First](#4-master-the-fundamentals-first)
+  - [5. Prompts Are Non-Negotiable](#5-prompts-are-non-negotiable)
+- [Skills: Honest Assessment](#skills-honest-assessment)
+  - [Pros](#pros)
+  - [Cons](#cons)
+- [Evolution Path](#evolution-path)
+- [Context Management](#context-management)
+- [Key Quotes for Reference](#key-quotes-for-reference)
+- [Summary](#summary)
+
 ## Executive Summary
 
 Claude Code's architecture is built on a fundamental principle: **prompts are the primitive foundation** for everything. This document provides the authoritative reference for understanding Skills, Sub-Agents, MCP Servers, and Slash Commands—how they work, how they relate, and how they compose.

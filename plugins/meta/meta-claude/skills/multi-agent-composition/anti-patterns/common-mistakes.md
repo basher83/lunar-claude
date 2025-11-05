@@ -2,6 +2,25 @@
 
 **Critical mistakes to avoid** when building with Claude Code components.
 
+## Table of Contents
+
+- [The Fatal Five](#the-fatal-five)
+  - [1. Converting All Slash Commands to Skills](#1-converting-all-slash-commands-to-skills)
+  - [2. Using Skills for One-Off Tasks](#2-using-skills-for-one-off-tasks)
+  - [3. Skipping the Primitive (Not Mastering Prompts First)](#3-skipping-the-primitive-not-mastering-prompts-first)
+  - [4. Forcing Single Agents to Do Too Much (Context Explosion)](#4-forcing-single-agents-to-do-too-much-context-explosion)
+  - [5. Using Sub-Agents When Context Matters](#5-using-sub-agents-when-context-matters)
+- [Secondary Anti-Patterns](#secondary-anti-patterns)
+  - [6. Confusing MCP with Internal Orchestration](#6-confusing-mcp-with-internal-orchestration)
+  - [7. Forgetting the Core Four](#7-forgetting-the-core-four)
+  - [8. No Observability (Can't Measure, Can't Improve)](#8-no-observability-cant-measure-cant-improve)
+  - [9. Nesting Sub-Agents](#9-nesting-sub-agents)
+  - [10. Over-Engineering Simple Problems](#10-over-engineering-simple-problems)
+  - [11. Agent Dependency Coupling](#11-agent-dependency-coupling)
+- [Anti-Pattern Detection Checklist](#anti-pattern-detection-checklist)
+- [Recovery Strategies](#recovery-strategies)
+- [Remember](#remember)
+
 ## The Fatal Five
 
 These are the most common and damaging mistakes engineers make:

@@ -1,6 +1,6 @@
-# Composing Claude Code
+# Multi-Agent Composition
 
-**Comprehensive knowledge base** for building multi-component Claude Code systems.
+**Comprehensive knowledge base** for composing multi-component agentic systems with Claude Code.
 
 ## Quick Start
 
@@ -17,27 +17,34 @@ SKILL.md provides:
 This knowledge base follows the **Claude Code skills pattern** with progressive disclosure:
 
 ```text
-composing-claude-code/
+multi-agent-composition/
 ├── SKILL.md (START HERE - main entry point)
 │
 ├── reference/          (What components are)
 │   ├── architecture.md
-│   └── hooks-reference.md
+│   ├── core-4-framework.md
+│   ├── hooks-reference.md
+│   └── progressive-disclosure.md
 │
 ├── patterns/           (How to use components)
+│   ├── agent-descriptions.md
+│   ├── context-window-protection.md
 │   ├── decision-framework.md
+│   ├── hooks-observability.md
+│   ├── orchestrator-pattern.md
 │   └── practical-guide.md
 │
 ├── anti-patterns/      (What to avoid)
 │   └── common-mistakes.md
 │
 ├── examples/           (Real-world case studies)
+│   ├── multi-agent-case-studies.md
 │   └── work-tree-manager.md
 │
-├── workflows/          (Visual guides)
-│   └── visual-decision-trees.md
-│
-└── research-questions.md (Future research)
+└── workflows/          (Visual guides)
+    ├── agentic-prompt-template.md
+    ├── evolution-path.md
+    └── visual-decision-trees.md
 ```
 
 ## For Humans
@@ -113,14 +120,7 @@ This knowledge synthesizes:
 
 ## Contributing
 
-This is a living knowledge base. Content to be added:
-
-- patterns/hooks-observability.md (implementation patterns)
-- patterns/orchestrator-pattern.md (multi-agent orchestration)
-- patterns/context-window-protection.md (managing context at scale)
-- examples/multi-agent-case-studies.md (scout-builder patterns)
-
-See [research-questions.md](research-questions.md) for unanswered questions.
+This is a comprehensive knowledge base covering Claude Code architecture and composition patterns. All planned documentation has been completed and integrated.
 
 ---
 

@@ -1,9 +1,9 @@
 ---
-name: composing-claude-code
-description: Use when building multi-component Claude Code systems requires deciding between skills, sub-agents, hooks, MCP servers, and slash commands. Includes decision frameworks, context management patterns, orchestrator workflows, and anti-patterns to avoid.
+name: multi-agent-composition
+description: Provides decision frameworks and patterns for composing multi-component agentic systems. Use when choosing between skills, sub-agents, hooks, MCP servers, and slash commands, or when building orchestrator workflows and managing context across agents.
 ---
 
-# Composing Claude Code
+# Multi-Agent Composition
 
 **Master Claude Code's components, patterns, and principles** to build effective agentic systems.
 
@@ -87,9 +87,11 @@ This skill uses progressive disclosure. Start here, then navigate to specific to
 **How to use components effectively** - Decision-making and implementation
 
 - **[decision-framework.md](patterns/decision-framework.md)** - When to use Skills vs Sub-Agents vs MCP vs Slash Commands
+- **[agent-descriptions.md](patterns/agent-descriptions.md)** - Writing effective descriptions that trigger skills and agents correctly
 - **[hooks-observability.md](patterns/hooks-observability.md)** - Implementing hooks for logging and control
 - **[orchestrator-pattern.md](patterns/orchestrator-pattern.md)** - Multi-agent orchestration at scale
 - **[context-window-protection.md](patterns/context-window-protection.md)** - Managing context across agents
+- **[practical-guide.md](patterns/practical-guide.md)** - Q&A session with practical implementation questions
 
 ### Anti-Patterns
 
@@ -110,6 +112,7 @@ This skill uses progressive disclosure. Start here, then navigate to specific to
 
 - **[visual-decision-trees.md](workflows/visual-decision-trees.md)** - Mindmaps, decision matrices, GraphViz trees
 - **[evolution-path.md](workflows/evolution-path.md)** - Step-by-step progression from simple to complex
+- **[agentic-prompt-template.md](workflows/agentic-prompt-template.md)** - Purpose → Variables → Workflow → Report pattern for sub-agent prompts
 
 ## Getting Started
 
@@ -200,10 +203,6 @@ This knowledge synthesizes:
 **Need visual guides?** → [workflows/visual-decision-trees.md](workflows/visual-decision-trees.md)
 
 **Want to avoid mistakes?** → [anti-patterns/common-mistakes.md](anti-patterns/common-mistakes.md)
-
-## Future Research
-
-See [research-questions.md](research-questions.md) for unanswered questions and areas for deeper investigation.
 
 ---
 

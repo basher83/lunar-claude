@@ -29,7 +29,7 @@ Meta-claude provides five skills that Claude invokes automatically:
 - **command-creator** - Scaffolds slash commands with frontmatter and examples
 
 **Architectural Guidance:**
-- **composing-claude-code** - Comprehensive knowledge base for building multi-component Claude Code systems. Includes decision frameworks for choosing between skills/sub-agents/hooks/MCP/slash-commands, context management patterns, orchestrator workflows, and anti-patterns to avoid
+- **multi-agent-composition** - Comprehensive knowledge base for composing multi-component agentic systems. Provides decision frameworks for choosing between skills/sub-agents/hooks/MCP/slash-commands, context management patterns, orchestrator workflows, and anti-patterns to avoid
 
 ### Commands
 
@@ -82,5 +82,5 @@ skill-creator with plugin-specific knowledge.
 
 ## Version History
 
-- 0.2.0 - Added composing-claude-code skill for architectural guidance and multi-component system design
+- 0.2.0 - Added multi-agent-composition skill for architectural guidance and multi-component system design
 - 0.1.0 - Initial release with four creator skills and new-plugin command

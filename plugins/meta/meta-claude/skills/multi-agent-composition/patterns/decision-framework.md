@@ -2,6 +2,35 @@
 
 This guide helps you choose the right Claude Code component for your specific task. **Always start with prompts**—master the primitive first before scaling to other components.
 
+## Table of Contents
+
+- [The Decision Tree](#the-decision-tree)
+- [Quick Reference: Decision Matrix](#quick-reference-decision-matrix)
+- [When to Use Each Component](#when-to-use-each-component)
+  - [Use Skills When](#use-skills-when)
+  - [Use Sub-Agents When](#use-sub-agents-when)
+  - [Use Slash Commands When](#use-slash-commands-when)
+  - [Use MCP Servers When](#use-mcp-servers-when)
+  - [Use Hooks When](#use-hooks-when)
+  - [Use Plugins When](#use-plugins-when)
+- [Use Case Examples from the Field](#use-case-examples-from-the-field)
+- [Composition Rules and Boundaries](#composition-rules-and-boundaries)
+  - [What Can Compose What](#what-can-compose-what)
+  - [Critical Composition Rules](#critical-composition-rules)
+- [The Proper Evolution Path](#the-proper-evolution-path)
+  - [Stage 1: Start with a Prompt](#stage-1-start-with-a-prompt)
+  - [Stage 2: Add Sub-Agent if Parallelism Needed](#stage-2-add-sub-agent-if-parallelism-needed)
+  - [Stage 3: Create Skill When Management Needed](#stage-3-create-skill-when-management-needed)
+  - [Stage 4: Add MCP if External Data Needed](#stage-4-add-mcp-if-external-data-needed)
+- [Common Decision Anti-Patterns](#common-decision-anti-patterns)
+  - [Anti-Pattern 1: Converting All Slash Commands to Skills](#anti-pattern-1-converting-all-slash-commands-to-skills)
+  - [Anti-Pattern 2: Using Skills for One-Off Tasks](#anti-pattern-2-using-skills-for-one-off-tasks)
+  - [Anti-Pattern 3: Skipping the Primitive](#anti-pattern-3-skipping-the-primitive)
+  - [Anti-Pattern 4: Using Sub-Agents When Context Matters](#anti-pattern-4-using-sub-agents-when-context-matters)
+  - [Anti-Pattern 5: Forgetting MCP is for External Only](#anti-pattern-5-forgetting-mcp-is-for-external-only)
+- [Decision Checklist](#decision-checklist)
+- [Summary: The Golden Rules](#summary-the-golden-rules)
+
 ## The Decision Tree
 
 Start here when deciding which component to use:

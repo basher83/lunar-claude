@@ -276,7 +276,7 @@ compatibility information.
 - `FreeBSD` - FreeBSD
 - `GenericBSD` - Any BSD variant
 
-**Full list:** <https://galaxy.ansible.com/api/v1/platforms/>
+**Full list:** See [Ansible Galaxy API documentation](https://galaxy.ansible.com/api/v1/) for available endpoints
 
 ### Version Specification Strategies
 

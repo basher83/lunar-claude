@@ -424,7 +424,7 @@ Remove emoji prefixes from group names:
 ### Custom Templates
 
 The `body` template can be completely customized. See
-[git-cliff template documentation](https://git-cliff.org/docs/configuration/template) for available variables and
+[git-cliff configuration documentation](https://git-cliff.org/docs/configuration/) for available variables and
 filters.
 
 ## Troubleshooting

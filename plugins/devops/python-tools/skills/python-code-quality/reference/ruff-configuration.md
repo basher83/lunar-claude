@@ -883,7 +883,7 @@ by `ruff generate-shell-completion <SHELL>`, where `<SHELL>` is one of `bash`, `
 
 The exact steps required to enable autocompletion will vary by shell. For example instructions,
 see the [Poetry](https://python-poetry.org/docs/#enable-tab-completion-for-bash-fish-or-zsh) or
-[ripgrep](https://github.com/BurntSushi/ripgrep/blob/master/FAQ.md#complete) documentation.
+[ripgrep FAQ](https://github.com/BurntSushi/ripgrep/blob/master/FAQ.md) documentation (see the "Does ripgrep have support for shell auto-completion?" section).
 
 As an example: to enable autocompletion for Zsh, run
 `ruff generate-shell-completion zsh > ~/.zfunc/_ruff`. Then add the following line to your

@@ -464,4 +464,4 @@ qm reboot 101
 ## Further Reading
 
 - [Proxmox QEMU Guest Agent Documentation](https://pve.proxmox.com/wiki/Qemu-guest-agent)
-- [QEMU Guest Agent Protocol](https://qemu.readthedocs.io/en/latest/interop/qemu-ga.html)
+- [QEMU Guest Agent Protocol](https://www.qemu.org/docs/master/interop/qemu-ga.html)

@@ -15,13 +15,14 @@ truncate = true
 python = "3.13"
 eza = "0.23.0"
 fd = "10.2.0"
-pre-commit = "4.3.0"
 rg = "14.1.1"
 git-cliff = "2.10.1"
 shellcheck = "0.11.0"
 uv = "0.9.7"
 ruff = "0.14.3"
 "npm:pyright" = "1.1.407"
+lychee = "0.21.0"
+prek = "0.2.13"
 
 [env]
 _.python.venv = { path = ".venv", create = true } # create the venv if it doesn't exist
@@ -87,12 +88,12 @@ echo "     git push && git push --tags"
 
 # === Hooks tasks ===
 [tasks.hooks-install]
-description = "Install pre-commit and infisical hooks"
-run = "pre-commit install && infisical scan install --pre-commit-hook"
+description = "Install prek and infisical hooks"
+run = "prek install -f && infisical scan install --pre-commit-hook"
 
 [tasks.pre-commit-run]
-description = "Run pre-commit hooks"
-run = "pre-commit run --all-files"
+description = "Run prek hooks"
+run = "prek run --all-files"
 
 # === Infisical tasks ===
 [tasks.infisical-scan]
@@ -114,3 +115,11 @@ run = "./scripts/intelligent-markdown-lint.py"
 [tasks.intelligent-lint-dry-run]
 description = "Analyze markdown linting errors (no fixes)"
 run = "./scripts/intelligent-markdown-lint.py --dry-run"
+
+[tasks.link-check]
+description = "Check all links in markdown files using lychee"
+run = "lychee --config lychee.toml '**/*.md'"
+
+[tasks.link-check-verbose]
+description = "Check all links in markdown files with verbose output"
+run = "lychee --config lychee.toml --verbose debug '**/*.md'"

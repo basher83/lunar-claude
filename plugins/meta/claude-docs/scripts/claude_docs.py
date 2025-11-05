@@ -25,7 +25,6 @@ import time
 from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
-from typing import Optional
 
 import httpx
 import typer
@@ -46,8 +45,8 @@ console = Console()
 @dataclass
 class FileMetadata:
     """Metadata for tracking file versions."""
-    etag: Optional[str] = None
-    last_modified: Optional[str] = None
+    etag: str | None = None
+    last_modified: str | None = None
     size: int = 0
     downloaded_at: float = 0.0
 
@@ -81,7 +80,8 @@ CLAUDE_CODE_PAGES = [
     "slash-commands",
     "hooks",
     "plugins-reference",
-    "memory"
+    "memory",
+    "mcp"
 ]
 
 # Agent Skills API documentation
@@ -189,6 +189,7 @@ def discover_all_pages(client: httpx.Client) -> list[tuple[str, str]]:
         )
         return DEFAULT_PAGES
 
+
 def get_base_url(section: str) -> str:
     """Get the base URL for a documentation section."""
     if section == "claude-code":
@@ -198,12 +199,13 @@ def get_base_url(section: str) -> str:
     else:
         return f"{BASE_URL}/{section}"
 
+
 def needs_update(
     client: httpx.Client,
     section: str,
     page: str,
-    cached_meta: Optional[FileMetadata],
-) -> tuple[bool, Optional[str], Optional[str]]:
+    cached_meta: FileMetadata | None,
+) -> tuple[bool, str | None, str | None]:
     """
     Check if a page needs to be downloaded by comparing HTTP headers.
 
@@ -244,7 +246,7 @@ def needs_update(
         # If headers don't match or aren't available, assume update needed
         return True, etag, last_modified
 
-    except Exception as e:
+    except Exception:
         # If HEAD request fails, assume we need to try downloading
         from rich.console import Console
         stderr_console = Console(stderr=True)
@@ -260,8 +262,8 @@ def download_page(
     page: str,
     output_dir: Path,
     max_retries: int = 3,
-    etag: Optional[str] = None,
-    last_modified: Optional[str] = None,
+    etag: str | None = None,
+    last_modified: str | None = None,
 ) -> tuple[bool, float, int, FileMetadata]:
     """
     Download a single documentation page with retry logic.
@@ -358,11 +360,11 @@ def download_page(
 
 def find_or_create_ai_docs_dir() -> Path:
     """
-    Get reference docs directory for the claude-code-documentation skill.
+    Get reference docs directory for the claude-docs skill.
 
-    Returns ../skills/claude-code-documentation/reference/ relative to the script.
+    Returns ../skills/claude-docs/reference/ relative to the script.
     Example: if script is at /project/scripts/claude_docs.py,
-    returns /project/skills/claude-code-documentation/reference/
+    returns /project/skills/claude-docs/reference/
 
     Returns:
         Path to skill reference directory
@@ -371,11 +373,11 @@ def find_or_create_ai_docs_dir() -> Path:
     script_dir = Path(__file__).parent
 
     # Return path to skill's reference subdirectory
-    return script_dir.parent / "skills" / "claude-code-documentation" / "reference"
+    return script_dir.parent / "skills" / "claude-docs" / "reference"
 
 
 def main(
-    output_dir: Optional[Path] = typer.Option(
+    output_dir: Path | None = typer.Option(
         None,
         "--output-dir", "-o",
         help="Directory to save downloaded documentation files (default: auto-detect or create ai_docs/)",
@@ -436,7 +438,8 @@ def main(
     with httpx.Client() as client:
         if all_pages:
             if format == OutputFormat.RICH:
-                console.print("[cyan]Discovering all pages from docs map...[/cyan]")
+                console.print(
+                    "[cyan]Discovering all pages from docs map...[/cyan]")
             pages = discover_all_pages(client)
             if format == OutputFormat.RICH:
                 console.print(f"[dim]Found {len(pages)} pages[/dim]\n")
@@ -447,25 +450,32 @@ def main(
             else:
                 # Fetch all available pages first
                 all_available = discover_all_pages(client)
-                console.print(f"[cyan]Available pages ({len(all_available)}):[/cyan]")
+                console.print(
+                    f"[cyan]Available pages ({len(all_available)}):[/cyan]")
                 for idx, (section, page) in enumerate(all_available, 1):
                     console.print(f"  {idx}. [{section}] {page}")
-                console.print("\n[yellow]Enter page numbers to download (comma-separated)[/yellow]")
+                console.print(
+                    "\n[yellow]Enter page numbers to download (comma-separated)[/yellow]")
                 console.print("[dim]Or press Enter to use defaults[/dim]")
 
                 selection = input("> ").strip()
 
                 if not selection:
                     pages = DEFAULT_PAGES
-                    console.print(f"[dim]Using default {len(pages)} pages[/dim]\n")
+                    console.print(
+                        f"[dim]Using default {len(pages)} pages[/dim]\n")
                 else:
                     try:
-                        indices = [int(x.strip()) - 1 for x in selection.split(",")]
-                        pages = [all_available[i] for i in indices if 0 <= i < len(all_available)]
-                        console.print(f"[green]Selected {len(pages)} pages[/green]\n")
+                        indices = [int(x.strip()) -
+                                   1 for x in selection.split(",")]
+                        pages = [all_available[i]
+                                 for i in indices if 0 <= i < len(all_available)]
+                        console.print(
+                            f"[green]Selected {len(pages)} pages[/green]\n")
                     except (ValueError, IndexError) as e:
                         console.print(f"[red]Invalid selection: {e}[/red]")
-                        console.print("[yellow]Using defaults instead[/yellow]\n")
+                        console.print(
+                            "[yellow]Using defaults instead[/yellow]\n")
                         pages = DEFAULT_PAGES
         else:
             pages = DEFAULT_PAGES
@@ -473,7 +483,8 @@ def main(
     if format == OutputFormat.RICH:
         console.print(
             f"[cyan]{'Checking' if check_only else 'Downloading'} Claude Code documentation to {output_dir.absolute()}/[/cyan]")
-        console.print(f"[dim]Pages: {len(pages)} | Max retries: {retries}{' | DRY RUN' if check_only else ''}[/dim]\n")
+        console.print(
+            f"[dim]Pages: {len(pages)} | Max retries: {retries}{' | DRY RUN' if check_only else ''}[/dim]\n")
 
     start_time = time.time()
     success_count = 0
@@ -494,7 +505,8 @@ def main(
                     "[cyan]Checking pages...", total=len(pages))
 
                 for section, page in pages:
-                    progress.update(task, description=f"[cyan]Checking {page}...")
+                    progress.update(
+                        task, description=f"[cyan]Checking {page}...")
 
                     # Flatten filename for display and saving
                     flat_filename = page.replace("/", "-")
@@ -618,7 +630,8 @@ def main(
         table.add_row("Total Pages", str(len(pages)))
 
         if check_only:
-            table.add_row("↻ Updates Available", f"[yellow]{success_count}[/yellow]")
+            table.add_row("↻ Updates Available",
+                          f"[yellow]{success_count}[/yellow]")
         else:
             table.add_row("✓ Downloaded", f"[green]{success_count}[/green]")
 
@@ -646,7 +659,8 @@ def main(
             console.print(
                 f"  • Sequential download time: {total_download_time:.2f}s")
             console.print(f"  • Actual wall clock time: {total_time:.2f}s")
-            console.print(f"  • Overhead: {total_time - total_download_time:.2f}s")
+            console.print(
+                f"  • Overhead: {total_time - total_download_time:.2f}s")
 
             # Estimate parallel speedup
             if avg_time > 0:

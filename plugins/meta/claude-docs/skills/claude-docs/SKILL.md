@@ -1,5 +1,5 @@
 ---
-name: claude-code-documentation
+name: claude-docs
 description: Official Claude Code documentation. Use when user asks about
   plugins, skills, agents, hooks, commands, settings, or features.
 ---

@@ -7,3 +7,4 @@
 .ruff_cache
 *.pyc
 mise.local.toml
+.lychee-report.md

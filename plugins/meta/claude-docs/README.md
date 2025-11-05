@@ -20,8 +20,8 @@ reference material.
 
 ## Usage
 
-The `claude-code-documentation` skill activates automatically when you ask
-about Claude Code features:
+The `claude-docs` skill activates automatically when you ask about Claude
+Code features:
 
 - "How do I create a plugin?"
 - "What's the structure of SKILL.md?"
@@ -35,10 +35,10 @@ provide accurate answers.
 
 ### Components
 
-- **Skill** (`skills/claude-code-documentation/`) - Entry point with
-  progressive disclosure guidance
-- **Reference docs** (`skills/claude-code-documentation/reference/`) - 14
-  official documentation files
+- **Skill** (`skills/claude-docs/`) - Entry point with progressive disclosure
+  guidance
+- **Reference docs** (`skills/claude-docs/reference/`) - 14 official
+  documentation files
 - **SessionStart hook** (`hooks/hooks.json`) - Auto-updates docs on session
   start
 - **Update script** (`scripts/claude_docs.py`) - Downloads and caches docs

@@ -11,9 +11,15 @@ Usage:
     Hook mode (stdin): echo '{"tool_input":{"file_path":"test.md"}}' | python markdown_formatter.py
     CLI mode: python markdown_formatter.py test.md
     CLI mode (multiple files): python markdown_formatter.py file1.md file2.md
+    Blocking mode: python markdown_formatter.py --blocking test.md
+
+Options:
+    --blocking    Exit with code 2 when changes are made (sends feedback to Claude)
+                  Default: Exit with code 0 (output only in transcript mode)
 
 Features:
     - Dual mode: Works with Claude Code hooks (stdin) or command-line arguments
+    - Blocking mode option for immediate Claude feedback
     - Detects programming languages in unlabeled code fences
     - Adds appropriate language identifiers (python, json, bash, etc.)
     - Normalizes excessive blank lines
@@ -83,12 +89,17 @@ def format_markdown(content: str) -> str:
 
 # Main execution
 try:
-    # Determine mode: CLI args or stdin (hook mode)
+    # Parse arguments
+    blocking = False
     file_paths = []
 
     if len(sys.argv) > 1:
-        # CLI mode: file paths from arguments
-        file_paths = sys.argv[1:]
+        # CLI mode: parse arguments
+        args = sys.argv[1:]
+        if "--blocking" in args:
+            blocking = True
+            args.remove("--blocking")
+        file_paths = args
     else:
         # Hook mode: Read from stdin
         try:
@@ -98,7 +109,10 @@ try:
                 file_paths = [file_path]
         except json.JSONDecodeError as e:
             print(f"Error: Invalid JSON input from stdin: {e}", file=sys.stderr)
-            sys.exit(1)
+            sys.exit(0)  # Non-blocking even on errors
+
+    # Track if any changes were made
+    any_changes = False
 
     # Process each file
     for file_path in file_paths:
@@ -119,11 +133,23 @@ try:
             if formatted != content:
                 with open(file_path, "w", encoding="utf-8") as f:
                     f.write(formatted)
-                print(f"✓ Fixed markdown formatting in {file_path}")
+
+                message = f"✓ Fixed markdown formatting in {file_path}"
+                if blocking:
+                    print(message, file=sys.stderr)
+                else:
+                    print(message)
+
+                any_changes = True
 
         except Exception as e:
             print(f"Error formatting {file_path}: {e}", file=sys.stderr)
 
+    # In blocking mode, exit with code 2 if changes were made
+    if blocking and any_changes:
+        sys.exit(2)
+
+    # Always exit 0 to be non-blocking (unless blocking mode with changes)
     sys.exit(0)
 
 except Exception as e:

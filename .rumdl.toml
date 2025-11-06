@@ -46,6 +46,9 @@ exclude = [
 
     # Review documents (may contain quoted violations for documentation)
     "docs/reviews/**/*.md",
+
+    # Research documents (raw conversation transcripts and research notes)
+    "docs/research/**/*.md",
 ]
 
 # Respect .gitignore files when scanning directories (default: true)

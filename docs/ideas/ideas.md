@@ -63,3 +63,8 @@ A plugin for Claude to help with meta tasks.
     - HA considerations for networking, storage, and other resources
     - DNS management for the cluster
     - Network management for the cluster (IPAM, routing, etc.)
+
+- Process a Github repo and extract relevant information to be able to turn it into a usable skill for
+  Claude Code. Possibly a good way to do this would be to clone the repo into a container, conduct the
+  analysis in the container, and export the learnings, and then simply delete the container after the
+  analysis is done.

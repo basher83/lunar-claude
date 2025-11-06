@@ -435,7 +435,7 @@ def main(
     cache = load_cache(cache_file)
 
     # Determine which pages to download
-    with httpx.Client() as client:
+    with httpx.Client(follow_redirects=True) as client:
         if all_pages:
             if format == OutputFormat.RICH:
                 console.print(
@@ -493,7 +493,7 @@ def main(
     total_bytes = 0
     download_times = []
 
-    with httpx.Client() as client:
+    with httpx.Client(follow_redirects=True) as client:
         if format == OutputFormat.RICH:
             # Rich mode: Use progress bar and status messages
             with Progress(

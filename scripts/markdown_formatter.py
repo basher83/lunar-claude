@@ -8,10 +8,12 @@ Markdown formatter for Claude Code output.
 Fixes missing language tags and spacing issues while preserving code content.
 
 Usage:
-    Called automatically by Claude Code hooks via JSON stdin
-    Can be run manually: echo '{"tool_input":{"file_path":"test.md"}}' | python markdown_formatter.py
+    Hook mode (stdin): echo '{"tool_input":{"file_path":"test.md"}}' | python markdown_formatter.py
+    CLI mode: python markdown_formatter.py test.md
+    CLI mode (multiple files): python markdown_formatter.py file1.md file2.md
 
 Features:
+    - Dual mode: Works with Claude Code hooks (stdin) or command-line arguments
     - Detects programming languages in unlabeled code fences
     - Adds appropriate language identifiers (python, json, bash, etc.)
     - Normalizes excessive blank lines
@@ -81,23 +83,49 @@ def format_markdown(content: str) -> str:
 
 # Main execution
 try:
-    input_data = json.load(sys.stdin)
-    file_path = input_data.get("tool_input", {}).get("file_path", "")
+    # Determine mode: CLI args or stdin (hook mode)
+    file_paths = []
 
-    if not file_path.endswith((".md", ".mdx")):
-        sys.exit(0)  # Not a markdown file
+    if len(sys.argv) > 1:
+        # CLI mode: file paths from arguments
+        file_paths = sys.argv[1:]
+    else:
+        # Hook mode: Read from stdin
+        try:
+            input_data = json.load(sys.stdin)
+            file_path = input_data.get("tool_input", {}).get("file_path", "")
+            if file_path:
+                file_paths = [file_path]
+        except json.JSONDecodeError as e:
+            print(f"Error: Invalid JSON input from stdin: {e}", file=sys.stderr)
+            sys.exit(1)
 
-    if os.path.exists(file_path):
-        with open(file_path, encoding="utf-8") as f:
-            content = f.read()
+    # Process each file
+    for file_path in file_paths:
+        # Skip non-markdown files
+        if not file_path.endswith((".md", ".mdx")):
+            continue
 
-        formatted = format_markdown(content)
+        if not os.path.exists(file_path):
+            print(f"⚠ File not found: {file_path}", file=sys.stderr)
+            continue
 
-        if formatted != content:
-            with open(file_path, "w", encoding="utf-8") as f:
-                f.write(formatted)
-            print(f"✓ Fixed markdown formatting in {file_path}")
+        try:
+            with open(file_path, encoding="utf-8") as f:
+                content = f.read()
+
+            formatted = format_markdown(content)
+
+            if formatted != content:
+                with open(file_path, "w", encoding="utf-8") as f:
+                    f.write(formatted)
+                print(f"✓ Fixed markdown formatting in {file_path}")
+
+        except Exception as e:
+            print(f"Error formatting {file_path}: {e}", file=sys.stderr)
+
+    sys.exit(0)
 
 except Exception as e:
-    print(f"Error formatting markdown: {e}", file=sys.stderr)
-    sys.exit(1)
+    print(f"Error in markdown formatter: {e}", file=sys.stderr)
+    sys.exit(0)  # Non-blocking even on errors

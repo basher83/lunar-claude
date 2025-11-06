@@ -91,24 +91,6 @@ User Request → Claude Code CLI → marketplace.json → Plugin Components
                                         Claude Execution Context
 ```
 
-### Skills Architecture Pattern
-
-Skills use a **layered documentation approach** for comprehensive AI context:
-
-```text
-skills/<skill-name>/
-├── SKILL.md                 # Main skill definition (injected into Claude context)
-├── patterns/                # Production-ready implementation patterns
-├── reference/               # Technical references and API docs
-├── anti-patterns/           # Common mistakes to avoid
-├── examples/                # Real-world implementations
-├── workflows/               # Process and workflow documentation
-└── tools/                   # Helper scripts (Python/shell)
-```
-
-This structure allows skills to provide deep, structured knowledge without
-overwhelming the main SKILL.md file.
-
 ## Creating New Plugins
 
 ### Using meta-claude Plugin
@@ -158,64 +140,7 @@ cp -r templates/plugin-template/ plugins/<category>/<plugin-name>/
 - **Purpose:** Development tool versions and task automation
 - **Tools:** See `mise.toml` for complete list of development tools and versions
 
-## Important Patterns
-
-### SKILL.md Frontmatter
-
-All skills must include YAML frontmatter:
-
-```markdown
----
-name: skill-name
-description: Brief description of what the skill does
----
-
-# Skill Title
-...
-```
-
-## Release Process
-
-```bash
-# 1. Update CHANGELOG.md
-mise run changelog-bump 0.1.4
-
-# 2. Review CHANGELOG.md changes
-
-# 3. Update version in relevant files
-# - .claude-plugin/marketplace.json (marketplace version)
-# - plugins/<category>/<plugin-name>/.claude-plugin/plugin.json (plugin version)
-
-# 4. Commit changes
-git add CHANGELOG.md .claude-plugin/marketplace.json
-git commit -m "chore: release v0.1.4"
-
-# 5. Tag release
-git tag -a v0.1.4 -m "Release v0.1.4"
-
-# 6. Push to GitHub
-git push && git push --tags
-```
-
-## Working with Skills
-
-When creating or modifying skills:
-
-1. **Structure:** Use SKILL.md as the main entry point
-2. **Supporting docs:** Place detailed patterns/references in
-   subdirectories
-3. **Frontmatter:** Always include `name` and `description`
-4. **Triggers:** Document "When to Use This Skill" section clearly
-5. **Examples:** Provide real-world examples from actual
-   infrastructure
-
-When Claude activates a skill, it reads SKILL.md and referenced documentation
-to provide expert guidance.
-
 ## Design Philosophy
 
 - **Modularity:** Each plugin is independent and self-contained
 - **Reusability:** Skills provide context for solving similar problems repeatedly
-- **Production-focused:** Patterns come from real homelab/infrastructure experience
-- **Documentation-first:** Extensive supporting materials ensure AI can provide expert guidance
-- **Template-driven:** Plugin template ensures consistency across the marketplace

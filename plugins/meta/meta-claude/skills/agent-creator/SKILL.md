@@ -1,6 +1,9 @@
 ---
 name: agent-creator
-description: Generates properly formatted Claude Code subagent definitions with capabilities and usage patterns
+description: >
+  Generates Claude Code subagent definitions when user requests specialized agent creation, needs agent structure
+  guidance, or wants to add subagents to plugins. Creates proper frontmatter, capabilities lists, and invocation
+  criteria.
 ---
 
 # Agent Creator
@@ -12,7 +15,8 @@ that Claude can invoke for specific tasks.
 
 **When to use:** User requests an agent, wants to add specialized subagent to plugin, or needs agent structure guidance.
 
-**References:** Consult `ai_docs/plugins-referance.md` for agent specifications.
+**References:** Consult
+`plugins/meta/claude-docs/skills/claude-docs/reference/plugins-reference.md` for agent specifications.
 
 ## Agent Structure Requirements
 
@@ -92,7 +96,8 @@ When Y happens, agent does Z.
 
 ### Step 5: Verify Against Official Docs
 
-Check `ai_docs/plugins-referance.md` for current agent specification.
+Check
+`plugins/meta/claude-docs/skills/claude-docs/reference/plugins-reference.md` for current agent specification.
 
 ## Key Principles
 

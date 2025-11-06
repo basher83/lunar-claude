@@ -1,6 +1,8 @@
 ---
 name: hook-creator
-description: Creates hook configurations following Claude Code event handling patterns and best practices
+description: >
+  Creates hook configurations for Claude Code event handling. Use when automating workflows, implementing
+  event-driven behavior, or needing hooks to respond to tool usage, session events, or user prompts.
 ---
 
 # Hook Creator
@@ -13,7 +15,9 @@ initialization.
 
 **When to use:** User wants to automate workflows, needs event-driven behavior, or requests hooks for their plugin.
 
-**References:** Consult `ai_docs/plugins-referance.md` for hook specifications and available events.
+**References:** Consult
+`plugins/meta/claude-docs/skills/claude-docs/reference/plugins-reference.md` for hook specifications and available
+events.
 
 ## Hook Structure Requirements
 
@@ -88,7 +92,8 @@ If using command hooks:
 
 ### Step 5: Verify Against Official Docs
 
-Check `ai_docs/plugins-referance.md` for:
+Check
+`plugins/meta/claude-docs/skills/claude-docs/reference/plugins-reference.md` for:
 
 - Current event names
 - Hook configuration schema

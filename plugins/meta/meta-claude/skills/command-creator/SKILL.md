@@ -1,6 +1,8 @@
 ---
 name: command-creator
-description: Scaffolds slash commands with proper frontmatter, structure, and usage examples
+description: >
+  Creates slash commands for Claude Code plugins when user requests command creation, adds plugin commands, or
+  needs help with command structure and frontmatter
 ---
 
 # Command Creator
@@ -12,7 +14,8 @@ expand into detailed instructions for Claude.
 
 **When to use:** User wants to create a command, add command to plugin, or needs command structure help.
 
-**References:** See `ai_docs/plugins-referance.md` for command specifications.
+**References:** See
+`plugins/meta/claude-docs/skills/claude-docs/reference/plugins-reference.md` for command specifications.
 
 ## Command Structure Requirements
 
@@ -80,7 +83,8 @@ Show example scenarios if helpful.
 
 ### Step 5: Verify Against Official Docs
 
-Check `ai_docs/plugins-referance.md` for command specifications.
+Check
+`plugins/meta/claude-docs/skills/claude-docs/reference/plugins-reference.md` for command specifications.
 
 ## Key Principles
 

@@ -13,9 +13,15 @@ Download Claude Code documentation using Firecrawl MCP Server (robust scraping).
 This script demonstrates production-grade scraping via Claude Agent SDK + Firecrawl MCP.
 Best for: Production scraping, complex pages, need for rich metadata and reliability.
 
+NOTE: This is a POC demonstrating Claude Agent SDK patterns for Firecrawl MCP tool usage.
+The metadata implementation (lines 160-165) uses placeholder values. A production
+implementation would parse structured MCP responses to extract actual Firecrawl metadata
+(cache status, credits used, etc.).
+
 Prerequisites:
     - Firecrawl MCP server configured in Claude settings
     - FIRECRAWL_API_KEY environment variable set
+    - ANTHROPIC_API_KEY environment variable set
 
 Usage:
     ./firecrawl_mcp_docs.py                         # Downloads with full metadata
@@ -91,6 +97,27 @@ def get_base_url(section: str) -> str:
     else:
         return f"{BASE_URL}/{section}"
 
+def validate_api_keys() -> None:
+    """
+    Validate required environment variables are set.
+
+    Raises:
+        ValueError: If any required API keys are missing.
+    """
+    missing_keys = []
+
+    if not os.getenv("ANTHROPIC_API_KEY"):
+        missing_keys.append("ANTHROPIC_API_KEY")
+
+    if not os.getenv("FIRECRAWL_API_KEY"):
+        missing_keys.append("FIRECRAWL_API_KEY")
+
+    if missing_keys:
+        raise ValueError(
+            f"Missing required environment variables: {', '.join(missing_keys)}\n"
+            "Please set them before running this script."
+        )
+
 def create_orchestrator_options() -> ClaudeAgentOptions:
     """
     Create SDK options for orchestrator that uses Firecrawl MCP tools.
@@ -128,9 +155,10 @@ async def download_page_firecrawl(
     """
     options = create_orchestrator_options()
 
-    async with ClaudeSDKClient(options=options) as client:
-        # Build scrape request
-        prompt = f"""Use the Firecrawl firecrawl_scrape tool to fetch this URL:
+    try:
+        async with ClaudeSDKClient(options=options) as client:
+            # Build scrape request
+            prompt = f"""Use the Firecrawl firecrawl_scrape tool to fetch this URL:
 
 URL: {url}
 Options:
@@ -139,32 +167,45 @@ Options:
 
 Return the scraped markdown content and metadata."""
 
-        await client.query(prompt)
+            await client.query(prompt)
 
-        # Collect response
-        full_response = []
-        async for message in client.receive_response():
-            if isinstance(message, AssistantMessage):
-                for block in message.content:
-                    if isinstance(block, TextBlock):
-                        full_response.append(block.text)
+            # Collect response
+            full_response = []
+            async for message in client.receive_response():
+                if isinstance(message, AssistantMessage):
+                    for block in message.content:
+                        if isinstance(block, TextBlock):
+                            full_response.append(block.text)
 
-        combined_content = "\n\n".join(full_response)
+            combined_content = "\n\n".join(full_response)
 
-        # Extract page name and save
-        page_name = url.split("/")[-1].replace(".md", "")
-        flat_filename = page_name.replace("/", "-")
-        output_file = output_dir / f"{flat_filename}.md"
-        output_file.write_text(combined_content)
+            # Validate content
+            if not combined_content or len(combined_content.strip()) < 100:
+                return False, "", {
+                    "url": url,
+                    "error": "Empty or minimal content received",
+                }
 
-        # Metadata (in production, would parse from MCP tool response)
-        metadata = {
+            # Extract page name and save
+            page_name = url.split("/")[-1].replace(".md", "")
+            flat_filename = page_name.replace("/", "-")
+            output_file = output_dir / f"{flat_filename}.md"
+            output_file.write_text(combined_content)
+
+            # Metadata (in production, would parse from MCP tool response)
+            metadata = {
+                "url": url,
+                "size": len(combined_content),
+                "main_content_only": main_content_only,
+            }
+
+            return True, combined_content, metadata
+
+    except Exception as e:
+        return False, "", {
             "url": url,
-            "size": len(combined_content),
-            "main_content_only": main_content_only,
+            "error": str(e),
         }
-
-        return True, combined_content, metadata
 
 async def download_all_sequential(
     pages: list[tuple[str, str]],
@@ -277,6 +318,9 @@ def main(
 
     Requires: Firecrawl MCP server configured with FIRECRAWL_API_KEY.
     """
+    # Validate API keys first
+    validate_api_keys()
+
     output_dir.mkdir(exist_ok=True, parents=True)
 
     if format == OutputFormat.RICH:

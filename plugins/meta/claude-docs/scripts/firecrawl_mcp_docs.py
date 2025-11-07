@@ -31,6 +31,7 @@ Usage:
 
 import asyncio
 import json
+import os
 import sys
 import time
 from dataclasses import dataclass
@@ -319,7 +320,18 @@ def main(
     Requires: Firecrawl MCP server configured with FIRECRAWL_API_KEY.
     """
     # Validate API keys first
-    validate_api_keys()
+    try:
+        validate_api_keys()
+    except ValueError as e:
+        if format == OutputFormat.RICH:
+            console.print(f"[red]ERROR:[/red] {e}", file=sys.stderr)
+        else:
+            error_result = {
+                "status": "error",
+                "message": str(e)
+            }
+            print(json.dumps(error_result), file=sys.stderr)
+        sys.exit(1)
 
     output_dir.mkdir(exist_ok=True, parents=True)
 

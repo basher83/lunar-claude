@@ -238,3 +238,16 @@ knowledge_base:
     scope: auto
   pull_requests:
     scope: auto
+
+code_generation:
+  docstrings:
+    language: en-US
+    path_instructions:
+      - path: "scripts/**/*.py"
+        instructions: "Use Google-style docstrings with Args, Returns, and Raises sections. Type hints in signatures (not docstrings). Include usage examples for complex functions. Focus on behavior and edge cases rather than implementation details."
+      - path: "plugins/**/tools/**/*.py"
+        instructions: "Brief docstrings focusing on tool purpose and parameters. Include examples for non-obvious usage."
+  unit_tests:
+    path_instructions:
+      - path: "scripts/**/*.py"
+        instructions: "Generate tests covering happy paths, error handling, edge cases, and boundary conditions. Use pytest framework. Focus on validating behavior, not implementation details. Mock external dependencies (file I/O, network calls, subprocess). Tests should be independent and not rely on execution order."

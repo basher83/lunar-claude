@@ -1,0 +1,5 @@
+# yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
+
+language: en-US
+tone_instructions: "Provide comprehensive feedback on plugin architecture, security, documentation quality, and code standards. Include actionable suggestions with examples."
+early_access: false

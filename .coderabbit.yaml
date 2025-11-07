@@ -27,6 +27,24 @@ reviews:
   suggested_reviewers: true
   auto_assign_reviewers: true
 
+  labeling_instructions:
+    - label: "security"
+      instructions: "Critical security issues including authentication, authorization, injection vulnerabilities, credential management, or data exposure"
+    - label: "documentation"
+      instructions: "Changes to markdown documentation, README files, or inline code documentation"
+    - label: "automation"
+      instructions: "Changes to Python scripts in scripts/ directory, mise tasks, or CI/CD workflows"
+    - label: "bugfix"
+      instructions: "Bug fixes that resolve existing issues or correct incorrect behavior"
+    - label: "feature"
+      instructions: "New functionality or enhancements to existing features"
+    - label: "breaking-change"
+      instructions: "Changes that break backward compatibility or require users to update their usage"
+    - label: "dependencies"
+      instructions: "Updates to Python packages, tool versions, or external dependencies"
+    - label: "testing"
+      instructions: "Changes to test files, test infrastructure, or testing documentation"
+
   commit_status: true
   fail_commit_status: false
   review_status: true

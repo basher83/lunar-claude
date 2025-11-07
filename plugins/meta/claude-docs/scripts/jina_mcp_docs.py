@@ -13,9 +13,15 @@ Download Claude Code documentation using Jina MCP Server (parallel operations).
 This script demonstrates parallel URL reading via Claude Agent SDK + Jina MCP.
 Best for: Research tasks requiring multiple sources, speed optimization (3-4 URLs optimal).
 
+NOTE: This is a POC demonstrating Claude Agent SDK patterns for parallel MCP tool usage.
+The response parsing implementation (lines 160-174) saves combined content to all files
+as a placeholder. A production implementation would parse structured MCP responses
+to extract individual URL content.
+
 Prerequisites:
     - Jina MCP server configured in Claude settings
     - JINA_API_KEY environment variable set
+    - ANTHROPIC_API_KEY environment variable set
 
 Usage:
     ./jina_mcp_docs.py                              # Downloads with optimal batching
@@ -100,6 +106,27 @@ def get_base_url(section: str) -> str:
     else:
         return f"{BASE_URL}/{section}"
 
+def validate_api_keys() -> None:
+    """
+    Validate required API keys are present in environment.
+
+    Raises:
+        ValueError: If required API keys are missing
+    """
+    missing_keys = []
+
+    if not os.getenv("ANTHROPIC_API_KEY"):
+        missing_keys.append("ANTHROPIC_API_KEY")
+
+    if not os.getenv("JINA_API_KEY"):
+        missing_keys.append("JINA_API_KEY")
+
+    if missing_keys:
+        raise ValueError(
+            f"Missing required environment variables: {', '.join(missing_keys)}\n"
+            "Please set them before running this script."
+        )
+
 def create_orchestrator_options() -> ClaudeAgentOptions:
     """
     Create SDK options for orchestrator that uses Jina MCP tools.
@@ -158,8 +185,12 @@ Return the content for each URL."""
                         full_response.append(block.text)
 
         # Parse response and extract content
-        # Note: In production, would parse structured response from MCP tool
-        # For now, save the combined response
+        # TODO: POC LIMITATION - This saves combined content to all files
+        # Production implementation should:
+        # 1. Parse structured MCP tool response (JSON array of {url, content} objects)
+        # 2. Map each URL to its specific content
+        # 3. Save individual content to corresponding files
+        # Current behavior: All files get the same combined response
         combined_content = "\n\n".join(full_response)
 
         for url in urls:
@@ -168,8 +199,7 @@ Return the content for each URL."""
             flat_filename = page_name.replace("/", "-")
             output_file = output_dir / f"{flat_filename}.md"
 
-            # In real implementation, would parse individual responses
-            # For demo, save combined output
+            # TODO: Replace with parsed individual content per URL
             output_file.write_text(combined_content)
             results.append((url, True, combined_content))
 
@@ -233,12 +263,12 @@ async def download_all_parallel(
                     page_name = url.split("/")[-1].replace(".md", "")
                     if success:
                         console.print(
-                            f"[green]Success[/green] {page_name} "
+                            f"[green]SUCCESS:[/green] {page_name} "
                             f"[dim](batch {batch_num}, {len(content)} bytes)[/dim]"
                         )
                         success_count += 1
                     else:
-                        console.print(f"[red]Failed[/red] {page_name}", file=sys.stderr)
+                        console.print(f"[red]ERROR:[/red] {page_name}", file=sys.stderr)
                         failed_count += 1
 
                 progress.advance(task)
@@ -283,8 +313,18 @@ def main(
     This demonstrates parallel URL reading via Claude Agent SDK.
     Best for: Research tasks, speed optimization (3-4x faster than sequential).
 
-    Requires: Jina MCP server configured with JINA_API_KEY.
+    Requires: Jina MCP server configured with JINA_API_KEY and ANTHROPIC_API_KEY.
     """
+    # Validate required API keys before proceeding
+    try:
+        validate_api_keys()
+    except ValueError as e:
+        if format == OutputFormat.RICH:
+            console.print(f"[red]ERROR:[/red] {e}", file=sys.stderr)
+        else:
+            print(json.dumps({"status": "error", "message": str(e)}), file=sys.stderr)
+        raise typer.Exit(code=1)
+
     output_dir.mkdir(exist_ok=True, parents=True)
 
     if format == OutputFormat.RICH:
@@ -329,7 +369,7 @@ def main(
 
         # Performance note
         console.print(
-            "\n[yellow]Performance:[/yellow] Parallel batching "
+            "\n[yellow]NOTE:[/yellow] Parallel batching "
             "(~3x faster than sequential). Optimal batch size: 3-4 URLs."
         )
 

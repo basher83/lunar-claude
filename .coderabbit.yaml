@@ -99,3 +99,42 @@ reviews:
     - "docs/**"
     - ".claude/**"
     - ".claude-plugin/**"
+
+  path_instructions:
+    - path: "scripts/**/*.py"
+      instructions: |
+        Review Python automation scripts for:
+        - Ruff compliance with existing ruff.toml configuration
+        - Type hints for all function signatures
+        - Google-style docstrings with Args, Returns, and Raises sections
+        - Proper error handling with specific exceptions
+        - Security: validate inputs, avoid shell injection, handle credentials safely
+        - Logging for debugging and monitoring
+        - Command-line argument validation
+
+    - path: "plugins/**/.claude-plugin/*.json"
+      instructions: |
+        Validate plugin manifests for:
+        - Required fields present: name, version, description, author, keywords
+        - Semantic versioning format (X.Y.Z)
+        - JSON schema compliance
+        - Accurate dependency specifications
+        - Consistency with marketplace registry
+
+    - path: ".claude-plugin/marketplace.json"
+      instructions: |
+        Critical marketplace registry review:
+        - All listed plugins have corresponding directories
+        - Plugin metadata matches individual plugin.json files
+        - Version numbers are consistent across registry and plugin files
+        - No duplicate plugin names or paths
+        - Valid JSON structure
+
+    - path: "**/*.sh"
+      instructions: |
+        Shell script review:
+        - Shellcheck compliance
+        - Error handling: set -e, set -u, set -o pipefail
+        - Input validation and sanitization
+        - No hardcoded credentials or sensitive data
+        - Clear comments for complex operations

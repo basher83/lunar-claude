@@ -64,13 +64,13 @@ is long enough to pass validation checks."""
 
 
 @pytest.mark.asyncio
-async def test_error_handling_robustness():
+async def test_error_handling_robustness(tmp_path):
     """Test that Firecrawl handles errors gracefully."""
     from firecrawl_mcp_docs import download_page_firecrawl
 
     # Should handle failures without crashing
     url = "https://invalid-url-that-will-fail.com"
-    success, content, metadata = await download_page_firecrawl(url, Path("/tmp"))
+    success, _content, _metadata = await download_page_firecrawl(url, tmp_path)
 
     # May succeed or fail, but should not raise exception
     assert isinstance(success, bool)

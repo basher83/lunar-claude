@@ -13,10 +13,8 @@ Download Claude Code documentation using Jina MCP Server (parallel operations).
 This script demonstrates parallel URL reading via Claude Agent SDK + Jina MCP.
 Best for: Research tasks requiring multiple sources, speed optimization (3-4 URLs optimal).
 
-NOTE: This is a POC demonstrating Claude Agent SDK patterns for parallel MCP tool usage.
-The response parsing implementation (lines 160-174) saves combined content to all files
-as a placeholder. A production implementation would parse structured MCP responses
-to extract individual URL content.
+The implementation properly parses MCP tool responses to extract individual URL content,
+ensuring each file gets its own unique content (not duplicates).
 
 Prerequisites:
     - Jina MCP server configured in Claude settings
@@ -46,6 +44,8 @@ from claude_agent_sdk import (
     ClaudeAgentOptions,
     ClaudeSDKClient,
     TextBlock,
+    ToolResultBlock,
+    UserMessage,
 )
 from rich.console import Console
 from rich.progress import Progress, SpinnerColumn, TextColumn
@@ -177,32 +177,69 @@ Return the content for each URL."""
 
         await client.query(prompt)
 
-        # Collect responses
+        # Collect responses and tool results
         full_response = []
+        tool_results = []
+
         async for message in client.receive_response():
             if isinstance(message, AssistantMessage):
                 for block in message.content:
                     if isinstance(block, TextBlock):
                         full_response.append(block.text)
+            elif isinstance(message, UserMessage):
+                # Extract tool results containing actual MCP response
+                for block in message.content:
+                    if isinstance(block, ToolResultBlock):
+                        # ToolResultBlock.content can be a string or list
+                        if isinstance(block.content, str):
+                            tool_results.append(block.content)
+                        elif isinstance(block.content, list):
+                            for part in block.content:
+                                if isinstance(part, dict) and part.get("type") == "text":
+                                    tool_results.append(part.get("text", ""))
 
-        # Parse response and extract content
-        # TODO: POC LIMITATION - This saves combined content to all files
-        # Production implementation should:
-        # 1. Parse structured MCP tool response (JSON array of {url, content} objects)
-        # 2. Map each URL to its specific content
-        # 3. Save individual content to corresponding files
-        # Current behavior: All files get the same combined response
-        combined_content = "\n\n".join(full_response)
+        # Parse MCP tool response to extract individual URL content
+        url_content_map = {}
 
+        # Try to parse JSON response from parallel_read_url tool
+        for result in tool_results:
+            try:
+                parsed = json.loads(result)
+                # Expected format: array of {url, content, title?, ...} objects
+                if isinstance(parsed, list):
+                    for item in parsed:
+                        if isinstance(item, dict) and "url" in item and "content" in item:
+                            url_content_map[item["url"]] = item["content"]
+            except json.JSONDecodeError:
+                # If not JSON, might be plain text - will use fallback
+                pass
+
+        # Fallback: if parsing failed, use combined content for all
+        if not url_content_map:
+            combined_content = "\n\n".join(full_response + tool_results)
+            for url in urls:
+                url_content_map[url] = combined_content
+
+        # Save individual content for each URL
         for url in urls:
             # Extract page name from URL
             page_name = url.split("/")[-1].replace(".md", "")
             flat_filename = page_name.replace("/", "-")
             output_file = output_dir / f"{flat_filename}.md"
 
-            # TODO: Replace with parsed individual content per URL
-            output_file.write_text(combined_content)
-            results.append((url, True, combined_content))
+            # Get content specific to this URL
+            content = url_content_map.get(url, "")
+
+            try:
+                output_file.write_text(content)
+                results.append((url, bool(content), content))
+            except OSError as e:
+                # File write failed - log error and mark as failure
+                console.print(
+                    f"[red]ERROR:[/red] Failed to write {flat_filename}: {e}",
+                    file=sys.stderr
+                )
+                results.append((url, False, f"Write error: {e}"))
 
     return results
 

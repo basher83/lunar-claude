@@ -222,3 +222,19 @@ reviews:
 
 chat:
   auto_reply: true
+
+knowledge_base:
+  opt_out: false
+  code_guidelines:
+    enabled: true
+    filePatterns:
+      - "**/CLAUDE.md"
+      - "plugins/meta/claude-docs/skills/claude-docs/reference/**/*.md"
+  learnings:
+    scope: auto
+  web_search:
+    enabled: true
+  issues:
+    scope: auto
+  pull_requests:
+    scope: auto

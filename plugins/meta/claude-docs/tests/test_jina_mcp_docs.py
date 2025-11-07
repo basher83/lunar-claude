@@ -43,23 +43,33 @@ async def test_sdk_orchestrator_configuration():
 
 
 @pytest.mark.asyncio
-@patch("claude_agent_sdk.ClaudeSDKClient")
-async def test_parallel_download_via_mcp(mock_client):
+async def test_parallel_download_via_mcp(tmp_path):
     """Test parallel download orchestration via Jina MCP."""
+    from claude_agent_sdk import AssistantMessage, TextBlock
     from jina_mcp_docs import download_batch_parallel
 
     # Mock SDK client responses
-    mock_instance = AsyncMock()
-    mock_client.return_value.__aenter__.return_value = mock_instance
+    with patch("jina_mcp_docs.ClaudeSDKClient") as mock_client:
+        mock_instance = AsyncMock()
+        mock_client.return_value.__aenter__.return_value = mock_instance
 
-    urls = [
-        "https://docs.claude.com/page1.md",
-        "https://docs.claude.com/page2.md",
-        "https://docs.claude.com/page3.md",
-    ]
+        # Mock receive_response to return some content
+        async def mock_receive():
+            yield AssistantMessage(
+                model="claude-sonnet-4-5-20250929",
+                content=[TextBlock(text="Mock content from parallel_read_url")],
+            )
 
-    results = await download_batch_parallel(urls)
+        mock_instance.receive_response = mock_receive
 
-    # Should have attempted parallel download
-    assert mock_instance.query.called
-    assert len(results) == 3
+        urls = [
+            "https://docs.claude.com/page1.md",
+            "https://docs.claude.com/page2.md",
+            "https://docs.claude.com/page3.md",
+        ]
+
+        results = await download_batch_parallel(urls, tmp_path)
+
+        # Should have attempted parallel download
+        assert mock_instance.query.called
+        assert len(results) == 3

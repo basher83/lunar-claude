@@ -62,3 +62,40 @@ reviews:
       - "DRAFT"
     labels: []
     base_branches: []
+
+  path_filters:
+    # Exclude virtual environments and caches
+    - "!**/.venv/**"
+    - "!**/venv/**"
+    - "!**/__pycache__/**"
+    - "!**/.ruff_cache/**"
+    - "!**/.rumdl-cache/**"
+    - "!**/.pytest_cache/**"
+    - "!**/.mypy_cache/**"
+
+    # Exclude build artifacts
+    - "!**/dist/**"
+    - "!**/build/**"
+    - "!**/.eggs/**"
+    - "!**/node_modules/**"
+
+    # Exclude working documents
+    - "!docs/plans/**"
+    - "!docs/research/**"
+    - "!docs/reviews/**"
+    - "!docs/notes/**"
+
+    # Exclude examples and templates
+    - "!plugins/**/examples/**"
+    - "!plugins/**/assets/templates/**"
+
+    # Exclude test fixtures
+    - "!tests/fixtures/**"
+    - "!**/test/fixtures/**"
+
+    # Include primary directories
+    - "scripts/**"
+    - "plugins/**"
+    - "docs/**"
+    - ".claude/**"
+    - ".claude-plugin/**"

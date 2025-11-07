@@ -31,6 +31,48 @@ Code features:
 Claude will use the skill to access up-to-date official documentation and
 provide accurate answers.
 
+## Available Scripts
+
+The `scripts/` directory contains multiple implementations for downloading Claude Code documentation, each using a different web scraping approach:
+
+### claude_docs.py (Original)
+Direct HTTP downloads using `httpx` with caching and incremental updates.
+
+**Best for:** Standard usage, incremental updates, caching
+
+```bash
+./scripts/claude_docs.py --output-dir ./ai_docs
+```
+
+### jina_reader_docs.py
+Direct Jina Reader API calls using `requests` library.
+
+**Best for:** Simple scripts, no MCP setup, direct HTTP control
+
+```bash
+./scripts/jina_reader_docs.py --output-dir ./ai_docs
+```
+
+### jina_mcp_docs.py
+Parallel operations via Claude Agent SDK + Jina MCP Server.
+
+**Best for:** Speed (3x faster), research tasks, batch processing
+
+```bash
+./scripts/jina_mcp_docs.py --batch-size 3 --output-dir ./ai_docs
+```
+
+### firecrawl_mcp_docs.py
+Robust scraping via Claude Agent SDK + Firecrawl MCP Server.
+
+**Best for:** Production reliability, complex pages, rich metadata
+
+```bash
+./scripts/firecrawl_mcp_docs.py --main-content-only --output-dir ./ai_docs
+```
+
+**For detailed comparison and decision guide, see:** [docs/script-comparison.md](docs/script-comparison.md)
+
 ## How it works
 
 ### Components

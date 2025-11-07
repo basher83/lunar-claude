@@ -39,11 +39,17 @@ async def test_download_with_metadata(tmp_path):
         mock_instance = AsyncMock()
         mock_client.return_value.__aenter__.return_value = mock_instance
 
-        # Mock receive_response to return some content
+        # Mock receive_response to return realistic content (>100 chars)
+        mock_content = """# Claude Code Documentation
+
+This is a comprehensive guide to using Claude Code. It contains detailed
+information about features, best practices, and examples. This mock content
+is long enough to pass validation checks."""
+
         async def mock_receive():
             yield AssistantMessage(
                 model="claude-sonnet-4-5-20250929",
-                content=[TextBlock(text="Mock content from firecrawl")],
+                content=[TextBlock(text=mock_content)],
             )
 
         mock_instance.receive_response = mock_receive
@@ -54,7 +60,7 @@ async def test_download_with_metadata(tmp_path):
         # Should have attempted download via MCP
         assert mock_instance.query.called
         assert success is True
-        assert "Mock content from firecrawl" in content
+        assert "Claude Code Documentation" in content
 
 
 @pytest.mark.asyncio

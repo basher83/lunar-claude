@@ -29,19 +29,32 @@ async def test_firecrawl_orchestrator_configuration():
 
 
 @pytest.mark.asyncio
-@patch("claude_agent_sdk.ClaudeSDKClient")
-async def test_download_with_metadata(mock_client):
+async def test_download_with_metadata(tmp_path):
     """Test that Firecrawl returns rich metadata."""
+    from claude_agent_sdk import AssistantMessage, TextBlock
     from firecrawl_mcp_docs import download_page_firecrawl
 
-    mock_instance = AsyncMock()
-    mock_client.return_value.__aenter__.return_value = mock_instance
+    # Mock SDK client responses
+    with patch("firecrawl_mcp_docs.ClaudeSDKClient") as mock_client:
+        mock_instance = AsyncMock()
+        mock_client.return_value.__aenter__.return_value = mock_instance
 
-    url = "https://docs.claude.com/page1.md"
-    success, content, metadata = await download_page_firecrawl(url, Path("/tmp"))
+        # Mock receive_response to return some content
+        async def mock_receive():
+            yield AssistantMessage(
+                model="claude-sonnet-4-5-20250929",
+                content=[TextBlock(text="Mock content from firecrawl")],
+            )
 
-    # Should have attempted download via MCP
-    assert mock_instance.query.called
+        mock_instance.receive_response = mock_receive
+
+        url = "https://docs.claude.com/page1.md"
+        success, content, metadata = await download_page_firecrawl(url, tmp_path)
+
+        # Should have attempted download via MCP
+        assert mock_instance.query.called
+        assert success is True
+        assert "Mock content from firecrawl" in content
 
 
 @pytest.mark.asyncio

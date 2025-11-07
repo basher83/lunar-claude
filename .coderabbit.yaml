@@ -219,3 +219,6 @@ reviews:
     github-checks:
       enabled: true
       timeout_ms: 90000
+
+chat:
+  auto_reply: true

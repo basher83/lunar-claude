@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """Tests for jina_reader_docs.py script."""
 
 import sys

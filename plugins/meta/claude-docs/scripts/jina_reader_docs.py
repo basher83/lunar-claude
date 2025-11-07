@@ -143,14 +143,14 @@ def download_page_jina(
             if attempt < retries and e.response.status_code >= 500:
                 wait_time = 2 ** (attempt - 1)
                 console.print(
-                    f"[yellow]⚠[/yellow] HTTP {e.response.status_code}, "
+                    f"[yellow]WARNING:[/yellow] HTTP {e.response.status_code}, "
                     f"retrying in {wait_time}s (attempt {attempt}/{retries})"
                 )
                 time.sleep(wait_time)
                 continue
             else:
                 console.print(
-                    f"[red]✗[/red] HTTP {e.response.status_code}",
+                    f"[red]ERROR:[/red] HTTP {e.response.status_code}",
                     file=sys.stderr
                 )
                 return False, "", {}
@@ -159,13 +159,13 @@ def download_page_jina(
             if attempt < retries:
                 wait_time = 2 ** (attempt - 1)
                 console.print(
-                    f"[yellow]⚠[/yellow] Network error, "
+                    f"[yellow]WARNING:[/yellow] Network error, "
                     f"retrying in {wait_time}s (attempt {attempt}/{retries})"
                 )
                 time.sleep(wait_time)
                 continue
             else:
-                console.print(f"[red]✗[/red] {e}", file=sys.stderr)
+                console.print(f"[red]ERROR:[/red] {e}", file=sys.stderr)
                 return False, "", {}
 
     return False, "", {}
@@ -248,7 +248,7 @@ def main(
                     size_kb = metadata["size"] / 1024
                     speed_kbps = (metadata["size"] / 1024) / duration if duration > 0 else 0
                     console.print(
-                        f"[green]✓[/green] {flat_filename}.md "
+                        f"[green]SUCCESS:[/green] {flat_filename}.md "
                         f"[dim]({size_kb:.1f}KB in {duration:.2f}s @ {speed_kbps:.1f}KB/s)[/dim]"
                     )
                     success_count += 1
@@ -300,9 +300,9 @@ def main(
         table.add_column("Value", style="green")
 
         table.add_row("Total Pages", str(len(pages)))
-        table.add_row("✓ Downloaded", f"[green]{success_count}[/green]")
+        table.add_row("Downloaded", f"[green]{success_count}[/green]")
         if failed_count > 0:
-            table.add_row("✗ Failed", f"[red]{failed_count}[/red]")
+            table.add_row("Failed", f"[red]{failed_count}[/red]")
         table.add_row("Total Size", f"{total_bytes / 1024:.1f} KB")
         table.add_row("Total Time", f"{total_time:.2f}s")
 
@@ -315,7 +315,7 @@ def main(
         # Note about parallel potential
         if len(download_times) > 1:
             console.print(
-                "\n[yellow]💡 Note:[/yellow] Sequential processing. "
+                "\n[yellow]NOTE:[/yellow] Sequential processing. "
                 "See jina_mcp_docs.py for parallel downloads (~3x faster)."
             )
 

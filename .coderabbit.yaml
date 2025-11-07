@@ -183,3 +183,39 @@ reviews:
         - Schema compliance where applicable
         - Comments explain non-obvious settings
         - Consistent with project conventions
+
+  finishing_touches:
+    docstrings:
+      enabled: true
+    unit_tests:
+      enabled: true
+
+  tools:
+    # Python tools
+    ruff:
+      enabled: true
+    pylint:
+      enabled: true
+
+    # Shell tools
+    shellcheck:
+      enabled: true
+
+    # Markdown tools
+    markdownlint:
+      enabled: true
+
+    # YAML tools
+    yamllint:
+      enabled: true
+
+    # Security scanning
+    gitleaks:
+      enabled: false
+    checkov:
+      enabled: true
+
+    # GitHub checks integration
+    github-checks:
+      enabled: true
+      timeout_ms: 90000

@@ -78,20 +78,17 @@ This skill uses progressive disclosure. Start here, then navigate to specific to
 **Architecture fundamentals** - What each component is and how they work
 
 - **[architecture.md](reference/architecture.md)** - Component definitions, capabilities, restrictions
-- **[progressive-disclosure.md](reference/progressive-disclosure.md)** - How Skills load content efficiently
 - **[core-4-framework.md](reference/core-4-framework.md)** - Deep dive into Context, Model, Prompt, Tools
-- **[hooks-reference.md](reference/hooks-reference.md)** - Five hooks, when they fire, what data they provide
 
 ### Implementation Patterns
 
 **How to use components effectively** - Decision-making and implementation
 
 - **[decision-framework.md](patterns/decision-framework.md)** - When to use Skills vs Sub-Agents vs MCP vs Slash Commands
-- **[agent-descriptions.md](patterns/agent-descriptions.md)** - Writing effective descriptions that trigger skills and agents correctly
-- **[hooks-observability.md](patterns/hooks-observability.md)** - Implementing hooks for logging and control
+- **[hooks-in-composition.md](patterns/hooks-in-composition.md)** - Implementing hooks for observability and control
 - **[orchestrator-pattern.md](patterns/orchestrator-pattern.md)** - Multi-agent orchestration at scale
-- **[context-window-protection.md](patterns/context-window-protection.md)** - Managing context across agents
-- **[practical-guide.md](patterns/practical-guide.md)** - Q&A session with practical implementation questions
+- **[context-management.md](patterns/context-management.md)** - Managing context across agents
+- **[context-in-composition.md](patterns/context-in-composition.md)** - Context handling in multi-agent systems
 
 ### Anti-Patterns
 
@@ -103,16 +100,14 @@ This skill uses progressive disclosure. Start here, then navigate to specific to
 
 **Real-world case studies and progression paths**
 
-- **[work-tree-manager.md](examples/work-tree-manager.md)** - Evolution from prompt → sub-agent → skill
-- **[multi-agent-case-studies.md](examples/multi-agent-case-studies.md)** - Scout-builder patterns, orchestration workflows
+- **[progression-example.md](examples/progression-example.md)** - Evolution from prompt → sub-agent → skill (work tree manager example)
+- **[case-studies.md](examples/case-studies.md)** - Scout-builder patterns, orchestration workflows, multi-agent systems
 
 ### Workflows
 
 **Visual guides and decision trees**
 
-- **[visual-decision-trees.md](workflows/visual-decision-trees.md)** - Mindmaps, decision matrices, GraphViz trees
-- **[evolution-path.md](workflows/evolution-path.md)** - Step-by-step progression from simple to complex
-- **[agentic-prompt-guide.md](workflows/agentic-prompt-guide.md)** - Purpose → Variables → Workflow → Report pattern for sub-agent prompts
+- **[decision-tree.md](workflows/decision-tree.md)** - Decision trees, mindmaps, and visual guides for choosing components
 
 ## Getting Started
 
@@ -132,16 +127,15 @@ This skill uses progressive disclosure. Start here, then navigate to specific to
 
 ### If you're adding observability
 
-1. Read **[reference/hooks-reference.md](reference/hooks-reference.md)** to understand available hooks
-2. Follow **[patterns/hooks-observability.md](patterns/hooks-observability.md)** for implementation
-3. Use isolated scripts pattern (UV, bun, or shell)
+1. Read **[patterns/hooks-in-composition.md](patterns/hooks-in-composition.md)** to understand available hooks and implementation
+2. Use isolated scripts pattern (UV, bun, or shell)
 
 ### If you're scaling to multi-agent orchestration
 
 1. Ensure you've mastered custom agents first
 2. Read **[patterns/orchestrator-pattern.md](patterns/orchestrator-pattern.md)**
-3. Study **[examples/multi-agent-case-studies.md](examples/multi-agent-case-studies.md)**
-4. Review **[patterns/context-window-protection.md](patterns/context-window-protection.md)**
+3. Study **[examples/case-studies.md](examples/case-studies.md)**
+4. Review **[patterns/context-management.md](patterns/context-management.md)**
 
 ## Key Principles from the Field
 
@@ -194,13 +188,13 @@ This knowledge synthesizes:
 
 **Need to choose the right component?** → [patterns/decision-framework.md](patterns/decision-framework.md)
 
-**Need to implement hooks?** → [patterns/hooks-observability.md](patterns/hooks-observability.md)
+**Need to implement hooks?** → [patterns/hooks-in-composition.md](patterns/hooks-in-composition.md)
 
 **Need to scale to multiple agents?** → [patterns/orchestrator-pattern.md](patterns/orchestrator-pattern.md)
 
 **Need to see real examples?** → [examples/](examples/)
 
-**Need visual guides?** → [workflows/visual-decision-trees.md](workflows/visual-decision-trees.md)
+**Need visual guides?** → [workflows/decision-tree.md](workflows/decision-tree.md)
 
 **Want to avoid mistakes?** → [anti-patterns/common-mistakes.md](anti-patterns/common-mistakes.md)
 

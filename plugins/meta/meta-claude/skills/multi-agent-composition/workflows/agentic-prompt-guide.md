@@ -114,7 +114,7 @@ The agent is not aware of the user's intent, so you must state it clearly.
 **Example:**
 
 ```text
-You are a code security reviewer. Your task is to identify security vulnerabilities 
+You are a code security reviewer. Your task is to identify security vulnerabilities
 in Python files.
 
 Intent: RESEARCH ONLY - Do not modify any code, only analyze and report findings.
@@ -257,7 +257,7 @@ Return a JSON object with this structure:
   "summary": "human-readable summary for context"
 }
 
-IMPORTANT: 
+IMPORTANT:
 - Return ONLY valid JSON, no markdown code blocks or additional text
 - Ensure all strings are properly escaped
 - Include a summary field for human readability
@@ -318,7 +318,7 @@ Return a JSON object with this structure:
   "summary": "Reviewed 3 files and found 5 vulnerabilities: 2 critical, 2 high, 1 medium. Primary concerns are SQL injection in auth.py and weak password hashing in users.py."
 }
 
-IMPORTANT: 
+IMPORTANT:
 - Return ONLY the JSON object, no additional text or markdown formatting
 - Ensure the JSON is valid and parseable
 - Include ALL findings that meet the severity threshold
@@ -332,7 +332,7 @@ IMPORTANT:
 Here's a full agentic prompt using all 4 parts:
 
 ```text
-You are a code security reviewer. Your task is to identify security vulnerabilities 
+You are a code security reviewer. Your task is to identify security vulnerabilities
 in Python files and provide detailed remediation guidance.
 
 Intent: RESEARCH ONLY - Do not modify any code, only analyze and report findings.
@@ -415,7 +415,7 @@ Return a JSON object with this structure:
   "summary": "Reviewed 3 files and found 5 vulnerabilities: 2 critical, 3 high. Primary concerns are SQL injection in auth.py (lines 42, 67) and weak password hashing in queries.py. No issues found in users.py."
 }
 
-IMPORTANT: 
+IMPORTANT:
 - Return ONLY the JSON object, no additional text or markdown formatting
 - Ensure the JSON is valid and parseable
 - Include ALL findings that meet the severity threshold
@@ -448,7 +448,7 @@ Launch multiple agents concurrently when tasks are independent to maximize perfo
 ```text
 Launch all three agents in a single message with multiple tool uses:
 - Agent 1: Search for authentication code
-- Agent 2: Search for database queries  
+- Agent 2: Search for database queries
 - Agent 3: Search for API endpoints
 
 All execute concurrently, return results together
@@ -558,7 +558,7 @@ Put the 4-part structure first, then provide the actual inputs:
 
 ```text
 [Purpose]
-[Variables]  
+[Variables]
 [Workflow]
 [Report Format]
 
@@ -720,7 +720,7 @@ Main Agent Workflow:
 4. Aggregate, deduplicate, and synthesize findings
 5. Generate final unified report
 
-Example: 
+Example:
 - Main agent: "Analyze entire codebase for issues"
 - Sub-agent 1: "Review authentication code"
 - Sub-agent 2: "Review database queries"
@@ -748,9 +748,9 @@ After receiving sub-agent results:
 ```text
 Sub-agent returned: [detailed JSON with 15 findings]
 
-Main agent summarizes: "I found 15 security vulnerabilities across 3 files. 
-The most critical are 2 SQL injection points in auth.py (lines 42, 67) and 
-1 hardcoded API key in config.py (line 23). Would you like me to fix these 
+Main agent summarizes: "I found 15 security vulnerabilities across 3 files.
+The most critical are 2 SQL injection points in auth.py (lines 42, 67) and
+1 hardcoded API key in config.py (line 23). Would you like me to fix these
 or see the full detailed report?"
 ```
 

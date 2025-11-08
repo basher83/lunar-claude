@@ -494,6 +494,6 @@ These descriptions:
 
 ## Next Steps
 
-- See [workflows/agentic-prompt-template.md](../workflows/agentic-prompt-template.md) for prompt structure
+- See [workflows/agentic-prompt-guide.md](../workflows/agentic-prompt-guide.md) for prompt structure
 - See [anti-patterns/common-mistakes.md](../anti-patterns/common-mistakes.md) for what to avoid
 - See [examples/multi-agent-case-studies.md](../examples/multi-agent-case-studies.md) for real implementations

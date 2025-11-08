@@ -112,7 +112,7 @@ This skill uses progressive disclosure. Start here, then navigate to specific to
 
 - **[visual-decision-trees.md](workflows/visual-decision-trees.md)** - Mindmaps, decision matrices, GraphViz trees
 - **[evolution-path.md](workflows/evolution-path.md)** - Step-by-step progression from simple to complex
-- **[agentic-prompt-template.md](workflows/agentic-prompt-template.md)** - Purpose → Variables → Workflow → Report pattern for sub-agent prompts
+- **[agentic-prompt-guide.md](workflows/agentic-prompt-guide.md)** - Purpose → Variables → Workflow → Report pattern for sub-agent prompts
 
 ## Getting Started
 

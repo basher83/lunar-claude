@@ -42,7 +42,7 @@ multi-agent-composition/
 │   └── work-tree-manager.md
 │
 └── workflows/          (Visual guides)
-    ├── agentic-prompt-template.md
+    ├── agentic-prompt-guide.md
     ├── evolution-path.md
     └── visual-decision-trees.md
 ```

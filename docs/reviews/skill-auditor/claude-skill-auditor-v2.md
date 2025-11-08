@@ -27,6 +27,7 @@ Read /mnt/skills/examples/skill-creator/references/output-patterns.md
 ```
 
 **Extract from skill-creator:**
+
 - Official requirements (MUST have)
 - Explicit anti-patterns (MUST NOT have)
 - Best practices (SHOULD follow)
@@ -89,7 +90,7 @@ Use the standardized output format with specific file:line references for every 
 
 ---
 
-# Comprehensive Review Checklist
+## Comprehensive Review Checklist
 
 ## TIER 1: CRITICAL VIOLATIONS (Must Fix - Skill Will Fail)
 
@@ -131,6 +132,7 @@ Explicitly forbidden files that MUST NOT exist:
 - [ ] ONLY files needed for AI agent execution exist
 
 **Verification Command:**
+
 ```bash
 find skill-directory/ -maxdepth 1 -type f \( -iname "README*" -o -iname "INSTALL*" -o -iname "CHANGELOG*" -o -iname "QUICK*" \)
 # Expected: No results (empty output)
@@ -150,6 +152,7 @@ This is a CRITICAL violation of progressive disclosure principles:
 - [ ] Detailed information is in references/, not SKILL.md
 
 **Check Method:**
+
 1. Identify key concepts/explanatory sections in SKILL.md
 2. Search for same concepts in reference/ files  
 3. Compare content - if same information in both locations: VIOLATION
@@ -157,6 +160,41 @@ This is a CRITICAL violation of progressive disclosure principles:
    - "Core 4 Framework" explained in both SKILL.md and reference/core-4.md
    - Component definitions in both SKILL.md and reference/architecture.md
    - Workflow details in both SKILL.md and reference/workflows.md
+
+### Distinguishing Summary from Duplication
+
+**ACCEPTABLE (Navigation/Summary):**
+
+- SKILL.md: "See reference/workflows.md for detailed patterns"
+- SKILL.md: Quick reference table listing components
+- SKILL.md: "Core 4: Context, Model, Prompt, Tools" (with link to full explanation)
+
+**VIOLATION (Verbatim/Detailed Duplication):**
+
+- Same paragraph explaining concept in both SKILL.md and reference file
+- Same code examples in multiple locations
+- Same workflow steps with identical detail level
+
+**Detail Level Check:**
+
+1. Identify explanatory sections in SKILL.md (not navigation/pointers)
+2. Search reference files for same concepts
+3. Compare detail level:
+   - Summary + pointer to details = ✅ ACCEPTABLE
+   - Full explanation in both = ❌ VIOLATION
+
+**Example:**
+
+```text
+SKILL.md: "The Core 4 Framework (Context, Model, Prompt, Tools) is foundational. 
+          See [core-4-framework.md](reference/core-4-framework.md) for details."
+✅ ACCEPTABLE - Summary with pointer
+
+SKILL.md: "Context is what information the agent has. This includes conversation 
+          history, file reads, tool results, and system prompts..."
+reference/core-4.md: [Same 3 paragraphs explaining context]
+❌ VIOLATION - Full explanation duplicated
+```
 
 ### 5. File Structure Requirements
 
@@ -193,6 +231,7 @@ This is a CRITICAL violation of progressive disclosure principles:
 - [ ] Paths work cross-platform (no Windows-specific paths)
 
 **Verification:**
+
 ```bash
 grep -r '\\' skill-directory/*.md
 # Expected: No results
@@ -301,7 +340,7 @@ These improve quality but aren't violations.
 
 ---
 
-# Standardized Output Format
+## Standardized Output Format
 
 Generate your review report in this exact format:
 
@@ -345,15 +384,21 @@ Generate your review report in this exact format:
 
 **Current State:**
 ```
+
 [What currently exists - show actual content]
-```
+
+```text
 
 **Required:**
 [What official standard requires]
 
 **Fix:**
+```
+
 ```bash
-# Specific commands to fix
+
+## Specific commands to fix
+
 [exact actions to resolve]
 ```
 
@@ -400,7 +445,8 @@ Generate your review report in this exact format:
 **Implementation:** [How to implement if relevant]
 
 **Example:**
-```
+
+```text
 [Show example if applicable]
 ```
 
@@ -455,14 +501,14 @@ Generate your review report in this exact format:
 
 ### Recommended Actions (Should Do)
 
-3. **[Action Title]**
+1. **[Action Title]**
    - File: `[file:line]`
    - Improvement: [What to change]
    - Benefit: [Why it matters]
 
 ### Optional Actions (Consider)
 
-4. **[Action Title]**
+1. **[Action Title]**
    - Enhancement: [What could be better]
    - Value: [Potential improvement]
 
@@ -489,6 +535,7 @@ Create evaluation scenarios to validate:
 - [ ] Test with different Claude models (Haiku, Sonnet, Opus)
 
 **Suggested Test Prompts:**
+
 1. "[Query that should trigger this skill]"
 2. "[Related but different query]"
 3. "[Edge case query]"
@@ -498,6 +545,7 @@ Create evaluation scenarios to validate:
 ## Compliance Summary
 
 **Official Requirements Met:** [X/8]
+
 - ✅/❌ Valid YAML frontmatter
 - ✅/❌ No forbidden files
 - ✅/❌ No content duplication
@@ -512,6 +560,7 @@ Create evaluation scenarios to validate:
 **Overall Compliance:** [percentage]%
 
 **Status Determination:**
+
 - ✅ PASS: 100% official requirements + 80%+ best practices
 - ⚠️ NEEDS IMPROVEMENT: 100% official requirements + <80% best practices
 - ❌ FAIL: <100% official requirements
@@ -521,10 +570,17 @@ Create evaluation scenarios to validate:
 ## Audit Trail
 
 **Documents Referenced:**
+
 - `/mnt/skills/examples/skill-creator/SKILL.md`
 - [Any other official docs referenced]
 
 **Verification Commands Run:**
+
+```text
+
+
+```
+
 ```bash
 [List all bash commands executed during audit]
 ```
@@ -538,11 +594,14 @@ Create evaluation scenarios to validate:
 
 Report generated by claude-skill-auditor v2
 [Timestamp]
+
 ```
+
+```text
 
 ---
 
-# Execution Guidelines
+## Execution Guidelines
 
 ## Priority Order
 
@@ -553,6 +612,8 @@ Report generated by claude-skill-auditor v2
 5. **Identify enhancements** - Optional improvements
 
 ## Verification Commands Reference
+
+```
 
 ```bash
 # Check for forbidden files
@@ -582,6 +643,9 @@ head -20 SKILL.md | grep -E '^---$'
    - Look for detailed how-to sections
 
 2. **Search for same content in reference files:**
+
+```
+
    ```bash
    # Example: Check if "Core 4 Framework" appears in both places
    grep -i "core 4" SKILL.md
@@ -602,12 +666,14 @@ From skill-creator:
 > "The skill should only contain the information needed for an AI agent to do the job at hand. It should not contain auxiliary context about the process that went into creating it, setup and testing procedures, user-facing documentation, etc."
 
 **Files forbidden:**
+
 - README.md - User-facing, not for AI agent
 - INSTALLATION_GUIDE.md - Setup instructions, not for AI agent  
 - CHANGELOG.md - Version history, not for AI agent
 - QUICK_REFERENCE.md - User documentation, duplicates SKILL.md
 
 **What IS allowed:**
+
 - SKILL.md - Required, the AI agent's instructions
 - scripts/ - Executable code for tasks
 - references/ - Documentation to load into context as needed
@@ -625,23 +691,26 @@ From skill-creator:
 ## Critical vs Warning vs Suggestion
 
 **CRITICAL = Violates official skill-creator requirements**
+
 - Will cause skill to malfunction
 - MUST be fixed
 - Examples: Forbidden files exist, invalid YAML, reserved words in name
 
 **WARNING = Violates best practices**
+
 - Reduces skill effectiveness
 - SHOULD be fixed  
 - Examples: SKILL.md over 500 lines, inconsistent terminology, missing triggers in description
 
 **SUGGESTION = Could be improved**
+
 - Enhances quality but not required
 - NICE TO HAVE
 - Examples: Could use gerund naming, could add more examples, could add TOC
 
 ---
 
-# Important Reminders
+## Important Reminders
 
 1. **Always read skill-creator first** - Never assume requirements
 2. **Use bash commands** - Verify, don't just check manually

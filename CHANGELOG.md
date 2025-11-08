@@ -5,240 +5,172 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.2.0] - 2025-11-02
-
-### 🔒 Security
-
-- **changelog**: Add git-cliff configuration and documentation by @basher83
-
+## [Unreleased]
 
 ### 🚀 Features
 
-- Create marketplace category and template directories by @basher83
+- **mise**: Add intelligent markdown linting tasks
 
-- Create clean marketplace manifest by @basher83
+- **plugins**: Add python-tools plugin with SDK support
 
-- Create plugin template directory structure by @basher83
+- **agents**: Add skill-creator subagent with comprehensive testing methodology
 
-- Add template plugin manifest by @basher83
+- **agents**: Add claude-skill-auditor subagent for comprehensive skill validation
 
-- Add template README with standard sections by @basher83
+- **agents,commands**: Add agent-sdk-verifier and review-sdk-app command
 
-- Add example agent template by @basher83
+- **skills,scripts**: Add doc-generator skill and note_smith.py SDK demo
 
-- Add example skill template by @basher83
+- **commands**: Add load_superpowers command placeholder
 
-- Add example hooks configuration by @basher83
+- **plugins**: Update python-tools plugin with SDK improvements and uv converter
 
-- Create meta-claude plugin structure by @basher83
+- **docs**: Add comprehensive validation framework with checklist-template-subagent pattern
 
-- Add skill-creator skill by @basher83
+- **meta-claude**: Add composing-claude-code skill and release v0.2.0
 
-- Add agent-creator skill by @basher83
+- **commands**: Add generate-changelog command
 
-- Add hook-creator skill by @basher83
+- **claude-dev-sandbox**: Add video-processor skill
 
-- Add command-creator skill by @basher83
+- **scripts**: Add dual-mode support to markdown_formatter.py
 
-- Add new-plugin command by @basher83
+- **scripts**: Add --blocking mode and fix exit code consistency
 
-- Add meta-claude to marketplace by @basher83
+- **coderabbit**: Add base configuration with schema
 
-- Add structure verification script by @basher83
+- **coderabbit**: Configure assertive profile with full automation
 
-- Add python-uv-tools plugin to devops category by @basher83
+- **coderabbit**: Configure auto-review for PRs
 
-- Add three homelab infrastructure plugins by @basher83
+- **coderabbit**: Add automated labeling strategy
 
-- Add claude-dev-sandbox plugin with python-uv-scripts skill by @basher83
+- **coderabbit**: Configure path filters for focused reviews
 
-- **claude-docs-sync**: Create plugin structure and README by @basher83
+- **coderabbit**: Add path instructions for Python and plugin files
 
-- **claude-docs-sync**: Add JSON output format to script by @basher83
+- **coderabbit**: Add path instructions for documentation files
 
-- **claude-docs-sync**: Add minimal documentation awareness skill by @basher83
+- **coderabbit**: Configure tool integration
 
-- **claude-docs-sync**: Add update-docs slash command by @basher83
+- **coderabbit**: Enable auto-reply in chat
 
-- **claude-docs-sync**: Add SessionStart staleness check hook by @basher83
+- **coderabbit**: Configure knowledge base with CLAUDE.md and official docs
 
-- Add claude-docs plugin with auto-sync skill by @basher83
+- **coderabbit**: Configure code generation for docstrings and tests
 
-- **skills**: Add crawl4ai web scraping skill by @basher83
+- Add skill creator and context isolation reference
 
-- **plugins**: Add claude-dev-sandbox plugin with research docs by @basher83
+- **multi-agent-v2**: Add skill definition and reference documentation
 
-- **scripts**: Add documentation extraction example by @basher83
+- **multi-agent-v2**: Add composition patterns
 
-- **plugins**: Add python-tools plugin with consolidated python-uv-scripts skill by @basher83
+- **multi-agent-v2**: Add decision tree workflow
 
-- **scripts**: Add bash command validator hook example by @basher83
+- **multi-agent-v2**: Add example case studies and progression
 
-- **meta**: Enhance verify-structure.py with comprehensive validation by @basher83
-
-- **claude**: Add PostToolUse hooks for auto-formatting by @basher83
-
-- **scripts**: Add Python formatter and checker scripts by @basher83
-
-- **claude**: Add agents and hooks configuration by @basher83
-
-- **python-tools**: Add python-code-quality skill structure by @basher83
-
-- **python-tools**: Add python-json-parsing skill structure by @basher83
-
-- **python-tools**: Add generic config templates for ruff and pyright by @basher83
-
-- **python-tools**: Add pre-commit and CI/CD integration patterns
-
-- **agents**: Add intelligent markdown linting agent definitions by @basher83
-
-- **orchestrator**: Add intelligent markdown linting workflow by @basher83
-
-- **orchestrator**: Integrate Claude SDK for subagent spawning by @basher83
-
-- **orchestrator**: Implement investigation result aggregation by @basher83
-
-- **commands**: Add /intelligent-lint slash command by @basher83
-
-- **commands**: Add intelligent markdown linting slash command by @basher83
-
-- **scripts**: Add rumdl output parser for intelligent linting by @basher83
+- **multi-agent-v2**: Add anti-patterns documentation
 
 
 ### 🐛 Bug Fixes
 
-- Correct .gitkeep placement in plugin template by @basher83
+- **lint**: Use explicit glob pattern for .claude exclusion
 
-- **netbox**: Remove invalid [tool.uv.metadata] from API client scripts by @basher83
+- **claude-docs**: Enable HTTP redirect following in httpx client
 
-- **hooks**: Update python_formatter.py path to new location by @basher83
-
-- **config**: Exclude .claude/ from rumdl and use official slash command format by @basher83
-
-- **ansible**: Resolve markdown linting in cluster-automation by @basher83
-
-- **ansible**: Resolve markdown linting in testing-comprehensive by @basher83
-
-- **ansible**: Resolve markdown linting in variable-management-patterns by @basher83
-
-- **netbox**: Shorten frontmatter description and wrap long line by @basher83
-
-- **orchestrator**: Add --dry-run support and subprocess error handling by @basher83
-
-- **orchestrator**: Improve error handling in subagent spawning by @basher83
-
-- **tests**: Import aggregation function instead of duplicating it by @basher83
-
-- **plugins**: Resolve markdown linting in plugins and templates by @basher83
-
-- **docs**: Resolve markdown linting in docs and examples by @basher83
+- **meta-claude**: Correct file references and enhance skill descriptions
 
 
 ### 📚 Documentation
 
-- Add meta-claude README by @basher83
+- Add testing campaign notes and detailed analysis
 
-- Update README with marketplace documentation by @basher83
+- Update prompts notes and sync Claude Code docs
 
-- Add mcp-builder example skill by @basher83
+- Fix broken links and trailing whitespace
 
-- Add documentation maintenance agent design by @basher83
+- Expand TODO.md with detailed action items and remove outdated notes
 
-- Add project instructions and reorganize documentation by @basher83
+- **git-cliff**: Expand configuration documentation with advanced patterns and troubleshooting
 
-- Add claude-docs-sync plugin design document by @basher83
+- **reviews**: Add comprehensive skill audit system
 
-- Update skill section to minimal approach by @basher83
+- Add metacognitive development framework and parahuman cognition research
 
-- **ai_docs**: Add web scraping tool research docs by @basher83
+- Add claude-mem usage guide and token efficiency analysis
 
-- **ideas**: Add hook-based approach to extend DeepWiki MCP by @basher83
+- Add research notes, Safety config, new idea, and exclude research from linting
 
-- **CLAUDE.md**: Simplify project documentation by @basher83
+- Add research pipeline meta-learning system design
 
-- Update planning and idea documents by @basher83
+- Add emergence analysis from research pipeline design session
 
-- **python-uv-scripts**: Simplify skill description by @basher83
+- Add metacognitive exploration transcript
 
-- **ai_docs**: Add comprehensive ruff documentation by @basher83
+- Add plugin-auditor agent design
 
-- **python-tools**: Update README for expanded toolkit by @basher83
+- Update CLAUDE.md and add prime-mind notes
 
-- Update README and architecture with implementation status by @basher83
+- Add prime-mind-v2 command with improved actionability
 
-- **ideas**: Add AI-powered markdown linting design notes by @basher83
+- Add claude-docs-upgrade challenge planning documents
 
-- Wrap long lines in remaining documentation files by @basher83
+- Add plan comparison and prime-mind prompt analysis
 
-- **plans**: Add intelligent markdown linting agent MVP plan by @basher83
+- Add web scraping research and planning documentation
+
+- **plans**: Add research pipeline design feedback
+
+- **plan**: Add CodeRabbit configuration design
+
+- **plan**: Add CodeRabbit configuration implementation plan
+
+- **plan**: Apply elements-of-style to evaluation design
+
+- **developer**: Add CodeRabbit configuration guide
+
+- **research**: Add persuasion techniques for coding agents
+
+- Add skill auditor reviews and YouTube transcripts
 
 
 ### ♻️ Refactor
 
-- **claude-docs-sync**: Add type-safe format enum and fix output handling by @basher83
+- **scripts**: Migrate intelligent markdown linting to claude-agent-sdk
 
-- Remove .claude/skills/python-uv-scripts (moved to plugin) by @basher83
+- **agents**: Update frontmatter to use comma-separated tools format
 
-- Remove python-uv-tools plugin (renamed to python-tools) by @basher83
+- **scripts**: Improve SDK implementation in intelligent-markdown-lint
 
-- Clean up claude-dev-sandbox migrated content by @basher83
+- **lint**: Use .rumdl.toml for exclusions instead of pre-commit config
 
-- **scripts**: Improve markdown_formatter.py error handling by @basher83
+- **meta-claude**: Rename composing-claude-code skill to multi-agent-composition
 
-- **plugins**: Rename python-uv-tools to python-tools by @basher83
+- **multi-agent**: Consolidate agentic prompt documentation
 
-- **python-tools**: Migrate ruff/pyright docs to python-code-quality skill by @basher83
+- **multi-agent**: Upgrade visual-decision-trees to comprehensive guide
 
-- **python-tools**: Migrate formatting tools to python-code-quality skill by @basher83
-
-- **python-tools**: Migrate JSON research to python-json-parsing skill by @basher83
-
-- Improve code quality across Python scripts by @basher83
-
-
-### 🧪 Testing
-
-- Add end-to-end test for intelligent linting by @basher83
-
-
-### 👷 CI/CD
-
-- **ruff**: Add ruff configuration and tooling setup by @basher83
+- Reorganize multi-agent composition and skill creator
 
 
 ### 🔧 Miscellaneous
 
-- Add .worktrees/ to .gitignore by @basher83
+- Remove obsolete scripts and backup files
 
-- Add documentation references and examples by @basher83
+- **lint**: Exclude docs/notes/ from markdown linting
 
-- **dev**: Add devcontainer config by @basher83
+- **deps**: Update dependency uv to v0.9.7
 
-- **deps**: Update dependency uv to v0.9.5 by @renovate[bot]
+- **tooling**: Migrate from pre-commit to prek and add link checking
 
-- **devcontainer**: Delete start over by @basher83
+- **docs**: Exclude review documents from markdown linting
 
-- Remove empty .gitkeep files from plugins directories by @basher83
+- Add Cursor IDE configuration rules
 
-- Apply markdown linting fixes across all documentation by @basher83
+- Remove backup CodeRabbit config
 
-- Add development tools and documentation by @basher83
+- Fix trailing whitespace in agentic-prompt-guide.md
 
-- **ai_docs**: Remove outdated Claude Code reference docs by @basher83
+- Add cursor worktrees configuration
 
-- **claude-docs**: Stop tracking .download_cache.json by @basher83
-
-- **meta**: Remove obsolete skill-creator SKILL.md by @basher83
-
-
-### Config
-
-- **rumdl**: Increase line length limit to 120 characters by @basher83
-
-
-### New Contributors
-
-- @basher83 made their first contribution
-- @ made their first contribution
-- @renovate[bot] made their first contribution
 <!-- generated by git-cliff -->

@@ -9,6 +9,7 @@
 ## Search Strategy
 
 This report combines three search methods:
+
 1. User correction phrases in prompts
 2. Problem-solution concept observations
 3. Bugfix type observations
@@ -180,6 +181,7 @@ firecrawl_mcp_docs.py was missing API key validation in main() function, leading
 **Total searches performed:** 3 strategies
 
 **Results by strategy:**
+
 - User correction phrases: 2 relevant incidents (searched 6 terms: "wrong", "stop", "why did you", "not what I asked", "no", "what are you")
 - Problem-solution concepts: 1 observation (prompt engineering analysis)
 - Bugfix observations: 10 observations (MCP parsing, API validation, worker health, etc.)
@@ -191,6 +193,7 @@ firecrawl_mcp_docs.py was missing API key validation in main() function, leading
 ## Patterns Observed
 
 **Common themes across incidents:**
+
 1. **Incomplete error handling** - Missing imports, validation, health checks
 2. **Output formatting issues** - Emojis, JSON pollution from subprocess output
 3. **Cross-platform compatibility** - Hardcoded paths, OS-specific assumptions

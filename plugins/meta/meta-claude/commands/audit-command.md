@@ -18,10 +18,39 @@ You will receive a file path via `$ARGUMENTS` pointing to a slash command file t
 
 Use Read tool to load the file at `$ARGUMENTS`.
 
-Handle errors:
+**Error Handling:**
 
-- File not found: "Error: File not found at [path]. Check path and try again."
-- Permission denied: "Error: Cannot read file at [path]. Permission denied."
+**File not found:**
+
+- Error: "Error: File not found at [path]. Check path and try again."
+- Suggest: Check if path is correct, verify file exists
+- Exit: Do not continue with audit
+
+**Permission denied:**
+
+- Error: "Error: Cannot read file at [path]. Permission denied."
+- Suggest: Check file permissions
+- Exit: Do not continue with audit
+
+**Empty file:**
+
+- Warning: "Warning: File is empty. Nothing to audit."
+- Suggest: Add content to command file
+- Exit: Do not continue with audit
+
+**Invalid markdown:**
+
+- Error: "Error: Markdown parsing failed at line X: [error details]"
+- Note: This will be caught during validation
+- Continue: Proceed with audit, report in technical compliance section
+
+**Unparseable frontmatter:**
+
+- Error: "Error: YAML parsing failed: [error] at line X"
+- Note: This will be caught during validation
+- Continue: Proceed with audit, report in technical compliance section
+
+**Always complete full audit:** Even if some checks fail, report all findings in a single comprehensive output.
 
 ### Step 2: Parse Frontmatter and Content
 

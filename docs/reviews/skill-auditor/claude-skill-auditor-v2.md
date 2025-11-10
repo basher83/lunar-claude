@@ -154,7 +154,7 @@ This is a CRITICAL violation of progressive disclosure principles:
 **Check Method:**
 
 1. Identify key concepts/explanatory sections in SKILL.md
-2. Search for same concepts in reference/ files  
+2. Search for same concepts in reference/ files
 3. Compare content - if same information in both locations: VIOLATION
 4. Examples of duplication:
    - "Core 4 Framework" explained in both SKILL.md and reference/core-4.md
@@ -186,11 +186,11 @@ This is a CRITICAL violation of progressive disclosure principles:
 **Example:**
 
 ```text
-SKILL.md: "The Core 4 Framework (Context, Model, Prompt, Tools) is foundational. 
+SKILL.md: "The Core 4 Framework (Context, Model, Prompt, Tools) is foundational.
           See [core-4-framework.md](reference/core-4-framework.md) for details."
 ✅ ACCEPTABLE - Summary with pointer
 
-SKILL.md: "Context is what information the agent has. This includes conversation 
+SKILL.md: "Context is what information the agent has. This includes conversation
           history, file reads, tool results, and system prompts..."
 reference/core-4.md: [Same 3 paragraphs explaining context]
 ❌ VIOLATION - Full explanation duplicated
@@ -668,7 +668,7 @@ From skill-creator:
 **Files forbidden:**
 
 - README.md - User-facing, not for AI agent
-- INSTALLATION_GUIDE.md - Setup instructions, not for AI agent  
+- INSTALLATION_GUIDE.md - Setup instructions, not for AI agent
 - CHANGELOG.md - Version history, not for AI agent
 - QUICK_REFERENCE.md - User documentation, duplicates SKILL.md
 
@@ -699,7 +699,7 @@ From skill-creator:
 **WARNING = Violates best practices**
 
 - Reduces skill effectiveness
-- SHOULD be fixed  
+- SHOULD be fixed
 - Examples: SKILL.md over 500 lines, inconsistent terminology, missing triggers in description
 
 **SUGGESTION = Could be improved**

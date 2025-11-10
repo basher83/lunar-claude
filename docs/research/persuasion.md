@@ -420,4 +420,3 @@ The key insight is that coding agents, like the models in the persuasion study, 
 [^142]: https://www.codecademy.com/article/chain-of-thought-cot-prompting
 
 [^143]: https://chain-of-code.github.io
-

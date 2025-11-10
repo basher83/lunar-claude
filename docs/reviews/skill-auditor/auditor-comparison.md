@@ -77,7 +77,7 @@ find skill-directory/ -maxdepth 1 -type f \( -iname "README*" -o -iname "INSTALL
 
 **Check Method:**
 1. Identify key concepts/explanatory sections in SKILL.md
-2. Search for same concepts in reference/ files  
+2. Search for same concepts in reference/ files
 3. Compare content - if same information in both locations: VIOLATION
 ```
 
@@ -165,7 +165,7 @@ grep -i 'claude\|anthropic' <<< "skill-name-here"
 
 1. **Identify key sections in SKILL.md:**
    - Look for explanatory sections (e.g., "What is X", "Understanding Y")
-   
+
 2. **Search for same content in reference files:**
    ```bash
    grep -i "core 4" SKILL.md
@@ -308,7 +308,7 @@ find multi-agent-composition/ -maxdepth 1 \( -iname "README*" \) -type f
 3. Comparison:
    - Same concept explained in both locations
    - Violates "not both" principle
-   
+
 ❌ CRITICAL: Content duplication detected
 ```
 
@@ -327,7 +327,7 @@ find multi-agent-composition/ -maxdepth 1 \( -iname "README*" \) -type f
 ⚠️ WARNING: For knowledge base skills, SKILL.md should be primarily navigation
    Current: 209 lines includes explanatory content
    Best practice: ~100-120 lines as pure navigation hub
-   
+
    Content that should be in reference/ files:
    - Lines 45-55: Core 4 Framework explanation
    - Lines 60-80: Component definitions

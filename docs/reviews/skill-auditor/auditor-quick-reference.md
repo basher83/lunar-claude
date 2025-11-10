@@ -26,7 +26,7 @@ Please review plugins/meta/meta-claude/skills/multi-agent-composition/ for compl
 ### Thorough Audit with Context
 
 ```
-I just finished creating/updating the [skill-name] skill. 
+I just finished creating/updating the [skill-name] skill.
 Please conduct a comprehensive audit against official skill-creator standards.
 Pay special attention to:
 - Forbidden files
@@ -50,7 +50,7 @@ Pay special attention to:
 ### Status Indicators
 
 - **✅ PASS** = 100% official requirements + 80%+ best practices
-- **⚠️ NEEDS IMPROVEMENT** = 100% official requirements + <80% best practices  
+- **⚠️ NEEDS IMPROVEMENT** = 100% official requirements + <80% best practices
 - **❌ FAIL** = Missing official requirements
 
 ### Issue Priorities
@@ -100,7 +100,7 @@ Context, Model, Prompt, Tools are the four pillars...
 [500 words of explanation]
 
 # reference/core-4.md
-## The Core 4 Framework  
+## The Core 4 Framework
 Context, Model, Prompt, Tools are the four pillars...
 [Same 500 words repeated]
 
@@ -245,7 +245,7 @@ The auditor will run the same checks and generate a new report showing improveme
 If the auditor finds issues you don't understand:
 
 ```
-I don't understand issue #2 about content duplication. 
+I don't understand issue #2 about content duplication.
 Can you explain what needs to change and show me before/after examples?
 ```
 

@@ -1,5 +1,7 @@
 ---
-broken: yaml: invalid
+broken yaml
+no key-value pairs
+invalid structure
 ---
 
-Test content with broken YAML frontmatter.
+Test content with truly broken YAML frontmatter.

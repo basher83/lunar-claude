@@ -59,10 +59,9 @@ Extract:
 - Frontmatter (YAML between `---` markers)
 - Markdown body content
 
-Handle errors:
-
-- Invalid YAML: "Error: YAML parsing failed: [error] at line X"
-- Invalid markdown: "Error: Markdown parsing failed at line X: [error details]"
+Note: Error handling for invalid YAML and markdown is documented in Step 1.
+If errors occur during parsing, continue with the audit and report findings
+in the technical compliance section.
 
 ### Step 3: Run Technical Compliance Checks
 

@@ -145,6 +145,120 @@ Handle errors:
      - Fix: Add to frontmatter: allowed-tools: Bash(command:*)
      - Reference: slash-commands.md line 139
 
+### Step 4: Run Quality Practice Checks
+
+**Description Quality:**
+
+1. **Description is clear and descriptive**
+   - Check description explains command purpose (not just filename)
+   - Check description is informative
+   - Pass: ✓ Description is clear and descriptive
+   - Fail: ✗ Description unclear or not descriptive
+     - Why: Description appears in /help and should clearly explain purpose
+     - Fix: Revise description to explain what command does and when to use it
+     - Reference: slash-commands.md line 186
+
+2. **Description under 100 characters**
+   - Check length of description field
+   - Pass: ✓ Description under 100 characters
+   - Warn: ⚠ Description exceeds 100 characters (currently: X chars)
+     - Why: Long descriptions may be truncated in /help output
+     - Fix: Shorten description to under 100 characters while keeping it clear
+     - Reference: Best practice for /help display
+
+**Instruction Clarity:**
+
+1. **Instructions are clear and unambiguous**
+   - Check for vague language ("handle this", "do that")
+   - Check for clear action verbs
+   - Pass: ✓ Instructions are clear and unambiguous
+   - Fail: ✗ Instructions contain vague or ambiguous language
+     - Why: Claude needs explicit instructions to execute correctly
+     - Fix: Use specific action verbs and clear steps
+     - Reference: command-creator SKILL.md line 89
+
+2. **Instructions have structure (sections/steps)**
+   - Check for headings, numbered lists, or clear organization
+   - Pass: ✓ Instructions have clear structure
+   - Fail: ✗ Instructions lack structure
+     - Why: Structured instructions are easier for Claude to follow
+     - Fix: Add sections like:
+
+        ```markdown
+        ## Process
+        1. First step
+        2. Second step
+
+        ## Output Format
+        Describe expected output
+        ```
+
+     - Reference: command-creator SKILL.md lines 64-82
+
+3. **Expected output format specified**
+   - Check if command describes what output should look like
+   - Pass: ✓ Output format specified
+   - Warn: ⚠ Output format not specified
+     - Why: Clear output expectations help Claude provide consistent results
+     - Fix: Add section describing expected output format
+     - Reference: command-creator SKILL.md line 75
+
+4. **Written from Claude's perspective**
+   - Check instructions say "You should..." not "The user should..."
+   - Pass: ✓ Written from Claude's perspective
+   - Fail: ✗ Instructions not from Claude's perspective
+     - Why: Instructions should tell Claude what to do, not describe user actions
+     - Fix: Rewrite as instructions to Claude: "You should..." "Your task is..."
+     - Reference: command-creator SKILL.md line 23
+
+**Tool Permission Hygiene:**
+
+1. **allowed-tools grants only necessary permissions**
+   - Compare allowed-tools to actual tool usage in instructions
+   - Check for overly permissive grants (e.g., Bash(*:*))
+   - Pass: ✓ Tool permissions match usage
+   - Fail: ✗ Overly permissive tool permissions
+     - Why: Granting more permissions than needed violates least privilege
+     - Fix: Restrict allowed-tools to only what command actually uses
+     - Reference: Best practice - principle of least privilege
+
+2. **Permissions match actual command usage**
+   - Check if command uses tools not in allowed-tools
+   - Pass: ✓ All used tools have permissions
+   - Fail: ✗ Command uses tools without permission: [tool name]
+     - Why: Command will fail if it tries to use unpermitted tools
+     - Fix: Add missing tool to allowed-tools field
+     - Reference: slash-commands.md line 185
+
+**File Reference Validation:**
+
+1. **Static @ file references point to existing files**
+   - Extract all @path/to/file references from command body
+   - Check if each referenced file exists
+   - Pass: ✓ All file references valid (@paths exist)
+   - Fail: ✗ File reference points to non-existent file: [path]
+     - Why: Command will fail when invoked if referenced files don't exist
+     - Fix: Create the referenced file or correct the path
+     - Reference: slash-commands.md line 161
+
+**Documentation Completeness:**
+
+1. **Examples provided for complex commands**
+   - If command uses multiple arguments or has complex usage, check for examples
+   - Pass: ✓ Examples provided for complex command
+   - Warn: ⚠ Complex command missing usage examples
+     - Why: Examples help users understand how to invoke the command correctly
+     - Fix: Add ## Examples section with sample invocations and expected behavior
+     - Reference: command-creator SKILL.md line 79
+
+2. **Argument usage explained for positional parameters**
+   - If command uses $1, $2, etc., check for explanation
+   - Pass: ✓ Positional argument usage explained
+   - Warn: ⚠ Positional arguments not explained
+     - Why: Users need to know what each argument represents
+     - Fix: Document what each $1, $2, etc. parameter means
+     - Reference: slash-commands.md line 119
+
 ## Next Steps
 
-Following tasks will implement quality and architectural validation.
+Following task will implement architectural standards validation.

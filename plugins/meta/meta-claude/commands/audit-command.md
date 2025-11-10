@@ -96,7 +96,7 @@ Handle errors:
    - Pass: ✓ All code blocks specify language
    - Fail: ✗ Code blocks missing language specification
      - Why: CLAUDE.md requires all fenced code blocks to have a language specified
-     - Fix: Change ```to```bash or ```markdown or appropriate language
+     - Fix: Add language identifier after opening backticks (e.g., ```bash or```markdown)
      - Reference: CLAUDE.md line 3
 
 3. **Blank lines around code blocks and lists**

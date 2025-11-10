@@ -6,7 +6,7 @@ No description field.
 
 Code block without language:
 
-```text
+```
 code here
 ```
 

@@ -164,12 +164,12 @@ in the technical compliance section.
      - Reference: slash-commands.md line 161
 
 2. **Bash execution uses ! prefix correctly**
-   - Find bash execution patterns `!`command``
+   - Find bash execution patterns (exclamation mark followed by backtick-wrapped command)
    - Check syntax: backticks and ! prefix
    - Pass: ✓ Bash execution syntax correct
    - Fail: ✗ Invalid bash execution syntax
-     - Why: Bash commands must use !`command` format
-     - Fix: Use !`command` format for bash execution
+     - Why: Bash commands must use the format: exclamation mark, backtick, command, backtick
+     - Fix: Use the pattern: ! followed by command in backticks
      - Reference: slash-commands.md line 139
 
 3. **Argument placeholders are valid**
@@ -182,10 +182,10 @@ in the technical compliance section.
      - Reference: slash-commands.md line 103
 
 4. **Bash execution permissions match allowed-tools**
-   - If command uses !`bash command`, check frontmatter includes Bash in allowed-tools
+   - If command uses bash execution syntax, check frontmatter includes Bash in allowed-tools
    - Pass: ✓ Bash permissions match usage
    - Warn: ⚠ Bash execution without allowed-tools permission
-     - Why: Command uses !`bash` but frontmatter doesn't include Bash in allowed-tools
+     - Why: Command uses bash execution syntax but frontmatter doesn't include Bash in allowed-tools
      - Fix: Add to frontmatter: allowed-tools: Bash(command:*)
      - Reference: slash-commands.md line 139
 

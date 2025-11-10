@@ -290,6 +290,86 @@ Handle errors:
      - Fix: Remove unused options/features, keep only what's necessary
      - Reference: ai_docs/continuous-improvement/rules.md line 16
 
-## Next Steps
+### Step 6: Generate Report
 
-Following task will implement report generation.
+Count results:
+
+- Total checks: 25
+- Passed: Count of ✓
+- Failed: Count of ✗
+- Warnings: Count of ⚠
+
+Determine overall status:
+
+- If any failures: FAIL
+- If warnings but no failures: WARNINGS
+- If all passed: PASS
+
+Format output as:
+
+```text
+# Slash Command Audit Report
+
+Command: [filename from path]
+Path: [full path from $ARGUMENTS]
+Date: [current timestamp]
+
+---
+
+## Summary
+
+✓ Passed: X checks
+✗ Failed: Y checks
+⚠ Warnings: Z checks
+
+Overall: [PASS/FAIL/WARNINGS]
+
+---
+
+## Technical Compliance
+
+[For each technical check 1-11, show result]
+[For failures/warnings, include Why/Fix/Reference]
+
+---
+
+## Quality Practices
+
+[For each quality check 12-22, show result]
+[For failures/warnings, include Why/Fix/Reference]
+
+---
+
+## Architectural Standards
+
+[For each architectural check 23-25, show result]
+[For failures/warnings, include Why/Fix/Reference]
+
+---
+
+## Recommendations
+
+Priority Actions:
+[List all failures as [CRITICAL]]
+[List all warnings as [IMPORTANT] or [OPTIONAL] based on severity]
+
+Format:
+1. [CRITICAL] [Action from failure]
+2. [IMPORTANT] [Action from warning]
+3. [OPTIONAL] [Suggestion for improvement]
+```
+
+Display this report to the user.
+
+## Complete Execution
+
+You have now audited the slash command file and provided a comprehensive report with:
+
+- All validation results
+- Specific violations identified
+- Clear explanations of why each is important
+- Actionable fixes with examples
+- References to source documentation
+- Prioritized recommendations
+
+The user can now review the report and address any issues found.

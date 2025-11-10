@@ -270,7 +270,7 @@ Handle errors:
    - Fail: ✗ Command has multiple unrelated purposes
      - Why: Each command should do one thing well
      - Fix: Split into separate commands if doing multiple unrelated things
-     - Reference: ai_docs/continuous-improvement/rules.md (KISS principle)
+     - Reference: ai_docs/continuous-improvement/rules.md (General Engineering Guidelines)
 
 2. **Follows KISS principle (not over-engineered)**
    - Check for unnecessary complexity
@@ -279,7 +279,7 @@ Handle errors:
    - Fail: ✗ Command is over-engineered
      - Why: Simplicity and reliability over cleverness
      - Fix: Simplify logic, remove unnecessary complexity
-     - Reference: ai_docs/continuous-improvement/rules.md line 15
+     - Reference: ai_docs/continuous-improvement/rules.md line 14
 
 3. **Follows YAGNI principle (no unnecessary features)**
    - Check for unused options or features
@@ -288,7 +288,7 @@ Handle errors:
    - Fail: ✗ Violates YAGNI - includes unnecessary features
      - Why: Command includes features/options that aren't needed for stated purpose
      - Fix: Remove unused options/features, keep only what's necessary
-     - Reference: ai_docs/continuous-improvement/rules.md line 17
+     - Reference: ai_docs/continuous-improvement/rules.md line 16
 
 ## Next Steps
 

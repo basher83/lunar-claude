@@ -1,6 +1,7 @@
 ---
 argument-hint: [agent-file-path]
 description: Convert a sub-agent to a slash command (project)
+allowed-tools: Read, Write, AskUserQuestion
 ---
 
 # Convert Sub-Agent to Slash Command
@@ -16,6 +17,7 @@ You will receive a file path to a sub-agent file via `$ARGUMENTS`.
 Before converting, you MUST validate that conversion is appropriate. A sub-agent should become a slash command when:
 
 **Convert when:**
+
 - ✅ **No parallelization needed** - Task runs once, not in parallel batches
 - ✅ **Context isolation not required** - Results can stay in main conversation
 - ✅ **Simple repeatable action** - One-off or simple recurring task
@@ -23,6 +25,7 @@ Before converting, you MUST validate that conversion is appropriate. A sub-agent
 - ✅ **Realized it was over-engineered** - Fell into the "converting all commands to agents" anti-pattern
 
 **Do NOT convert when:**
+
 - ❌ **Parallelization is still needed** - Multiple instances running simultaneously
 - ❌ **Context isolation is required** - Need to protect main context window
 - ❌ **Batch operations at scale** - Processing multiple items in parallel
@@ -95,6 +98,7 @@ Task-oriented prompt content
 **Optional Slash Command Fields:**
 
 You may add these fields if appropriate:
+
 - `argument-hint: [args]` - If the command should accept arguments
 - `disable-model-invocation: true` - If Claude shouldn't invoke via SlashCommand tool
 

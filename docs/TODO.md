@@ -3,6 +3,10 @@
 **Need to review all plugins and see if and where they referance ai_docs/ directory as this will may cause plugin
 to fail when installed into a new environment outside of this repository. Need to test/validate**
 
+- [ ] Agentic workflow to convert slash commands to agents and agents to slash commands. I don't see this one being too
+  difficult since the slash command is essentially already contains the basis of everything needed for an agent and vice
+  versa
+
 - [ ] `plugins/meta/meta-claude/README.md` Line 66 - References `ai_docs/` directory
 
 - [ ] `plugins/meta/meta-claude/skills/agent-creator/SKILL.md` Lines 15, 95 - Improperly references

@@ -51,19 +51,6 @@ chmod +x script.py
 ./tools/validate_script.py script.py
 ```
 
-## When to Use This Skill
-
-Activate this skill when:
-
-- Creating standalone Python utilities or automation scripts
-- Converting scripts from `requirements.txt` to uv format
-- Adding dependencies to existing single-file scripts
-- Implementing testing for utility scripts
-- Establishing team standards for script development
-- Reviewing scripts for security or best practices
-- Setting up CI/CD for script execution
-- Creating infrastructure automation tools (like cluster health checkers)
-
 ## Core Concepts
 
 ### What is PEP 723?
@@ -204,42 +191,13 @@ Pattern: JSON API interaction with structured output
 
 ### 1. Security Patterns
 
-**Don't hardcode secrets:**
+See [reference/security-patterns.md](reference/security-patterns.md) for complete security guide including:
 
-```python
-# ❌ BAD
-password = "super_secret"
-
-# ✅ GOOD - Use environment variables
-import os
-password = os.getenv("PROXMOX_PASSWORD")
-if not password:
-    raise ValueError("PROXMOX_PASSWORD not set")
-```
-
-**Better - Use keyring:**
-
-```python
-# /// script
-# dependencies = ["keyring>=24.0.0"]
-# ///
-import keyring
-password = keyring.get_password("proxmox", "api_user")
-```
-
-**Best - Use Infisical (following repository pattern):**
-
-```python
-# /// script
-# dependencies = ["infisical-python>=2.3.3"]
-# ///
-from infisical import InfisicalClient
-
-client = InfisicalClient()
-password = client.get_secret("PROXMOX_PASSWORD", path="/matrix")
-```
-
-See [patterns/security-patterns.md](patterns/security-patterns.md) for complete guide.
+- Secrets management (environment variables, keyring, Infisical)
+- Input validation
+- Dependency security
+- File operations security
+- Command execution security
 
 ### 2. Version Pinning Strategy
 
@@ -395,134 +353,12 @@ See [anti-patterns/when-not-to-use.md](anti-patterns/when-not-to-use.md) for det
 
 ## Common Patterns
 
-### Pattern: CLI Application
+See pattern guides for complete examples:
 
-```python
-#!/usr/bin/env -S uv run --script
-# /// script
-# requires-python = ">=3.11"
-# dependencies = [
-#   "typer>=0.9.0",
-#   "rich>=13.0.0",
-# ]
-# ///
-
-import typer
-from rich import print
-
-app = typer.Typer()
-
-@app.command()
-def hello(name: str):
-    """Greet someone"""
-    print(f"[green]Hello {name}![/green]")
-
-if __name__ == "__main__":
-    app()
-```
-
-See [patterns/cli-applications.md](patterns/cli-applications.md).
-
-### Pattern: API Client
-
-```python
-#!/usr/bin/env -S uv run --script
-# /// script
-# requires-python = ">=3.11"
-# dependencies = [
-#   "httpx>=0.27.0",
-# ]
-# ///
-
-import httpx
-import os
-
-def get_proxmox_nodes(api_url: str, token: str):
-    """Fetch Proxmox cluster nodes"""
-    headers = {"Authorization": f"PVEAPIToken={token}"}
-
-    with httpx.Client(verify=False) as client:
-        response = client.get(f"{api_url}/nodes", headers=headers)
-        response.raise_for_status()
-        return response.json()
-
-if __name__ == "__main__":
-    api_url = os.getenv("PROXMOX_API_URL")
-    token = os.getenv("PROXMOX_TOKEN")
-
-    nodes = get_proxmox_nodes(api_url, token)
-    for node in nodes['data']:
-        print(f"{node['node']}: {node['status']}")
-```
-
-See [patterns/api-clients.md](patterns/api-clients.md).
-
-### Pattern: Data Processing
-
-```python
-#!/usr/bin/env -S uv run --script
-# /// script
-# requires-python = ">=3.11"
-# dependencies = [
-#   "polars>=0.20.0",
-# ]
-# ///
-
-import polars as pl
-import sys
-
-def analyze_logs(log_file: str):
-    """Analyze log file for errors"""
-    df = pl.read_csv(log_file)
-
-    errors = df.filter(pl.col("level") == "ERROR")
-    print(f"Total errors: {len(errors)}")
-
-    by_component = errors.group_by("component").count()
-    print("\nErrors by component:")
-    print(by_component)
-
-if __name__ == "__main__":
-    if len(sys.argv) < 2:
-        print("Usage: analyze_logs.py <log_file>")
-        sys.exit(1)
-
-    analyze_logs(sys.argv[1])
-```
-
-See [patterns/data-processing.md](patterns/data-processing.md).
-
-### Pattern: System Automation
-
-```python
-#!/usr/bin/env -S uv run --script
-# /// script
-# requires-python = ">=3.11"
-# dependencies = [
-#   "psutil>=5.9.0",
-# ]
-# ///
-
-import psutil
-import sys
-
-def check_disk_space(threshold: int = 80):
-    """Check if disk usage exceeds threshold"""
-    usage = psutil.disk_usage('/')
-    percent = usage.percent
-
-    if percent >= threshold:
-        print(f"WARNING: Disk usage at {percent}%", file=sys.stderr)
-        sys.exit(1)
-
-    print(f"OK: Disk usage at {percent}%")
-
-if __name__ == "__main__":
-    threshold = int(sys.argv[1]) if len(sys.argv) > 1 else 80
-    check_disk_space(threshold)
-```
-
-See [patterns/system-automation.md](patterns/system-automation.md).
+- [CLI Applications](patterns/cli-applications.md) - Typer, Click, argparse patterns
+- [API Clients](patterns/api-clients.md) - httpx, requests, authentication
+- [Data Processing](patterns/data-processing.md) - Polars, pandas, analysis
+- [System Automation](patterns/system-automation.md) - psutil, subprocess, system admin
 
 ## CI/CD Integration
 
@@ -607,10 +443,12 @@ For deeper knowledge:
 - [System Automation](patterns/system-automation.md) - psutil, subprocess, system admin
 - [Error Handling](patterns/error-handling.md) - Exception handling, logging
 
+> **Note:** See [Common Patterns](#common-patterns) section above for quick access to these guides.
+
 ### Working Examples
 
 - [NetBox API Client](examples/04-api-clients/netbox_client.py) - Production-ready API client with Infisical, validation, error handling, and Rich output
-- [Examples README](examples/README.md) - Complete examples directory with progressive complexity
+- [Cluster Health Checker](examples/03-production-ready/check_cluster_health_enhanced.py) - Production-ready monitoring script with Typer, Rich, and JSON output
 
 ### Anti-Patterns
 

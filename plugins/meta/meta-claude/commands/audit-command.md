@@ -12,6 +12,22 @@ You are auditing a slash command for compliance with technical, quality, and arc
 
 You will receive a file path via `$ARGUMENTS` pointing to a slash command file to audit.
 
+## Examples
+
+Audit a slash command file:
+
+```bash
+/audit-command plugins/meta/meta-claude/commands/audit-command.md
+```
+
+Audit a command in the local .claude directory:
+
+```bash
+/audit-command .claude/commands/prime.md
+```
+
+Expected output: Comprehensive audit report with all validation results, violations, and actionable recommendations.
+
 ## Execution Process
 
 ### Step 1: Read the Command File
@@ -335,7 +351,7 @@ Determine overall status:
 
 Format output as:
 
-```text
+```markdown
 # Slash Command Audit Report
 
 Command: [filename from path]

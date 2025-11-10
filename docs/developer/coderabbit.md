@@ -50,7 +50,6 @@ reviews:
   review_status: true
 ```
 
-
 ### Automatic Review Configuration
 
 The auto_review subsection controls when and how CodeRabbit automatically triggers reviews. Enabling automatic reviews means CodeRabbit will analyze every new pull request and subsequent commits without manual intervention. This setting can be selectively disabled for specific scenarios like draft pull requests:[^4][^3][^6][^1]
@@ -163,17 +162,17 @@ reviews:
     - "!**/.next/**"
     - "!**/.nuxt/**"
     - "!**/.yarn/**"
-    
+
     # Exclude generated code
     - "!**/generated/**"
     - "!**/@generated/**"
     - "!**/__generated__/**"
-    
+
     # Exclude test fixtures and mock data
     - "!**/__fixtures__/**"
     - "!**/__mocks__/**"
     - "!**/fixtures/**"
-    
+
     # Include only specific directories
     - "src/**"
     - "lib/**"
@@ -196,7 +195,7 @@ reviews:
         - Component composition and prop validation
         - Performance optimization opportunities (useMemo, useCallback)
         - Accessibility (ARIA attributes, keyboard navigation)
-        
+
     - path: "src/api/**/*.ts"
       instructions: |
         Focus on API security:
@@ -205,7 +204,7 @@ reviews:
         - Authentication and authorization checks
         - Rate limiting implementation
         - Error handling without information disclosure
-        
+
     - path: "**/*.test.{ts,tsx,js,jsx}"
       instructions: |
         Evaluate test quality:
@@ -236,7 +235,7 @@ reviews:
       enabled: true
     oxlint:
       enabled: true
-      
+
     # Python tools
     ruff:
       enabled: true
@@ -244,7 +243,7 @@ reviews:
       enabled: true
     flake8:
       enabled: true
-      
+
     # Security scanners
     gitleaks:
       enabled: true
@@ -253,7 +252,7 @@ reviews:
     semgrep:
       enabled: true
       config_file: ".semgrep.yml"
-      
+
     # Language-specific linters
     golangci-lint:
       enabled: true
@@ -263,7 +262,7 @@ reviews:
     swiftlint:
       enabled: true
       config_file: ".swiftlint.yml"
-    
+
     # Documentation and formatting
     markdownlint:
       enabled: true
@@ -271,7 +270,7 @@ reviews:
       enabled: true
     hadolint:
       enabled: true
-    
+
     # Code quality analyzers
     pmd:
       enabled: true
@@ -296,15 +295,15 @@ reviews:
     eslint:
       enabled: true
       # Looks for .eslintrc.js, .eslintrc.json, etc.
-    
+
     golangci-lint:
       enabled: true
       config_file: ".golangci.yml"
-    
+
     pylint:
       enabled: true
       # Looks for .pylintrc, pylintrc, etc.
-    
+
     markdownlint:
       enabled: true
       # Looks for .markdownlint.json, .markdownlint.yaml, etc.
@@ -323,7 +322,6 @@ reviews:
       enabled: true
       timeout_ms: 90000  # 90 seconds
 ```
-
 
 ### AST-Grep Custom Rules
 
@@ -395,11 +393,11 @@ CodeRabbit analyzes whether pull request changes adequately address linked issue
 knowledge_base:
   issues:
     scope: auto
-  
+
   jira:
     usage: auto  # Options: auto, enabled, disabled
     project_keys: []
-  
+
   linear:
     usage: auto
     team_keys: []
@@ -417,7 +415,6 @@ knowledge_base:
     enabled: true
 ```
 
-
 ### Pull Request Context
 
 The pull request configuration enables CodeRabbit to reference and learn from previous pull requests in your repository, providing context-aware suggestions based on similar changes:[^1]
@@ -427,7 +424,6 @@ knowledge_base:
   pull_requests:
     scope: auto
 ```
-
 
 ### Data Retention and Privacy
 
@@ -463,13 +459,13 @@ code_generation:
           Use TSDoc format with @param, @returns, and @example tags.
           Include code examples for public API functions.
           Focus on behavior and edge cases rather than implementation details.
-          
+
       - path: "src/**/*.py"
         instructions: |
           Use Google-style docstrings with Args, Returns, and Raises sections.
           Include type hints in the docstring.
           Provide usage examples for complex functions.
-          
+
       - path: "**/*test*"
         instructions: |
           Keep test docstrings brief, focusing on what is being tested.
@@ -500,7 +496,7 @@ code_generation:
           - Authentication and authorization scenarios
           - Database interaction mocking
           Use Jest and supertest for API testing.
-          
+
       - path: "src/components/**/*.tsx"
         instructions: |
           Generate React component tests covering:
@@ -550,12 +546,12 @@ reviews:
   high_level_summary: true
   high_level_summary_in_walkthrough: true
   auto_title_instructions: "use conventional commits structure: <type>[optional scope]: <description>"
-  
+
   collapse_walkthrough: false
   sequence_diagrams: true
   review_effort: true
   poem: false
-  
+
   suggested_labels: true
   auto_apply_labels: true
   labeling_instructions:
@@ -565,7 +561,7 @@ reviews:
       instructions: "Performance concerns including inefficient algorithms, memory leaks, or database query optimization"
     - label: "breaking-change"
       instructions: "Changes that break backward compatibility or require API consumers to update"
-  
+
   path_filters:
     - "!**/dist/**"
     - "!**/build/**"
@@ -573,7 +569,7 @@ reviews:
     - "!**/.next/**"
     - "!**/coverage/**"
     - "!**/__generated__/**"
-    
+
   path_instructions:
     - path: "src/auth/**/*.ts"
       instructions: |
@@ -583,7 +579,7 @@ reviews:
         - Validate JWT token expiration and refresh logic
         - Ensure sensitive data is not logged
         - Check for SQL injection and XSS vulnerabilities
-        
+
     - path: "src/api/**/*.ts"
       instructions: |
         API security and quality:
@@ -592,7 +588,7 @@ reviews:
         - Rate limiting implementation
         - API versioning strategy compliance
         - OpenAPI/Swagger documentation accuracy
-        
+
     - path: "src/database/**/*.ts"
       instructions: |
         Database code review:
@@ -601,10 +597,10 @@ reviews:
         - N+1 query problems avoided
         - Connection pooling properly configured
         - Transactions used appropriately
-  
+
   abort_on_close: true
   disable_cache: false
-  
+
   auto_review:
     enabled: true
     auto_incremental_review: true
@@ -612,13 +608,13 @@ reviews:
     ignore_title_keywords:
       - "WIP"
       - "DO NOT MERGE"
-    
+
   finishing_touches:
     docstrings:
       enabled: true
     unit_tests:
       enabled: true
-  
+
   tools:
     eslint:
       enabled: true
@@ -662,7 +658,6 @@ code_generation:
         instructions: "Generate comprehensive Jest tests covering happy paths, error cases, and edge conditions"
 ```
 
-
 ### Minimal Configuration for Getting Started
 
 Teams new to CodeRabbit should start with minimal configuration and gradually add customizations based on experience:[^4][^6][^5]
@@ -675,24 +670,23 @@ language: en-US
 reviews:
   profile: chill
   high_level_summary: true
-  
+
   auto_review:
     enabled: true
     drafts: false
-  
+
   path_filters:
     - "!**/node_modules/**"
     - "!**/dist/**"
-  
+
   poem: false
-  
+
   tools:
     eslint:
       enabled: true
     gitleaks:
       enabled: true
 ```
-
 
 ### Technology-Specific Configurations
 
@@ -707,12 +701,12 @@ language: en-US
 
 reviews:
   profile: assertive
-  
+
   path_filters:
     - "!**/__pycache__/**"
     - "!**/venv/**"
     - "!**/.pytest_cache/**"
-  
+
   path_instructions:
     - path: "**/*.py"
       instructions: |
@@ -722,7 +716,7 @@ reviews:
         - Proper exception handling
         - Security issues (SQL injection, command injection)
         - Performance optimization opportunities
-  
+
   tools:
     ruff:
       enabled: true
@@ -743,7 +737,7 @@ language: en-US
 
 reviews:
   profile: assertive
-  
+
   path_instructions:
     - path: "**/*.go"
       instructions: |
@@ -753,7 +747,7 @@ reviews:
         - Context usage in long-running operations
         - Idiomatic Go patterns and conventions
         - Resource cleanup with defer
-  
+
   tools:
     golangci-lint:
       enabled: true
@@ -761,7 +755,6 @@ reviews:
     gitleaks:
       enabled: true
 ```
-
 
 ## Configuration Management Best Practices
 
@@ -771,7 +764,7 @@ Effective configuration management requires understanding how to test, validate,
 
 Before creating a `.coderabbit.yaml` file, you can export your current configuration from the CodeRabbit UI using the chat command. This provides a starting point based on your existing settings:[^22][^2]
 
-```
+```text
 @coderabbitai configuration
 ```
 
@@ -803,7 +796,6 @@ Configuration optimization is an ongoing process. Start with conservative settin
 - Time saved in manual review processes
 - Code quality metrics over time
 
-
 ### Central Configuration for Organizations
 
 Organizations managing many repositories can create central configuration that applies across all repositories lacking their own `.coderabbit.yaml` files. This approach establishes organization-wide defaults while allowing repository-specific overrides:[^25]
@@ -826,13 +818,13 @@ tone_instructions: "Focus on React best practices, performance, and accessibilit
 
 reviews:
   profile: assertive
-  
+
   path_filters:
     - "!**/node_modules/**"
     - "!**/build/**"
     - "!**/.next/**"
     - "!**/coverage/**"
-  
+
   path_instructions:
     - path: "src/components/**/*.{tsx,jsx}"
       instructions: |
@@ -842,7 +834,7 @@ reviews:
         - Accessibility (ARIA attributes, semantic HTML)
         - Component composition and reusability
         - Prop validation with TypeScript
-        
+
     - path: "src/**/*.test.{tsx,ts}"
       instructions: |
         Ensure tests:
@@ -850,7 +842,7 @@ reviews:
         - Test user behavior, not implementation
         - Cover edge cases and error states
         - Use appropriate queries and assertions
-  
+
   tools:
     eslint:
       enabled: true
@@ -858,7 +850,7 @@ reviews:
       enabled: true
     oxlint:
       enabled: true
-  
+
   finishing_touches:
     docstrings:
       enabled: true
@@ -870,7 +862,6 @@ code_generation:
         instructions: "Use JSDoc with @param and @returns. Include usage examples for complex components."
 ```
 
-
 ### Scenario: Security-Focused Backend API
 
 ```yaml
@@ -881,7 +872,7 @@ tone_instructions: "Prioritize security vulnerabilities and provide detailed rem
 
 reviews:
   profile: assertive
-  
+
   path_instructions:
     - path: "src/api/**/*.ts"
       instructions: |
@@ -892,7 +883,7 @@ reviews:
         - Rate limiting and DDoS protection
         - Sensitive data handling and logging
         - Error messages without information disclosure
-  
+
   tools:
     eslint:
       enabled: true
@@ -903,7 +894,7 @@ reviews:
     semgrep:
       enabled: true
       config_file: "security-rules.yml"
-  
+
   labeling_instructions:
     - label: "security-critical"
       instructions: "Any code handling authentication, authorization, encryption, or sensitive data"
@@ -917,7 +908,6 @@ knowledge_base:
       - "**/SECURITY_GUIDELINES.md"
 ```
 
-
 ### Scenario: Monorepo with Multiple Projects
 
 ```yaml
@@ -927,25 +917,25 @@ language: en-US
 
 reviews:
   profile: chill
-  
+
   path_filters:
     - "!**/node_modules/**"
     - "!**/dist/**"
     - "!**/build/**"
-  
+
   path_instructions:
     - path: "packages/frontend/**/*.{ts,tsx}"
       instructions: "Apply React and TypeScript best practices. Focus on component architecture and state management."
-      
+
     - path: "packages/backend/**/*.ts"
       instructions: "Review for API security, database query optimization, and error handling."
-      
+
     - path: "packages/shared/**/*.ts"
       instructions: "Ensure changes maintain backward compatibility. Verify comprehensive unit test coverage."
-      
+
     - path: "packages/**/README.md"
       instructions: "Check documentation accuracy and completeness. Verify examples are up-to-date."
-  
+
   tools:
     eslint:
       enabled: true
@@ -960,7 +950,6 @@ code_generation:
       - path: "packages/shared/**/*.ts"
         instructions: "Comprehensive TSDoc documentation required for all public APIs with usage examples"
 ```
-
 
 ## Troubleshooting Common Issues
 
@@ -1113,4 +1102,3 @@ Remember that configuration is version-controlled infrastructure that should und
 [^43]: https://cloud.google.com/blog/products/ai-machine-learning/how-coderabbit-built-its-ai-code-review-agent-with-google-cloud-run
 
 [^44]: https://docs.coderabbit.ai/changelog
-

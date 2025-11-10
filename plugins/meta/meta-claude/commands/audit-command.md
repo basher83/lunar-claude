@@ -259,6 +259,37 @@ Handle errors:
      - Fix: Document what each $1, $2, etc. parameter means
      - Reference: slash-commands.md line 119
 
+### Step 5: Run Architectural Standard Checks
+
+**Design Principles:**
+
+1. **Single, clear purpose**
+   - Check if command has one well-defined purpose
+   - Check for multiple unrelated functions
+   - Pass: ✓ Single, clear purpose
+   - Fail: ✗ Command has multiple unrelated purposes
+     - Why: Each command should do one thing well
+     - Fix: Split into separate commands if doing multiple unrelated things
+     - Reference: ai_docs/continuous-improvement/rules.md (KISS principle)
+
+2. **Follows KISS principle (not over-engineered)**
+   - Check for unnecessary complexity
+   - Check for features that could be simpler
+   - Pass: ✓ Follows KISS principle
+   - Fail: ✗ Command is over-engineered
+     - Why: Simplicity and reliability over cleverness
+     - Fix: Simplify logic, remove unnecessary complexity
+     - Reference: ai_docs/continuous-improvement/rules.md line 15
+
+3. **Follows YAGNI principle (no unnecessary features)**
+   - Check for unused options or features
+   - Check for "just in case" functionality
+   - Pass: ✓ Follows YAGNI principle
+   - Fail: ✗ Violates YAGNI - includes unnecessary features
+     - Why: Command includes features/options that aren't needed for stated purpose
+     - Fix: Remove unused options/features, keep only what's necessary
+     - Reference: ai_docs/continuous-improvement/rules.md line 17
+
 ## Next Steps
 
-Following task will implement architectural standards validation.
+Following task will implement report generation.

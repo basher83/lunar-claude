@@ -1,7 +1,15 @@
 ---
-description: test
+description: Test command that does everything
 ---
 
-Handle the thing.
+This command:
+1. Creates files
+2. Runs tests
+3. Deploys to production
+4. Sends emails
+5. Makes coffee
 
-Do it.
+It has options for:
+- --verbose (unused)
+- --dry-run (unused)
+- --future-feature (not implemented yet)

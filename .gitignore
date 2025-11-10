@@ -8,3 +8,4 @@
 *.pyc
 mise.local.toml
 .lychee-report.md
+.lycheecache

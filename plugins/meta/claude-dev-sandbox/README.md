@@ -87,7 +87,8 @@ Document what you're currently testing here:
 
 ### Skills
 
-- (none yet - add as you develop)
+- **mcp-builder** - Experimental skill for MCP server development
+- **video-processor** - Experimental video processing skill
 
 ### Hooks
 

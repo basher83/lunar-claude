@@ -172,7 +172,7 @@ def download_page_jina(
 
 def main(
     output_dir: Path = typer.Option(
-        Path("./ai_docs"),
+        Path(__file__).parent.parent / "ai_docs",
         "--output-dir", "-o",
         help="Directory to save downloaded files",
     ),

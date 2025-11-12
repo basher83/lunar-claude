@@ -116,8 +116,7 @@ def validate_api_keys() -> None:
     """
     missing_keys = []
 
-    if not os.getenv("ANTHROPIC_API_KEY"):
-        missing_keys.append("ANTHROPIC_API_KEY")
+    # ANTHROPIC_API_KEY not needed - SDK uses current Claude Code session
 
     if not os.getenv("JINA_API_KEY"):
         missing_keys.append("JINA_API_KEY")
@@ -149,7 +148,7 @@ def create_orchestrator_options() -> ClaudeAgentOptions:
 
 async def download_batch_parallel(
     urls: list[str],
-    output_dir: Path = Path("./ai_docs"),
+    output_dir: Path = Path(__file__).parent.parent / "ai_docs",
 ) -> list[tuple[str, bool, str]]:
     """
     Download a batch of URLs in parallel using Jina MCP parallel_read_url.
@@ -329,7 +328,7 @@ async def download_all_parallel(
 
 def main(
     output_dir: Path = typer.Option(
-        Path("./ai_docs"),
+        Path(__file__).parent.parent / "ai_docs",
         "--output-dir", "-o",
         help="Directory to save downloaded files",
     ),

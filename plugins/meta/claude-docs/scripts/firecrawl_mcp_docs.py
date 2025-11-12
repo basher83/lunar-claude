@@ -21,7 +21,6 @@ implementation would parse structured MCP responses to extract actual Firecrawl 
 Prerequisites:
     - Firecrawl MCP server configured in Claude settings
     - FIRECRAWL_API_KEY environment variable set
-    - ANTHROPIC_API_KEY environment variable set
 
 Usage:
     ./firecrawl_mcp_docs.py                         # Downloads with full metadata
@@ -55,7 +54,9 @@ class OutputFormat(str, Enum):
     RICH = "rich"
     JSON = "json"
 
+
 console = Console()
+
 
 @dataclass
 class DownloadResult:
@@ -65,6 +66,7 @@ class DownloadResult:
     failed: int = 0
     duration_seconds: float = 0.0
     timestamp: str = ""
+
 
 # Same constants
 BASE_URL = "https://docs.claude.com/en/docs"
@@ -89,6 +91,7 @@ DEFAULT_PAGES = [
     ("agents-and-tools", page) for page in AGENT_SKILLS_PAGES
 ]
 
+
 def get_base_url(section: str) -> str:
     """Get the base URL for a documentation section."""
     if section == "claude-code":
@@ -97,6 +100,7 @@ def get_base_url(section: str) -> str:
         return AGENTS_TOOLS_BASE
     else:
         return f"{BASE_URL}/{section}"
+
 
 def validate_api_keys() -> None:
     """
@@ -107,8 +111,7 @@ def validate_api_keys() -> None:
     """
     missing_keys = []
 
-    if not os.getenv("ANTHROPIC_API_KEY"):
-        missing_keys.append("ANTHROPIC_API_KEY")
+    # ANTHROPIC_API_KEY not needed - SDK uses current Claude Code session
 
     if not os.getenv("FIRECRAWL_API_KEY"):
         missing_keys.append("FIRECRAWL_API_KEY")
@@ -118,6 +121,7 @@ def validate_api_keys() -> None:
             f"Missing required environment variables: {', '.join(missing_keys)}\n"
             "Please set them before running this script."
         )
+
 
 def create_orchestrator_options() -> ClaudeAgentOptions:
     """
@@ -137,6 +141,7 @@ def create_orchestrator_options() -> ClaudeAgentOptions:
         permission_mode="acceptEdits",
         model="claude-sonnet-4-5-20250929"
     )
+
 
 async def download_page_firecrawl(
     url: str,
@@ -208,6 +213,7 @@ Return the scraped markdown content and metadata."""
             "error": str(e),
         }
 
+
 async def download_all_sequential(
     pages: list[tuple[str, str]],
     output_dir: Path,
@@ -247,7 +253,8 @@ async def download_all_sequential(
                 base_url = get_base_url(section)
                 url = f"{base_url}/{page}.md"
 
-                progress.update(task, description=f"[cyan]Downloading {page}...")
+                progress.update(
+                    task, description=f"[cyan]Downloading {page}...")
 
                 page_start = time.time()
                 try:
@@ -264,7 +271,8 @@ async def download_all_sequential(
                         )
                         success_count += 1
                     else:
-                        console.print(f"[red]ERROR:[/red] {page}", file=sys.stderr)
+                        console.print(
+                            f"[red]ERROR:[/red] {page}", file=sys.stderr)
                         failed_count += 1
                 except Exception as e:
                     console.print(
@@ -294,9 +302,10 @@ async def download_all_sequential(
     total_time = time.time() - start_time
     return success_count, failed_count, total_time
 
+
 def main(
     output_dir: Path = typer.Option(
-        Path("./ai_docs"),
+        Path(__file__).parent.parent / "ai_docs",
         "--output-dir", "-o",
         help="Directory to save downloaded files",
     ),
@@ -343,7 +352,8 @@ def main(
 
     # Run async download
     success_count, failed_count, total_time = asyncio.run(
-        download_all_sequential(DEFAULT_PAGES, output_dir, main_content_only, format)
+        download_all_sequential(DEFAULT_PAGES, output_dir,
+                                main_content_only, format)
     )
 
     # Output results
@@ -358,7 +368,8 @@ def main(
         print(json.dumps(result))
     else:
         console.print()
-        table = Table(title="Download Summary", show_header=True, header_style="bold cyan")
+        table = Table(title="Download Summary",
+                      show_header=True, header_style="bold cyan")
         table.add_column("Metric", style="cyan")
         table.add_column("Value", style="green")
 
@@ -378,6 +389,7 @@ def main(
 
     if failed_count > 0:
         raise typer.Exit(code=1)
+
 
 if __name__ == "__main__":
     typer.run(main)

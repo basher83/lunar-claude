@@ -1,11 +1,14 @@
 ---
 name: ansible-best-practices
-description: Ansible playbook refactoring, role development, testing, and best practices. Covers
-  role vs playbook organization, variable precedence, idempotency patterns (changed_when,
-  failed_when), testing with molecule and ansible-lint, secrets management with Infisical, proper
-  use of ansible.builtin vs community modules, and task complexity analysis. Use when refactoring
-  Ansible playbooks, creating roles, improving idempotency, implementing Ansible testing, managing
-  secrets with Infisical, analyzing playbook complexity, or following Ansible best practices.
+description: >
+  Ansible playbook and role patterns using ansible.builtin modules, community.general,
+  community.proxmox, ansible.posix collections, molecule testing, ansible-lint validation,
+  and Infisical secrets management. Covers idempotency patterns (changed_when, failed_when,
+  register), YAML playbook structure, Jinja2 templating, handler patterns, and variable
+  precedence rules. This skill should be used when writing Ansible playbooks, developing
+  Ansible roles, testing with molecule/ansible-lint, managing secrets with Infisical,
+  implementing idempotent task patterns with changed_when/failed_when directives, or
+  configuring Proxmox/network automation.
 ---
 
 # Ansible Playbook Best Practices
@@ -13,59 +16,53 @@ description: Ansible playbook refactoring, role development, testing, and best p
 Expert guidance for writing maintainable, idempotent, and testable Ansible playbooks based on
 real-world patterns from this repository.
 
-## Quick Start
+## Quick Reference
 
-### Common Tasks
+### Pattern Decision Guide
 
-**Lint Playbook:**
+| Need | Use Pattern | Details |
+|------|-------------|---------|
+| **Use secrets?** | Infisical Secret Management | [patterns/secrets-management.md](patterns/secrets-management.md) |
+| **Resource management?** | State-Based Playbooks | [patterns/playbook-role-patterns.md](patterns/playbook-role-patterns.md) |
+| **No native module?** | Hybrid Module Approach | See Hybrid Module section below |
+| **Task failing?** | Proper Error Handling | [patterns/error-handling.md](patterns/error-handling.md) |
+| **Repeating blocks?** | Task Organization | [patterns/task-organization.md](patterns/task-organization.md) |
+| **Network config?** | Network Automation | [patterns/network-automation.md](patterns/network-automation.md) |
+| **Tasks show 'changed'?** | Idempotency Patterns | [reference/idempotency-patterns.md](reference/idempotency-patterns.md) |
+
+### Golden Rules
+
+1. **Use `uv run` prefix** - Always: `uv run ansible-playbook`
+2. **Fully qualify modules** - `ansible.builtin.copy` not `copy`
+3. **Secrets via Infisical** - Use reusable task pattern
+4. **Control `command`/`shell`** - Always use `changed_when`, `failed_when`
+5. **Use `set -euo pipefail`** - In all shell scripts
+6. **Tag sensitive tasks** - Use `no_log: true`
+7. **Idempotency first** - Check before create, verify after
+
+### Common Commands
 
 ```bash
+# Lint
 mise run ansible-lint
-# Or: ./tools/lint-all.sh
-```
 
-**Analyze Playbook Complexity:**
-
-```bash
+# Analyze complexity
 ./tools/analyze_playbook.py ansible/playbooks/my-playbook.yml
-```
 
-**Check Idempotency:**
-
-```bash
+# Check idempotency
 ./tools/check_idempotency.py ansible/playbooks/my-playbook.yml
-```
 
-**Run With Infisical Secrets:**
-
-```bash
-# Secrets loaded from Infisical vault
+# Run with secrets
 cd ansible && uv run ansible-playbook playbooks/my-playbook.yml
 ```
-
-## When to Use This Skill
-
-Activate this skill when:
-
-- Refactoring existing Ansible playbooks
-- Creating new roles or playbooks
-- Improving idempotency of tasks
-- Implementing proper error handling
-- Managing secrets with Infisical
-- Setting up Ansible testing (molecule, ansible-lint)
-- Organizing variables and inventory
-- Choosing between `ansible.builtin` and community modules
-- Analyzing playbook complexity
 
 ## Core Patterns from This Repository
 
 ### 1. Infisical Secret Management
 
-This repository uses **Infisical** for secrets management. See the reusable task:
+This repository uses **Infisical** for centralized secrets management.
 
-[../../ansible/tasks/infisical-secret-lookup.yml](../../ansible/tasks/infisical-secret-lookup.yml)
-
-**Usage Pattern:**
+**Quick Pattern:**
 
 ```yaml
 - name: Retrieve Proxmox credentials
@@ -73,83 +70,47 @@ This repository uses **Infisical** for secrets management. See the reusable task
   vars:
     secret_name: 'PROXMOX_PASSWORD'
     secret_var_name: 'proxmox_password'
-    fallback_env_var: 'PROXMOX_PASSWORD'  # Optional fallback
-    infisical_project_id: '7b832220-24c0-45bc-a5f1-ce9794a31259'
-    infisical_env: 'prod'
-    infisical_path: '/doggos-cluster'
+    fallback_env_var: 'PROXMOX_PASSWORD'  # Optional
 ```
 
-**Key Features:**
+**Key Features:** Validates authentication, proper `no_log`, fallback to env vars, reusable across playbooks.
 
-- Validates authentication (Universal Auth or fallback env)
-- Proper `no_log` for security
-- Fallback to environment variables
-- Reusable across playbooks
-- Clear error messages
+See [patterns/secrets-management.md](patterns/secrets-management.md) for complete guide including
+authentication methods, security best practices, and CI/CD integration.
 
-See [patterns/secrets-management.md](patterns/secrets-management.md) for complete guide.
-
-### 2. State-Based Playbooks (Not Separate Create/Delete)
+### 2. State-Based Playbooks
 
 **Pattern:** Single playbook handles both create and remove via `state` variable.
 
-From [../../ansible/playbooks/create-admin-user.yml](../../ansible/playbooks/create-admin-user.yml) + [../../ansible/roles/system_user/](../../ansible/roles/system_user/):
-
 ```yaml
-# Create user (default behavior)
+# Create user (default)
 uv run ansible-playbook playbooks/create-admin-user.yml \
-  -e "admin_name=alice" \
-  -e "admin_ssh_key='ssh-ed25519 ...'"
+  -e "admin_name=alice" -e "admin_ssh_key='ssh-ed25519 ...'"
 
-# Remove user (just add state=absent)
+# Remove user (add state=absent)
 uv run ansible-playbook playbooks/create-admin-user.yml \
-  -e "admin_name=alice" \
-  -e "admin_state=absent"
+  -e "admin_name=alice" -e "admin_state=absent"
 ```
 
-**Why This Works:**
+**Why:** Follows community role patterns, single source of truth, consistent interface, less duplication.
 
-- Follows community role patterns (`geerlingguy.docker`, etc.)
-- Single source of truth
-- Consistent interface
-- Less duplication
-
-**Key Implementation Details:**
-
-```yaml
-- name: Manage Administrative User
-  roles:
-    - role: system_user
-      vars:
-        system_users:
-          - name: "{{ admin_name }}"
-            state: "{{ admin_state | default('present') }}"  # Default to create
-            # Conditional parameters (only when creating)
-            ssh_keys: "{{ [] if admin_state == 'absent' else [admin_ssh_key] }}"
-```
-
-See [patterns/playbook-role-patterns.md](patterns/playbook-role-patterns.md) for complete guide.
+See [patterns/playbook-role-patterns.md](patterns/playbook-role-patterns.md) for complete implementation details and advanced patterns.
 
 ### 3. Hybrid Module Approach
-
-From [../../ansible/playbooks/proxmox-create-terraform-user.yml](../../ansible/playbooks/proxmox-create-terraform-user.yml):
 
 **Pattern:** Use native modules where available, fall back to `command` when needed.
 
 ```yaml
-# GOOD: Use native module for user creation
+# GOOD: Native module
 - name: Create Linux system user
   ansible.builtin.user:
     name: "{{ system_username }}"
-    shell: "{{ system_user_shell }}"
-    comment: "{{ system_user_comment }}"
     state: present
 
-# ACCEPTABLE: Use command when no native module exists
+# ACCEPTABLE: Command when no native module exists
 - name: Create Proxmox API token
   ansible.builtin.command: >
     pveum user token add {{ system_username }}@{{ proxmox_user_realm }}
-    {{ proxmox_token_name }}
   register: token_result
   changed_when: "'already exists' not in token_result.stderr"
   failed_when:
@@ -157,15 +118,9 @@ From [../../ansible/playbooks/proxmox-create-terraform-user.yml](../../ansible/p
     - "'already exists' not in token_result.stderr"
 ```
 
-**Why This Works:**
-
-- `changed_when` prevents false positives
-- `failed_when` handles "already exists" gracefully
-- Idempotent despite using `command` module
+**Key:** `changed_when` and `failed_when` make `command` module idempotent.
 
 ### 4. Proper Error Handling
-
-**Pattern:**
 
 ```yaml
 - name: Check if resource exists
@@ -180,24 +135,11 @@ From [../../ansible/playbooks/proxmox-create-terraform-user.yml](../../ansible/p
   when: resource_check.rc != 0
 ```
 
-**Anti-pattern:**
-
-```yaml
-# BAD: Using shell without proper controls
-- name: Do something
-  ansible.builtin.shell: some-command
-  # Missing: changed_when, failed_when, register
-```
+See [patterns/error-handling.md](patterns/error-handling.md) for comprehensive patterns.
 
 ### 5. Task Organization
 
-**Reusable Tasks:**
-
-- Extract common patterns to `tasks/` directory
-- Use `include_tasks` with clear variable contracts
-- Document required variables
-
-**Example from repository:**
+**Reusable Tasks Pattern:**
 
 ```yaml
 # In playbook
@@ -208,17 +150,16 @@ From [../../ansible/playbooks/proxmox-create-terraform-user.yml](../../ansible/p
     secret_var_name: 'db_password'
 ```
 
-See [patterns/reusable-tasks.md](patterns/reusable-tasks.md).
+Extract common patterns to `tasks/` directory, use `include_tasks` with clear variable contracts.
 
-### 6. Network Automation with Community Modules
+See [patterns/task-organization.md](patterns/task-organization.md) and [patterns/reusable-tasks.md](patterns/reusable-tasks.md).
 
-From [../../ansible/playbooks/proxmox-enable-vlan-bridging.yml](../../ansible/playbooks/proxmox-enable-vlan-bridging.yml):
+### 6. Network Automation
 
-**Pattern:** Use community.general.interfaces_file for network configuration.
+**Pattern:** Use `community.general.interfaces_file` for network configuration.
 
 ```yaml
-# GOOD: Use interfaces_file module for network config
-- name: Enable VLAN-aware bridging on vmbr1
+- name: Enable VLAN-aware bridging
   community.general.interfaces_file:
     iface: vmbr1
     option: bridge-vlan-aware
@@ -226,21 +167,11 @@ From [../../ansible/playbooks/proxmox-enable-vlan-bridging.yml](../../ansible/pl
     backup: true
     state: present
   notify: Reload network interfaces
-
-# Handler for network changes
-- name: Reload network interfaces
-  ansible.builtin.command: ifreload -a
-  changed_when: true
 ```
 
-**Why This Works:**
+Declarative config, automatic backup, handler pattern for reload.
 
-- Declarative network configuration
-- Automatic backup before changes
-- Handler pattern for network reload
-- Verification with `bridge vlan show`
-
-See [patterns/network-automation.md](patterns/network-automation.md) for advanced patterns.
+See [patterns/network-automation.md](patterns/network-automation.md) for advanced patterns including VLAN, bonding, and verification.
 
 ### 7. Idempotency Patterns
 
@@ -261,72 +192,40 @@ See [patterns/network-automation.md](patterns/network-automation.md) for advance
 # Conditional create
 - name: Create VM
   ansible.builtin.command: qm create {{ template_id }} ...
-  when: vm_exists.rc != 0  # Only if doesn't exist
+  when: vm_exists.rc != 0
 ```
 
-**Verify Operations:**
-
-```yaml
-- name: Verify template was created
-  ansible.builtin.shell: |
-    set -o pipefail
-    qm list | grep "{{ template_id }}"
-  args:
-    executable: /bin/bash
-  register: template_verify
-  changed_when: false
-  when: not dry_run
-```
+See [reference/idempotency-patterns.md](reference/idempotency-patterns.md) for comprehensive patterns.
 
 ## Variable Organization
 
-### Precedence (Highest to Lowest)
+### Quick Summary
 
-1. Extra vars (`-e` on command line)
-2. Task vars
-3. Block vars
-4. Role vars (defined in role/vars/main.yml)
-5. Include vars
-6. Set_facts / Registered vars
-7. Include_params
-8. Role default vars (defined in role/defaults/main.yml)
-9. Inventory file or script group vars
-10. Inventory group_vars/all
-11. Playbook group_vars/all
-12. Inventory group_vars/*
-13. Playbook group_vars/*
-14. Inventory file or script host vars
-15. Inventory host_vars/*
-16. Playbook host_vars/*
-17. Host facts / cached set_facts
-18. Play vars
-19. Play vars_prompt
-20. Play vars_files
-21. Role vars (defined in role/vars/main.yml)
-22. Role defaults (defined in role/defaults/main.yml)
+**Precedence:** Extra vars (`-e`) > Role vars > Defaults
 
-See [reference/variable-precedence.md](reference/variable-precedence.md) for details.
-
-### Organization Strategy
+**Organization:**
 
 ```text
 ansible/
-├── group_vars/
-│   ├── all.yml          # Variables for ALL hosts
-│   └── proxmox.yml      # Variables for proxmox group
-├── host_vars/
-│   ├── foxtrot.yml      # Host-specific variables
-│   ├── golf.yml
-│   └── hotel.yml
+├── group_vars/all.yml      # Variables for ALL hosts
+├── group_vars/proxmox.yml  # Group-specific
+├── host_vars/foxtrot.yml   # Host-specific
 └── playbooks/
-    └── my-playbook.yml  # Use vars: for playbook-specific
+    └── my-playbook.yml     # Use vars: for playbook-specific
 ```
+
+**Key principle:** Use `defaults/main.yml` for configurable options, `vars/main.yml` for constants.
+
+See [reference/variable-precedence.md](reference/variable-precedence.md) for complete precedence
+rules (22 levels) and
+[patterns/variable-management-patterns.md](patterns/variable-management-patterns.md) for
+advanced patterns.
 
 ## Module Selection
 
-### Prefer `ansible.builtin`
+### Prefer ansible.builtin
 
-**Always use fully qualified names:**
+**Always use fully qualified collection names (FQCN):**
 
 ```yaml
 # GOOD
@@ -338,23 +237,9 @@ ansible/
   ping:
 ```
 
-### When to Use Community Modules
+### Community Collections in Use
 
-**Use community.proxmox for Proxmox management:**
-
-```yaml
-- name: Create Proxmox user
-  community.proxmox.proxmox_user:
-    api_host: "{{ proxmox_api_host }}"
-    api_user: "{{ proxmox_api_user }}"
-    api_password: "{{ proxmox_api_password }}"
-    userid: "terraform@pam"
-    state: present
-```
-
-**Collections in use:**
-
-- `community.general` - General utilities
+- `community.general` - General utilities (interfaces_file, etc.)
 - `community.proxmox` - Proxmox VE management
 - `infisical.vault` - Secrets management
 - `ansible.posix` - POSIX system management
@@ -374,19 +259,10 @@ mise run lint-all
 mise run ansible-lint
 ```
 
-**Common Issues to Fix:**
-
-- Missing `name:` on tasks
-- Using `shell` instead of `command` unnecessarily
-- Not using `changed_when` with `command`/`shell`
-- Deprecated module short names
-- Missing `no_log` on sensitive tasks
+**Common Issues:** Missing `name:` on tasks, using `shell` instead of `command`, not using
+`changed_when`, deprecated short names, missing `no_log` on sensitive tasks.
 
 ### With Molecule
-
-See [tools/molecule/](tools/molecule/) for test scenarios.
-
-**Basic workflow:**
 
 ```bash
 cd tools/molecule/default
@@ -396,125 +272,77 @@ molecule verify    # Run tests
 molecule destroy   # Clean up
 ```
 
-See [reference/testing-guide.md](reference/testing-guide.md).
+See [reference/testing-guide.md](reference/testing-guide.md) and [patterns/testing-comprehensive.md](patterns/testing-comprehensive.md) for CI/CD integration.
 
 ## Common Anti-Patterns
 
-See [anti-patterns/common-mistakes.md](anti-patterns/common-mistakes.md) for detailed list.
+See [anti-patterns/common-mistakes.md](anti-patterns/common-mistakes.md) for detailed examples.
 
-### 1. Not Using set -euo pipefail
+### Quick List
 
-**Bad:**
-
-```yaml
-- name: Run script
-  ansible.builtin.shell: |
-    command1
-    command2
-```
-
-**Good:**
+**1. Not Using `set -euo pipefail`**
 
 ```yaml
+# GOOD
 - name: Run script
   ansible.builtin.shell: |
     set -euo pipefail
-    command1
-    command2
+    command1 | command2
   args:
     executable: /bin/bash
 ```
 
-### 2. Missing no_log on Secrets
-
-**Bad:**
+**2. Missing `no_log` on Secrets**
 
 ```yaml
-- name: Set password
-  ansible.builtin.command: set-password {{ password }}
-  # Password visible in logs!
-```
-
-**Good:**
-
-```yaml
+# GOOD
 - name: Set password
   ansible.builtin.command: set-password {{ password }}
   no_log: true
 ```
 
-### 3. Using `shell` When `command` Suffices
+**3. Using `shell` When `command` Suffices**
 
-**Bad:**
-
-```yaml
-- name: List files
-  ansible.builtin.shell: ls -la
-```
-
-**Good:**
+Use `shell` ONLY when you need shell features (pipes, redirects, etc.).
 
 ```yaml
+# GOOD: No shell features needed
 - name: List files
   ansible.builtin.command: ls -la
 ```
 
-Use `shell` ONLY when you need shell features (pipes, redirects, etc.).
+See [anti-patterns/common-mistakes.md](anti-patterns/common-mistakes.md) for complete list and
+[anti-patterns/refactoring-guide.md](anti-patterns/refactoring-guide.md) for improvement
+strategies.
 
 ## Tools Available
 
 ### Python Analysis Tools (uv)
 
-**analyze_playbook.py** - Complexity metrics
-
 ```bash
+# Complexity metrics
 ./tools/analyze_playbook.py playbook.yml
-# Shows: task count, role usage, variable complexity
-```
 
-**check_idempotency.py** - Find non-idempotent patterns
-
-```bash
+# Find non-idempotent patterns
 ./tools/check_idempotency.py playbook.yml
-# Detects: missing changed_when, shell without controls
-```
 
-**extract_variables.py** - Variable organization helper
-
-```bash
+# Variable organization helper
 ./tools/extract_variables.py playbook.yml
-# Suggests: where to move variables (defaults, group_vars, etc.)
 ```
 
 ### Linting
 
-**lint-all.sh** - Run all linters
-
 ```bash
+# Run all linters
 ./tools/lint-all.sh
-# Runs: ansible-lint, yamllint, with project config
 ```
 
 ### Testing
 
-**molecule/** - Test scenarios
-
 ```bash
-./tools/molecule/default/  # Default test scenario
+# Molecule test scenarios
+./tools/molecule/default/
 ```
-
-## Best Practices Summary
-
-1. **Use `uv run` prefix** - Always: `uv run ansible-playbook`
-2. **Fully qualify modules** - `ansible.builtin.copy` not `copy`
-3. **Secrets via Infisical** - Use reusable task pattern
-4. **Control `command`/`shell`** - Always use `changed_when`, `failed_when`
-5. **Use `set -euo pipefail`** - In all shell scripts
-6. **Tag sensitive tasks** - Use `no_log: true`
-7. **Extract reusable tasks** - Don't repeat yourself
-8. **Test with ansible-lint** - Before committing
-9. **Document variables** - Clear comments on required vars
-10. **Idempotency first** - Check before create, verify after
 
 ## Progressive Disclosure
 
@@ -522,19 +350,19 @@ Start here, drill down as needed:
 
 ### Quick Reference (Read First)
 
-- [Playbook & Role Patterns](patterns/playbook-role-patterns.md) - State-based playbooks, public API variables, validation patterns
-- [Secrets management](patterns/secrets-management.md) - Infisical integration
+- [Playbook & Role Patterns](patterns/playbook-role-patterns.md) - State-based playbooks, public API variables, validation
+- [Secrets Management](patterns/secrets-management.md) - Infisical integration, authentication, security
 
 ### Deep Patterns (Read When Needed)
 
-- [testing-comprehensive.md](patterns/testing-comprehensive.md) - Molecule, CI/CD, test strategies ✨ NEW
-- [role-structure-standards.md](patterns/role-structure-standards.md) - Directory org, naming conventions ✨ NEW
-- [documentation-templates.md](patterns/documentation-templates.md) - README structure, variable docs ✨ NEW
-- [variable-management-patterns.md](patterns/variable-management-patterns.md) - defaults vs vars, naming ✨ NEW
-- [handler-best-practices.md](patterns/handler-best-practices.md) - Handler usage patterns ✨ NEW
-- [meta-dependencies.md](patterns/meta-dependencies.md) - galaxy_info, dependencies ✨ NEW
+- [Testing Comprehensive](patterns/testing-comprehensive.md) - Molecule, CI/CD, test strategies
+- [Role Structure Standards](patterns/role-structure-standards.md) - Directory org, naming conventions
+- [Documentation Templates](patterns/documentation-templates.md) - README structure, variable docs
+- [Variable Management Patterns](patterns/variable-management-patterns.md) - defaults vs vars, naming
+- [Handler Best Practices](patterns/handler-best-practices.md) - Handler usage patterns
+- [Meta Dependencies](patterns/meta-dependencies.md) - galaxy_info, dependencies
 
-### Advanced Automation Patterns (from ProxSpray Analysis)
+### Advanced Automation (from ProxSpray Analysis)
 
 - [Cluster Automation](patterns/cluster-automation.md) - Proxmox cluster formation with idempotency
 - [Network Automation](patterns/network-automation.md) - Declarative network configuration
@@ -542,20 +370,20 @@ Start here, drill down as needed:
 
 ### Core Reference
 
-- [Roles vs playbooks](reference/roles-vs-playbooks.md) - Organization patterns
-- [Variable precedence](reference/variable-precedence.md) - Complete precedence rules
-- [Idempotency patterns](reference/idempotency-patterns.md) - Advanced patterns
-- [Module selection](reference/module-selection.md) - Builtin vs community
-- [Testing guide](reference/testing-guide.md) - Molecule and ansible-lint
-- [Collections guide](reference/collections-guide.md) - Using collections
-- [production-repos.md](reference/production-repos.md) - Studied geerlingguy roles index ✨ NEW
+- [Roles vs Playbooks](reference/roles-vs-playbooks.md) - Organization patterns
+- [Variable Precedence](reference/variable-precedence.md) - Complete precedence rules (22 levels)
+- [Idempotency Patterns](reference/idempotency-patterns.md) - Advanced idempotency techniques
+- [Module Selection](reference/module-selection.md) - Builtin vs community decision guide
+- [Testing Guide](reference/testing-guide.md) - Molecule and ansible-lint deep dive
+- [Collections Guide](reference/collections-guide.md) - Using and managing collections
+- [Production Repos](reference/production-repos.md) - Studied geerlingguy roles index
 
 ### Patterns & Anti-Patterns
 
-- [Error handling](patterns/error-handling.md) - Proper error handling
-- [Task organization](patterns/task-organization.md) - Reusable tasks
-- [Common mistakes](anti-patterns/common-mistakes.md) - What to avoid
-- [Refactoring guide](anti-patterns/refactoring-guide.md) - How to improve
+- [Error Handling](patterns/error-handling.md) - Proper error handling patterns
+- [Task Organization](patterns/task-organization.md) - Reusable tasks and includes
+- [Common Mistakes](anti-patterns/common-mistakes.md) - What to avoid
+- [Refactoring Guide](anti-patterns/refactoring-guide.md) - How to improve existing playbooks
 
 ## Related Skills
 

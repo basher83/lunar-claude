@@ -11,6 +11,7 @@ argument-hint: <document-path>
 **Purpose:** Verify factual claims in documents about code implementations, features, tests, or PRs.
 
 **Core 4 Foundation:**
+
 - **Context:** Document with claims + git repository state
 - **Model:** Semantic verification capabilities
 - **Prompt:** This systematic verification process
@@ -51,6 +52,7 @@ For each claim:
 **What this means:** PR #7 lacks script making direct HTTP calls to r.jina.ai (not using MCP)
 
 **Counter-evidence:** ANY script in PR #7 that:
+
 - Uses httpx/requests (not MCP dependencies)
 - Calls https://r.jina.ai/
 - Downloads docs directly
@@ -100,6 +102,7 @@ API calls: jina_url = f"https://r.jina.ai/{url}"
 **Claim type:** "PR implements feature X"
 
 **Verify:**
+
 - Feature exists in code (not just mentioned in PR description)
 - Implementation matches claimed approach
 - Tests exist for feature (if claimed)
@@ -117,6 +120,7 @@ git show branch:path/to/tests
 **Claim type:** "All features have tests"
 
 **Verify:**
+
 - Test files actually exist
 - Tests actually test the claimed functionality
 - Tests pass (if claimed)
@@ -134,6 +138,7 @@ git show branch:path/to/test.py | grep -A 10 "test_feature_name"
 **Claim type:** "PR A has X but PR B doesn't"
 
 **Verify:**
+
 - Check what X actually IS in PR A (dependencies, API calls, functionality)
 - Look for EQUIVALENT functionality in PR B (any filename)
 - Compare behavior, not names
@@ -153,6 +158,7 @@ git grep -n "key_functionality" branch-b
 **Claim type:** "File has N lines"
 
 **Verify:**
+
 ```bash
 git show branch:path/to/file.py | wc -l
 ```
@@ -162,6 +168,7 @@ git show branch:path/to/file.py | wc -l
 **Claim type:** "Uses library X version Y"
 
 **Verify:**
+
 ```bash
 git show branch:requirements.txt | grep library
 git show branch:pyproject.toml | grep library

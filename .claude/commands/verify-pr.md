@@ -11,6 +11,7 @@ argument-hint: [PR-number|branch-name]
 **Purpose:** Verify that a PR's description, commits, and plan match actual implementation.
 
 **Core 4 Foundation:**
+
 - **Context:** PR metadata + git changes + plan documents
 - **Model:** Semantic verification capabilities
 - **Prompt:** This systematic verification process
@@ -37,6 +38,7 @@ You are verifying a pull request. Check that claims in PR description, commits, 
 ### Determine PR Type
 
 The argument could be:
+
 - Branch name: `cursor/implement-plan-from-cu-plan-md-11ba`
 - PR number: `#7` or `7`
 - Comparison: `main...feature-branch`
@@ -76,6 +78,7 @@ git log main...$ARGUMENTS | grep -i "plan\|spec\|requirement"
 ```
 
 **Common claim patterns to extract:**
+
 - "Adds feature X"
 - "Fixes bug Y"
 - "Implements Z from plan"
@@ -211,6 +214,7 @@ git diff --name-only main...$ARGUMENTS | wc -l
 If claims involve comparisons (e.g., "Different from PR #8"):
 
 **Process:**
+
 1. Verify what the claimed difference IS in the reference PR
 2. Check if difference actually exists
 3. Compare functionality, not just filenames
@@ -293,13 +297,16 @@ git log main...cursor/implement-plan-from-cu-plan-md-11ba | grep -i "plan"
 **Verify against cu-plan.md requirements:**
 
 **Claim 1:** "Creates Jina MCP server"
+
 ```bash
 git diff --name-only main...cursor/... | grep "jina.*mcp"
 # → plugins/meta/claude-docs/mcp/jina_docs_mcp.py
 ```
+
 ✅ Verified
 
 **Claim 2:** "Creates Jina direct API script"
+
 ```bash
 git diff --name-only main...cursor/... | grep -i jina | grep scripts
 # → plugins/meta/claude-docs/scripts/claude_docs_jina.py
@@ -308,6 +315,7 @@ git diff --name-only main...cursor/... | grep -i jina | grep scripts
 git show cursor/...:plugins/meta/claude-docs/scripts/claude_docs_jina.py | grep "dependencies"
 # → httpx>=0.27.0 (direct HTTP, not MCP)
 ```
+
 ✅ Verified
 
 ---

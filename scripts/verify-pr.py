@@ -28,7 +28,9 @@ The verification prompt is embedded from .claude/commands/verify-pr.md methodolo
 """
 
 import json
+import logging
 import os
+import re
 import sys
 from enum import Enum
 from typing import Any
@@ -43,7 +45,6 @@ from claude_agent_sdk import (
     TextBlock,
 )
 from rich.console import Console
-from rich.table import Table
 
 # Embedded prompt from verify-pr.md (lines 7-316)
 # Replaced $ARGUMENTS with {pr_identifier} for runtime substitution
@@ -361,6 +362,13 @@ git show cursor/...:plugins/meta/claude-docs/scripts/claude_docs_jina.py | grep 
 
 console = Console()
 
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+)
+logger = logging.getLogger(__name__)
+
 
 class OutputFormat(str, Enum):
     """Output format options."""
@@ -369,20 +377,55 @@ class OutputFormat(str, Enum):
     JSON = "json"
 
 
+def validate_pr_identifier(pr_identifier: str) -> str:
+    """
+    Validate and sanitize PR identifier to prevent command injection.
+
+    Args:
+        pr_identifier: User-provided PR identifier (PR number, branch name, or comparison)
+
+    Returns:
+        Validated PR identifier
+
+    Raises:
+        ValueError: If PR identifier contains invalid characters or patterns
+    """
+    # Allow:
+    # - Numeric PR IDs (e.g., "7", "123")
+    # - Branch names (alphanumeric, dots, hyphens, underscores, slashes)
+    # - Comparison refs (e.g., "main...feature", "base..head")
+    # - Hash prefixes with # (e.g., "#7")
+    valid_pattern = r"^[#]?[A-Za-z0-9._/-]+(?:\.\.\.[A-Za-z0-9._/-]+)?$"
+
+    if not pr_identifier or not pr_identifier.strip():
+        raise ValueError("PR identifier cannot be empty")
+
+    if not re.match(valid_pattern, pr_identifier):
+        raise ValueError(
+            f"Invalid PR identifier format: {pr_identifier!r}. "
+            "Allowed: PR numbers (7), branch names (feature/branch), "
+            "or comparisons (main...feature)"
+        )
+
+    logger.info(f"Validated PR identifier: {pr_identifier}")
+    return pr_identifier
+
+
 def create_sdk_options() -> ClaudeAgentOptions:
     """
     Create ClaudeAgentOptions for PR verification.
 
     Uses claude_code system prompt with Bash and Read tools for git operations
-    and file reading.
+    and file reading. Permission mode is set to default (not acceptEdits) since
+    this is a read-only verification task using only Bash and Read tools.
 
     Returns:
         Configured options for ClaudeSDKClient
     """
     return ClaudeAgentOptions(
-        system_prompt="claude_code",  # Provides built-in tool knowledge
-        allowed_tools=["Bash", "Read"],  # Git commands and file reading
-        permission_mode="acceptEdits",  # Auto-accept for automated workflow
+        system_prompt={"type": "preset", "preset": "claude_code"},  # Built-in tool knowledge
+        allowed_tools=["Bash", "Read"],  # Git commands and file reading (read-only)
+        permission_mode="default",  # Default permissions (read-only operations)
         model="claude-sonnet-4-5",
     )
 
@@ -396,9 +439,18 @@ async def verify_pr(pr_identifier: str) -> dict[str, Any]:
 
     Returns:
         Dictionary with verification results and metadata
+
+    Raises:
+        ValueError: If PR identifier is invalid or empty
+        Exception: If SDK client communication fails
     """
-    # Format prompt with PR identifier
-    prompt = VERIFY_PR_PROMPT.format(pr_identifier=pr_identifier)
+    # Validate PR identifier to prevent command injection
+    validated_identifier = validate_pr_identifier(pr_identifier)
+
+    logger.info(f"Starting PR verification for: {validated_identifier}")
+
+    # Format prompt with validated PR identifier
+    prompt = VERIFY_PR_PROMPT.format(pr_identifier=validated_identifier)
 
     # Get SDK configuration
     options = create_sdk_options()
@@ -410,9 +462,11 @@ async def verify_pr(pr_identifier: str) -> dict[str, Any]:
 
     async with ClaudeSDKClient(options=options) as client:
         # Send verification prompt
+        logger.debug("Sending verification prompt to Claude SDK")
         await client.query(prompt)
 
         # Stream and collect responses
+        logger.debug("Streaming responses from Claude SDK")
         async for message in client.receive_response():
             if isinstance(message, AssistantMessage):
                 for block in message.content:
@@ -422,12 +476,15 @@ async def verify_pr(pr_identifier: str) -> dict[str, Any]:
             elif isinstance(message, ResultMessage):
                 duration_ms = message.duration_ms
                 total_cost_usd = message.total_cost_usd
+                logger.info(
+                    f"Verification complete - Duration: {duration_ms}ms, Cost: ${total_cost_usd:.4f}"
+                )
 
     # Combine all response text
     full_response = "\n".join(response_text)
 
     return {
-        "pr_identifier": pr_identifier,
+        "pr_identifier": validated_identifier,
         "response": full_response,
         "duration_ms": duration_ms,
         "total_cost_usd": total_cost_usd,
@@ -474,20 +531,21 @@ def validate_api_key() -> None:
     Validate that ANTHROPIC_API_KEY is set.
 
     Raises:
-        ValueError: If API key is missing
+        ValueError: If API key is missing or empty
     """
-    if not os.getenv("ANTHROPIC_API_KEY"):
+    api_key = os.getenv("ANTHROPIC_API_KEY")
+    if not api_key:
+        logger.error("ANTHROPIC_API_KEY environment variable not set")
         raise ValueError(
             "ANTHROPIC_API_KEY environment variable not set. "
             "Please set it before running this script."
         )
+    logger.debug("API key validation successful")
 
 
 def main(
     pr_identifier: str = typer.Argument(..., help="PR number, branch name, or comparison"),
-    json_output: bool = typer.Option(
-        False, "--json", "-j", help="Output results in JSON format"
-    ),
+    json_output: bool = typer.Option(False, "--json", "-j", help="Output results in JSON format"),
 ) -> None:
     """
     Main entry point for PR verification script.
@@ -495,7 +553,12 @@ def main(
     Args:
         pr_identifier: PR number (e.g., "7"), branch name, or comparison (e.g., "main...feature")
         json_output: If True, output JSON instead of rich formatted text
+
+    Raises:
+        typer.Exit: If validation fails or verification encounters an error
     """
+    logger.info(f"PR verification script started with identifier: {pr_identifier}")
+
     # Validate API key
     try:
         validate_api_key()
@@ -504,26 +567,41 @@ def main(
             print(json.dumps({"error": str(e)}, indent=2), file=sys.stderr)
         else:
             console.print(f"[red]ERROR:[/red] {e}", file=sys.stderr)
-        raise typer.Exit(code=1)
+        logger.error(f"API key validation failed: {e}")
+        raise typer.Exit(code=1) from e
 
     # Run verification
     try:
         if not json_output:
             console.print(f"[cyan]Verifying PR:[/cyan] {pr_identifier}\n")
 
+        # Official SDK examples use anyio.run()
         results = anyio.run(verify_pr, pr_identifier)
 
         # Format and display results
         output_format = OutputFormat.JSON if json_output else OutputFormat.RICH
         format_output(results, output_format)
 
-    except Exception as e:
-        error_msg = f"Verification failed: {str(e)}"
+        logger.info("PR verification completed successfully")
+
+    except ValueError as e:
+        # Input validation errors
+        error_msg = f"Invalid input: {e}"
         if json_output:
             print(json.dumps({"error": error_msg}, indent=2), file=sys.stderr)
         else:
             console.print(f"[red]ERROR:[/red] {error_msg}", file=sys.stderr)
-        raise typer.Exit(code=1)
+        logger.error(f"Validation error: {e}")
+        raise typer.Exit(code=1) from e
+    except Exception as e:
+        # SDK or other runtime errors
+        error_msg = f"Verification failed: {e}"
+        if json_output:
+            print(json.dumps({"error": error_msg}, indent=2), file=sys.stderr)
+        else:
+            console.print(f"[red]ERROR:[/red] {error_msg}", file=sys.stderr)
+        logger.exception("Unexpected error during verification")
+        raise typer.Exit(code=1) from e
 
 
 if __name__ == "__main__":

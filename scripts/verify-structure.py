@@ -638,6 +638,45 @@ def check_custom_component_paths(plugin_dir: Path, plugin_data: dict) -> list[st
     return errors
 
 
+def check_manifest_conflicts(
+    plugin_name: str,
+    marketplace_entry: dict,
+    plugin_json_data: dict
+) -> list[str]:
+    """Detect conflicts between marketplace entry and plugin.json.
+
+    Args:
+        plugin_name: Name of the plugin
+        marketplace_entry: Plugin entry from marketplace.json
+        plugin_json_data: Parsed plugin.json content
+
+    Returns:
+        List of warning messages for conflicting values
+    """
+    warnings = []
+
+    # Fields that can appear in both
+    comparable_fields = [
+        'version', 'description', 'author', 'homepage',
+        'repository', 'license', 'keywords'
+    ]
+
+    for field in comparable_fields:
+        market_value = marketplace_entry.get(field)
+        plugin_value = plugin_json_data.get(field)
+
+        # Both exist and differ
+        if market_value and plugin_value and market_value != plugin_value:
+            warnings.append(
+                f"{plugin_name}: Conflict in '{field}' - "
+                f"marketplace: {repr(market_value)}, "
+                f"plugin.json: {repr(plugin_value)} "
+                f"(plugin.json takes precedence)"
+            )
+
+    return warnings
+
+
 def check_plugin_manifest(
     plugin_dir: Path,
     marketplace_entry: dict | None = None,
@@ -653,6 +692,7 @@ def check_plugin_manifest(
     Returns dict with categorized errors:
     {
         'manifest': [...],
+        'warnings': [...],
         'placement': [...],
         'skills': [...],
         'commands': [...],
@@ -664,6 +704,7 @@ def check_plugin_manifest(
     """
     results = {
         'manifest': [],
+        'warnings': [],
         'placement': [],
         'skills': [],
         'commands': [],
@@ -708,6 +749,15 @@ def check_plugin_manifest(
     # Validate against schema
     schema_errors = validate_json_schema(data, PLUGIN_MANIFEST_SCHEMA, plugin_dir.name)
     results['manifest'].extend(schema_errors)
+
+    # Check for conflicts if both marketplace entry and plugin.json exist
+    if marketplace_entry and plugin_json.exists():
+        conflict_warnings = check_manifest_conflicts(
+            plugin_dir.name,
+            marketplace_entry,
+            data
+        )
+        results['warnings'].extend(conflict_warnings)
 
     # Check README.md exists
     if not (plugin_dir / "README.md").exists():

@@ -721,19 +721,6 @@ def check_marketplace_structure() -> dict[str, Any]:
 
     repo_root = Path(__file__).parent.parent
 
-    # Check core directories
-    required_dirs = [
-        "plugins/meta",
-        "plugins/infrastructure",
-        "plugins/devops",
-        "plugins/homelab",
-        "templates/plugin-template"
-    ]
-
-    for dir_path in required_dirs:
-        if not (repo_root / dir_path).is_dir():
-            result['marketplace_errors'].append(f"Missing required directory: {dir_path}")
-
     # Check marketplace.json
     marketplace_json = repo_root / ".claude-plugin" / "marketplace.json"
     if not marketplace_json.exists():
@@ -748,9 +735,12 @@ def check_marketplace_structure() -> dict[str, Any]:
         result['marketplace_errors'].append(f"Invalid JSON in marketplace.json: {e}")
         return result
 
-    # Check marketplace structure
-    if "plugins" not in marketplace_data:
-        result['marketplace_errors'].append("marketplace.json missing 'plugins' array")
+    # Validate marketplace schema
+    marketplace_schema_errors = validate_marketplace_json(marketplace_data)
+    result['marketplace_errors'].extend(marketplace_schema_errors)
+
+    # If marketplace structure invalid, don't continue
+    if marketplace_schema_errors:
         return result
 
     # Check each plugin in marketplace

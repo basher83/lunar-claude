@@ -7,14 +7,14 @@
 # ]
 # ///
 """
-Verify lunar-claude marketplace structure and validate plugin manifests.
+Verify Claude Code marketplace structure and validate plugin manifests.
 
-This script validates all aspects of Claude Code plugins per official documentation:
+This script validates all aspects of Claude Code marketplaces per official documentation:
 
 Marketplace Structure:
-- marketplace.json syntax and schema
+- marketplace.json syntax and schema (name, owner, plugins)
+- Plugin entry validation (name, source, strict mode)
 - Plugin registry completeness
-- Required category directories
 
 Plugin Components:
 - Manifest (plugin.json) schema and metadata
@@ -26,15 +26,21 @@ Plugin Components:
 - MCP servers (configuration, ${CLAUDE_PLUGIN_ROOT} usage)
 - Custom component paths (existence, relative paths)
 
+Strict Mode:
+- Plugins with strict: false can omit plugin.json
+- Conflicts between marketplace and plugin.json generate warnings
+- Use --strict flag to fail on warnings (for CI/CD)
+
 Usage:
-    ./scripts/verify-structure.py
-    python scripts/verify-structure.py
+    ./scripts/verify-structure.py              # Normal mode
+    ./scripts/verify-structure.py --strict     # Strict mode (warnings fail)
 
 Exit codes:
-    0 - All checks passed
-    1 - Validation errors found
+    0 - All checks passed (warnings allowed in normal mode)
+    1 - Validation errors found (or warnings in strict mode)
 """
 
+import argparse
 import json
 import re
 import sys
@@ -858,24 +864,90 @@ def check_marketplace_structure() -> dict[str, Any]:
     return result
 
 
+def calculate_exit_code(result: dict, strict: bool = False) -> int:
+    """Calculate exit code based on errors and warnings.
+
+    Args:
+        result: Validation results from check_marketplace_structure()
+        strict: If True, warnings cause failure
+
+    Returns:
+        0 if validation passed, 1 if failed
+    """
+    total_errors = 0
+    total_warnings = 0
+
+    # Count marketplace-level errors
+    total_errors += len(result.get('marketplace_errors', []))
+
+    # Count plugin-level errors and warnings
+    for plugin_result in result.get('plugin_results', {}).values():
+        for category, issues in plugin_result.items():
+            if category == 'warnings':
+                total_warnings += len(issues)
+            else:
+                total_errors += len(issues)
+
+    # Strict mode: warnings are failures
+    if strict and total_warnings > 0:
+        return 1
+
+    # Normal mode: only errors are failures
+    return 1 if total_errors > 0 else 0
+
+
 def main() -> int:
     """Run all verification checks."""
-    console.print("\n[bold cyan]Verifying lunar-claude marketplace structure...[/bold cyan]\n")
+    parser = argparse.ArgumentParser(
+        description="Verify Claude Code marketplace structure and plugins",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Exit codes:
+  0 - Validation passed
+  1 - Validation failed (errors found, or warnings in strict mode)
+
+Examples:
+  ./scripts/verify-structure.py              # Normal mode (warnings allowed)
+  ./scripts/verify-structure.py --strict     # Strict mode (warnings fail)
+        """
+    )
+    parser.add_argument(
+        '--strict',
+        action='store_true',
+        help='Treat warnings as errors (useful for CI/CD)'
+    )
+    args = parser.parse_args()
+
+    mode_text = "[bold cyan]Verifying marketplace structure"
+    if args.strict:
+        mode_text += " (strict mode)"
+    mode_text += "...[/bold cyan]\n"
+    console.print("\n" + mode_text)
 
     result = check_marketplace_structure()
 
-    # Count total errors across all categories (exclude warnings)
+    # Count errors and warnings
     total_errors = len(result['marketplace_errors'])
+    total_warnings = 0
     all_plugin_errors = {}
+    all_plugin_warnings = {}
 
     for plugin_name, plugin_result in result['plugin_results'].items():
         plugin_errors = []
-        for category, errors in plugin_result.items():
-            if category != 'warnings' and errors:  # Exclude warnings from error count
-                plugin_errors.extend(errors)
+        plugin_warnings = []
+        for category, issues in plugin_result.items():
+            if issues:
+                if category == 'warnings':
+                    plugin_warnings.extend(issues)
+                else:
+                    plugin_errors.extend(issues)
+
         if plugin_errors:
             all_plugin_errors[plugin_name] = plugin_errors
             total_errors += len(plugin_errors)
+        if plugin_warnings:
+            all_plugin_warnings[plugin_name] = plugin_warnings
+            total_warnings += len(plugin_warnings)
 
     # Display marketplace errors
     if result['marketplace_errors']:
@@ -897,6 +969,7 @@ def main() -> int:
         table.add_column("Hooks", justify="center")
         table.add_column("MCP", justify="center")
         table.add_column("Paths", justify="center")
+        table.add_column("Warnings", justify="center")
 
         for plugin_name, plugin_result in result['plugin_results'].items():
             def status_icon(errors):
@@ -911,7 +984,8 @@ def main() -> int:
                 status_icon(plugin_result['agents']),
                 status_icon(plugin_result['hooks']),
                 status_icon(plugin_result['mcp']),
-                status_icon(plugin_result['paths'])
+                status_icon(plugin_result['paths']),
+                f"[yellow]{len(plugin_result.get('warnings', []))}[/yellow]" if plugin_result.get('warnings') else "[green]0[/green]"
             )
 
         console.print(table)
@@ -919,12 +993,12 @@ def main() -> int:
 
         # Display detailed errors by category
         for plugin_name, plugin_result in result['plugin_results'].items():
-            has_errors = any(errors for errors in plugin_result.values())
+            has_errors = any(errors for category, errors in plugin_result.items() if category != 'warnings' and errors)
             if has_errors:
                 console.print(f"\n[bold yellow]{plugin_name} - Detailed Errors:[/bold yellow]")
 
                 for category, errors in plugin_result.items():
-                    if errors:
+                    if category != 'warnings' and errors:
                         category_label = category.capitalize()
                         console.print(f"\n  [cyan]{category_label}:[/cyan]")
                         for error in errors:
@@ -932,23 +1006,50 @@ def main() -> int:
 
                 console.print()
 
+    # Display warnings
+    if total_warnings > 0:
+        warning_style = "yellow" if not args.strict else "red"
+        warning_label = "Warnings" if not args.strict else "Warnings (treated as errors)"
+
+        console.print(f"\n[bold {warning_style}]{warning_label} ({total_warnings}):[/bold {warning_style}]\n")
+
+        for plugin_name, warnings in all_plugin_warnings.items():
+            console.print(f"  [bold]{plugin_name}:[/bold]")
+            for warning in warnings:
+                console.print(f"    [{warning_style}]• {warning}[/{warning_style}]")
+
+        if args.strict:
+            console.print("\n  [red](--strict mode: warnings treated as errors)[/red]\n")
+        console.print()
+
+    # Calculate exit code
+    exit_code = calculate_exit_code(result, strict=args.strict)
+
     # Final summary
-    if total_errors > 0:
+    if exit_code != 0:
+        message = f"✗ Validation failed with {total_errors} error(s)"
+        if total_warnings > 0:
+            message += f" and {total_warnings} warning(s)"
+        if args.strict and total_warnings > 0:
+            message += " (warnings treated as errors in strict mode)"
+
         console.print(Panel.fit(
-            f"[bold red]✗ Validation failed with {total_errors} error(s)[/bold red]\n"
+            f"[bold red]{message}[/bold red]\n"
             "See details above for specific issues.",
             border_style="red"
         ))
-        return 1
+    else:
+        message = "✅ All verification checks passed!"
+        if total_warnings > 0:
+            message += f"\n{total_warnings} warning(s) found but not failing (normal mode)"
+        message += "\nMarketplace structure and all plugins are valid."
 
-    # Success!
-    console.print(Panel.fit(
-        "[bold green]✅ All verification checks passed![/bold green]\n"
-        "Marketplace structure and all plugins are valid.",
-        border_style="green"
-    ))
+        console.print(Panel.fit(
+            f"[bold green]{message}[/bold green]",
+            border_style="green"
+        ))
 
-    return 0
+    return exit_code
 
 
 if __name__ == "__main__":

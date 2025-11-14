@@ -5,6 +5,7 @@ This guide covers hook patterns for intercepting and modifying Claude Agent SDK 
 ## Overview
 
 Hooks allow you to intercept SDK events and modify behavior at key points in execution. Common uses:
+
 - Control tool execution (approve/deny/modify)
 - Add context to prompts
 - Review tool outputs
@@ -331,6 +332,7 @@ async with ClaudeSDKClient(options=options) as client:
 ## Anti-Patterns
 
 ❌ **Blocking without explanation**
+
 ```python
 return {
     "hookSpecificOutput": {
@@ -341,6 +343,7 @@ return {
 ```
 
 ✅ **Clear explanations**
+
 ```python
 return {
     "reason": "Command contains dangerous pattern: rm -rf",
@@ -354,6 +357,7 @@ return {
 ```
 
 ❌ **Ignoring tool_name in PreToolUse**
+
 ```python
 # This will fire for ALL tools
 async def hook(input_data, tool_use_id, context):
@@ -361,6 +365,7 @@ async def hook(input_data, tool_use_id, context):
 ```
 
 ✅ **Filter by tool_name**
+
 ```python
 async def hook(input_data, tool_use_id, context):
     if input_data["tool_name"] != "Bash":

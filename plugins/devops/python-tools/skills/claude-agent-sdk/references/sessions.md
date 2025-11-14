@@ -12,7 +12,6 @@ When you start a new query, the SDK automatically creates a session and returns 
 
 ### Getting the Session ID
 
-
 options: {    options: {
       model: "claude-sonnet-4-5"
     }
@@ -20,6 +19,7 @@ options: {    options: {
 
   for await (const message of response) {
     // The first message is a system init message with the session ID
+
 ```python
 if (message.type === 'system' && message.subtype === 'init') {    if (message.type === 'system' && message.subtype === 'init') {
       sessionId = message.session_id
@@ -28,6 +28,7 @@ if (message.type === 'system' && message.subtype === 'init') {    if (message.ty
     }
 
 ```
+
 // Process other messages...    // Process other messages...
     console.log(message)
   }
@@ -35,6 +36,7 @@ if (message.type === 'system' && message.subtype === 'init') {    if (message.ty
   // Later, you can use the saved sessionId to resume
   if (sessionId) {
     const resumedResponse = query({
+
 ```python
 prompt: "Continue where we left off",
       options: {
@@ -51,12 +53,15 @@ prompt: "Continue where we left off",
 
   async for message in query(
       prompt="Help me build a web application",
+```
+
 ```python
 options=ClaudeAgentOptions(      options=ClaudeAgentOptions(
           model="claude-sonnet-4-5"
       )
   ):
-      # The first message is a system init message with the session ID
+
+## The first message is a system init message with the session ID
 ```python
 if hasattr(message, 'subtype') and message.subtype == 'init':      if hasattr(message, 'subtype') and message.subtype == 'init':
           session_id = message.data.get('session_id')
@@ -64,12 +69,16 @@ if hasattr(message, 'subtype') and message.subtype == 'init':      if hasattr(me
           # You can save this ID for later resumption
 
 ```
-# Process other messages...      # Process other messages...
+
+## Process other messages...      # Process other messages
+
       print(message)
 
-  # Later, you can use the saved session_id to resume
+## Later, you can use the saved session_id to resume
+
   if session_id:
       async for message in query(
+
 ```python
 prompt="Continue where we left off",          prompt="Continue where we left off",
           options=ClaudeAgentOptions(
@@ -79,11 +88,9 @@ prompt="Continue where we left off",          prompt="Continue where we left off
           print(message)
   ```
 
-
 ## Resuming Sessions
 
 The SDK supports resuming sessions from previous conversation states, enabling continuous development workflows. Use the `resume` option with a session ID to continue a previous conversation.
-
 
 options: {    options: {
       resume: "session-xyz", // Session ID from previous conversation
@@ -96,12 +103,14 @@ options: {    options: {
   for await (const message of response) {
     console.log(message)
   }
+
   ```
 
   ```python Python theme={null}
   from claude_agent_sdk import query, ClaudeAgentOptions
 
-  # Resume a previous session using its ID
+## Resume a previous session using its ID
+
   async for message in query(
       prompt="Continue implementing the authentication system from where we left off",
 ```python
@@ -115,7 +124,6 @@ options=ClaudeAgentOptions(      options=ClaudeAgentOptions(
 
   # The conversation continues with full context from the previous session
   ```
-
 
 The SDK automatically handles loading the conversation history and context when you resume a session, allowing Claude to continue exactly where it left off.
 
@@ -143,12 +151,12 @@ Forking is useful when you want to:
 
 ### Example: Forking a Session
 
-
 options: { model: "claude-sonnet-4-5" }    options: { model: "claude-sonnet-4-5" }
   })
 
   for await (const message of response) {
     if (message.type === 'system' && message.subtype === 'init') {
+
 ```python
 sessionId = message.session_id      sessionId = message.session_id
       console.log(`Original session: ${sessionId}`)
@@ -187,7 +195,8 @@ options: {    options: {
   ```python Python theme={null}
   from claude_agent_sdk import query, ClaudeAgentOptions
 
-  # First, capture the session ID
+## First, capture the session ID
+
   session_id = None
 
   async for message in query(
@@ -200,7 +209,8 @@ options=ClaudeAgentOptions(model="claude-sonnet-4-5")      options=ClaudeAgentOp
 session_id = message.data.get('session_id')          session_id = message.data.get('session_id')
           print(f"Original session: {session_id}")
 
-  # Fork the session to try a different approach
+## Fork the session to try a different approach
+
   async for message in query(
       prompt="Now let's redesign this as a GraphQL API instead",
 ```python
@@ -214,9 +224,11 @@ options=ClaudeAgentOptions(      options=ClaudeAgentOptions(
 ```python
 forked_id = message.data.get('session_id')          forked_id = message.data.get('session_id')
           print(f"Forked session: {forked_id}")
-          # This will be a different session ID
 
-  # The original session remains unchanged and can still be resumed
+## This will be a different session ID
+
+## The original session remains unchanged and can still be resumed
+
   async for message in query(
       prompt="Add authentication to the REST API",
 ```python

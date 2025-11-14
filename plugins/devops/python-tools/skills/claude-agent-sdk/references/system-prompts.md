@@ -50,6 +50,7 @@ options = ClaudeAgentOptions(
 ```
 
 The `"claude_code"` preset includes:
+
 - Tool usage patterns (Bash, Read, Write, Edit, etc.)
 - Best practices for code modification
 - Knowledge of the Task tool for delegating to subagents
@@ -139,11 +140,11 @@ Provide detailed analysis with file/line references.""",
 The SDK accepts both shorthand and dictionary formats for the `claude_code` preset:
 
 ```python
-# Shorthand for preset (recommended for simplicity)
-system_prompt="claude_code"
-
-# Equivalent dict format (official API)
+# Dict format (official examples prefer this)
 system_prompt={"type": "preset", "preset": "claude_code"}
+
+# Shorthand format (equivalent, but less explicit)
+system_prompt="claude_code"
 
 # With append (dict only)
 system_prompt={
@@ -153,7 +154,7 @@ system_prompt={
 }
 ```
 
-**Note:** The shorthand `system_prompt="claude_code"` is a convenience that's equivalent to the full dict format. Both are valid and produce identical behavior. Use shorthand for cleaner code, or the dict format when you need to add `append` instructions.
+**Note:** The shorthand `system_prompt="claude_code"` is a convenience that's equivalent to the full dict format. Both are valid and produce identical behavior. Official examples prefer the dict format for explicitness, but shorthand works fine for simple cases.
 
 ## Best Practices
 
@@ -219,6 +220,7 @@ options = ClaudeAgentOptions(
 ## Anti-Patterns
 
 ❌ **Orchestrator without claude_code preset**
+
 ```python
 # Orchestrator won't know how to use Task tool
 options = ClaudeAgentOptions(
@@ -228,6 +230,7 @@ options = ClaudeAgentOptions(
 ```
 
 ✅ **Proper orchestrator configuration**
+
 ```python
 options = ClaudeAgentOptions(
     system_prompt="claude_code",
@@ -236,6 +239,7 @@ options = ClaudeAgentOptions(
 ```
 
 ❌ **Conflicting instructions**
+
 ```python
 # Tells agent to modify files but only allows read tools
 options = ClaudeAgentOptions(
@@ -245,6 +249,7 @@ options = ClaudeAgentOptions(
 ```
 
 ✅ **Aligned tools and instructions**
+
 ```python
 options = ClaudeAgentOptions(
     system_prompt="Analyze code for bugs and report findings",

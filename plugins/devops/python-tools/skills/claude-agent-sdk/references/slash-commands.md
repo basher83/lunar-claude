@@ -8,10 +8,10 @@ Slash commands provide a way to control Claude Code sessions with special comman
 
 The Claude Agent SDK provides information about available slash commands in the system initialization message. Access this information when your session starts:
 
-
 options: { maxTurns: 1 }    options: { maxTurns: 1 }
   })) {
     if (message.type === "system" && message.subtype === "init") {
+
 ```python
 console.log("Available slash commands:", message.slash_commands);      console.log("Available slash commands:", message.slash_commands);
       // Example output: ["/compact", "/clear", "/help"]
@@ -24,12 +24,15 @@ console.log("Available slash commands:", message.slash_commands);      console.l
 
   async def main():
       async for message in query(
+```
+
 ```python
 prompt="Hello Claude",          prompt="Hello Claude",
           options={"max_turns": 1}
       ):
           if message.type == "system" and message.subtype == "init":
               print("Available slash commands:", message.slash_commands)
+
               # Example output: ["/compact", "/clear", "/help"]
 
   asyncio.run(main())
@@ -44,6 +47,7 @@ Send slash commands by including them in your prompt string, just like regular t
 options: { maxTurns: 1 }    options: { maxTurns: 1 }
   })) {
     if (message.type === "result") {
+
 ```python
 console.log("Command executed:", message.result);      console.log("Command executed:", message.result);
     }
@@ -54,6 +58,7 @@ console.log("Command executed:", message.result);      console.log("Command exec
   from claude_agent_sdk import query
 
   async def main():
+
       # Send a slash command
 ```python
 async for message in query(      async for message in query(
@@ -66,17 +71,16 @@ async for message in query(      async for message in query(
   asyncio.run(main())
   ```
 
-
 ## Common Slash Commands
 
 ### `/compact` - Compact Conversation History
 
 The `/compact` command reduces the size of your conversation history by summarizing older messages while preserving important context:
 
-
 options: { maxTurns: 1 }    options: { maxTurns: 1 }
   })) {
     if (message.type === "system" && message.subtype === "compact_boundary") {
+
 ```python
 console.log("Compaction completed");      console.log("Compaction completed");
       console.log("Pre-compaction tokens:", message.compact_metadata.pre_tokens);
@@ -113,6 +117,7 @@ The `/clear` command starts a fresh conversation by clearing all previous histor
 options: { maxTurns: 1 }    options: { maxTurns: 1 }
   })) {
     if (message.type === "system" && message.subtype === "init") {
+
 ```python
 console.log("Conversation cleared, new session started");      console.log("Conversation cleared, new session started");
       console.log("Session ID:", message.session_id);
@@ -124,6 +129,7 @@ console.log("Conversation cleared, new session started");      console.log("Conv
   from claude_agent_sdk import query
 
   async def main():
+
       # Clear conversation and start fresh
 ```python
 async for message in query(      async for message in query(
@@ -136,7 +142,6 @@ async for message in query(      async for message in query(
 
   asyncio.run(main())
   ```
-
 
 ## Creating Custom Slash Commands
 
@@ -176,7 +181,7 @@ Create `.claude/commands/security-check.md`:
 ---
 allowed-tools: Read, Grep, Glob
 description: Run security vulnerability scan
-model: claude-sonnet-4-5-20250929
+model: claude-sonnet-4-5
 ---
 
 Analyze the codebase for security vulnerabilities including:
@@ -190,10 +195,10 @@ Analyze the codebase for security vulnerabilities including:
 
 Once defined in the filesystem, custom commands are automatically available through the SDK:
 
-
 options: { maxTurns: 3 }    options: { maxTurns: 3 }
   })) {
     if (message.type === "assistant") {
+
 ```python
 console.log("Refactoring suggestions:", message.message);      console.log("Refactoring suggestions:", message.message);
     }
@@ -206,11 +211,13 @@ options: { maxTurns: 1 }    options: { maxTurns: 1 }
   })) {
     if (message.type === "system" && message.subtype === "init") {
 ```
+
 // Will include both built-in and custom commands      // Will include both built-in and custom commands
       console.log("Available commands:", message.slash_commands);
       // Example: ["/compact", "/clear", "/help", "/refactor", "/security-check"]
     }
-  ```
+
+  ```text
 
   ```python Python theme={null}
   import asyncio
@@ -264,6 +271,7 @@ Use in SDK:
 options: { maxTurns: 5 }    options: { maxTurns: 5 }
   })) {
     // Command will process with $1="123" and $2="high"
+
 ```python
 if (message.type === "result") {    if (message.type === "result") {
       console.log("Issue fixed:", message.result);
@@ -275,6 +283,7 @@ if (message.type === "result") {    if (message.type === "result") {
   from claude_agent_sdk import query
 
   async def main():
+
       # Pass arguments to custom command
 ```python
 async for message in query(      async for message in query(
@@ -288,8 +297,7 @@ async for message in query(      async for message in query(
   asyncio.run(main())
   ```
 
-
-#### Bash Command Execution
+## Bash Command Execution
 
 Custom commands can execute bash commands and include their output:
 
@@ -311,7 +319,7 @@ description: Create a git commit
 Create a git commit with appropriate message based on the changes.
 ```
 
-#### File References
+### File References
 
 Include file contents using the `@` prefix:
 
@@ -398,7 +406,6 @@ Run tests matching pattern: $ARGUMENTS
 
 Use these commands through the SDK:
 
-
 options: { maxTurns: 3 }    options: { maxTurns: 3 }
   })) {
     // Process review feedback
@@ -407,6 +414,7 @@ options: { maxTurns: 3 }    options: { maxTurns: 3 }
   // Run specific tests
   for await (const message of query({
     prompt: "/test auth",
+
 ```python
 options: { maxTurns: 5 }    options: { maxTurns: 5 }
   })) {
@@ -425,7 +433,9 @@ async for message in query(      async for message in query(
           prompt="/code-review",
           options={"max_turns": 3}
       ):
+
           # Process review feedback
+
           pass
 
       # Run specific tests

@@ -43,7 +43,7 @@ The SDK provides two ways to interact with Claude: the `query()` function for si
 | **Session control** | New session each time | Single persistent session |
 
 > **Important:** Hooks and custom tools (SDK MCP servers) are **only supported with `ClaudeSDKClient`**, not with `query()`. If you need hooks or custom tools, you must use `ClaudeSDKClient`.
-
+>
 > **Note on Async Runtimes:** The SDK works with both `asyncio` and `anyio`. The official SDK examples prefer `anyio.run()` for better async library compatibility, but `asyncio.run()` works equally well. Use whichever fits your project's async runtime.
 
 ### When to Use query()
@@ -187,17 +187,19 @@ anyio.run(interruptible_task)  # or: asyncio.run(interruptible_task())
 Define a main orchestrator that delegates work to specialized subagents.
 
 **Critical requirements:**
-- Orchestrator must use `system_prompt="claude_code"` (provides Task tool knowledge)
+
+- Orchestrator must use `system_prompt={"type": "preset", "preset": "claude_code"}` (provides Task tool knowledge)
 - Register agents programmatically via `agents={}` parameter (SDK best practice)
 - Orchestrator must include `"Task"` in `allowed_tools`
 - Match agent names exactly between definition and usage
 
 **Example:**
+
 ```python
 from claude_agent_sdk import AgentDefinition, ClaudeAgentOptions
 
 options = ClaudeAgentOptions(
-    system_prompt="claude_code",  # REQUIRED for orchestrators
+    system_prompt={"type": "preset", "preset": "claude_code"},  # REQUIRED for orchestrators
     allowed_tools=["Bash", "Task", "Read", "Write"],
     agents={
         "analyzer": AgentDefinition(
@@ -214,11 +216,12 @@ options = ClaudeAgentOptions(
         )
     },
     permission_mode="acceptEdits",
-    model="claude-sonnet-4-5-20250929"
+    model="claude-sonnet-4-5"
 )
 ```
 
 **See:**
+
 - `references/agent-patterns.md` - Complete agent definition patterns
 - `examples/agents.py` - Official SDK agent examples with different agent types
 
@@ -227,7 +230,10 @@ options = ClaudeAgentOptions(
 Choose the appropriate system prompt pattern:
 
 ```python
-# Orchestrator (use claude_code preset) - shorthand
+# Orchestrator (use claude_code preset) - dict format (official examples prefer this)
+system_prompt={"type": "preset", "preset": "claude_code"}
+
+# Shorthand format (equivalent, but less explicit)
 system_prompt="claude_code"
 
 # Custom behavior
@@ -241,9 +247,10 @@ system_prompt={
 }
 ```
 
-**Note:** The shorthand `system_prompt="claude_code"` is equivalent to `{"type": "preset", "preset": "claude_code"}`. Both are valid.
+**Note:** The shorthand `system_prompt="claude_code"` is equivalent to `{"type": "preset", "preset": "claude_code"}`. Both are valid. Official examples prefer the dict format for explicitness.
 
 **See:**
+
 - `references/system-prompts.md` - Complete system prompt documentation
 - `examples/system_prompt.py` - Official SDK system prompt examples
 
@@ -284,6 +291,7 @@ options = ClaudeAgentOptions(
 ```
 
 **See:**
+
 - `references/hooks-guide.md` - Complete hook patterns documentation
 - `examples/hooks.py` - Official SDK hook examples with all hook types
 
@@ -310,6 +318,7 @@ options = ClaudeAgentOptions(
 ```
 
 **See:**
+
 - `references/tool-permissions.md` - Complete permission patterns and decision guide
 - `examples/tool_permission_callback.py` - Official SDK permission callback example
 
@@ -320,11 +329,13 @@ options = ClaudeAgentOptions(
 Follow these steps to build an effective orchestrator:
 
 **1. Define agent purposes**
+
 - What specialized tasks need delegation?
 - What tools does each agent need?
 - What constraints should apply?
 
 **2. Create agent definitions**
+
 ```python
 agents={
     "agent-name": AgentDefinition(
@@ -337,9 +348,10 @@ agents={
 ```
 
 **3. Configure orchestrator**
+
 ```python
 options = ClaudeAgentOptions(
-    system_prompt="claude_code",  # CRITICAL
+    system_prompt={"type": "preset", "preset": "claude_code"},  # CRITICAL
     allowed_tools=["Bash", "Task", "Read", "Write"],
     agents=agents,
     permission_mode="acceptEdits"
@@ -347,6 +359,7 @@ options = ClaudeAgentOptions(
 ```
 
 **4. Implement workflow**
+
 ```python
 async with ClaudeSDKClient(options=options) as client:
     await client.query("Use 'agent-name' to perform task")
@@ -398,12 +411,14 @@ options = ClaudeAgentOptions(agents={"my-agent": agent})
 Avoid these common mistakes:
 
 **❌ Missing orchestrator system prompt**
+
 ```python
 # Orchestrator won't know how to use Task tool
 options = ClaudeAgentOptions(agents={...})
 ```
 
 **✅ Correct orchestrator configuration**
+
 ```python
 options = ClaudeAgentOptions(
     system_prompt="claude_code",
@@ -412,24 +427,28 @@ options = ClaudeAgentOptions(
 ```
 
 **❌ Mismatched agent names**
+
 ```python
 agents={"investigator": AgentDefinition(...)}
 await client.query("Use 'markdown-investigator'...")  # Wrong name
 ```
 
 **✅ Exact name matching**
+
 ```python
 agents={"investigator": AgentDefinition(...)}
 await client.query("Use 'investigator'...")  # Matches
 ```
 
 **❌ Tool/prompt mismatch**
+
 ```python
 system_prompt="Fix bugs you find"
 allowed_tools=["Read", "Grep"]  # Can't fix, only read
 ```
 
 **✅ Aligned tools and behavior**
+
 ```python
 system_prompt="Analyze code for bugs"
 allowed_tools=["Read", "Grep", "Glob"]
@@ -460,16 +479,19 @@ In-depth documentation loaded as needed:
 Ready-to-run code examples from official SDK:
 
 **Getting Started:**
+
 - `quick_start.py` - Basic query() usage and message handling (start here!)
 - `basic-orchestrator.py` - Complete orchestrator with analyzer and fixer subagents
 
 **Core Patterns:**
+
 - `agents.py` - Programmatic agent definitions with different agent types
 - `hooks.py` - Comprehensive hook patterns (PreToolUse, PostToolUse, UserPromptSubmit, etc.)
 - `system_prompt.py` - System prompt patterns (preset, custom, append)
 - `streaming_mode.py` - Complete ClaudeSDKClient patterns with multi-turn conversations
 
 **Advanced Features:**
+
 - `mcp_calculator.py` - Custom tools with SDK MCP server (in-process tool server)
 - `tool_permission_callback.py` - Permission callbacks with logging and control
 - `setting_sources.py` - Settings isolation and loading (user/project/local)
@@ -496,34 +518,40 @@ Use this skill when:
 - Following SDK best practices
 
 Do not use for:
+
 - Claude Code slash commands or skills (different system)
 - Direct API usage without SDK
 - Non-Python implementations (TypeScript SDK has different patterns)
 
 ## Next Steps
 
-### For Beginners:
+### For Beginners
+
 1. Start with `examples/quick_start.py` - Learn basic query() usage
 2. Try `assets/sdk-template.py` - Template for new projects
 3. Review `examples/basic-orchestrator.py` - See orchestrator pattern
 
-### For Intermediate Users:
-4. Explore core patterns:
+### For Intermediate Users
+
+1. Explore core patterns:
    - `examples/agents.py` - Agent definitions
    - `examples/system_prompt.py` - System prompt patterns
    - `examples/streaming_mode.py` - Multi-turn conversations
    - `examples/hooks.py` - Hook patterns
 
-### For Advanced Users:
-5. Study advanced features:
+### For Advanced Users
+
+1. Study advanced features:
    - `examples/tool_permission_callback.py` - Permission control
    - `examples/mcp_calculator.py` - Custom tools
    - `examples/setting_sources.py` - Settings management
    - `examples/plugin_example.py` - Plugin integration
 
-### Validation & Quality:
-6. Validate your code with `assets/sdk-validation-checklist.md`
-7. Review against best practices in `references/best-practices.md`
+### Validation & Quality
 
-### Reference Documentation:
-8. Consult `references/` as needed for detailed patterns
+1. Validate your code with `assets/sdk-validation-checklist.md`
+2. Review against best practices in `references/best-practices.md`
+
+### Reference Documentation
+
+1. Consult `references/` as needed for detailed patterns

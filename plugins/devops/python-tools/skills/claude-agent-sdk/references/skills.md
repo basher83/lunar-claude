@@ -20,9 +20,7 @@ When using the Claude Agent SDK, Skills are:
 
 Unlike subagents (which can be defined programmatically), Skills must be created as filesystem artifacts. The SDK does not provide a programmatic API for registering Skills.
 
-
   **Default behavior**: By default, the SDK does not load any filesystem settings. To use Skills, you must explicitly configure `settingSources: ['user', 'project']` (TypeScript) or `setting_sources=["user", "project"]` (Python) in your options.
-
 
 ## Using Skills with the SDK
 
@@ -33,13 +31,14 @@ To use Skills with the SDK, you need to:
 
 Once configured, Claude automatically discovers Skills from the specified directories and invokes them when relevant to the user's request.
 
-
   ```python Python theme={null}
   import asyncio
   from claude_agent_sdk import query, ClaudeAgentOptions
 
   async def main():
       options = ClaudeAgentOptions(
+```
+
 ```python
 cwd="/path/to/project",  # Project with .claude/skills/          cwd="/path/to/project",  # Project with .claude/skills/
           setting_sources=["user", "project"],  # Load Skills from filesystem
@@ -64,7 +63,8 @@ options: {    options: {
   })) {
     console.log(message);
   }
-  ```
+
+  ```text
 
 
 ## Skill Locations
@@ -84,7 +84,7 @@ Skills are defined as directories containing a `SKILL.md` file with YAML frontma
 ```bash  theme={null}
 .claude/skills/processing-pdfs/
 └── SKILL.md
-```
+  ```
 
 For complete guidance on creating Skills, including SKILL.md structure, multi-file Skills, and examples, see:
 
@@ -127,13 +127,12 @@ options: {    options: {
   })) {
     console.log(message);
   }
-  ```
 
+  ```text
 
 ## Discovering Available Skills
 
 To see which Skills are available in your SDK application, simply ask Claude:
-
 
   ```python Python theme={null}
   options = ClaudeAgentOptions(
@@ -157,7 +156,8 @@ options: {    options: {
   })) {
     console.log(message);
   }
-  ```
+
+  ```text
 
 
 Claude will list the available Skills based on your current working directory and installed plugins.
@@ -191,8 +191,8 @@ options: {    options: {
   })) {
     console.log(message);
   }
-  ```
 
+  ```text
 
 Claude automatically invokes the relevant Skill if the description matches your request.
 
@@ -201,7 +201,6 @@ Claude automatically invokes the relevant Skill if the description matches your 
 ### Skills Not Found
 
 **Check settingSources configuration**: Skills are only loaded when you explicitly configure `settingSources`/`setting_sources`. This is the most common issue:
-
 
   ```python Python theme={null}
   # Wrong - Skills won't be loaded
@@ -219,13 +218,12 @@ allowed_tools=["Skill"]      allowed_tools=["Skill"]
 
 allowedTools: ["Skill"]    allowedTools: ["Skill"]
   };
-  ```
 
+  ```text
 
 For more details on `settingSources`/`setting_sources`, see the [TypeScript SDK reference](/en/api/agent-sdk/typescript#settingsource) or [Python SDK reference](/en/api/agent-sdk/python#settingsource).
 
 **Check working directory**: The SDK loads Skills relative to the `cwd` option. Ensure it points to a directory containing `.claude/skills/`:
-
 
   ```python Python theme={null}
   # Ensure your cwd points to the directory containing .claude/skills/
@@ -240,8 +238,8 @@ setting_sources=["user", "project"],  # Required to load Skills      setting_sou
 settingSources: ["user", "project"],  // Required to load Skills    settingSources: ["user", "project"],  // Required to load Skills
     allowedTools: ["Skill"]
   };
-  ```
 
+  ```text
 
 See the "Using Skills with the SDK" section above for the complete pattern.
 
@@ -253,7 +251,7 @@ ls .claude/skills/*/SKILL.md
 
 # Check personal Skills
 ls ~/.claude/skills/*/SKILL.md
-```
+  ```
 
 ### Skill Not Being Used
 

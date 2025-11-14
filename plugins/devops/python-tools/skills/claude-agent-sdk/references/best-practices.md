@@ -7,6 +7,7 @@ This guide captures best practices and common patterns for building effective SD
 ### ✅ Use Programmatic Registration
 
 **Recommended:** Define agents via `agents` parameter
+
 ```python
 options = ClaudeAgentOptions(
     agents={
@@ -20,6 +21,7 @@ options = ClaudeAgentOptions(
 ```
 
 **Not Recommended:** Relying on filesystem auto-discovery
+
 ```python
 # SDK can auto-discover .claude/agents/*.md
 # but programmatic registration is clearer and more maintainable
@@ -29,6 +31,7 @@ options = ClaudeAgentOptions()
 ### ✅ Set Orchestrator System Prompt
 
 **Critical:** Orchestrators must use `system_prompt="claude_code"`
+
 ```python
 options = ClaudeAgentOptions(
     system_prompt="claude_code",  # Knows how to use Task tool
@@ -42,6 +45,7 @@ options = ClaudeAgentOptions(
 ### ✅ Match Agent Names
 
 Ensure agent names in `agents={}` match references in prompts:
+
 ```python
 # Define agent
 options = ClaudeAgentOptions(
@@ -57,6 +61,7 @@ await client.query("Use the 'markdown-investigator' subagent...")
 ### ✅ Restrict Subagent Tools
 
 Limit subagent tools to minimum needed:
+
 ```python
 # Read-only analyzer
 "analyzer": AgentDefinition(
@@ -72,6 +77,7 @@ Limit subagent tools to minimum needed:
 ### ✅ Give Orchestrator Task Tool
 
 Orchestrators need Task tool to delegate:
+
 ```python
 options = ClaudeAgentOptions(
     allowed_tools=["Bash", "Task", "Read", "Write"],  # Include Task
@@ -112,6 +118,7 @@ async for message in client.receive_response():
 ### ✅ Validate Agent Responses
 
 Don't assume agents return expected format:
+
 ```python
 investigation_report = None
 
@@ -133,6 +140,7 @@ if not investigation_report:
 ### ✅ Use uv Script Headers
 
 For standalone SDK scripts, use uv inline script metadata:
+
 ```python
 #!/usr/bin/env -S uv run --script --quiet
 # /// script
@@ -148,6 +156,7 @@ For standalone SDK scripts, use uv inline script metadata:
 ### ✅ Organize Agent Definitions
 
 Option 1: Store in markdown files, load programmatically
+
 ```text
 project/
 ├── .claude/
@@ -167,6 +176,7 @@ options = ClaudeAgentOptions(agents={"investigator": investigator})
 ```
 
 Option 2: Define inline
+
 ```python
 options = ClaudeAgentOptions(
     agents={
@@ -204,6 +214,7 @@ options = ClaudeAgentOptions(
 ### ✅ Use Hooks for Complex Logic
 
 Prefer hooks over permission callbacks for:
+
 - Adding context
 - Reviewing outputs
 - Stopping on errors
@@ -301,7 +312,8 @@ def test_agent_configuration():
     options = get_sdk_options()
 
     # Check orchestrator has claude_code preset
-    assert options.system_prompt == "claude_code"
+    # Note: Can be string "claude_code" or dict {"type": "preset", "preset": "claude_code"}
+    assert options.system_prompt in ("claude_code", {"type": "preset", "preset": "claude_code"})
 
     # Check orchestrator has Task tool
     assert "Task" in options.allowed_tools

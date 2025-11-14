@@ -158,12 +158,14 @@ options = ClaudeAgentOptions(
 ## Anti-Patterns
 
 ❌ **Relying on filesystem auto-discovery**
+
 ```python
 # SDK will auto-discover .claude/agents/*.md but this is NOT recommended
 options = ClaudeAgentOptions()  # Missing explicit agents={}
 ```
 
 ✅ **Programmatic registration**
+
 ```python
 options = ClaudeAgentOptions(
     agents={"agent-name": AgentDefinition(...)}
@@ -171,6 +173,7 @@ options = ClaudeAgentOptions(
 ```
 
 ❌ **Missing orchestrator system prompt**
+
 ```python
 options = ClaudeAgentOptions(
     agents={...}
@@ -179,6 +182,7 @@ options = ClaudeAgentOptions(
 ```
 
 ✅ **Proper orchestrator configuration**
+
 ```python
 options = ClaudeAgentOptions(
     system_prompt="claude_code",  # Orchestrator knows how to use Task tool

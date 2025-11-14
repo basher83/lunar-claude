@@ -49,7 +49,7 @@ Subagents can be limited to specific tools, reducing the risk of unintended acti
 Define subagents directly in your code using the `agents` parameter:
 
 ```python
-import asyncio
+import anyio
 from claude_agent_sdk import query, ClaudeAgentOptions, AgentDefinition
 
 async def main():
@@ -89,7 +89,7 @@ Focus on:
     ):
         print(message)
 
-asyncio.run(main())
+anyio.run(main)
 ```
 
 ### AgentDefinition Configuration

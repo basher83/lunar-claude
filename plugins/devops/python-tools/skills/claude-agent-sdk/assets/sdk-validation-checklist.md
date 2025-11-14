@@ -5,6 +5,7 @@ This checklist helps validate SDK applications against official patterns and bes
 ## Quick Validation
 
 Use this checklist when:
+
 - Creating new SDK applications
 - Reviewing SDK code
 - Debugging SDK issues
@@ -14,12 +15,12 @@ Use this checklist when:
 
 ## 1. Imports & Dependencies
 
-### Required Checks:
+### Required Checks
 
 - [ ] **Async runtime import**
-  - Uses `import anyio` (preferred) or `import asyncio`
-  - Comment indicates choice: `# or: import asyncio`
-  - **Reference:** SKILL.md line 47
+  - Uses `import anyio` (official SDK examples use anyio)
+  - Comment reflects official preference: `# Official SDK examples use anyio`
+  - **Reference:** Official examples consistently use anyio
 
 - [ ] **Claude SDK imports are accurate**
   - `ClaudeAgentOptions` for configuration
@@ -38,12 +39,12 @@ Use this checklist when:
 
 ## 2. Async Runtime
 
-### Required Checks:
+### Required Checks
 
 - [ ] **Runtime execution is correct**
-  - Uses `anyio.run(main)` (preferred) or `asyncio.run(main())`
-  - Comment shows alternative: `# or: asyncio.run(main())`
-  - **Reference:** SKILL.md lines 54-71, 88-124
+  - Uses `anyio.run(main)` (official SDK examples use anyio.run())
+  - Comment reflects official preference: `# Official SDK examples use anyio.run()`
+  - **Reference:** Official examples consistently use anyio.run()
 
 - [ ] **Async/await patterns are correct**
   - Functions marked as `async def`
@@ -56,7 +57,7 @@ Use this checklist when:
 
 ## 3. Choosing query() vs ClaudeSDKClient
 
-### Required Checks:
+### Required Checks
 
 - [ ] **Correct approach for use case**
   - `query()`: One-shot tasks, no conversation memory
@@ -72,13 +73,15 @@ Use this checklist when:
 
 ## 4. Orchestrator Configuration
 
-### Required Checks:
+### Required Checks
 
 - [ ] **System prompt is set correctly**
-  - Uses `system_prompt="claude_code"` for orchestrators
-  - OR uses `{"type": "preset", "preset": "claude_code"}` (equivalent)
+  - Uses `system_prompt={"type": "preset", "preset": "claude_code"}` for orchestrators
+    (official examples use dict format)
+  - OR uses `system_prompt="claude_code"` (string shorthand, equivalent but less explicit)
   - Custom prompts only for non-orchestrators
-  - **Reference:** SKILL.md lines 226-242, `references/system-prompts.md`
+  - **Reference:** Official examples use dict format, SKILL.md lines 226-242,
+    `references/system-prompts.md`
 
 - [ ] **Task tool is included**
   - `allowed_tools` includes `"Task"` for orchestrators
@@ -96,9 +99,10 @@ Use this checklist when:
 
 ## 5. Agent Definitions
 
-### Required Checks:
+### Required Checks
 
 - [ ] **Agent definition structure is correct**
+
   ```python
   AgentDefinition(
       description="...",  # When to use this agent
@@ -107,6 +111,7 @@ Use this checklist when:
       model="sonnet"      # or "opus", "haiku", "inherit"
   )
   ```
+
   - **Reference:** SKILL.md lines 195-217
 
 - [ ] **Agent names match references**
@@ -124,7 +129,7 @@ Use this checklist when:
 
 ## 6. Permission Control
 
-### Required Checks:
+### Required Checks
 
 - [ ] **Permission strategy is appropriate**
   - Simple use case → `permission_mode` only
@@ -147,7 +152,7 @@ Use this checklist when:
 
 ## 7. Hooks (if used)
 
-### Required Checks:
+### Required Checks
 
 - [ ] **Hooks ONLY used with ClaudeSDKClient**
   - NOT using hooks with `query()` function
@@ -174,15 +179,17 @@ Use this checklist when:
 
 ## 8. ClaudeSDKClient Usage
 
-### Required Checks:
+### Required Checks
 
 - [ ] **Context manager pattern is used**
+
   ```python
   async with ClaudeSDKClient(options=options) as client:
       await client.query(...)
       async for message in client.receive_response():
           ...
   ```
+
   - **Reference:** SKILL.md lines 88-124
 
 - [ ] **Query → receive_response flow**
@@ -200,9 +207,10 @@ Use this checklist when:
 
 ## 9. Message Handling
 
-### Required Checks:
+### Required Checks
 
 - [ ] **Message types are checked correctly**
+
   ```python
   if isinstance(message, AssistantMessage):
       for block in message.content:
@@ -211,6 +219,7 @@ Use this checklist when:
   elif isinstance(message, ResultMessage):
       # Handle completion
   ```
+
   - **Reference:** SKILL.md lines 77-91, `examples/streaming_mode.py`
 
 - [ ] **TextBlock extraction is correct**
@@ -227,7 +236,7 @@ Use this checklist when:
 
 ## 10. Error Handling
 
-### Required Checks:
+### Required Checks
 
 - [ ] **API key validation**
   - Checks `os.getenv("ANTHROPIC_API_KEY")` before SDK calls
@@ -248,18 +257,20 @@ Use this checklist when:
 
 ## 11. Settings & Configuration
 
-### Required Checks:
+### Required Checks
 
 - [ ] **setting_sources is configured (if needed)**
   - Default behavior: NO settings loaded (isolated environment)
-  - Explicitly set to load: `["user"]`, `["project"]`, `["user", "project"]`
+  - Explicitly set to load: `["user"]`, `["project"]`, `["local"]`, or combinations like `["user", "project"]`
   - Understands isolation vs loading tradeoff
-  - **Reference:** `examples/setting_sources.py`
+  - **Reference:** `examples/setting_sources.py` (official example shows user, project, local options)
 
 - [ ] **Model selection is appropriate**
-  - Orchestrator: `"claude-sonnet-4-5-20250929"` or latest
+  - Orchestrator: `"claude-sonnet-4-5"` (simplified, official examples prefer this)
+    or `"claude-sonnet-4-5-20250929"` (dated version)
   - Subagents: `"sonnet"`, `"opus"`, `"haiku"`, or `"inherit"`
-  - **Reference:** SKILL.md line 51, `references/agent-patterns.md`
+  - **Reference:** Official examples use `claude-sonnet-4-5`, SKILL.md line 51,
+    `references/agent-patterns.md`
 
 - [ ] **Budget limits (if needed)**
   - Uses `max_budget_usd` for cost control
@@ -270,7 +281,7 @@ Use this checklist when:
 
 ## 12. Best Practices Compliance
 
-### Required Checks:
+### Required Checks
 
 - [ ] **Follows DRY principle**
   - Options extracted to function (e.g., `get_sdk_options()`)
@@ -300,7 +311,8 @@ Use this checklist when:
 
 After reviewing, fill out this summary:
 
-### ✅ Passed Checks:
+### ✅ Passed Checks
+
 - [ ] Imports & Dependencies
 - [ ] Async Runtime
 - [ ] Orchestrator Configuration
@@ -309,15 +321,18 @@ After reviewing, fill out this summary:
 - [ ] Message Handling
 - [ ] Best Practices
 
-### ❌ Issues Found:
+### ❌ Issues Found
+
 - Issue 1: [Description]
 - Issue 2: [Description]
 
-### 🔧 Fixes Required:
+### 🔧 Fixes Required
+
 1. [Specific fix with line reference]
 2. [Specific fix with line reference]
 
-### 📊 Overall Assessment:
+### 📊 Overall Assessment
+
 - **Accuracy:** [%]
 - **Alignment with docs:** [High/Medium/Low]
 - **Production ready:** [Yes/No]
@@ -327,11 +342,13 @@ After reviewing, fill out this summary:
 ## Quick Reference Links
 
 **Core Documentation:**
+
 - Main skill: `SKILL.md`
 - API reference: `references/api-reference.md`
 - Best practices: `references/best-practices.md`
 
 **Pattern Guides:**
+
 - Agent patterns: `references/agent-patterns.md`
 - Hooks: `references/hooks-guide.md`
 - Permissions: `references/tool-permissions.md`
@@ -339,6 +356,7 @@ After reviewing, fill out this summary:
 - Subagents: `references/subagents.md`
 
 **Examples:**
+
 - Quick start: `examples/quick_start.py`
 - Template: `assets/sdk-template.py`
 - Complete examples: `examples/*.py`

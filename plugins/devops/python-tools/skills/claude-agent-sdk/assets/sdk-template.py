@@ -16,13 +16,12 @@ Usage:
 3. Update the prompt and workflow
 4. Run: ./your-script.py
 
-Note: Uses anyio for async runtime (official SDK preference).
-You can also use asyncio - both work equally well.
+Note: Uses anyio for async runtime (official SDK examples use anyio).
 """
 
 import os
 
-import anyio  # or: import asyncio
+import anyio  # Official SDK examples use anyio
 from claude_agent_sdk import (
     AgentDefinition,
     AssistantMessage,
@@ -37,7 +36,7 @@ def get_sdk_options() -> ClaudeAgentOptions:
     """Configure SDK options with agents."""
     return ClaudeAgentOptions(
         # Use claude_code preset for orchestrators
-        system_prompt="claude_code",
+        system_prompt={"type": "preset", "preset": "claude_code"},
         # Allow orchestrator to use Task tool for delegation
         allowed_tools=["Bash", "Task", "Read", "Write"],
         # Permission mode: "default", "acceptEdits", or "rejectEdits"
@@ -51,7 +50,7 @@ def get_sdk_options() -> ClaudeAgentOptions:
                 model="sonnet",  # or "opus", "haiku", "inherit"
             ),
         },
-        model="claude-sonnet-4-5-20250929",
+        model="claude-sonnet-4-5",
     )
 
 
@@ -94,4 +93,4 @@ async def main():
 
 
 if __name__ == "__main__":
-    anyio.run(main)  # or: asyncio.run(main())
+    anyio.run(main)  # Official SDK examples use anyio.run()

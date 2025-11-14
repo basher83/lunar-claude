@@ -5,6 +5,7 @@ This guide covers tool permission callbacks for fine-grained control over tool u
 ## Overview
 
 Tool permission callbacks allow you to:
+
 - Approve or deny tool usage
 - Modify tool inputs before execution
 - Implement complex permission logic
@@ -17,12 +18,14 @@ The SDK provides two ways to control tool permissions: **permission modes** (sim
 ### Quick Decision Guide
 
 **Use `permission_mode` when:**
+
 - You have simple, consistent permission policies
 - You want to auto-approve/deny all file edits
 - You don't need conditional logic
 - You want minimal code
 
 **Use `can_use_tool` callback when:**
+
 - You need conditional approval logic
 - You want to modify tool inputs before execution
 - You need to block specific commands or patterns
@@ -411,22 +414,26 @@ if __name__ == "__main__":
 ## Anti-Patterns
 
 ❌ **Assuming input structure**
+
 ```python
 # Crashes if command key doesn't exist
 command = input_data["command"]
 ```
 
 ✅ **Safe access**
+
 ```python
 command = input_data.get("command", "")
 ```
 
 ❌ **Silent denials**
+
 ```python
 return PermissionResultDeny()  # No message
 ```
 
 ✅ **Informative denials**
+
 ```python
 return PermissionResultDeny(
     message="Cannot write to system directories for safety"
@@ -434,6 +441,7 @@ return PermissionResultDeny(
 ```
 
 ❌ **Checking all tools for Bash-specific logic**
+
 ```python
 # This crashes on non-Bash tools
 async def callback(tool_name, input_data, context):
@@ -441,6 +449,7 @@ async def callback(tool_name, input_data, context):
 ```
 
 ✅ **Filter by tool_name first**
+
 ```python
 async def callback(tool_name, input_data, context):
     if tool_name != "Bash":

@@ -18,8 +18,9 @@ Key patterns:
 - Async/await streaming
 """
 
-import asyncio
 import os
+
+import anyio
 
 from claude_agent_sdk import (
     AgentDefinition,
@@ -40,7 +41,7 @@ def get_sdk_options() -> ClaudeAgentOptions:
     """
     return ClaudeAgentOptions(
         # CRITICAL: Orchestrator needs claude_code preset to use Task tool
-        system_prompt="claude_code",
+        system_prompt={"type": "preset", "preset": "claude_code"},
         # Orchestrator tools - include Task for delegating to subagents
         allowed_tools=["Bash", "Task", "Read", "Write", "Edit"],
         # Auto-accept file edits for automated workflow
@@ -75,7 +76,7 @@ Use Read, Edit, and Bash to implement and verify fixes.""",
                 model="sonnet",
             ),
         },
-        model="claude-sonnet-4-5-20250929",
+        model="claude-sonnet-4-5",
     )
 
 
@@ -124,4 +125,4 @@ Wait for the analyzer to complete its work."""
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    anyio.run(main)

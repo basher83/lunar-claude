@@ -29,7 +29,6 @@ You are verifying a pull request. Check that claims in PR description, commits, 
 2. **Verify behavior, not names:** Check what code DOES. Different filenames can provide same functionality.
 3. **Counter-evidence first:** Define what would disprove claim BEFORE checking
 4. **Cross-reference patterns:** If comparing implementations, check what feature IS first
-5. **No meta-analysis:** No recursive patterns, cognitive dynamics, or turtles
 
 ---
 

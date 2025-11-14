@@ -2,13 +2,18 @@
 
 > Build and integrate custom tools to extend Claude Agent SDK functionality
 
-Custom tools allow you to extend Claude Code's capabilities with your own functionality through in-process MCP servers, enabling Claude to interact with external services, APIs, or perform specialized operations.
+Custom tools allow you to extend Claude Code's capabilities with your own
+functionality through in-process MCP servers, enabling Claude to interact with
+external services, APIs, or perform specialized operations.
 
 ## Creating Custom Tools
 
 Use the `createSdkMcpServer` and `tool` helper functions to define type-safe custom tools:
 
-version: "1.0.0",
+```typescript
+const customServer = createSdkMcpServer({
+  name: "my-custom-tools",
+  version: "1.0.0",
     tools: [
       tool(
         "get_weather",
@@ -34,53 +39,46 @@ version: "1.0.0",
       )
     ]
   });
+```
 
-  ```text
-
-  ```python Python theme={null}
+```python
   from claude_agent_sdk import tool, create_sdk_mcp_server, ClaudeSDKClient, ClaudeAgentOptions
   from typing import Any
   import aiohttp
 
-## Define a custom tool using the @tool decorator
-
+  # Define a custom tool using the @tool decorator
   @tool("get_weather", "Get current weather for a location", {"location": str, "units": str})
   async def get_weather(args: dict[str, Any]) -> dict[str, Any]:
-
       # Call weather API
-```
-
-```python
-units = args.get('units', 'celsius')      units = args.get('units', 'celsius')
+      units = args.get('units', 'celsius')
       async with aiohttp.ClientSession() as session:
           async with session.get(
               f"https://api.weather.com/v1/current?q={args['location']}&units={units}"
           ) as response:
               data = await response.json()
 
-```python
-return {      return {
+      return {
           "content": [{
               "type": "text",
               "text": f"Temperature: {data['temp']}°\nConditions: {data['conditions']}\nHumidity: {data['humidity']}%"
           }]
       }
 
-## Create an SDK MCP server with the custom tool
-
+  # Create an SDK MCP server with the custom tool
   custom_server = create_sdk_mcp_server(
       name="my-custom-tools",
-```python
-version="1.0.0",
+      version="1.0.0",
       tools=[get_weather]  # Pass the decorated function
   )
-  ```
+```
 
 ## Using Custom Tools
 
 Pass the custom server to the `query` function via the `mcpServers` option as a dictionary/object.
 
-  **Important:** Custom MCP tools require streaming input mode. You must use an async generator/iterable for the `prompt` parameter - a simple string will not work with MCP servers.
+  **Important:** Custom MCP tools require streaming input mode. You must use an
+  async generator/iterable for the `prompt` parameter - a simple string will not
+  work with MCP servers.
 
 ### Tool Name Format
 
@@ -93,6 +91,10 @@ When MCP tools are exposed to Claude, their names follow a specific format:
 
 You can control which tools Claude can use via the `allowedTools` option:
 
+```typescript
+  async function* generateMessages() {
+    yield {
+      type: "user",
       message: {
         content: "What's the weather in San Francisco?"
       }
@@ -101,9 +103,7 @@ You can control which tools Claude can use via the `allowedTools` option:
 
   for await (const message of query({
     prompt: generateMessages(),  // Use async generator for streaming input
-
-```python
-options: {    options: {
+    options: {
       mcpServers: {
         "my-custom-tools": customServer  // Pass as object/dictionary, not array
       },
@@ -116,21 +116,19 @@ options: {    options: {
     }
   })) {
     if (message.type === "result" && message.subtype === "success") {
-```python
-console.log(message.result);      console.log(message.result);
+      console.log(message.result);
     }
-  ```
+  }
+```
 
-  ```python Python theme={null}
+```python
   from claude_agent_sdk import ClaudeSDKClient, ClaudeAgentOptions
   import asyncio
 
-## Use the custom tools with Claude
-
+  # Use the custom tools with Claude
   options = ClaudeAgentOptions(
       mcp_servers={"my-custom-tools": custom_server},
-```python
-allowed_tools=[      allowed_tools=[
+      allowed_tools=[
           "mcp__my-custom-tools__get_weather",  # Allow the weather tool
           # Add other tools as needed
       ]
@@ -138,24 +136,23 @@ allowed_tools=[      allowed_tools=[
 
   async def main():
       async with ClaudeSDKClient(options=options) as client:
-```python
-await client.query("What's the weather in San Francisco?")          await client.query("What's the weather in San Francisco?")
+          await client.query("What's the weather in San Francisco?")
 
-```
-
-# Extract and print response          # Extract and print response
+          # Extract and print response
           async for msg in client.receive_response():
               print(msg)
 
   asyncio.run(main())
-
-  ```text
+```
 
 ## Multiple Tools Example
 
 When your MCP server has multiple tools, you can selectively allow them:
 
-version: "1.0.0",
+```typescript
+  const multiToolServer = createSdkMcpServer({
+    name: "utilities",
+    version: "1.0.0",
     tools: [
       tool("calculate", "Perform calculations", { /* ... */ }, async (args) => { /* ... */ }),
       tool("translate", "Translate text", { /* ... */ }, async (args) => { /* ... */ }),
@@ -166,8 +163,7 @@ version: "1.0.0",
   // Allow only specific tools with streaming input
   async function* generateMessages() {
     yield {
-  ```
-
+      type: "user",
       message: {
         content: "Calculate 5 + 3 and translate 'hello' to Spanish"
       }
@@ -176,9 +172,7 @@ version: "1.0.0",
 
   for await (const message of query({
     prompt: generateMessages(),  // Use async generator for streaming input
-
-```python
-options: {    options: {
+    options: {
       mcpServers: {
         utilities: multiToolServer
       },
@@ -191,78 +185,68 @@ options: {    options: {
   })) {
     // Process messages
   }
-  ```
+```
 
-  ```python Python theme={null}
+```python
   from claude_agent_sdk import ClaudeSDKClient, ClaudeAgentOptions, tool, create_sdk_mcp_server
   from typing import Any
   import asyncio
 
-## Define multiple tools using the @tool decorator
-
+  # Define multiple tools using the @tool decorator
   @tool("calculate", "Perform calculations", {"expression": str})
   async def calculate(args: dict[str, Any]) -> dict[str, Any]:
       result = eval(args["expression"])  # Use safe eval in production
-```python
-return {"content": [{"type": "text", "text": f"Result: {result}"}]}      return {"content": [{"type": "text", "text": f"Result: {result}"}]}
+      return {"content": [{"type": "text", "text": f"Result: {result}"}]}
 
   @tool("translate", "Translate text", {"text": str, "target_lang": str})
   async def translate(args: dict[str, Any]) -> dict[str, Any]:
       # Translation logic here
-```python
-return {"content": [{"type": "text", "text": f"Translated: {args['text']}"}]}      return {"content": [{"type": "text", "text": f"Translated: {args['text']}"}]}
+      return {"content": [{"type": "text", "text": f"Translated: {args['text']}"}]}
 
   @tool("search_web", "Search the web", {"query": str})
   async def search_web(args: dict[str, Any]) -> dict[str, Any]:
-
       # Search logic here
-```python
-return {"content": [{"type": "text", "text": f"Search results for: {args['query']}"}]}      return {"content": [{"type": "text", "text": f"Search results for: {args['query']}"}]}
+      return {"content": [{"type": "text", "text": f"Search results for: {args['query']}"}]}
 
   multi_tool_server = create_sdk_mcp_server(
       name="utilities",
-```python
-version="1.0.0",
+      version="1.0.0",
       tools=[calculate, translate, search_web]  # Pass decorated functions
   )
 
-## Allow only specific tools with streaming input
-
+  # Allow only specific tools with streaming input
   async def message_generator():
       yield {
-```
-
-"type": "user",          "type": "user",
+          "type": "user",
           "message": {
               "role": "user",
               "content": "Calculate 5 + 3 and translate 'hello' to Spanish"
           }
+      }
 
   async for message in query(
       prompt=message_generator(),  # Use async generator for streaming input
-
-```python
-options=ClaudeAgentOptions(      options=ClaudeAgentOptions(
+      options=ClaudeAgentOptions(
           mcp_servers={"utilities": multi_tool_server},
           allowed_tools=[
               "mcp__utilities__calculate",   # Allow calculator
               "mcp__utilities__translate",   # Allow translator
-
               # "mcp__utilities__search_web" is NOT allowed
-
           ]
       )
   ):
       if hasattr(message, 'result'):
-```python
-print(message.result)          print(message.result)
-  ```
+          print(message.result)
+```
 
 ## Type Safety with Python
 
 The `@tool` decorator supports various schema definition approaches for type safety:
 
-"Process structured data with type safety",    "Process structured data with type safety",
+```typescript
+  tool(
+    "process_data",
+    "Process structured data with type safety",
     {
       // Zod schema defines both runtime validation and TypeScript types
       data: z.object({
@@ -287,19 +271,15 @@ The `@tool` decorator supports various schema definition approaches for type saf
       };
     }
   )
-
-  ```
-
-  ```python Python theme={null}
-  from typing import Any
-
-## Simple type mapping - recommended for most cases
-
-  @tool(
-      "process_data",
 ```
 
-"Process structured data with type safety",      "Process structured data with type safety",
+```python
+  from typing import Any
+
+  # Simple type mapping - recommended for most cases
+  @tool(
+      "process_data",
+      "Process structured data with type safety",
       {
           "name": str,
           "age": int,
@@ -309,9 +289,7 @@ The `@tool` decorator supports various schema definition approaches for type saf
   )
   async def process_data(args: dict[str, Any]) -> dict[str, Any]:
       # Access arguments with type hints for IDE support
-
-```python
-name = args["name"]      name = args["name"]
+      name = args["name"]
       age = args["age"]
       email = args["email"]
       preferences = args.get("preferences", [])
@@ -325,13 +303,10 @@ name = args["name"]      name = args["name"]
           }]
       }
 
-## For more complex schemas, you can use JSON Schema format
-
+  # For more complex schemas, you can use JSON Schema format
   @tool(
       "advanced_process",
-```
-
-"Process data with advanced validation",      "Process data with advanced validation",
+      "Process data with advanced validation",
       {
           "type": "object",
           "properties": {
@@ -345,23 +320,22 @@ name = args["name"]      name = args["name"]
   )
   async def advanced_process(args: dict[str, Any]) -> dict[str, Any]:
       # Process with advanced schema validation
-
-```python
-return {      return {
+      return {
           "content": [{
               "type": "text",
               "text": f"Advanced processing for {args['name']}"
           }]
       }
-  ```
-
+```
 
 ## Error Handling
 
 Handle errors gracefully to provide meaningful feedback:
 
-
-"Fetch data from an API",    "Fetch data from an API",
+```typescript
+  tool(
+    "fetch_data",
+    "Fetch data from an API",
     {
       endpoint: z.string().url().describe("API endpoint URL")
     },
@@ -393,27 +367,23 @@ Handle errors gracefully to provide meaningful feedback:
           }]
         };
       }
+    }
   )
+```
 
-  ```
-
-  ```python Python theme={null}
+```python
   import json
   import aiohttp
   from typing import Any
 
   @tool(
       "fetch_data",
-```
-
-"Fetch data from an API",      "Fetch data from an API",
+      "Fetch data from an API",
       {"endpoint": str}  # Simple schema
   )
   async def fetch_data(args: dict[str, Any]) -> dict[str, Any]:
       try:
-
-```python
-async with aiohttp.ClientSession() as session:          async with aiohttp.ClientSession() as session:
+          async with aiohttp.ClientSession() as session:
               async with session.get(args["endpoint"]) as response:
                   if response.status != 200:
                       return {
@@ -437,13 +407,16 @@ async with aiohttp.ClientSession() as session:          async with aiohttp.Clien
                   "text": f"Failed to fetch data: {str(e)}"
               }]
           }
-  ```
+```
 
 ## Example Tools
 
 ### Database Query Tool
 
-version: "1.0.0",
+```typescript
+  const databaseServer = createSdkMcpServer({
+    name: "database-tools",
+    version: "1.0.0",
     tools: [
       tool(
         "query_database",
@@ -464,25 +437,20 @@ version: "1.0.0",
       )
     ]
   });
+```
 
-  ```
-
-  ```python Python theme={null}
+```python
   from typing import Any
   import json
 
   @tool(
       "query_database",
-```
-
-"Execute a database query",      "Execute a database query",
+      "Execute a database query",
       {"query": str, "params": list}  # Simple schema with list type
   )
   async def query_database(args: dict[str, Any]) -> dict[str, Any]:
       results = await db.query(args["query"], args.get("params", []))
-
-```python
-return {      return {
+      return {
           "content": [{
               "type": "text",
               "text": f"Found {len(results)} rows:\n{json.dumps(results, indent=2)}"
@@ -491,15 +459,17 @@ return {      return {
 
   database_server = create_sdk_mcp_server(
       name="database-tools",
-```python
-version="1.0.0",
+      version="1.0.0",
       tools=[query_database]  # Pass the decorated function
   )
-  ```
+```
 
 ### API Gateway Tool
 
-version: "1.0.0",
+```typescript
+  const apiGatewayServer = createSdkMcpServer({
+    name: "api-gateway",
+    version: "1.0.0",
     tools: [
       tool(
         "api_request",
@@ -543,22 +513,18 @@ version: "1.0.0",
       )
     ]
   });
+```
 
-  ```
-
-  ```python Python theme={null}
+```python
   import os
   import json
   import aiohttp
   from typing import Any
 
-## For complex schemas with enums, use JSON Schema format
-
+  # For complex schemas with enums, use JSON Schema format
   @tool(
       "api_request",
-```
-
-"Make authenticated API requests to external services",      "Make authenticated API requests to external services",
+      "Make authenticated API requests to external services",
       {
           "type": "object",
           "properties": {
@@ -573,9 +539,7 @@ version: "1.0.0",
   )
   async def api_request(args: dict[str, Any]) -> dict[str, Any]:
       config = {
-
-```text
-"stripe": {"base_url": "<https://api.stripe.com/v1>", "key": os.environ["STRIPE_KEY"]},          "stripe": {"base_url": "<https://api.stripe.com/v1>", "key": os.environ["STRIPE_KEY"]},
+          "stripe": {"base_url": "<https://api.stripe.com/v1>", "key": os.environ["STRIPE_KEY"]},
           "github": {"base_url": "<https://api.github.com>", "key": os.environ["GITHUB_TOKEN"]},
           "openai": {"base_url": "<https://api.openai.com/v1>", "key": os.environ["OPENAI_KEY"]},
           "slack": {"base_url": "<https://slack.com/api>", "key": os.environ["SLACK_TOKEN"]}
@@ -604,15 +568,17 @@ version: "1.0.0",
 
   api_gateway_server = create_sdk_mcp_server(
       name="api-gateway",
-```python
-version="1.0.0",
+      version="1.0.0",
       tools=[api_request]  # Pass the decorated function
   )
-  ```
+```
 
 ## Calculator Tool
 
-version: "1.0.0",
+```typescript
+  const calculatorServer = createSdkMcpServer({
+    name: "calculator",
+    version: "1.0.0",
     tools: [
       tool(
         "calculate",
@@ -641,6 +607,7 @@ version: "1.0.0",
               }]
             };
           }
+        }
       ),
       tool(
         "compound_interest",
@@ -672,27 +639,20 @@ version: "1.0.0",
       )
     ]
   });
+```
 
-  ```
-
-  ```python Python theme={null}
+```python
   import math
   from typing import Any
 
   @tool(
       "calculate",
-```
-
-"Perform mathematical calculations",      "Perform mathematical calculations",
+      "Perform mathematical calculations",
       {"expression": str, "precision": int}  # Simple schema
   )
   async def calculate(args: dict[str, Any]) -> dict[str, Any]:
       try:
-
-```text
-
-## Use a safe math evaluation library in production          # Use a safe math evaluation library in production
-
+          # Use a safe math evaluation library in production
           result = eval(args["expression"], {"__builtins__": {}})
           precision = args.get("precision", 2)
           formatted = round(result, precision)
@@ -713,16 +673,12 @@ version: "1.0.0",
 
   @tool(
       "compound_interest",
-```
-
-"Calculate compound interest for an investment",      "Calculate compound interest for an investment",
+      "Calculate compound interest for an investment",
       {"principal": float, "rate": float, "time": float, "n": int}
   )
   async def compound_interest(args: dict[str, Any]) -> dict[str, Any]:
       principal = args["principal"]
-
-```python
-rate = args["rate"]      rate = args["rate"]
+      rate = args["rate"]
       time = args["time"]
       n = args.get("n", 12)
 
@@ -742,19 +698,14 @@ rate = args["rate"]      rate = args["rate"]
   Interest Earned: ${interest:.2f}
   Return: {(interest / principal) * 100:.2f}%"""
           }]
-```
-
-}      }
+      }
 
   calculator_server = create_sdk_mcp_server(
       name="calculator",
-
-```python
-version="1.0.0",
+      version="1.0.0",
       tools=[calculate, compound_interest]  # Pass decorated functions
   )
-  ```
-
+```
 
 ## Related Documentation
 

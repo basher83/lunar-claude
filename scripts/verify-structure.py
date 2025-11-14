@@ -638,8 +638,17 @@ def check_custom_component_paths(plugin_dir: Path, plugin_data: dict) -> list[st
     return errors
 
 
-def check_plugin_manifest(plugin_dir: Path) -> dict[str, list[str]]:
+def check_plugin_manifest(
+    plugin_dir: Path,
+    marketplace_entry: dict | None = None,
+    strict_mode: bool = True
+) -> dict[str, list[str]]:
     """Validate a single plugin's manifest and structure.
+
+    Args:
+        plugin_dir: Path to plugin directory
+        marketplace_entry: Plugin entry from marketplace.json (optional)
+        strict_mode: If True, require plugin.json. If False, allow missing plugin.json
 
     Returns dict with categorized errors:
     {
@@ -666,18 +675,35 @@ def check_plugin_manifest(plugin_dir: Path) -> dict[str, list[str]]:
 
     plugin_json = plugin_dir / ".claude-plugin" / "plugin.json"
 
-    # Check plugin.json exists
-    if not plugin_json.exists():
-        results['manifest'].append(f"{plugin_dir.name}: Missing .claude-plugin/plugin.json")
-        return results
+    # Strict mode: plugin.json required
+    if strict_mode:
+        if not plugin_json.exists():
+            results['manifest'].append(
+                f"{plugin_dir.name}: Missing .claude-plugin/plugin.json (strict mode)"
+            )
+            return results
 
-    # Validate JSON syntax
-    try:
-        with open(plugin_json) as f:
-            data = json.load(f)
-    except json.JSONDecodeError as e:
-        results['manifest'].append(f"{plugin_dir.name}: Invalid JSON in plugin.json: {e}")
-        return results
+        # Load and validate plugin.json
+        try:
+            with open(plugin_json) as f:
+                data = json.load(f)
+        except json.JSONDecodeError as e:
+            results['manifest'].append(f"{plugin_dir.name}: Invalid JSON in plugin.json: {e}")
+            return results
+
+    # Non-strict mode: plugin.json optional
+    else:
+        if plugin_json.exists():
+            # Load and validate if present
+            try:
+                with open(plugin_json) as f:
+                    data = json.load(f)
+            except json.JSONDecodeError as e:
+                results['manifest'].append(f"{plugin_dir.name}: Invalid JSON in plugin.json: {e}")
+                return results
+        else:
+            # Use marketplace entry as manifest
+            data = marketplace_entry if marketplace_entry else {}
 
     # Validate against schema
     schema_errors = validate_json_schema(data, PLUGIN_MANIFEST_SCHEMA, plugin_dir.name)
@@ -748,6 +774,10 @@ def check_marketplace_structure() -> dict[str, Any]:
         plugin_name = plugin_entry.get("name", "unknown")
         plugin_source = plugin_entry.get("source", "")
 
+        # Skip external sources (GitHub/Git URLs)
+        if isinstance(plugin_source, dict):
+            continue  # External sources not validated locally
+
         if not plugin_source:
             result['marketplace_errors'].append(f"Plugin '{plugin_name}' missing 'source' field")
             continue
@@ -761,8 +791,15 @@ def check_marketplace_structure() -> dict[str, Any]:
             )
             continue
 
+        # Get strict mode from marketplace entry (default: true)
+        strict_mode = plugin_entry.get("strict", True)
+
         # Validate plugin manifest and components
-        plugin_results = check_plugin_manifest(plugin_dir)
+        plugin_results = check_plugin_manifest(
+            plugin_dir,
+            marketplace_entry=plugin_entry,
+            strict_mode=strict_mode
+        )
         result['plugin_results'][plugin_name] = plugin_results
 
     return result

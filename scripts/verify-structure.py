@@ -57,6 +57,116 @@ VALID_HOOK_EVENTS = {
 # Valid hook types
 VALID_HOOK_TYPES = {"command", "validation", "notification"}
 
+# Marketplace manifest schema
+MARKETPLACE_SCHEMA = {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "required": ["name", "owner", "plugins"],
+    "additionalProperties": True,  # Allow custom fields
+    "properties": {
+        "name": {
+            "type": "string",
+            "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+            "description": "Marketplace identifier (kebab-case)"
+        },
+        "owner": {
+            "type": "object",
+            "required": ["name"],
+            "properties": {
+                "name": {"type": "string", "minLength": 1},
+                "email": {"type": "string", "format": "email"}
+            }
+        },
+        "plugins": {
+            "type": "array",
+            "minItems": 1,
+            "items": {"type": "object"}
+        },
+        "metadata": {
+            "type": "object",
+            "properties": {
+                "description": {"type": "string"},
+                "version": {
+                    "type": "string",
+                    "pattern": "^\\d+\\.\\d+\\.\\d+$"
+                },
+                "pluginRoot": {"type": "string"}
+            }
+        }
+    }
+}
+
+# Plugin entry schema for marketplace.json plugins array
+MARKETPLACE_PLUGIN_ENTRY_SCHEMA = {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "required": ["name", "source"],
+    "additionalProperties": True,
+    "properties": {
+        "name": {
+            "type": "string",
+            "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+        },
+        "source": {
+            "oneOf": [
+                {"type": "string"},  # Relative path
+                {
+                    "type": "object",
+                    "required": ["source"],
+                    "properties": {
+                        "source": {"type": "string"},
+                        "repo": {"type": "string"},
+                        "url": {"type": "string"}
+                    }
+                }
+            ]
+        },
+        "strict": {"type": "boolean"},
+        # Plugin manifest fields (all optional)
+        "version": {"type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$"},
+        "description": {"type": "string"},
+        "author": {
+            "type": "object",
+            "properties": {
+                "name": {"type": "string"},
+                "email": {"type": "string", "format": "email"},
+                "url": {"type": "string", "format": "uri"}
+            }
+        },
+        "homepage": {"type": "string", "format": "uri"},
+        "repository": {"type": "string", "format": "uri"},
+        "license": {"type": "string"},
+        "keywords": {"type": "array", "items": {"type": "string"}},
+        "category": {"type": "string"},
+        "tags": {"type": "array", "items": {"type": "string"}},
+        # Component overrides
+        "commands": {
+            "oneOf": [
+                {"type": "string"},
+                {"type": "array", "items": {"type": "string"}}
+            ]
+        },
+        "agents": {
+            "oneOf": [
+                {"type": "string"},
+                {"type": "array", "items": {"type": "string"}}
+            ]
+        },
+        "hooks": {
+            "oneOf": [
+                {"type": "string"},
+                {"type": "object"}
+            ]
+        },
+        "mcpServers": {
+            "oneOf": [
+                {"type": "string"},
+                {"type": "object"}
+            ]
+        }
+    }
+}
+
 # Plugin manifest schema based on ai_docs/plugins-referance.md
 PLUGIN_MANIFEST_SCHEMA = {
     "$schema": "http://json-schema.org/draft-07/schema#",
@@ -149,6 +259,38 @@ def validate_json_schema(data: dict[str, Any], schema: dict[str, Any], context: 
     for error in validator.iter_errors(data):
         path = " -> ".join(str(p) for p in error.path) if error.path else "root"
         errors.append(f"{context}: {path}: {error.message}")
+
+    return errors
+
+
+def validate_marketplace_json(marketplace_data: dict) -> list[str]:
+    """Validate marketplace.json structure against schema.
+
+    Args:
+        marketplace_data: Parsed marketplace.json content
+
+    Returns:
+        List of validation errors
+    """
+    errors = []
+
+    # Validate marketplace-level schema
+    schema_errors = validate_json_schema(
+        marketplace_data,
+        MARKETPLACE_SCHEMA,
+        "marketplace.json"
+    )
+    errors.extend(schema_errors)
+
+    # Validate each plugin entry
+    plugins = marketplace_data.get("plugins", [])
+    for i, plugin_entry in enumerate(plugins):
+        entry_errors = validate_json_schema(
+            plugin_entry,
+            MARKETPLACE_PLUGIN_ENTRY_SCHEMA,
+            f"marketplace.json plugins[{i}] ({plugin_entry.get('name', 'unknown')})"
+        )
+        errors.extend(entry_errors)
 
     return errors
 

@@ -695,9 +695,10 @@ def check_plugin_manifest(
         marketplace_entry: Plugin entry from marketplace.json (optional)
         strict_mode: If True, require plugin.json. If False, allow missing plugin.json
 
-    Returns dict with categorized errors:
+    Returns dict with categorized errors and warnings:
     {
         'manifest': [...],
+        'warnings': [...],
         'placement': [...],
         'skills': [...],
         'commands': [...],
@@ -864,7 +865,7 @@ def check_marketplace_structure() -> dict[str, Any]:
     return result
 
 
-def calculate_exit_code(result: dict, strict: bool = False) -> int:
+def calculate_exit_code(result: dict[str, Any], strict: bool = False) -> int:
     """Calculate exit code based on errors and warnings.
 
     Args:

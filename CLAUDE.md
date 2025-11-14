@@ -33,6 +33,9 @@ conventions, and release workflow.
 ```bash
 # Verify marketplace and plugin structure (validates plugin.json schema)
 ./scripts/verify-structure.py
+
+# Strict mode for CI/CD (warnings fail)
+./scripts/verify-structure.py --strict
 ```
 
 ### Local Plugin Testing

@@ -1068,15 +1068,17 @@ def check_marketplace_structure() -> dict[str, Any]:
     return result
 
 
-def calculate_exit_code(result: dict[str, Any], *, strict: bool = False) -> int:
-    """Calculate exit code based on errors and warnings.
+def calculate_exit_code(
+    result: dict[str, Any], *, strict: bool = False
+) -> tuple[int, int, int]:
+    """Calculate exit code and totals based on errors and warnings.
 
     Args:
         result: Validation results from check_marketplace_structure()
         strict: If True, warnings cause failure
 
     Returns:
-        0 if validation passed, 1 if failed
+        Tuple of (exit_code, total_errors, total_warnings)
     """
     total_errors = 0
     total_warnings = 0
@@ -1092,12 +1094,14 @@ def calculate_exit_code(result: dict[str, Any], *, strict: bool = False) -> int:
             else:
                 total_errors += len(issues)
 
+    # Determine exit code
     # Strict mode: warnings are failures
-    if strict and total_warnings > 0:
-        return 1
+    if strict and total_warnings > 0 or total_errors > 0:
+        exit_code = 1
+    else:
+        exit_code = 0
 
-    # Normal mode: only errors are failures
-    return 1 if total_errors > 0 else 0
+    return exit_code, total_errors, total_warnings
 
 
 def main() -> int:
@@ -1128,9 +1132,10 @@ Examples:
 
     result = check_marketplace_structure()
 
-    # Count errors and warnings
-    total_errors = len(result["marketplace_errors"])
-    total_warnings = 0
+    # Calculate exit code and totals (single source of truth)
+    exit_code, total_errors, total_warnings = calculate_exit_code(result, strict=args.strict)
+
+    # Collect plugin errors and warnings for display
     all_plugin_errors = {}
     all_plugin_warnings = {}
 
@@ -1146,10 +1151,8 @@ Examples:
 
         if plugin_errors:
             all_plugin_errors[plugin_name] = plugin_errors
-            total_errors += len(plugin_errors)
         if plugin_warnings:
             all_plugin_warnings[plugin_name] = plugin_warnings
-            total_warnings += len(plugin_warnings)
 
     # Display marketplace errors
     if result["marketplace_errors"]:
@@ -1160,6 +1163,10 @@ Examples:
 
     # Display plugin validation results
     if result["plugin_results"]:
+        # Helper for status icons
+        def status_icon(errors: list[str]) -> str:
+            return "[red]✗[/red]" if errors else "[green]✓[/green]"
+
         # Create summary table
         table = Table(title="Plugin Validation Summary", show_header=True, header_style="bold cyan")
         table.add_column("Plugin", style="cyan")
@@ -1174,10 +1181,6 @@ Examples:
         table.add_column("Warnings", justify="center")
 
         for plugin_name, plugin_result in result["plugin_results"].items():
-
-            def status_icon(errors: list[str]) -> str:
-                return "[red]✗[/red]" if errors else "[green]✓[/green]"
-
             table.add_row(
                 plugin_name,
                 status_icon(plugin_result["manifest"]),
@@ -1232,9 +1235,6 @@ Examples:
         if args.strict:
             console.print("\n  [red](--strict mode: warnings treated as errors)[/red]\n")
         console.print()
-
-    # Calculate exit code
-    exit_code = calculate_exit_code(result, strict=args.strict)
 
     # Final summary
     if exit_code != 0:

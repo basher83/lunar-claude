@@ -99,6 +99,64 @@ def validate_plugin_path(
         return None, f"{context}: Invalid path: {e}"
 
 
+def load_plugin_json_file(
+    plugin_dir: Path, relative_path: str, context: str
+) -> tuple[dict | None, list[str]]:
+    """Load and parse a JSON file from plugin directory with validation.
+
+    Centralizes the common pattern of:
+    - Path validation (prevent traversal)
+    - Existence check
+    - File reading with encoding
+    - JSON parsing
+    - Comprehensive error handling
+
+    Args:
+        plugin_dir: Plugin root directory
+        relative_path: Relative path to JSON file
+        context: Context string for error messages (e.g., "plugin-name/hooks")
+
+    Returns:
+        Tuple of (parsed_json_dict, error_list). If successful, dict is not None
+        and error_list is empty. If failed, dict is None and error_list has errors.
+    """
+    errors = []
+
+    # Validate path to prevent traversal
+    validated_path, error = validate_plugin_path(plugin_dir, relative_path, context)
+    if error:
+        errors.append(error)
+        return None, errors
+
+    # Check file exists
+    if not validated_path.exists():
+        errors.append(f"{context}: File not found: {relative_path}")
+        return None, errors
+
+    # Load and parse JSON
+    try:
+        with open(validated_path, encoding="utf-8") as f:
+            return json.load(f), []
+    except FileNotFoundError:
+        errors.append(f"{context}: File not found: {relative_path}")
+    except PermissionError:
+        errors.append(f"{context}: Permission denied reading file: {relative_path}")
+    except json.JSONDecodeError as e:
+        errors.append(
+            f"{context}: Invalid JSON in {relative_path}\n"
+            f"  Line {e.lineno}, column {e.colno}: {e.msg}"
+        )
+    except UnicodeDecodeError:
+        errors.append(
+            f"{context}: File is not valid UTF-8: {relative_path}\n"
+            f"  Ensure file is text, not binary"
+        )
+    except OSError as e:
+        errors.append(f"{context}: Cannot read file: {e}")
+
+    return None, errors
+
+
 # Valid hook event types from official docs
 VALID_HOOK_EVENTS = {
     "PreToolUse",
@@ -535,66 +593,18 @@ def check_hooks_configuration(plugin_dir: Path, plugin_data: dict) -> list[str]:
     if isinstance(inline_hooks, dict):
         hooks_config = inline_hooks
     elif isinstance(inline_hooks, str):
-        # Path to hooks file - validate to prevent path traversal
-        custom_hooks_path, error = validate_plugin_path(
-            plugin_dir, inline_hooks, f"{plugin_name}/hooks"
-        )
-        if error:
-            errors.append(error)
-            return errors
-        if not custom_hooks_path.exists():
-            errors.append(
-                f"{plugin_name}: Hooks file specified in plugin.json not found: {inline_hooks}"
-            )
-            return errors
-        try:
-            with open(custom_hooks_path, encoding="utf-8") as f:
-                hooks_config = json.load(f)
-        except FileNotFoundError:
-            errors.append(f"{plugin_name}: Hooks file not found: {inline_hooks}")
-            return errors
-        except PermissionError:
-            errors.append(f"{plugin_name}: Permission denied reading hooks file: {inline_hooks}")
-            return errors
-        except json.JSONDecodeError as e:
-            errors.append(
-                f"{plugin_name}: Invalid JSON in hooks file {inline_hooks}\n"
-                f"  Line {e.lineno}, column {e.colno}: {e.msg}"
-            )
-            return errors
-        except UnicodeDecodeError:
-            errors.append(
-                f"{plugin_name}: Hooks file is not valid UTF-8: {inline_hooks}\n"
-                f"  Ensure file is text, not binary"
-            )
-            return errors
-        except OSError as e:
-            errors.append(f"{plugin_name}: Cannot read hooks file: {e}")
+        # Path to hooks file - load with validation
+        hooks_config, load_errors = load_plugin_json_file(plugin_dir, inline_hooks, plugin_name)
+        if load_errors:
+            errors.extend(load_errors)
             return errors
     elif hooks_file.exists():
-        try:
-            with open(hooks_file, encoding="utf-8") as f:
-                hooks_config = json.load(f)
-        except FileNotFoundError:
-            errors.append(f"{plugin_name}/hooks/hooks.json: File not found")
-            return errors
-        except PermissionError:
-            errors.append(f"{plugin_name}/hooks/hooks.json: Permission denied reading file")
-            return errors
-        except json.JSONDecodeError as e:
-            errors.append(
-                f"{plugin_name}/hooks/hooks.json: Invalid JSON\n"
-                f"  Line {e.lineno}, column {e.colno}: {e.msg}"
-            )
-            return errors
-        except UnicodeDecodeError:
-            errors.append(
-                f"{plugin_name}/hooks/hooks.json: File is not valid UTF-8\n"
-                f"  Ensure file is text, not binary"
-            )
-            return errors
-        except OSError as e:
-            errors.append(f"{plugin_name}/hooks/hooks.json: Cannot read file: {e}")
+        # Load default hooks file
+        hooks_config, load_errors = load_plugin_json_file(
+            plugin_dir, "hooks/hooks.json", plugin_name
+        )
+        if load_errors:
+            errors.extend(load_errors)
             return errors
 
     if not hooks_config:
@@ -666,63 +676,16 @@ def check_mcp_servers(plugin_dir: Path, plugin_data: dict) -> list[str]:
     if isinstance(inline_mcp, dict):
         mcp_config = inline_mcp
     elif isinstance(inline_mcp, str):
-        # Path to MCP file - validate to prevent path traversal
-        custom_mcp_path, error = validate_plugin_path(
-            plugin_dir, inline_mcp, f"{plugin_name}/mcpServers"
-        )
-        if error:
-            errors.append(error)
-            return errors
-        if not custom_mcp_path.exists():
-            errors.append(
-                f"{plugin_name}: MCP file specified in plugin.json not found: {inline_mcp}"
-            )
-            return errors
-        try:
-            with open(custom_mcp_path, encoding="utf-8") as f:
-                mcp_config = json.load(f)
-        except FileNotFoundError:
-            errors.append(f"{plugin_name}: MCP file not found: {inline_mcp}")
-            return errors
-        except PermissionError:
-            errors.append(f"{plugin_name}: Permission denied reading MCP file: {inline_mcp}")
-            return errors
-        except json.JSONDecodeError as e:
-            errors.append(
-                f"{plugin_name}: Invalid JSON in MCP file {inline_mcp}\n"
-                f"  Line {e.lineno}, column {e.colno}: {e.msg}"
-            )
-            return errors
-        except UnicodeDecodeError:
-            errors.append(
-                f"{plugin_name}: MCP file is not valid UTF-8: {inline_mcp}\n"
-                f"  Ensure file is text, not binary"
-            )
-            return errors
-        except OSError as e:
-            errors.append(f"{plugin_name}: Cannot read MCP file: {e}")
+        # Path to MCP file - load with validation
+        mcp_config, load_errors = load_plugin_json_file(plugin_dir, inline_mcp, plugin_name)
+        if load_errors:
+            errors.extend(load_errors)
             return errors
     elif mcp_file.exists():
-        try:
-            with open(mcp_file, encoding="utf-8") as f:
-                mcp_config = json.load(f)
-        except PermissionError:
-            errors.append(f"{plugin_name}: Permission denied reading .mcp.json")
-            return errors
-        except json.JSONDecodeError as e:
-            errors.append(
-                f"{plugin_name}/.mcp.json: Invalid JSON\n"
-                f"  Line {e.lineno}, column {e.colno}: {e.msg}"
-            )
-            return errors
-        except UnicodeDecodeError:
-            errors.append(
-                f"{plugin_name}/.mcp.json: File is not valid UTF-8\n"
-                f"  Ensure file is text, not binary"
-            )
-            return errors
-        except OSError as e:
-            errors.append(f"{plugin_name}: Cannot read .mcp.json: {e}")
+        # Load default MCP file
+        mcp_config, load_errors = load_plugin_json_file(plugin_dir, ".mcp.json", plugin_name)
+        if load_errors:
+            errors.extend(load_errors)
             return errors
 
     if not mcp_config:

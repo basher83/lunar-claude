@@ -260,7 +260,8 @@ def validate_json_schema(data: dict[str, Any], schema: dict[str, Any], context: 
     Returns:
         List of formatted error messages with context and field paths
     """
-    from jsonschema.exceptions import SchemaError
+    from jsonschema.exceptions import SchemaError, UnknownType
+    from referencing.exceptions import Unresolvable
 
     errors = []
 
@@ -279,11 +280,12 @@ def validate_json_schema(data: dict[str, Any], schema: dict[str, Any], context: 
             errors.append(f"{context}: {path}: {error.message}")
     except RecursionError:
         errors.append(f"{context}: Data structure too deeply nested (recursion limit)")
-    except Exception as e:
-        errors.append(
-            f"{context}: Unexpected error during validation: {e.__class__.__name__}: {e}\n"
-            f"  Please report this as a bug"
-        )
+    except Unresolvable as e:
+        errors.append(f"{context}: Schema reference resolution failed: {e}")
+    except UnknownType as e:
+        errors.append(f"{context}: Unknown type in schema: {e}")
+    except (ValueError, TypeError) as e:
+        errors.append(f"{context}: Invalid data structure: {e}")
 
     return errors
 

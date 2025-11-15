@@ -101,7 +101,7 @@ def validate_plugin_path(
 
 def load_plugin_json_file(
     plugin_dir: Path, relative_path: str, context: str
-) -> tuple[dict | None, list[str]]:
+) -> tuple[dict[str, Any] | None, list[str]]:
     """Load and parse a JSON file from plugin directory with validation.
 
     Centralizes the common pattern of:
@@ -594,14 +594,16 @@ def check_hooks_configuration(plugin_dir: Path, plugin_data: dict) -> list[str]:
         hooks_config = inline_hooks
     elif isinstance(inline_hooks, str):
         # Path to hooks file - load with validation
-        hooks_config, load_errors = load_plugin_json_file(plugin_dir, inline_hooks, plugin_name)
+        hooks_config, load_errors = load_plugin_json_file(
+            plugin_dir, inline_hooks, f"{plugin_name}/hooks"
+        )
         if load_errors:
             errors.extend(load_errors)
             return errors
     elif hooks_file.exists():
         # Load default hooks file
         hooks_config, load_errors = load_plugin_json_file(
-            plugin_dir, "hooks/hooks.json", plugin_name
+            plugin_dir, "hooks/hooks.json", f"{plugin_name}/hooks"
         )
         if load_errors:
             errors.extend(load_errors)
@@ -677,13 +679,17 @@ def check_mcp_servers(plugin_dir: Path, plugin_data: dict) -> list[str]:
         mcp_config = inline_mcp
     elif isinstance(inline_mcp, str):
         # Path to MCP file - load with validation
-        mcp_config, load_errors = load_plugin_json_file(plugin_dir, inline_mcp, plugin_name)
+        mcp_config, load_errors = load_plugin_json_file(
+            plugin_dir, inline_mcp, f"{plugin_name}/mcp"
+        )
         if load_errors:
             errors.extend(load_errors)
             return errors
     elif mcp_file.exists():
         # Load default MCP file
-        mcp_config, load_errors = load_plugin_json_file(plugin_dir, ".mcp.json", plugin_name)
+        mcp_config, load_errors = load_plugin_json_file(
+            plugin_dir, ".mcp.json", f"{plugin_name}/mcp"
+        )
         if load_errors:
             errors.extend(load_errors)
             return errors

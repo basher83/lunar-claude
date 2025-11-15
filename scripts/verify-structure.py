@@ -91,10 +91,8 @@ def validate_plugin_path(
         except ValueError:
             return None, f"{context}: Path escapes base directory: {relative_path}"
         else:
-            # Path is safe, return the path object for existence checks
-            # Use the original Path construction for the return value
-            full_path = base_dir / relative_path.lstrip("./")
-            return full_path, None
+            # Path is safe, return the validated resolved path
+            return path_resolved, None
     except OSError as e:
         return None, f"{context}: Invalid path: {e}"
 

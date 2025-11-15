@@ -3,6 +3,7 @@
 # requires-python = ">=3.11"
 # dependencies = [
 #   "jsonschema>=4.20.0",
+#   "pyyaml>=6.0.0",
 #   "rich>=13.0.0",
 # ]
 # ///
@@ -46,11 +47,11 @@ Exit codes:
 
 import argparse
 import json
-import re
 import sys
 from pathlib import Path
 from typing import Any
 
+import yaml
 from jsonschema import Draft7Validator
 from rich.console import Console
 from rich.panel import Panel
@@ -359,14 +360,31 @@ def validate_markdown_frontmatter(
         errors.append(f"{plugin_name}/{rel_path}: Malformed frontmatter (missing closing ---)")
         return errors
 
-    frontmatter = parts[1].strip()
+    frontmatter_text = parts[1].strip()
 
-    # Basic check for required fields
+    # Parse YAML frontmatter
+    try:
+        frontmatter = yaml.safe_load(frontmatter_text)
+    except yaml.YAMLError as e:
+        errors.append(f"{plugin_name}/{rel_path}: Invalid YAML in frontmatter\n  {e}")
+        return errors
+
+    # Ensure frontmatter is a dictionary
+    if not isinstance(frontmatter, dict):
+        errors.append(
+            f"{plugin_name}/{rel_path}: Frontmatter must be a YAML mapping (key-value pairs), "
+            f"got {type(frontmatter).__name__}"
+        )
+        return errors
+
+    # Check for required fields with non-empty values
     for field in required_fields:
-        if not re.search(rf"^{field}:\s*.+", frontmatter, re.MULTILINE):
+        if field not in frontmatter:
             errors.append(
                 f"{plugin_name}/{rel_path}: Missing required field '{field}' in frontmatter"
             )
+        elif not frontmatter[field]:
+            errors.append(f"{plugin_name}/{rel_path}: Required field '{field}' is empty or null")
 
     return errors
 

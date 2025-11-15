@@ -338,3 +338,161 @@ class TestSchemaValidation:
         # Should get internal error message, not crash
         assert len(errors) > 0
         assert "internal error" in errors[0].lower() or "schema" in errors[0].lower()
+
+
+class TestMarketplaceValidation:
+    """Test marketplace.json schema validation."""
+
+    def test_valid_marketplace_passes(self, tmp_path):
+        """Valid marketplace.json should pass validation."""
+
+        from verify_structure import validate_marketplace_json
+
+        marketplace = {
+            "name": "test-marketplace",
+            "owner": {"name": "Test Owner", "email": "test@example.com"},
+            "plugins": [
+                {
+                    "name": "test-plugin",
+                    "source": "plugins/test-plugin",
+                    "version": "1.0.0",
+                }
+            ],
+        }
+
+        errors = validate_marketplace_json(marketplace)
+        assert len(errors) == 0
+
+    def test_invalid_marketplace_name_pattern(self, tmp_path):
+        """Invalid name pattern should fail."""
+
+        from verify_structure import validate_marketplace_json
+
+        marketplace = {
+            "name": "Invalid_Name",  # Underscores not allowed
+            "owner": {"name": "Test"},
+            "plugins": [{"name": "test", "source": "./test", "version": "1.0.0"}],
+        }
+
+        errors = validate_marketplace_json(marketplace)
+        assert len(errors) > 0
+        assert any("pattern" in str(e).lower() or "name" in str(e).lower() for e in errors)
+
+
+class TestStrictMode:
+    """Test strict mode functionality."""
+
+    def test_strict_true_requires_plugin_json(self, tmp_path):
+        """Strict mode should require plugin.json."""
+        from verify_structure import check_plugin_manifest
+
+        marketplace_entry = {
+            "name": "test-plugin",
+            "source": "plugins/test-plugin",
+        }
+
+        # Create plugin dir WITHOUT plugin.json
+        plugin_dir = tmp_path / "plugins" / "test-plugin"
+        plugin_dir.mkdir(parents=True)
+        (plugin_dir / "README.md").write_text("# Test")
+
+        result = check_plugin_manifest(plugin_dir, marketplace_entry, strict_mode=True)
+
+        assert len(result["manifest"]) > 0
+        assert any("plugin.json" in str(e).lower() for e in result["manifest"])
+
+    def test_strict_false_allows_missing_plugin_json(self, tmp_path):
+        """Non-strict mode should allow missing plugin.json."""
+        from verify_structure import check_plugin_manifest
+
+        marketplace_entry = {
+            "name": "test-plugin",
+            "source": "plugins/test-plugin",
+            "version": "1.0.0",
+            "description": "Test plugin",
+        }
+
+        plugin_dir = tmp_path / "plugins" / "test-plugin"
+        plugin_dir.mkdir(parents=True)
+        (plugin_dir / "README.md").write_text("# Test")
+
+        result = check_plugin_manifest(plugin_dir, marketplace_entry, strict_mode=False)
+
+        # Should have no manifest errors
+        assert len(result["manifest"]) == 0 or not any(
+            "plugin.json" in str(e).lower() for e in result["manifest"]
+        )
+
+
+class TestExitCodes:
+    """Test exit code calculation."""
+
+    def test_exit_0_no_errors_no_warnings(self):
+        """No errors or warnings should exit 0."""
+        from verify_structure import calculate_exit_code
+
+        result = {"marketplace_errors": [], "plugin_results": {}}
+        exit_code = calculate_exit_code(result, strict=False)
+        assert exit_code == 0
+
+    def test_exit_0_warnings_normal_mode(self):
+        """Warnings in normal mode should exit 0."""
+        from verify_structure import calculate_exit_code
+
+        result = {
+            "marketplace_errors": [],
+            "plugin_results": {"test-plugin": {"warnings": ["warning1"]}},
+        }
+        exit_code = calculate_exit_code(result, strict=False)
+        assert exit_code == 0
+
+    def test_exit_1_warnings_strict_mode(self):
+        """Warnings in strict mode should exit 1."""
+        from verify_structure import calculate_exit_code
+
+        result = {
+            "marketplace_errors": [],
+            "plugin_results": {"test-plugin": {"warnings": ["warning1"]}},
+        }
+        exit_code = calculate_exit_code(result, strict=True)
+        assert exit_code == 1
+
+    def test_exit_1_with_errors(self):
+        """Errors should always exit 1."""
+        from verify_structure import calculate_exit_code
+
+        result = {
+            "marketplace_errors": [],
+            "plugin_results": {"test-plugin": {"manifest": ["error1"]}},
+        }
+
+        assert calculate_exit_code(result, strict=False) == 1
+        assert calculate_exit_code(result, strict=True) == 1
+
+
+class TestConflictDetection:
+    """Test conflict detection between marketplace and plugin.json."""
+
+    def test_version_conflict_generates_warning(self):
+        """Differing versions should generate warning."""
+        from verify_structure import check_manifest_conflicts
+
+        marketplace_entry = {"name": "test", "version": "1.0.0"}
+        plugin_json = {"name": "test", "version": "2.0.0"}
+
+        warnings = check_manifest_conflicts("test-plugin", marketplace_entry, plugin_json)
+
+        assert len(warnings) > 0
+        assert any("version" in w.lower() for w in warnings)
+        assert any("1.0.0" in w for w in warnings)
+        assert any("2.0.0" in w for w in warnings)
+
+    def test_no_warning_when_values_match(self):
+        """Matching values should not generate warnings."""
+        from verify_structure import check_manifest_conflicts
+
+        entry = {"name": "test", "version": "1.0.0"}
+
+        warnings = check_manifest_conflicts("test-plugin", entry, entry)
+
+        assert len(warnings) == 0

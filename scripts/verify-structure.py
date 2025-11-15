@@ -26,10 +26,14 @@ Plugin Components:
 - MCP servers (configuration, ${CLAUDE_PLUGIN_ROOT} usage)
 - Custom component paths (existence, relative paths)
 
-Strict Mode:
-- Plugins with strict: false can omit plugin.json
-- Conflicts between marketplace and plugin.json generate warnings
-- Use --strict flag to fail on warnings (for CI/CD)
+Plugin Manifest Requirements:
+- By default, all plugins must have .claude-plugin/plugin.json
+- Plugins with "strict: false" in marketplace.json can omit plugin.json
+- When plugin.json is missing, marketplace entry data is used for validation
+
+CLI Options:
+- Normal mode: Warnings are displayed but don't cause failure (exit 0)
+- Use --strict flag to treat warnings as errors (exit 1, for CI/CD)
 
 Usage:
     ./scripts/verify-structure.py              # Normal mode
@@ -54,10 +58,57 @@ from rich.table import Table
 
 console = Console()
 
+
+def validate_plugin_path(
+    base_dir: Path, relative_path: str, context: str
+) -> tuple[Path | None, str | None]:
+    """Validate a plugin-relative path stays within base directory.
+
+    Args:
+        base_dir: Base directory (plugin or repo root)
+        relative_path: Relative path string from config
+        context: Context for error messages
+
+    Returns:
+        Tuple of (resolved_path, error_message). If error, path is None.
+    """
+    try:
+        import os.path
+
+        # Resolve base directory
+        base_resolved = base_dir.resolve()
+
+        # Use os.path.join and normpath to properly handle .. in paths
+        # Path's / operator normalizes too early and doesn't catch traversal
+        full_path_str = os.path.join(str(base_resolved), relative_path)
+        normalized_str = os.path.normpath(full_path_str)
+        path_resolved = Path(normalized_str)
+
+        # Check if normalized path is under base directory
+        try:
+            path_resolved.relative_to(base_resolved)
+        except ValueError:
+            return None, f"{context}: Path escapes base directory: {relative_path}"
+
+        # Path is safe, return the path object for existence checks
+        # Use the original Path construction for the return value
+        full_path = base_dir / relative_path.lstrip("./")
+        return full_path, None
+    except Exception as e:
+        return None, f"{context}: Invalid path: {e}"
+
+
 # Valid hook event types from official docs
 VALID_HOOK_EVENTS = {
-    "PreToolUse", "PostToolUse", "UserPromptSubmit", "Notification",
-    "Stop", "SubagentStop", "SessionStart", "SessionEnd", "PreCompact"
+    "PreToolUse",
+    "PostToolUse",
+    "UserPromptSubmit",
+    "Notification",
+    "Stop",
+    "SubagentStop",
+    "SessionStart",
+    "SessionEnd",
+    "PreCompact",
 }
 
 # Valid hook types
@@ -73,33 +124,26 @@ MARKETPLACE_SCHEMA = {
         "name": {
             "type": "string",
             "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
-            "description": "Marketplace identifier (kebab-case)"
+            "description": "Marketplace identifier (kebab-case)",
         },
         "owner": {
             "type": "object",
             "required": ["name"],
             "properties": {
                 "name": {"type": "string", "minLength": 1},
-                "email": {"type": "string", "format": "email"}
-            }
+                "email": {"type": "string", "format": "email"},
+            },
         },
-        "plugins": {
-            "type": "array",
-            "minItems": 1,
-            "items": {"type": "object"}
-        },
+        "plugins": {"type": "array", "minItems": 1, "items": {"type": "object"}},
         "metadata": {
             "type": "object",
             "properties": {
                 "description": {"type": "string"},
-                "version": {
-                    "type": "string",
-                    "pattern": "^\\d+\\.\\d+\\.\\d+$"
-                },
-                "pluginRoot": {"type": "string"}
-            }
-        }
-    }
+                "version": {"type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$"},
+                "pluginRoot": {"type": "string"},
+            },
+        },
+    },
 }
 
 # Plugin entry schema for marketplace.json plugins array
@@ -109,10 +153,7 @@ MARKETPLACE_PLUGIN_ENTRY_SCHEMA = {
     "required": ["name", "source"],
     "additionalProperties": True,
     "properties": {
-        "name": {
-            "type": "string",
-            "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
-        },
+        "name": {"type": "string", "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"},
         "source": {
             "oneOf": [
                 {"type": "string"},  # Relative path
@@ -122,9 +163,9 @@ MARKETPLACE_PLUGIN_ENTRY_SCHEMA = {
                     "properties": {
                         "source": {"type": "string"},
                         "repo": {"type": "string"},
-                        "url": {"type": "string"}
-                    }
-                }
+                        "url": {"type": "string"},
+                    },
+                },
             ]
         },
         "strict": {"type": "boolean"},
@@ -136,8 +177,8 @@ MARKETPLACE_PLUGIN_ENTRY_SCHEMA = {
             "properties": {
                 "name": {"type": "string"},
                 "email": {"type": "string", "format": "email"},
-                "url": {"type": "string", "format": "uri"}
-            }
+                "url": {"type": "string", "format": "uri"},
+            },
         },
         "homepage": {"type": "string", "format": "uri"},
         "repository": {"type": "string", "format": "uri"},
@@ -146,34 +187,15 @@ MARKETPLACE_PLUGIN_ENTRY_SCHEMA = {
         "category": {"type": "string"},
         "tags": {"type": "array", "items": {"type": "string"}},
         # Component overrides
-        "commands": {
-            "oneOf": [
-                {"type": "string"},
-                {"type": "array", "items": {"type": "string"}}
-            ]
-        },
-        "agents": {
-            "oneOf": [
-                {"type": "string"},
-                {"type": "array", "items": {"type": "string"}}
-            ]
-        },
-        "hooks": {
-            "oneOf": [
-                {"type": "string"},
-                {"type": "object"}
-            ]
-        },
-        "mcpServers": {
-            "oneOf": [
-                {"type": "string"},
-                {"type": "object"}
-            ]
-        }
-    }
+        "commands": {"oneOf": [{"type": "string"}, {"type": "array", "items": {"type": "string"}}]},
+        "agents": {"oneOf": [{"type": "string"}, {"type": "array", "items": {"type": "string"}}]},
+        "hooks": {"oneOf": [{"type": "string"}, {"type": "object"}]},
+        "mcpServers": {"oneOf": [{"type": "string"}, {"type": "object"}]},
+    },
 }
 
-# Plugin manifest schema based on ai_docs/plugins-referance.md
+# Plugin manifest schema based on Claude Code plugin reference documentation
+# See: https://docs.anthropic.com/claude/docs/plugin-reference
 PLUGIN_MANIFEST_SCHEMA = {
     "$schema": "http://json-schema.org/draft-07/schema#",
     "type": "object",
@@ -184,76 +206,46 @@ PLUGIN_MANIFEST_SCHEMA = {
         "name": {
             "type": "string",
             "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
-            "description": "Unique identifier (kebab-case, no spaces)"
+            "description": "Unique identifier (kebab-case, no spaces)",
         },
         # Optional metadata
         "version": {
             "type": "string",
             "pattern": "^\\d+\\.\\d+\\.\\d+$",
-            "description": "Semantic version"
+            "description": "Semantic version",
         },
-        "description": {
-            "type": "string",
-            "description": "Brief explanation of plugin purpose"
-        },
+        "description": {"type": "string", "description": "Brief explanation of plugin purpose"},
         "author": {
             "type": "object",
             "properties": {
                 "name": {"type": "string"},
                 "email": {"type": "string", "format": "email"},
-                "url": {"type": "string", "format": "uri"}
+                "url": {"type": "string", "format": "uri"},
             },
-            "required": ["name"]
+            "required": ["name"],
         },
-        "homepage": {
-            "type": "string",
-            "format": "uri",
-            "description": "Documentation URL"
-        },
-        "repository": {
-            "type": "string",
-            "format": "uri",
-            "description": "Source code URL"
-        },
-        "license": {
-            "type": "string",
-            "description": "License identifier"
-        },
-        "keywords": {
-            "type": "array",
-            "items": {"type": "string"},
-            "description": "Discovery tags"
-        },
+        "homepage": {"type": "string", "format": "uri", "description": "Documentation URL"},
+        "repository": {"type": "string", "format": "uri", "description": "Source code URL"},
+        "license": {"type": "string", "description": "License identifier"},
+        "keywords": {"type": "array", "items": {"type": "string"}, "description": "Discovery tags"},
         # Component paths
         "commands": {
-            "oneOf": [
-                {"type": "string"},
-                {"type": "array", "items": {"type": "string"}}
-            ],
-            "description": "Additional command files/directories"
+            "oneOf": [{"type": "string"}, {"type": "array", "items": {"type": "string"}}],
+            "description": "Additional command files/directories",
         },
         "agents": {
-            "oneOf": [
-                {"type": "string"},
-                {"type": "array", "items": {"type": "string"}}
-            ],
-            "description": "Additional agent files"
+            "oneOf": [{"type": "string"}, {"type": "array", "items": {"type": "string"}}],
+            "description": "Additional agent files",
         },
         "hooks": {
-            "oneOf": [
-                {"type": "string"},
-                {"type": "object"}
-            ],
-            "description": "Hook config path or inline config"
+            "oneOf": [{"type": "string"}, {"type": "object"}],
+            "description": "Hook config path or inline config",
         },
         "mcpServers": {
-            "oneOf": [
-                {"type": "string"},
-                {"type": "object"}
-            ],
-            "description": "MCP config path or inline config"
-        }
-    }
+            "oneOf": [{"type": "string"}, {"type": "object"}],
+            "description": "MCP config path or inline config",
+        },
+    },
 }
 
 
@@ -308,11 +300,7 @@ def validate_marketplace_json(marketplace_data: dict) -> list[str]:
     errors = []
 
     # Validate marketplace-level schema
-    schema_errors = validate_json_schema(
-        marketplace_data,
-        MARKETPLACE_SCHEMA,
-        "marketplace.json"
-    )
+    schema_errors = validate_json_schema(marketplace_data, MARKETPLACE_SCHEMA, "marketplace.json")
     errors.extend(schema_errors)
 
     # Validate each plugin entry
@@ -321,7 +309,7 @@ def validate_marketplace_json(marketplace_data: dict) -> list[str]:
         entry_errors = validate_json_schema(
             plugin_entry,
             MARKETPLACE_PLUGIN_ENTRY_SCHEMA,
-            f"marketplace.json plugins[{i}] ({plugin_entry.get('name', 'unknown')})"
+            f"marketplace.json plugins[{i}] ({plugin_entry.get('name', 'unknown')})",
         )
         errors.extend(entry_errors)
 
@@ -329,16 +317,14 @@ def validate_marketplace_json(marketplace_data: dict) -> list[str]:
 
 
 def validate_markdown_frontmatter(
-    file_path: Path,
-    required_fields: list[str],
-    plugin_name: str
+    file_path: Path, required_fields: list[str], plugin_name: str
 ) -> list[str]:
     """Validate YAML frontmatter in markdown file."""
     errors = []
     rel_path = file_path.relative_to(file_path.parent.parent)
 
     try:
-        content = file_path.read_text(encoding='utf-8')
+        content = file_path.read_text(encoding="utf-8")
     except PermissionError:
         errors.append(
             f"{plugin_name}/{rel_path}: Permission denied reading file\n"
@@ -371,7 +357,9 @@ def validate_markdown_frontmatter(
     # Basic check for required fields
     for field in required_fields:
         if not re.search(rf"^{field}:\s*.+", frontmatter, re.MULTILINE):
-            errors.append(f"{plugin_name}/{rel_path}: Missing required field '{field}' in frontmatter")
+            errors.append(
+                f"{plugin_name}/{rel_path}: Missing required field '{field}' in frontmatter"
+            )
 
     return errors
 
@@ -412,24 +400,21 @@ def check_skills_directory(plugin_dir: Path) -> list[str]:
     skill_dirs = [d for d in skills_dir.iterdir() if d.is_dir()]
 
     if not skill_dirs:
-        errors.append(f"{plugin_name}/skills/: Directory exists but contains no skill subdirectories")
+        errors.append(
+            f"{plugin_name}/skills/: Directory exists but contains no skill subdirectories"
+        )
         return errors
 
     for skill_path in skill_dirs:
         skill_md = skill_path / "SKILL.md"
 
         if not skill_md.exists():
-            errors.append(
-                f"{plugin_name}/skills/{skill_path.name}: "
-                "Missing required SKILL.md file"
-            )
+            errors.append(f"{plugin_name}/skills/{skill_path.name}: Missing required SKILL.md file")
             continue
 
         # Validate SKILL.md frontmatter
         frontmatter_errors = validate_markdown_frontmatter(
-            skill_md,
-            ["name", "description"],
-            plugin_name
+            skill_md, ["name", "description"], plugin_name
         )
         errors.extend(frontmatter_errors)
 
@@ -458,11 +443,7 @@ def check_commands_directory(plugin_dir: Path) -> list[str]:
 
     for cmd_file in command_files:
         # Validate frontmatter
-        frontmatter_errors = validate_markdown_frontmatter(
-            cmd_file,
-            ["description"],
-            plugin_name
-        )
+        frontmatter_errors = validate_markdown_frontmatter(cmd_file, ["description"], plugin_name)
         errors.extend(frontmatter_errors)
 
     return errors
@@ -491,9 +472,7 @@ def check_agents_directory(plugin_dir: Path) -> list[str]:
     for agent_file in agent_files:
         # Validate frontmatter - agents require description and capabilities
         frontmatter_errors = validate_markdown_frontmatter(
-            agent_file,
-            ["description", "capabilities"],
-            plugin_name
+            agent_file, ["description", "capabilities"], plugin_name
         )
         errors.extend(frontmatter_errors)
 
@@ -518,13 +497,20 @@ def check_hooks_configuration(plugin_dir: Path, plugin_data: dict) -> list[str]:
     if isinstance(inline_hooks, dict):
         hooks_config = inline_hooks
     elif isinstance(inline_hooks, str):
-        # Path to hooks file
-        custom_hooks_path = plugin_dir / inline_hooks.lstrip("./")
+        # Path to hooks file - validate to prevent path traversal
+        custom_hooks_path, error = validate_plugin_path(
+            plugin_dir, inline_hooks, f"{plugin_name}/hooks"
+        )
+        if error:
+            errors.append(error)
+            return errors
         if not custom_hooks_path.exists():
-            errors.append(f"{plugin_name}: Hooks file specified in plugin.json not found: {inline_hooks}")
+            errors.append(
+                f"{plugin_name}: Hooks file specified in plugin.json not found: {inline_hooks}"
+            )
             return errors
         try:
-            with open(custom_hooks_path, encoding='utf-8') as f:
+            with open(custom_hooks_path, encoding="utf-8") as f:
                 hooks_config = json.load(f)
         except FileNotFoundError:
             errors.append(f"{plugin_name}: Hooks file not found: {inline_hooks}")
@@ -549,7 +535,7 @@ def check_hooks_configuration(plugin_dir: Path, plugin_data: dict) -> list[str]:
             return errors
     elif hooks_file.exists():
         try:
-            with open(hooks_file, encoding='utf-8') as f:
+            with open(hooks_file, encoding="utf-8") as f:
                 hooks_config = json.load(f)
         except FileNotFoundError:
             errors.append(f"{plugin_name}/hooks/hooks.json: File not found")
@@ -591,9 +577,9 @@ def check_hooks_configuration(plugin_dir: Path, plugin_data: dict) -> list[str]:
 
         # Validate each hook in the event
         if isinstance(hook_list, list):
-            for i, hook_entry in enumerate(hook_list):
+            for _i, hook_entry in enumerate(hook_list):
                 if "hooks" in hook_entry and isinstance(hook_entry["hooks"], list):
-                    for j, hook in enumerate(hook_entry["hooks"]):
+                    for _j, hook in enumerate(hook_entry["hooks"]):
                         if "type" in hook and hook["type"] not in VALID_HOOK_TYPES:
                             errors.append(
                                 f"{plugin_name}: Invalid hook type '{hook['type']}' "
@@ -607,7 +593,9 @@ def check_hooks_configuration(plugin_dir: Path, plugin_data: dict) -> list[str]:
                             if "${CLAUDE_PLUGIN_ROOT}" in cmd:
                                 # Extract path after variable
                                 script_path = cmd.replace("${CLAUDE_PLUGIN_ROOT}/", "")
-                                script_path = script_path.split()[0]  # Get just the script, not args
+                                script_path = script_path.split()[
+                                    0
+                                ]  # Get just the script, not args
                                 full_path = plugin_dir / script_path
                                 if not full_path.exists():
                                     errors.append(
@@ -640,13 +628,20 @@ def check_mcp_servers(plugin_dir: Path, plugin_data: dict) -> list[str]:
     if isinstance(inline_mcp, dict):
         mcp_config = inline_mcp
     elif isinstance(inline_mcp, str):
-        # Path to MCP file
-        custom_mcp_path = plugin_dir / inline_mcp.lstrip("./")
+        # Path to MCP file - validate to prevent path traversal
+        custom_mcp_path, error = validate_plugin_path(
+            plugin_dir, inline_mcp, f"{plugin_name}/mcpServers"
+        )
+        if error:
+            errors.append(error)
+            return errors
         if not custom_mcp_path.exists():
-            errors.append(f"{plugin_name}: MCP file specified in plugin.json not found: {inline_mcp}")
+            errors.append(
+                f"{plugin_name}: MCP file specified in plugin.json not found: {inline_mcp}"
+            )
             return errors
         try:
-            with open(custom_mcp_path, encoding='utf-8') as f:
+            with open(custom_mcp_path, encoding="utf-8") as f:
                 mcp_config = json.load(f)
         except FileNotFoundError:
             errors.append(f"{plugin_name}: MCP file not found: {inline_mcp}")
@@ -671,7 +666,7 @@ def check_mcp_servers(plugin_dir: Path, plugin_data: dict) -> list[str]:
             return errors
     elif mcp_file.exists():
         try:
-            with open(mcp_file, encoding='utf-8') as f:
+            with open(mcp_file, encoding="utf-8") as f:
                 mcp_config = json.load(f)
         except PermissionError:
             errors.append(f"{plugin_name}: Permission denied reading .mcp.json")
@@ -727,12 +722,13 @@ def check_custom_component_paths(plugin_dir: Path, plugin_data: dict) -> list[st
         paths = [custom_commands] if isinstance(custom_commands, str) else custom_commands
         for path in paths:
             if not path.startswith("./"):
-                errors.append(
-                    f"{plugin_name}: Custom command path must start with './': {path}"
-                )
+                errors.append(f"{plugin_name}: Custom command path must start with './': {path}")
             else:
-                full_path = plugin_dir / path.lstrip("./")
-                if not full_path.exists():
+                # Validate to prevent path traversal
+                full_path, error = validate_plugin_path(plugin_dir, path, f"{plugin_name}/commands")
+                if error:
+                    errors.append(error)
+                elif not full_path.exists():
                     errors.append(f"{plugin_name}: Custom command path not found: {path}")
 
     # Check custom agent paths
@@ -741,21 +737,20 @@ def check_custom_component_paths(plugin_dir: Path, plugin_data: dict) -> list[st
         paths = [custom_agents] if isinstance(custom_agents, str) else custom_agents
         for path in paths:
             if not path.startswith("./"):
-                errors.append(
-                    f"{plugin_name}: Custom agent path must start with './': {path}"
-                )
+                errors.append(f"{plugin_name}: Custom agent path must start with './': {path}")
             else:
-                full_path = plugin_dir / path.lstrip("./")
-                if not full_path.exists():
+                # Validate to prevent path traversal
+                full_path, error = validate_plugin_path(plugin_dir, path, f"{plugin_name}/agents")
+                if error:
+                    errors.append(error)
+                elif not full_path.exists():
                     errors.append(f"{plugin_name}: Custom agent path not found: {path}")
 
     return errors
 
 
 def check_manifest_conflicts(
-    plugin_name: str,
-    marketplace_entry: dict,
-    plugin_json_data: dict
+    plugin_name: str, marketplace_entry: dict, plugin_json_data: dict
 ) -> list[str]:
     """Detect conflicts between marketplace entry and plugin.json.
 
@@ -771,8 +766,13 @@ def check_manifest_conflicts(
 
     # Fields that can appear in both
     comparable_fields = [
-        'version', 'description', 'author', 'homepage',
-        'repository', 'license', 'keywords'
+        "version",
+        "description",
+        "author",
+        "homepage",
+        "repository",
+        "license",
+        "keywords",
     ]
 
     for field in comparable_fields:
@@ -780,28 +780,42 @@ def check_manifest_conflicts(
         plugin_value = plugin_json_data.get(field)
 
         # Both exist and differ
-        if market_value and plugin_value and market_value != plugin_value:
-            warnings.append(
-                f"{plugin_name}: Conflict in '{field}' - "
-                f"marketplace: {repr(market_value)}, "
-                f"plugin.json: {repr(plugin_value)} "
-                f"(plugin.json takes precedence)"
-            )
+        if market_value is not None and plugin_value is not None:
+            # Special handling for keywords (order-insensitive)
+            if (
+                field == "keywords"
+                and isinstance(market_value, list)
+                and isinstance(plugin_value, list)
+            ):
+                if set(market_value) != set(plugin_value):
+                    warnings.append(
+                        f"{plugin_name}: Conflict in '{field}' - "
+                        f"marketplace: {repr(sorted(market_value))}, "
+                        f"plugin.json: {repr(sorted(plugin_value))} "
+                        f"(plugin.json takes precedence)"
+                    )
+            elif market_value != plugin_value:
+                warnings.append(
+                    f"{plugin_name}: Conflict in '{field}' - "
+                    f"marketplace: {repr(market_value)}, "
+                    f"plugin.json: {repr(plugin_value)} "
+                    f"(plugin.json takes precedence)"
+                )
 
     return warnings
 
 
 def check_plugin_manifest(
-    plugin_dir: Path,
-    marketplace_entry: dict | None = None,
-    strict_mode: bool = True
+    plugin_dir: Path, marketplace_entry: dict | None = None, require_manifest: bool = True
 ) -> dict[str, list[str]]:
     """Validate a single plugin's manifest and structure.
 
     Args:
         plugin_dir: Path to plugin directory
         marketplace_entry: Plugin entry from marketplace.json (optional)
-        strict_mode: If True, require plugin.json. If False, allow missing plugin.json
+        require_manifest: If True, plugin.json is required. If False, plugin.json
+                         is optional and marketplace entry data is used as fallback.
+                         This value comes from the 'strict' field in marketplace.json.
 
     Returns dict with categorized errors and warnings:
     {
@@ -817,108 +831,106 @@ def check_plugin_manifest(
     }
     """
     results = {
-        'manifest': [],
-        'warnings': [],     # NEW: Conflict warnings
-        'placement': [],
-        'skills': [],
-        'commands': [],
-        'agents': [],
-        'hooks': [],
-        'mcp': [],
-        'paths': []
+        "manifest": [],
+        "warnings": [],  # NEW: Conflict warnings
+        "placement": [],
+        "skills": [],
+        "commands": [],
+        "agents": [],
+        "hooks": [],
+        "mcp": [],
+        "paths": [],
     }
 
     plugin_json = plugin_dir / ".claude-plugin" / "plugin.json"
 
-    # Strict mode: plugin.json required
-    if strict_mode:
+    # Require manifest: plugin.json required
+    if require_manifest:
         if not plugin_json.exists():
-            results['manifest'].append(
-                f"{plugin_dir.name}: Missing .claude-plugin/plugin.json (strict mode)"
+            results["manifest"].append(
+                f"{plugin_dir.name}: Missing .claude-plugin/plugin.json (required by marketplace.json)"
             )
             return results
 
         # Load and validate plugin.json
         try:
-            with open(plugin_json, encoding='utf-8') as f:
+            with open(plugin_json, encoding="utf-8") as f:
                 data = json.load(f)
         except PermissionError:
-            results['manifest'].append(f"{plugin_dir.name}: Permission denied reading plugin.json")
+            results["manifest"].append(f"{plugin_dir.name}: Permission denied reading plugin.json")
             return results
         except json.JSONDecodeError as e:
-            results['manifest'].append(
+            results["manifest"].append(
                 f"{plugin_dir.name}: Invalid JSON in plugin.json\n"
                 f"  Line {e.lineno}, column {e.colno}: {e.msg}"
             )
             return results
         except UnicodeDecodeError:
-            results['manifest'].append(
+            results["manifest"].append(
                 f"{plugin_dir.name}: plugin.json is not valid UTF-8\n"
                 f"  Ensure file is text, not binary"
             )
             return results
         except OSError as e:
-            results['manifest'].append(f"{plugin_dir.name}: Cannot read plugin.json: {e}")
+            results["manifest"].append(f"{plugin_dir.name}: Cannot read plugin.json: {e}")
             return results
 
         # Validate against schema
         schema_errors = validate_json_schema(data, PLUGIN_MANIFEST_SCHEMA, plugin_dir.name)
-        results['manifest'].extend(schema_errors)
+        results["manifest"].extend(schema_errors)
 
-    # Non-strict mode: plugin.json optional
+    # Optional manifest: plugin.json optional
     else:
         if plugin_json.exists():
             # Load and validate if present
             try:
-                with open(plugin_json, encoding='utf-8') as f:
+                with open(plugin_json, encoding="utf-8") as f:
                     data = json.load(f)
             except PermissionError:
-                results['manifest'].append(f"{plugin_dir.name}: Permission denied reading plugin.json")
+                results["manifest"].append(
+                    f"{plugin_dir.name}: Permission denied reading plugin.json"
+                )
                 return results
             except json.JSONDecodeError as e:
-                results['manifest'].append(
+                results["manifest"].append(
                     f"{plugin_dir.name}: Invalid JSON in plugin.json\n"
                     f"  Line {e.lineno}, column {e.colno}: {e.msg}"
                 )
                 return results
             except UnicodeDecodeError:
-                results['manifest'].append(
+                results["manifest"].append(
                     f"{plugin_dir.name}: plugin.json is not valid UTF-8\n"
                     f"  Ensure file is text, not binary"
                 )
                 return results
             except OSError as e:
-                results['manifest'].append(f"{plugin_dir.name}: Cannot read plugin.json: {e}")
+                results["manifest"].append(f"{plugin_dir.name}: Cannot read plugin.json: {e}")
                 return results
 
             # Validate against schema only when plugin.json exists
             schema_errors = validate_json_schema(data, PLUGIN_MANIFEST_SCHEMA, plugin_dir.name)
-            results['manifest'].extend(schema_errors)
+            results["manifest"].extend(schema_errors)
         else:
             # Use marketplace entry as manifest (don't validate against plugin.json schema)
             data = marketplace_entry if marketplace_entry else {}
 
     # Check for conflicts if both marketplace entry and plugin.json exist
     if marketplace_entry and plugin_json.exists():
-        conflict_warnings = check_manifest_conflicts(
-            plugin_dir.name,
-            marketplace_entry,
-            data
-        )
-        results['warnings'].extend(conflict_warnings)
+        conflict_warnings = check_manifest_conflicts(plugin_dir.name, marketplace_entry, data)
+        results["warnings"].extend(conflict_warnings)
 
     # Check README.md exists
     if not (plugin_dir / "README.md").exists():
-        results['manifest'].append(f"{plugin_dir.name}: Missing README.md")
+        results["manifest"].append(f"{plugin_dir.name}: Missing README.md")
 
     # Run all component validations
-    results['placement'] = check_component_placement(plugin_dir)
-    results['skills'] = check_skills_directory(plugin_dir)
-    results['commands'] = check_commands_directory(plugin_dir)
-    results['agents'] = check_agents_directory(plugin_dir)
-    results['hooks'] = check_hooks_configuration(plugin_dir, data)
-    results['mcp'] = check_mcp_servers(plugin_dir, data)
-    results['paths'] = check_custom_component_paths(plugin_dir, data)
+    results["placement"] = check_component_placement(plugin_dir)
+    results["skills"] = check_skills_directory(plugin_dir)
+    results["commands"] = check_commands_directory(plugin_dir)
+    results["agents"] = check_agents_directory(plugin_dir)
+    results["hooks"] = check_hooks_configuration(plugin_dir, data)
+    results["mcp"] = check_mcp_servers(plugin_dir, data)
+    results["paths"] = check_custom_component_paths(plugin_dir, data)
 
     return results
 
@@ -938,45 +950,42 @@ def check_marketplace_structure() -> dict[str, Any]:
         }
     }
     """
-    result = {
-        'marketplace_errors': [],
-        'plugin_results': {}
-    }
+    result = {"marketplace_errors": [], "plugin_results": {}}
 
     repo_root = Path(__file__).parent.parent
 
     # Check marketplace.json
     marketplace_json = repo_root / ".claude-plugin" / "marketplace.json"
     if not marketplace_json.exists():
-        result['marketplace_errors'].append("Missing .claude-plugin/marketplace.json")
+        result["marketplace_errors"].append("Missing .claude-plugin/marketplace.json")
         return result
 
     # Validate marketplace.json syntax
     try:
-        with open(marketplace_json, encoding='utf-8') as f:
+        with open(marketplace_json, encoding="utf-8") as f:
             marketplace_data = json.load(f)
     except PermissionError:
-        result['marketplace_errors'].append("Permission denied reading .claude-plugin/marketplace.json")
+        result["marketplace_errors"].append(
+            "Permission denied reading .claude-plugin/marketplace.json"
+        )
         return result
     except json.JSONDecodeError as e:
-        result['marketplace_errors'].append(
-            f"Invalid JSON in marketplace.json\n"
-            f"  Line {e.lineno}, column {e.colno}: {e.msg}"
+        result["marketplace_errors"].append(
+            f"Invalid JSON in marketplace.json\n  Line {e.lineno}, column {e.colno}: {e.msg}"
         )
         return result
     except UnicodeDecodeError:
-        result['marketplace_errors'].append(
-            "marketplace.json is not valid UTF-8\n"
-            "  Ensure file is text, not binary"
+        result["marketplace_errors"].append(
+            "marketplace.json is not valid UTF-8\n  Ensure file is text, not binary"
         )
         return result
     except OSError as e:
-        result['marketplace_errors'].append(f"Cannot read marketplace.json: {e}")
+        result["marketplace_errors"].append(f"Cannot read marketplace.json: {e}")
         return result
 
     # Validate marketplace schema
     marketplace_schema_errors = validate_marketplace_json(marketplace_data)
-    result['marketplace_errors'].extend(marketplace_schema_errors)
+    result["marketplace_errors"].extend(marketplace_schema_errors)
 
     # If marketplace structure invalid, don't continue
     if marketplace_schema_errors:
@@ -992,28 +1001,31 @@ def check_marketplace_structure() -> dict[str, Any]:
             continue  # External sources not validated locally
 
         if not plugin_source:
-            result['marketplace_errors'].append(f"Plugin '{plugin_name}' missing 'source' field")
+            result["marketplace_errors"].append(f"Plugin '{plugin_name}' missing 'source' field")
             continue
 
-        # Resolve plugin directory
-        plugin_dir = repo_root / plugin_source.lstrip("./")
+        # Resolve plugin directory - validate to prevent path traversal
+        plugin_dir, error = validate_plugin_path(
+            repo_root, plugin_source, f"Plugin '{plugin_name}'"
+        )
+        if error:
+            result["marketplace_errors"].append(error)
+            continue
 
         if not plugin_dir.exists():
-            result['marketplace_errors'].append(
+            result["marketplace_errors"].append(
                 f"Plugin '{plugin_name}' source directory not found: {plugin_source}"
             )
             continue
 
         # Get strict mode from marketplace entry (default: true)
-        strict_mode = plugin_entry.get("strict", True)
+        require_manifest = plugin_entry.get("strict", True)
 
         # Validate plugin manifest and components
         plugin_results = check_plugin_manifest(
-            plugin_dir,
-            marketplace_entry=plugin_entry,
-            strict_mode=strict_mode
+            plugin_dir, marketplace_entry=plugin_entry, require_manifest=require_manifest
         )
-        result['plugin_results'][plugin_name] = plugin_results
+        result["plugin_results"][plugin_name] = plugin_results
 
     return result
 
@@ -1032,12 +1044,12 @@ def calculate_exit_code(result: dict[str, Any], strict: bool = False) -> int:
     total_warnings = 0
 
     # Count marketplace-level errors
-    total_errors += len(result.get('marketplace_errors', []))
+    total_errors += len(result.get("marketplace_errors", []))
 
     # Count plugin-level errors and warnings
-    for plugin_result in result.get('plugin_results', {}).values():
+    for plugin_result in result.get("plugin_results", {}).values():
         for category, issues in plugin_result.items():
-            if category == 'warnings':
+            if category == "warnings":
                 total_warnings += len(issues)
             else:
                 total_errors += len(issues)
@@ -1063,12 +1075,10 @@ Exit codes:
 Examples:
   ./scripts/verify-structure.py              # Normal mode (warnings allowed)
   ./scripts/verify-structure.py --strict     # Strict mode (warnings fail)
-        """
+        """,
     )
     parser.add_argument(
-        '--strict',
-        action='store_true',
-        help='Treat warnings as errors (useful for CI/CD)'
+        "--strict", action="store_true", help="Treat warnings as errors (useful for CI/CD)"
     )
     args = parser.parse_args()
 
@@ -1081,17 +1091,17 @@ Examples:
     result = check_marketplace_structure()
 
     # Count errors and warnings
-    total_errors = len(result['marketplace_errors'])
+    total_errors = len(result["marketplace_errors"])
     total_warnings = 0
     all_plugin_errors = {}
     all_plugin_warnings = {}
 
-    for plugin_name, plugin_result in result['plugin_results'].items():
+    for plugin_name, plugin_result in result["plugin_results"].items():
         plugin_errors = []
         plugin_warnings = []
         for category, issues in plugin_result.items():
             if issues:
-                if category == 'warnings':
+                if category == "warnings":
                     plugin_warnings.extend(issues)
                 else:
                     plugin_errors.extend(issues)
@@ -1104,14 +1114,14 @@ Examples:
             total_warnings += len(plugin_warnings)
 
     # Display marketplace errors
-    if result['marketplace_errors']:
+    if result["marketplace_errors"]:
         console.print("[bold red]Marketplace Structure Errors:[/bold red]\n")
-        for error in result['marketplace_errors']:
+        for error in result["marketplace_errors"]:
             console.print(f"  [red]• {error}[/red]")
         console.print()
 
     # Display plugin validation results
-    if result['plugin_results']:
+    if result["plugin_results"]:
         # Create summary table
         table = Table(title="Plugin Validation Summary", show_header=True, header_style="bold cyan")
         table.add_column("Plugin", style="cyan")
@@ -1125,34 +1135,41 @@ Examples:
         table.add_column("Paths", justify="center")
         table.add_column("Warnings", justify="center")
 
-        for plugin_name, plugin_result in result['plugin_results'].items():
+        for plugin_name, plugin_result in result["plugin_results"].items():
+
             def status_icon(errors):
                 return "[red]✗[/red]" if errors else "[green]✓[/green]"
 
             table.add_row(
                 plugin_name,
-                status_icon(plugin_result['manifest']),
-                status_icon(plugin_result['placement']),
-                status_icon(plugin_result['skills']),
-                status_icon(plugin_result['commands']),
-                status_icon(plugin_result['agents']),
-                status_icon(plugin_result['hooks']),
-                status_icon(plugin_result['mcp']),
-                status_icon(plugin_result['paths']),
-                f"[yellow]{len(plugin_result.get('warnings', []))}[/yellow]" if plugin_result.get('warnings') else "[green]0[/green]"
+                status_icon(plugin_result["manifest"]),
+                status_icon(plugin_result["placement"]),
+                status_icon(plugin_result["skills"]),
+                status_icon(plugin_result["commands"]),
+                status_icon(plugin_result["agents"]),
+                status_icon(plugin_result["hooks"]),
+                status_icon(plugin_result["mcp"]),
+                status_icon(plugin_result["paths"]),
+                f"[yellow]{len(plugin_result.get('warnings', []))}[/yellow]"
+                if plugin_result.get("warnings")
+                else "[green]0[/green]",
             )
 
         console.print(table)
         console.print()
 
         # Display detailed errors by category
-        for plugin_name, plugin_result in result['plugin_results'].items():
-            has_errors = any(errors for category, errors in plugin_result.items() if category != 'warnings' and errors)
+        for plugin_name, plugin_result in result["plugin_results"].items():
+            has_errors = any(
+                errors
+                for category, errors in plugin_result.items()
+                if category != "warnings" and errors
+            )
             if has_errors:
                 console.print(f"\n[bold yellow]{plugin_name} - Detailed Errors:[/bold yellow]")
 
                 for category, errors in plugin_result.items():
-                    if category != 'warnings' and errors:
+                    if category != "warnings" and errors:
                         category_label = category.capitalize()
                         console.print(f"\n  [cyan]{category_label}:[/cyan]")
                         for error in errors:
@@ -1165,7 +1182,9 @@ Examples:
         warning_style = "yellow" if not args.strict else "red"
         warning_label = "Warnings" if not args.strict else "Warnings (treated as errors)"
 
-        console.print(f"\n[bold {warning_style}]{warning_label} ({total_warnings}):[/bold {warning_style}]\n")
+        console.print(
+            f"\n[bold {warning_style}]{warning_label} ({total_warnings}):[/bold {warning_style}]\n"
+        )
 
         for plugin_name, warnings in all_plugin_warnings.items():
             console.print(f"  [bold]{plugin_name}:[/bold]")
@@ -1187,21 +1206,19 @@ Examples:
         if args.strict and total_warnings > 0:
             message += " (warnings treated as errors in strict mode)"
 
-        console.print(Panel.fit(
-            f"[bold red]{message}[/bold red]\n"
-            "See details above for specific issues.",
-            border_style="red"
-        ))
+        console.print(
+            Panel.fit(
+                f"[bold red]{message}[/bold red]\nSee details above for specific issues.",
+                border_style="red",
+            )
+        )
     else:
         message = "✅ All verification checks passed!"
         if total_warnings > 0:
             message += f"\n{total_warnings} warning(s) found but not failing (normal mode)"
         message += "\nMarketplace structure and all plugins are valid."
 
-        console.print(Panel.fit(
-            f"[bold green]{message}[/bold green]",
-            border_style="green"
-        ))
+        console.print(Panel.fit(f"[bold green]{message}[/bold green]", border_style="green"))
 
     return exit_code
 

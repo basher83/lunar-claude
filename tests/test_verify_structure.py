@@ -215,7 +215,7 @@ class TestMCPAndManifestErrors:
         from verify_structure import check_plugin_manifest
 
         try:
-            result = check_plugin_manifest(plugin_dir, strict_mode=True)
+            result = check_plugin_manifest(plugin_dir, require_manifest=True)
             assert len(result["manifest"]) > 0
             assert "permission" in result["manifest"][0].lower()
         finally:
@@ -232,7 +232,7 @@ class TestMCPAndManifestErrors:
 
         from verify_structure import check_plugin_manifest
 
-        result = check_plugin_manifest(plugin_dir, strict_mode=True)
+        result = check_plugin_manifest(plugin_dir, require_manifest=True)
         assert len(result["manifest"]) > 0
         assert (
             "utf-8" in result["manifest"][0].lower() or "encoding" in result["manifest"][0].lower()
@@ -251,7 +251,7 @@ class TestMCPAndManifestErrors:
         from verify_structure import check_plugin_manifest
 
         try:
-            result = check_plugin_manifest(plugin_dir, strict_mode=False)
+            result = check_plugin_manifest(plugin_dir, require_manifest=False)
             assert len(result["manifest"]) > 0
             assert "permission" in result["manifest"][0].lower()
         finally:
@@ -268,7 +268,7 @@ class TestMCPAndManifestErrors:
 
         from verify_structure import check_plugin_manifest
 
-        result = check_plugin_manifest(plugin_dir, strict_mode=False)
+        result = check_plugin_manifest(plugin_dir, require_manifest=False)
         assert len(result["manifest"]) > 0
         assert (
             "utf-8" in result["manifest"][0].lower() or "encoding" in result["manifest"][0].lower()
@@ -396,7 +396,7 @@ class TestStrictMode:
         plugin_dir.mkdir(parents=True)
         (plugin_dir / "README.md").write_text("# Test")
 
-        result = check_plugin_manifest(plugin_dir, marketplace_entry, strict_mode=True)
+        result = check_plugin_manifest(plugin_dir, marketplace_entry, require_manifest=True)
 
         assert len(result["manifest"]) > 0
         assert any("plugin.json" in str(e).lower() for e in result["manifest"])
@@ -416,7 +416,7 @@ class TestStrictMode:
         plugin_dir.mkdir(parents=True)
         (plugin_dir / "README.md").write_text("# Test")
 
-        result = check_plugin_manifest(plugin_dir, marketplace_entry, strict_mode=False)
+        result = check_plugin_manifest(plugin_dir, marketplace_entry, require_manifest=False)
 
         # Should have no manifest errors
         assert len(result["manifest"]) == 0 or not any(
@@ -496,3 +496,83 @@ class TestConflictDetection:
         warnings = check_manifest_conflicts("test-plugin", entry, entry)
 
         assert len(warnings) == 0
+
+
+class TestConflictDetectionEdgeCases:
+    """Test conflict detection edge cases."""
+
+    def test_keywords_order_insensitive(self):
+        """Keywords with different order should not conflict."""
+        from verify_structure import check_manifest_conflicts
+
+        marketplace = {"keywords": ["terraform", "ansible", "infrastructure"]}
+        plugin_json = {"keywords": ["ansible", "infrastructure", "terraform"]}
+
+        warnings = check_manifest_conflicts("test", marketplace, plugin_json)
+
+        # Should have NO keyword warnings
+        assert not any("keyword" in w.lower() for w in warnings)
+
+
+class TestSecurityValidation:
+    """Test security validations."""
+
+    def test_rejects_path_traversal_in_hooks(self, tmp_path):
+        """Should reject path traversal attempts in hooks path."""
+        plugin_dir = tmp_path / "plugin"
+        plugin_dir.mkdir()
+
+        from verify_structure import check_hooks_configuration
+
+        # Attempt path traversal
+        plugin_data = {"hooks": "../../etc/passwd"}
+
+        errors = check_hooks_configuration(plugin_dir, plugin_data)
+
+        assert len(errors) > 0
+        assert any("escape" in e.lower() or "outside" in e.lower() for e in errors)
+
+    def test_rejects_path_traversal_in_mcp(self, tmp_path):
+        """Should reject path traversal attempts in MCP path."""
+        plugin_dir = tmp_path / "plugin"
+        plugin_dir.mkdir()
+
+        from verify_structure import check_mcp_servers
+
+        # Attempt path traversal
+        plugin_data = {"mcpServers": "../../../etc/passwd"}
+
+        errors = check_mcp_servers(plugin_dir, plugin_data)
+
+        assert len(errors) > 0
+        assert any("escape" in e.lower() or "outside" in e.lower() for e in errors)
+
+    def test_rejects_path_traversal_in_custom_commands(self, tmp_path):
+        """Should reject path traversal attempts in custom command paths."""
+        plugin_dir = tmp_path / "plugin"
+        plugin_dir.mkdir()
+
+        from verify_structure import check_custom_component_paths
+
+        # Attempt path traversal (paths must start with ./ to get past initial check)
+        plugin_data = {"commands": "./../../etc/passwd"}
+
+        errors = check_custom_component_paths(plugin_dir, plugin_data)
+
+        assert len(errors) > 0
+        assert any("escape" in e.lower() or "outside" in e.lower() for e in errors)
+
+    def test_rejects_path_traversal_in_custom_agents(self, tmp_path):
+        """Should reject path traversal attempts in custom agent paths."""
+        plugin_dir = tmp_path / "plugin"
+        plugin_dir.mkdir()
+
+        from verify_structure import check_custom_component_paths
+
+        # Attempt path traversal (paths must start with ./ to get past initial check)
+        plugin_data = {"agents": "./../../../etc/passwd"}
+
+        errors = check_custom_component_paths(plugin_dir, plugin_data)
+
+        assert len(errors) > 0
+        assert any("escape" in e.lower() or "outside" in e.lower() for e in errors)

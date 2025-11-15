@@ -47,6 +47,7 @@ Exit codes:
 
 import argparse
 import json
+import re
 import sys
 from pathlib import Path
 from typing import Any
@@ -647,8 +648,18 @@ def check_hooks_configuration(plugin_dir: Path, plugin_data: dict) -> list[str]:
                             cmd = hook["command"]
                             # Check for ${CLAUDE_PLUGIN_ROOT} usage
                             if "${CLAUDE_PLUGIN_ROOT}" in cmd:
-                                # Extract path after variable
-                                script_path = cmd.replace("${CLAUDE_PLUGIN_ROOT}/", "").split()[0]
+                                # Extract path using regex to handle wrapper commands
+                                # Pattern: ${CLAUDE_PLUGIN_ROOT}/path (handles wrappers like bash -lc "...")
+                                match = re.search(r'\$\{CLAUDE_PLUGIN_ROOT\}/(\S+)', cmd)
+                                if not match:
+                                    errors.append(
+                                        f"{plugin_name}: Hook command contains ${{CLAUDE_PLUGIN_ROOT}} "
+                                        f"but path could not be extracted: {cmd}"
+                                    )
+                                    continue
+
+                                script_path = match.group(1).strip('"\'')  # Remove quotes if present
+
                                 # Validate path to prevent traversal
                                 full_path, error = validate_plugin_path(
                                     plugin_dir, script_path, f"{plugin_name}/hooks"

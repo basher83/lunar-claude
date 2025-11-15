@@ -322,7 +322,20 @@ def validate_marketplace_json(marketplace_data: dict) -> list[str]:
 def validate_markdown_frontmatter(
     file_path: Path, required_fields: list[str], plugin_name: str
 ) -> list[str]:
-    """Validate YAML frontmatter in markdown file."""
+    """Validate YAML frontmatter in markdown file.
+
+    Parses frontmatter using yaml.safe_load() to handle complex YAML structures
+    including nested mappings, lists, and multi-line values. Validates that
+    required fields exist and have non-empty values.
+
+    Args:
+        file_path: Path to markdown file with frontmatter
+        required_fields: List of required field names
+        plugin_name: Plugin name for error context
+
+    Returns:
+        List of validation error messages
+    """
     errors = []
     rel_path = file_path.relative_to(file_path.parent.parent)
 

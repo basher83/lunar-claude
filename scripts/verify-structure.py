@@ -311,9 +311,21 @@ def validate_markdown_frontmatter(
     rel_path = file_path.relative_to(file_path.parent.parent)
 
     try:
-        content = file_path.read_text()
-    except Exception as e:
-        errors.append(f"{plugin_name}/{rel_path}: Error reading file: {e}")
+        content = file_path.read_text(encoding='utf-8')
+    except PermissionError:
+        errors.append(
+            f"{plugin_name}/{rel_path}: Permission denied reading file\n"
+            f"  Check file permissions (current: {file_path.stat().st_mode:o})"
+        )
+        return errors
+    except UnicodeDecodeError as e:
+        errors.append(
+            f"{plugin_name}/{rel_path}: File is not valid UTF-8\n"
+            f"  Ensure file is text, not binary. Error at byte {e.start}: {e.reason}"
+        )
+        return errors
+    except OSError as e:
+        errors.append(f"{plugin_name}/{rel_path}: Cannot read file: {e}")
         return errors
 
     # Check frontmatter exists

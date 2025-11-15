@@ -134,3 +134,142 @@ class TestJSONErrorHandling:
             or "text" in errors[0].lower()
             or "ensure" in errors[0].lower()
         )
+
+
+class TestMCPAndManifestErrors:
+    """Test MCP config and manifest error handling."""
+
+    def test_mcp_json_file_not_found(self, tmp_path):
+        """Should handle MCP file not found errors specifically."""
+        plugin_dir = tmp_path / "test-plugin"
+        plugin_dir.mkdir()
+
+        from verify_structure import check_mcp_servers
+
+        # Reference a non-existent MCP file
+        errors = check_mcp_servers(plugin_dir, {"mcpServers": "config/mcp.json"})
+
+        assert len(errors) > 0
+        assert "not found" in errors[0].lower()
+
+    def test_mcp_json_invalid_syntax(self, tmp_path):
+        """Should report MCP JSON syntax errors clearly."""
+        plugin_dir = tmp_path / "test-plugin"
+        plugin_dir.mkdir()
+        mcp_file = plugin_dir / ".mcp.json"
+        mcp_file.write_text('{"invalid json')
+
+        from verify_structure import check_mcp_servers
+
+        errors = check_mcp_servers(plugin_dir, {})
+
+        assert len(errors) > 0
+        assert "json" in errors[0].lower() or "invalid" in errors[0].lower()
+        assert "line" in errors[0].lower() and "column" in errors[0].lower()
+
+    def test_mcp_custom_path_permission_denied(self, tmp_path):
+        """Should report permission errors clearly for custom MCP files."""
+        plugin_dir = tmp_path / "test-plugin"
+        plugin_dir.mkdir()
+        config_dir = plugin_dir / "config"
+        config_dir.mkdir()
+        mcp_file = config_dir / "mcp.json"
+        mcp_file.write_text('{"mcpServers": {}}')
+        mcp_file.chmod(0o000)
+
+        from verify_structure import check_mcp_servers
+
+        try:
+            errors = check_mcp_servers(plugin_dir, {"mcpServers": "config/mcp.json"})
+            assert len(errors) > 0
+            assert "permission" in errors[0].lower()
+        finally:
+            mcp_file.chmod(0o644)
+
+    def test_mcp_custom_path_unicode_error(self, tmp_path):
+        """Should report encoding errors clearly for custom MCP files."""
+        plugin_dir = tmp_path / "test-plugin"
+        plugin_dir.mkdir()
+        config_dir = plugin_dir / "config"
+        config_dir.mkdir()
+        mcp_file = config_dir / "mcp.json"
+        mcp_file.write_bytes(b"\xff\xfe\x00\x00")
+
+        from verify_structure import check_mcp_servers
+
+        errors = check_mcp_servers(plugin_dir, {"mcpServers": "config/mcp.json"})
+
+        assert len(errors) > 0
+        assert "utf-8" in errors[0].lower() or "encoding" in errors[0].lower()
+
+    def test_plugin_manifest_permission_denied_strict_mode(self, tmp_path):
+        """Should catch permission errors in strict mode plugin.json loading."""
+        plugin_dir = tmp_path / "test-plugin"
+        plugin_dir.mkdir()
+        claude_plugin_dir = plugin_dir / ".claude-plugin"
+        claude_plugin_dir.mkdir()
+        plugin_json = claude_plugin_dir / "plugin.json"
+        plugin_json.write_text('{"name": "test"}')
+        plugin_json.chmod(0o000)
+
+        from verify_structure import check_plugin_manifest
+
+        try:
+            result = check_plugin_manifest(plugin_dir, strict_mode=True)
+            assert len(result["manifest"]) > 0
+            assert "permission" in result["manifest"][0].lower()
+        finally:
+            plugin_json.chmod(0o644)
+
+    def test_plugin_manifest_unicode_error_strict_mode(self, tmp_path):
+        """Should catch encoding errors in strict mode plugin.json loading."""
+        plugin_dir = tmp_path / "test-plugin"
+        plugin_dir.mkdir()
+        claude_plugin_dir = plugin_dir / ".claude-plugin"
+        claude_plugin_dir.mkdir()
+        plugin_json = claude_plugin_dir / "plugin.json"
+        plugin_json.write_bytes(b"\xff\xfe\x00\x00")
+
+        from verify_structure import check_plugin_manifest
+
+        result = check_plugin_manifest(plugin_dir, strict_mode=True)
+        assert len(result["manifest"]) > 0
+        assert (
+            "utf-8" in result["manifest"][0].lower() or "encoding" in result["manifest"][0].lower()
+        )
+
+    def test_plugin_manifest_permission_denied_non_strict_mode(self, tmp_path):
+        """Should catch permission errors in non-strict mode plugin.json loading."""
+        plugin_dir = tmp_path / "test-plugin"
+        plugin_dir.mkdir()
+        claude_plugin_dir = plugin_dir / ".claude-plugin"
+        claude_plugin_dir.mkdir()
+        plugin_json = claude_plugin_dir / "plugin.json"
+        plugin_json.write_text('{"name": "test"}')
+        plugin_json.chmod(0o000)
+
+        from verify_structure import check_plugin_manifest
+
+        try:
+            result = check_plugin_manifest(plugin_dir, strict_mode=False)
+            assert len(result["manifest"]) > 0
+            assert "permission" in result["manifest"][0].lower()
+        finally:
+            plugin_json.chmod(0o644)
+
+    def test_plugin_manifest_unicode_error_non_strict_mode(self, tmp_path):
+        """Should catch encoding errors in non-strict mode plugin.json loading."""
+        plugin_dir = tmp_path / "test-plugin"
+        plugin_dir.mkdir()
+        claude_plugin_dir = plugin_dir / ".claude-plugin"
+        claude_plugin_dir.mkdir()
+        plugin_json = claude_plugin_dir / "plugin.json"
+        plugin_json.write_bytes(b"\xff\xfe\x00\x00")
+
+        from verify_structure import check_plugin_manifest
+
+        result = check_plugin_manifest(plugin_dir, strict_mode=False)
+        assert len(result["manifest"]) > 0
+        assert (
+            "utf-8" in result["manifest"][0].lower() or "encoding" in result["manifest"][0].lower()
+        )

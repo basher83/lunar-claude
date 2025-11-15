@@ -619,17 +619,50 @@ def check_mcp_servers(plugin_dir: Path, plugin_data: dict) -> list[str]:
             errors.append(f"{plugin_name}: MCP file specified in plugin.json not found: {inline_mcp}")
             return errors
         try:
-            with open(custom_mcp_path) as f:
+            with open(custom_mcp_path, encoding='utf-8') as f:
                 mcp_config = json.load(f)
-        except Exception as e:
-            errors.append(f"{plugin_name}: Error loading MCP file: {e}")
+        except FileNotFoundError:
+            errors.append(f"{plugin_name}: MCP file not found: {inline_mcp}")
+            return errors
+        except PermissionError:
+            errors.append(f"{plugin_name}: Permission denied reading MCP file: {inline_mcp}")
+            return errors
+        except json.JSONDecodeError as e:
+            errors.append(
+                f"{plugin_name}: Invalid JSON in MCP file {inline_mcp}\n"
+                f"  Line {e.lineno}, column {e.colno}: {e.msg}"
+            )
+            return errors
+        except UnicodeDecodeError:
+            errors.append(
+                f"{plugin_name}: MCP file is not valid UTF-8: {inline_mcp}\n"
+                f"  Ensure file is text, not binary"
+            )
+            return errors
+        except OSError as e:
+            errors.append(f"{plugin_name}: Cannot read MCP file: {e}")
             return errors
     elif mcp_file.exists():
         try:
-            with open(mcp_file) as f:
+            with open(mcp_file, encoding='utf-8') as f:
                 mcp_config = json.load(f)
-        except Exception as e:
-            errors.append(f"{plugin_name}/.mcp.json: Invalid JSON: {e}")
+        except PermissionError:
+            errors.append(f"{plugin_name}: Permission denied reading .mcp.json")
+            return errors
+        except json.JSONDecodeError as e:
+            errors.append(
+                f"{plugin_name}/.mcp.json: Invalid JSON\n"
+                f"  Line {e.lineno}, column {e.colno}: {e.msg}"
+            )
+            return errors
+        except UnicodeDecodeError:
+            errors.append(
+                f"{plugin_name}/.mcp.json: File is not valid UTF-8\n"
+                f"  Ensure file is text, not binary"
+            )
+            return errors
+        except OSError as e:
+            errors.append(f"{plugin_name}: Cannot read .mcp.json: {e}")
             return errors
 
     if not mcp_config:
@@ -780,10 +813,25 @@ def check_plugin_manifest(
 
         # Load and validate plugin.json
         try:
-            with open(plugin_json) as f:
+            with open(plugin_json, encoding='utf-8') as f:
                 data = json.load(f)
+        except PermissionError:
+            results['manifest'].append(f"{plugin_dir.name}: Permission denied reading plugin.json")
+            return results
         except json.JSONDecodeError as e:
-            results['manifest'].append(f"{plugin_dir.name}: Invalid JSON in plugin.json: {e}")
+            results['manifest'].append(
+                f"{plugin_dir.name}: Invalid JSON in plugin.json\n"
+                f"  Line {e.lineno}, column {e.colno}: {e.msg}"
+            )
+            return results
+        except UnicodeDecodeError:
+            results['manifest'].append(
+                f"{plugin_dir.name}: plugin.json is not valid UTF-8\n"
+                f"  Ensure file is text, not binary"
+            )
+            return results
+        except OSError as e:
+            results['manifest'].append(f"{plugin_dir.name}: Cannot read plugin.json: {e}")
             return results
 
         # Validate against schema
@@ -795,10 +843,25 @@ def check_plugin_manifest(
         if plugin_json.exists():
             # Load and validate if present
             try:
-                with open(plugin_json) as f:
+                with open(plugin_json, encoding='utf-8') as f:
                     data = json.load(f)
+            except PermissionError:
+                results['manifest'].append(f"{plugin_dir.name}: Permission denied reading plugin.json")
+                return results
             except json.JSONDecodeError as e:
-                results['manifest'].append(f"{plugin_dir.name}: Invalid JSON in plugin.json: {e}")
+                results['manifest'].append(
+                    f"{plugin_dir.name}: Invalid JSON in plugin.json\n"
+                    f"  Line {e.lineno}, column {e.colno}: {e.msg}"
+                )
+                return results
+            except UnicodeDecodeError:
+                results['manifest'].append(
+                    f"{plugin_dir.name}: plugin.json is not valid UTF-8\n"
+                    f"  Ensure file is text, not binary"
+                )
+                return results
+            except OSError as e:
+                results['manifest'].append(f"{plugin_dir.name}: Cannot read plugin.json: {e}")
                 return results
 
             # Validate against schema only when plugin.json exists
@@ -863,10 +926,25 @@ def check_marketplace_structure() -> dict[str, Any]:
 
     # Validate marketplace.json syntax
     try:
-        with open(marketplace_json) as f:
+        with open(marketplace_json, encoding='utf-8') as f:
             marketplace_data = json.load(f)
+    except PermissionError:
+        result['marketplace_errors'].append("Permission denied reading .claude-plugin/marketplace.json")
+        return result
     except json.JSONDecodeError as e:
-        result['marketplace_errors'].append(f"Invalid JSON in marketplace.json: {e}")
+        result['marketplace_errors'].append(
+            f"Invalid JSON in marketplace.json\n"
+            f"  Line {e.lineno}, column {e.colno}: {e.msg}"
+        )
+        return result
+    except UnicodeDecodeError:
+        result['marketplace_errors'].append(
+            "marketplace.json is not valid UTF-8\n"
+            "  Ensure file is text, not binary"
+        )
+        return result
+    except OSError as e:
+        result['marketplace_errors'].append(f"Cannot read marketplace.json: {e}")
         return result
 
     # Validate marketplace schema

@@ -258,13 +258,40 @@ PLUGIN_MANIFEST_SCHEMA = {
 
 
 def validate_json_schema(data: dict[str, Any], schema: dict[str, Any], context: str) -> list[str]:
-    """Validate JSON data against schema, return list of errors."""
-    validator = Draft7Validator(schema)
+    """Validate JSON data against JSON Schema Draft 7 specification.
+
+    Args:
+        data: Dictionary to validate
+        schema: JSON Schema dict (Draft 7 format)
+        context: Human-readable context for error messages
+
+    Returns:
+        List of formatted error messages with context and field paths
+    """
+    from jsonschema.exceptions import SchemaError
+
     errors = []
 
-    for error in validator.iter_errors(data):
-        path = " -> ".join(str(p) for p in error.path) if error.path else "root"
-        errors.append(f"{context}: {path}: {error.message}")
+    try:
+        validator = Draft7Validator(schema)
+    except SchemaError as e:
+        errors.append(
+            f"{context}: INTERNAL ERROR - Invalid schema definition: {e}\n"
+            f"  This is a bug in the verification script, please report it"
+        )
+        return errors
+
+    try:
+        for error in validator.iter_errors(data):
+            path = " -> ".join(str(p) for p in error.path) if error.path else "root"
+            errors.append(f"{context}: {path}: {error.message}")
+    except RecursionError:
+        errors.append(f"{context}: Data structure too deeply nested (recursion limit)")
+    except Exception as e:
+        errors.append(
+            f"{context}: Unexpected error during validation: {e.__class__.__name__}: {e}\n"
+            f"  Please report this as a bug"
+        )
 
     return errors
 

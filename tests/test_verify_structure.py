@@ -316,3 +316,25 @@ class TestMCPAndManifestErrors:
             "binary" in result["marketplace_errors"][0].lower()
             or "ensure" in result["marketplace_errors"][0].lower()
         )
+
+
+class TestSchemaValidation:
+    """Test JSON schema validation error handling."""
+
+    def test_invalid_schema_definition(self):
+        """Should catch schema errors gracefully."""
+        from verify_structure import validate_json_schema
+
+        # Create invalid schema
+        invalid_schema = {
+            "type": "object",
+            "properties": {"name": {"type": "invalid_type"}},  # Invalid type
+        }
+
+        data = {"name": "test"}
+
+        errors = validate_json_schema(data, invalid_schema, "test-context")
+
+        # Should get internal error message, not crash
+        assert len(errors) > 0
+        assert "internal error" in errors[0].lower() or "schema" in errors[0].lower()

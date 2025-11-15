@@ -328,9 +328,14 @@ def validate_markdown_frontmatter(
     try:
         content = file_path.read_text(encoding="utf-8")
     except PermissionError:
+        # Best-effort attempt to get file mode for diagnostics
+        try:
+            mode = f"{file_path.stat().st_mode:o}"
+        except OSError:
+            mode = "unknown"
         errors.append(
             f"{plugin_name}/{rel_path}: Permission denied reading file\n"
-            f"  Check file permissions (current: {file_path.stat().st_mode:o})"
+            f"  Check file permissions (current: {mode})"
         )
         return errors
     except UnicodeDecodeError as e:

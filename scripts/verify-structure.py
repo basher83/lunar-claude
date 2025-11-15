@@ -642,12 +642,14 @@ def check_hooks_configuration(plugin_dir: Path, plugin_data: dict) -> list[str]:
                             # Check for ${CLAUDE_PLUGIN_ROOT} usage
                             if "${CLAUDE_PLUGIN_ROOT}" in cmd:
                                 # Extract path after variable
-                                script_path = cmd.replace("${CLAUDE_PLUGIN_ROOT}/", "")
-                                script_path = script_path.split()[
-                                    0
-                                ]  # Get just the script, not args
-                                full_path = plugin_dir / script_path
-                                if not full_path.exists():
+                                script_path = cmd.replace("${CLAUDE_PLUGIN_ROOT}/", "").split()[0]
+                                # Validate path to prevent traversal
+                                full_path, error = validate_plugin_path(
+                                    plugin_dir, script_path, f"{plugin_name}/hooks"
+                                )
+                                if error:
+                                    errors.append(error)
+                                elif not full_path.exists():
                                     errors.append(
                                         f"{plugin_name}: Hook command script not found: {script_path}"
                                     )
@@ -1009,8 +1011,15 @@ def check_marketplace_structure() -> dict[str, Any]:
             if "repo" in plugin_source or "url" in plugin_source:
                 # Record external source (not validated locally)
                 result["plugin_results"][plugin_name] = {
-                    "errors": [],
+                    "manifest": [],
                     "warnings": ["External source; not validated locally"],
+                    "placement": [],
+                    "skills": [],
+                    "commands": [],
+                    "agents": [],
+                    "hooks": [],
+                    "mcp": [],
+                    "paths": [],
                 }
                 continue
             else:
@@ -1157,7 +1166,7 @@ Examples:
 
         for plugin_name, plugin_result in result["plugin_results"].items():
 
-            def status_icon(errors):
+            def status_icon(errors: list[str]) -> str:
                 return "[red]✗[/red]" if errors else "[green]✓[/green]"
 
             table.add_row(

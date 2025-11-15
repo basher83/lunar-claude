@@ -997,9 +997,22 @@ def check_marketplace_structure() -> dict[str, Any]:
         plugin_name = plugin_entry.get("name", "unknown")
         plugin_source = plugin_entry.get("source", "")
 
-        # Skip external sources (GitHub/Git URLs)
+        # Handle object-form sources
         if isinstance(plugin_source, dict):
-            continue  # External sources not validated locally
+            # External sources require 'repo' or 'url' key
+            if "repo" in plugin_source or "url" in plugin_source:
+                # Record external source (not validated locally)
+                result["plugin_results"][plugin_name] = {
+                    "errors": [],
+                    "warnings": ["External source; not validated locally"],
+                }
+                continue
+            else:
+                # Object source missing required keys
+                result["marketplace_errors"].append(
+                    f"Plugin '{plugin_name}' has object 'source' missing 'repo' or 'url'"
+                )
+                continue
 
         if not plugin_source:
             result["marketplace_errors"].append(f"Plugin '{plugin_name}' missing 'source' field")

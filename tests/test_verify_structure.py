@@ -273,3 +273,46 @@ class TestMCPAndManifestErrors:
         assert (
             "utf-8" in result["manifest"][0].lower() or "encoding" in result["manifest"][0].lower()
         )
+
+    def test_marketplace_json_unicode_error(self, tmp_path, monkeypatch):
+        """Should catch encoding errors in marketplace.json loading."""
+        from unittest.mock import MagicMock
+
+        from verify_structure import check_marketplace_structure
+
+        # Create a mock that simulates reading invalid UTF-8
+        mock_file = MagicMock()
+        mock_file.__enter__ = MagicMock(
+            side_effect=UnicodeDecodeError("utf-8", b"\xff\xfe\x00\x00", 0, 1, "invalid start byte")
+        )
+        mock_file.__exit__ = MagicMock(return_value=False)
+
+        # Mock the open function to raise UnicodeDecodeError
+        def mock_open_func(file, *args, **kwargs):
+            if "marketplace.json" in str(file):
+                return mock_file
+            # Fall back to real open for other files
+            return open(file, *args, **kwargs)
+
+        # Mock Path.exists to return True for marketplace.json
+        original_path = __import__("pathlib").Path
+
+        class MockPath(original_path):
+            def exists(self):
+                if "marketplace.json" in str(self):
+                    return True
+                return super().exists()
+
+        monkeypatch.setattr("pathlib.Path", MockPath)
+        monkeypatch.setattr("builtins.open", mock_open_func)
+
+        result = check_marketplace_structure()
+
+        assert len(result["marketplace_errors"]) > 0
+        # Should mention UTF-8/encoding issue
+        assert "utf-8" in result["marketplace_errors"][0].lower()
+        # Should mention binary file or ensure text
+        assert (
+            "binary" in result["marketplace_errors"][0].lower()
+            or "ensure" in result["marketplace_errors"][0].lower()
+        )

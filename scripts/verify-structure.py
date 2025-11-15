@@ -198,7 +198,11 @@ MARKETPLACE_SCHEMA = {
             "type": "object",
             "properties": {
                 "description": {"type": "string"},
-                "version": {"type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$"},
+                "version": {
+                    "type": "string",
+                    "pattern": "^\\d+\\.\\d+\\.\\d+$",
+                    "description": "Marketplace version (semver, stable releases only: major.minor.patch)",
+                },
                 "pluginRoot": {"type": "string"},
             },
         },
@@ -229,7 +233,11 @@ MARKETPLACE_PLUGIN_ENTRY_SCHEMA = {
         },
         "strict": {"type": "boolean"},
         # Plugin manifest fields (all optional)
-        "version": {"type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$"},
+        "version": {
+            "type": "string",
+            "pattern": "^\\d+\\.\\d+\\.\\d+$",
+            "description": "Plugin version (semver, stable releases only: major.minor.patch)",
+        },
         "description": {"type": "string"},
         "author": {
             "type": "object",
@@ -271,7 +279,7 @@ PLUGIN_MANIFEST_SCHEMA = {
         "version": {
             "type": "string",
             "pattern": "^\\d+\\.\\d+\\.\\d+$",
-            "description": "Semantic version",
+            "description": "Semantic version (stable releases only: major.minor.patch)",
         },
         "description": {"type": "string", "description": "Brief explanation of plugin purpose"},
         "author": {
@@ -349,7 +357,7 @@ def validate_json_schema(data: dict[str, Any], schema: dict[str, Any], context: 
     return errors
 
 
-def validate_marketplace_json(marketplace_data: dict) -> list[str]:
+def validate_marketplace_json(marketplace_data: dict[str, Any]) -> list[str]:
     """Validate marketplace.json structure against schema.
 
     Args:
@@ -799,15 +807,15 @@ def check_manifest_conflicts(
                 if set(market_value) != set(plugin_value):
                     warnings.append(
                         f"{plugin_name}: Conflict in '{field}' - "
-                        f"marketplace: {repr(sorted(market_value))}, "
-                        f"plugin.json: {repr(sorted(plugin_value))} "
+                        f"marketplace: {sorted(market_value)!r}, "
+                        f"plugin.json: {sorted(plugin_value)!r} "
                         f"(plugin.json takes precedence)"
                     )
             elif market_value != plugin_value:
                 warnings.append(
                     f"{plugin_name}: Conflict in '{field}' - "
-                    f"marketplace: {repr(market_value)}, "
-                    f"plugin.json: {repr(plugin_value)} "
+                    f"marketplace: {market_value!r}, "
+                    f"plugin.json: {plugin_value!r} "
                     f"(plugin.json takes precedence)"
                 )
 
@@ -815,7 +823,10 @@ def check_manifest_conflicts(
 
 
 def check_plugin_manifest(
-    plugin_dir: Path, marketplace_entry: dict | None = None, require_manifest: bool = True
+    plugin_dir: Path,
+    marketplace_entry: dict[str, Any] | None = None,
+    *,
+    require_manifest: bool = True,
 ) -> dict[str, list[str]]:
     """Validate a single plugin's manifest and structure.
 
@@ -1059,7 +1070,7 @@ def check_marketplace_structure() -> dict[str, Any]:
     return result
 
 
-def calculate_exit_code(result: dict[str, Any], strict: bool = False) -> int:
+def calculate_exit_code(result: dict[str, Any], *, strict: bool = False) -> int:
     """Calculate exit code based on errors and warnings.
 
     Args:

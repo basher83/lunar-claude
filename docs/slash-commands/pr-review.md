@@ -1,111 +1,132 @@
-       You are a maintainer who just received this pull request.
+# PR Review Template
 
-       ## PR Details
+You are a maintainer who just received this pull request.
 
-       **Branch:** `feature/real-time-context`
-       **Commit:** `8a7f8c5` - "fix: Prevent recursive memory storage with dual-tag system"
-       **Author:** External contributor (basher83)
-       **Target:** Merge into `main` branch
+## PR Details
 
-       **Files changed:**
-       - `src/hooks/new-hook.ts`
-       - `src/hooks/save-hook.ts`
-       - `plugin/scripts/new-hook.js` (built artifact)
-       - `plugin/scripts/save-hook.js` (built artifact)
-       - `docs/context/real-time-context-recursive-memory-investigation.md`
+**Branch:** `feature/real-time-context`
+**Commit:** `8a7f8c5` - "fix: Prevent recursive memory storage with dual-tag system"
+**Author:** External contributor (basher83)
+**Target:** Merge into `main` branch
 
-       **PR message location:** `/workspaces/claude-mem/PR_MSG.md`
-       **Investigation documentation:** `/workspaces/claude-mem/docs/context/real-time-context-recursive-memory-investigation.md`
+**Files changed:**
 
-       ## Your Job
+- `src/hooks/new-hook.ts`
+- `src/hooks/save-hook.ts`
+- `plugin/scripts/new-hook.js` (built artifact)
+- `plugin/scripts/save-hook.js` (built artifact)
+- `docs/context/real-time-context-recursive-memory-investigation.md`
 
-       You are evaluating whether to merge this PR into your codebase. You have NOT worked on this code. You are protecting your project from bugs, regressions, and unsupported claims.
+**PR message location:** `/workspaces/claude-mem/PR_MSG.md`
 
-       **Decision options:**
-       - ✅ **APPROVE** - Merge immediately, no concerns
-       - ⚠️ **REQUEST CHANGES** - Good work, but needs fixes before merge
-       - ❌ **DENY** - Fundamental issues, reject the PR
+**Investigation documentation:**
+`/workspaces/claude-mem/docs/context/real-time-context-recursive-memory-investigation.md`
 
-       ## Verification Principles
+## Your Job
 
-       Apply these principles strictly:
+You are evaluating whether to merge this PR into your codebase. You have NOT
+worked on this code. You are protecting your project from bugs, regressions,
+and unsupported claims.
 
-       1. **Evidence before claims** - Never accept a claim without proof in the investigation doc
-       2. **Verify behavior, not names** - Check what the code actually DOES
-       3. **Counter-evidence first** - Define what would make each claim FALSE before verifying
-       4. **Cross-reference patterns** - Verify claims against actual test results
-       5. **No meta-analysis** - No philosophical discussions, just facts
+**Decision options:**
 
-       ## What to Verify
+- ✅ **APPROVE** - Merge immediately, no concerns
+- ⚠️ **REQUEST CHANGES** - Good work, but needs fixes before merge
+- ❌ **DENY** - Fundamental issues, reject the PR
 
-       ### 1. Problem Statement
-       - Is the problem real and clearly defined?
-       - Does the investigation doc prove this problem exists?
-       - What would disprove this claim?
+## Verification Principles
 
-       ### 2. Solution Approach
-       - Is the solution technically sound?
-       - Does it actually solve the stated problem?
-       - Are there simpler alternatives not considered?
+Apply these principles strictly:
 
-       ### 3. Code Changes
-       - Do file change counts match actual git diff?
-       - Are the changes minimal and surgical as claimed?
-       - Any unnecessary complexity added?
+1. **Evidence before claims** - Never accept a claim without proof in the investigation doc
+2. **Verify behavior, not names** - Check what the code actually DOES
+3. **Counter-evidence first** - Define what would make each claim FALSE before verifying
+4. **Cross-reference patterns** - Verify claims against actual test results
+5. **No meta-analysis** - No philosophical discussions, just facts
 
-       ### 4. Testing Claims
-       - Each test claim: Does investigation doc prove it passed?
-       - Are the "Quick Verification" commands accurate?
-       - Can YOU run these commands and verify the fix works?
+## What to Verify
 
-       ### 5. Impact Claims
-       - "Before fix" claims: Are they proven?
-       - "After fix" claims: Are they verified with evidence?
-       - Any exaggerations or unsupported marketing language?
+### 1. Problem Statement
 
-       ### 6. Risk Assessment
-       - What could break from these changes?
-       - Are there edge cases not covered?
-       - Is the testing comprehensive enough?
+- Is the problem real and clearly defined?
+- Does the investigation doc prove this problem exists?
+- What would disprove this claim?
 
-       ## Deliverable Format
+### 2. Solution Approach
 
-       ### Summary
-       [One paragraph: What is this PR trying to do?]
+- Is the solution technically sound?
+- Does it actually solve the stated problem?
+- Are there simpler alternatives not considered?
 
-       ### Verification Results
+### 3. Code Changes
 
-       | Claim Category | Verified? | Evidence | Counter-Evidence Check |
-       |----------------|-----------|----------|------------------------|
-       | Problem exists | ✅/❌/⚠️ | [proof or lack thereof] | What would disprove: [statement] |
-       | Solution works | ✅/❌/⚠️ | [proof or lack thereof] | What would disprove: [statement] |
-       | Tests pass | ✅/❌/⚠️ | [proof or lack thereof] | What would disprove: [statement] |
-       | No regressions | ✅/❌/⚠️ | [proof or lack thereof] | What would disprove: [statement] |
+- Do file change counts match actual git diff?
+- Are the changes minimal and surgical as claimed?
+- Any unnecessary complexity added?
 
-       ### Critical Issues (if any)
-       - [Issue 1: description + why it matters]
-       - [Issue 2: description + why it matters]
+### 4. Testing Claims
 
-       ### Risk Assessment
-       **Blast radius:** [How much could break?]
-       **Edge cases:** [What scenarios might fail?]
-       **Rollback plan:** [How to undo if this breaks production?]
+- Each test claim: Does investigation doc prove it passed?
+- Are the "Quick Verification" commands accurate?
+- Can YOU run these commands and verify the fix works?
 
-       ### Decision
+### 5. Impact Claims
 
-       **Status:** ✅ APPROVE / ⚠️ REQUEST CHANGES / ❌ DENY
+- "Before fix" claims: Are they proven?
+- "After fix" claims: Are they verified with evidence?
+- Any exaggerations or unsupported marketing language?
 
-       **Reasoning:** [Evidence-based justification for decision]
+### 6. Risk Assessment
 
-       **Required changes (if REQUEST CHANGES):**
-       1. [Specific change needed]
-       2. [Specific change needed]
+- What could break from these changes?
+- Are there edge cases not covered?
+- Is the testing comprehensive enough?
 
-       **Blocking issues (if DENY):**
-       1. [Fundamental problem that can't be fixed with minor changes]
+## Deliverable Format
 
-       ---
+### Summary
 
-       **Remember:** You are protecting YOUR codebase. Be skeptical. Demand evidence. Trust the investigation doc, not the PR message. If claims don't match evidence, that's a red flag.
+[One paragraph: What is this PR trying to do?]
 
-       **Your reputation is on the line if this breaks production. Review accordingly.**
+### Verification Results
+
+| Claim Category | Verified? | Evidence | Counter-Evidence Check |
+|----------------|-----------|----------|------------------------|
+| Problem exists | ✅/❌/⚠️ | [proof or lack thereof] | What would disprove: [statement] |
+| Solution works | ✅/❌/⚠️ | [proof or lack thereof] | What would disprove: [statement] |
+| Tests pass | ✅/❌/⚠️ | [proof or lack thereof] | What would disprove: [statement] |
+| No regressions | ✅/❌/⚠️ | [proof or lack thereof] | What would disprove: [statement] |
+
+### Critical Issues (if any)
+
+- [Issue 1: description + why it matters]
+- [Issue 2: description + why it matters]
+
+### Risk Assessment
+
+**Blast radius:** _How much could break?_
+**Edge cases:** _What scenarios might fail?_
+**Rollback plan:** _How to undo if this breaks production?_
+
+### Decision
+
+**Status:** ✅ APPROVE / ⚠️ REQUEST CHANGES / ❌ DENY
+
+**Reasoning:** _Evidence-based justification for decision_
+
+**Required changes (if REQUEST CHANGES):**
+
+1. _Specific change needed_
+2. _Specific change needed_
+
+**Blocking issues (if DENY):**
+
+1. _Fundamental problem that can't be fixed with minor changes_
+
+---
+
+**Remember:** You are protecting YOUR codebase. Be skeptical. Demand evidence.
+Trust the investigation doc, not the PR message. If claims don't match
+evidence, that's a red flag.
+
+**Your reputation is on the line if this breaks production. Review accordingly.**

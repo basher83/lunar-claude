@@ -497,17 +497,53 @@ def check_hooks_configuration(plugin_dir: Path, plugin_data: dict) -> list[str]:
             errors.append(f"{plugin_name}: Hooks file specified in plugin.json not found: {inline_hooks}")
             return errors
         try:
-            with open(custom_hooks_path) as f:
+            with open(custom_hooks_path, encoding='utf-8') as f:
                 hooks_config = json.load(f)
-        except Exception as e:
-            errors.append(f"{plugin_name}: Error loading hooks file: {e}")
+        except FileNotFoundError:
+            errors.append(f"{plugin_name}: Hooks file not found: {inline_hooks}")
+            return errors
+        except PermissionError:
+            errors.append(f"{plugin_name}: Permission denied reading hooks file: {inline_hooks}")
+            return errors
+        except json.JSONDecodeError as e:
+            errors.append(
+                f"{plugin_name}: Invalid JSON in hooks file {inline_hooks}\n"
+                f"  Line {e.lineno}, column {e.colno}: {e.msg}"
+            )
+            return errors
+        except UnicodeDecodeError:
+            errors.append(
+                f"{plugin_name}: Hooks file is not valid UTF-8: {inline_hooks}\n"
+                f"  Ensure file is text, not binary"
+            )
+            return errors
+        except OSError as e:
+            errors.append(f"{plugin_name}: Cannot read hooks file: {e}")
             return errors
     elif hooks_file.exists():
         try:
-            with open(hooks_file) as f:
+            with open(hooks_file, encoding='utf-8') as f:
                 hooks_config = json.load(f)
-        except Exception as e:
-            errors.append(f"{plugin_name}/hooks/hooks.json: Invalid JSON: {e}")
+        except FileNotFoundError:
+            errors.append(f"{plugin_name}/hooks/hooks.json: File not found")
+            return errors
+        except PermissionError:
+            errors.append(f"{plugin_name}/hooks/hooks.json: Permission denied reading file")
+            return errors
+        except json.JSONDecodeError as e:
+            errors.append(
+                f"{plugin_name}/hooks/hooks.json: Invalid JSON\n"
+                f"  Line {e.lineno}, column {e.colno}: {e.msg}"
+            )
+            return errors
+        except UnicodeDecodeError:
+            errors.append(
+                f"{plugin_name}/hooks/hooks.json: File is not valid UTF-8\n"
+                f"  Ensure file is text, not binary"
+            )
+            return errors
+        except OSError as e:
+            errors.append(f"{plugin_name}/hooks/hooks.json: Cannot read file: {e}")
             return errors
 
     if not hooks_config:

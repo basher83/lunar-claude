@@ -53,3 +53,84 @@ class TestErrorHandling:
         assert "not valid utf-8" in errors[0].lower()
         # Should mention binary file or encoding issue
         assert "binary" in errors[0].lower() or "byte" in errors[0].lower()
+
+
+class TestJSONErrorHandling:
+    """Test JSON loading error specificity."""
+
+    def test_hooks_json_invalid_syntax(self, tmp_path):
+        """Should report JSON syntax errors clearly."""
+        plugin_dir = tmp_path / "test-plugin"
+        plugin_dir.mkdir()
+        hooks_dir = plugin_dir / "hooks"
+        hooks_dir.mkdir()
+
+        # Create invalid JSON
+        hooks_file = hooks_dir / "hooks.json"
+        hooks_file.write_text('{"invalid json')
+
+        from verify_structure import check_hooks_configuration
+
+        errors = check_hooks_configuration(plugin_dir, {"hooks": "hooks/hooks.json"})
+
+        assert len(errors) > 0
+        # Should mention JSON syntax error with line/column info
+        assert "json" in errors[0].lower() or "invalid" in errors[0].lower()
+        assert "line" in errors[0].lower() and "column" in errors[0].lower()
+
+    def test_hooks_file_not_found(self, tmp_path):
+        """Should report missing file clearly."""
+        plugin_dir = tmp_path / "test-plugin"
+        plugin_dir.mkdir()
+
+        from verify_structure import check_hooks_configuration
+
+        errors = check_hooks_configuration(plugin_dir, {"hooks": "nonexistent.json"})
+
+        assert len(errors) > 0
+        assert "not found" in errors[0].lower() or "does not exist" in errors[0].lower()
+
+    def test_hooks_json_permission_denied(self, tmp_path):
+        """Should report permission errors clearly."""
+        plugin_dir = tmp_path / "test-plugin"
+        plugin_dir.mkdir()
+        hooks_dir = plugin_dir / "hooks"
+        hooks_dir.mkdir()
+
+        # Create file with no read permissions
+        hooks_file = hooks_dir / "hooks.json"
+        hooks_file.write_text('{"hooks": []}')
+        hooks_file.chmod(0o000)
+
+        from verify_structure import check_hooks_configuration
+
+        try:
+            errors = check_hooks_configuration(plugin_dir, {"hooks": "hooks/hooks.json"})
+            assert len(errors) > 0
+            assert "permission" in errors[0].lower()
+        finally:
+            hooks_file.chmod(0o644)
+
+    def test_hooks_json_unicode_error(self, tmp_path):
+        """Should report encoding errors clearly."""
+        plugin_dir = tmp_path / "test-plugin"
+        plugin_dir.mkdir()
+        hooks_dir = plugin_dir / "hooks"
+        hooks_dir.mkdir()
+
+        # Create file with invalid UTF-8
+        hooks_file = hooks_dir / "hooks.json"
+        hooks_file.write_bytes(b"\xff\xfe\x00\x00")
+
+        from verify_structure import check_hooks_configuration
+
+        errors = check_hooks_configuration(plugin_dir, {"hooks": "hooks/hooks.json"})
+
+        assert len(errors) > 0
+        # Should mention UTF-8/encoding issue and suggest it's not text
+        assert "utf-8" in errors[0].lower() or "encoding" in errors[0].lower()
+        assert (
+            "binary" in errors[0].lower()
+            or "text" in errors[0].lower()
+            or "ensure" in errors[0].lower()
+        )

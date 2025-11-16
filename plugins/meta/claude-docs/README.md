@@ -1,15 +1,14 @@
 # claude-docs
 
-Auto-sync official Claude Code documentation as an Agent Skill with fresh
-reference material.
+Auto-syncs official Claude Code documentation as a skill with fresh reference
+material.
 
-## What it does
+## Features
 
-- **Provides a skill** with official Claude Code documentation from
-  docs.claude.com
-- **Auto-updates docs** via SessionStart hook to keep content fresh
-- **Progressive disclosure** - loads only relevant docs to manage context
-- **14 reference files** covering plugins, skills, hooks, commands, and more
+- Provides the `official-docs` skill with documentation from docs.claude.com
+- Updates documentation automatically via SessionStart hook
+- Loads only relevant files through progressive disclosure
+- Maintains 17 reference files covering plugins, skills, hooks, and commands
 
 ## Installation
 
@@ -18,117 +17,85 @@ reference material.
 /plugin install claude-docs@lunar-claude
 ```
 
+Note: Plugin name is `claude-docs`. Skill name is `official-docs` (renamed to
+comply with Anthropic requirements).
+
 ## Usage
 
-The `claude-docs` skill activates automatically when you ask about Claude
-Code features:
+Ask questions about Claude Code features. The skill activates automatically:
 
 - "How do I create a plugin?"
 - "What's the structure of SKILL.md?"
 - "How do hooks work?"
 - "How can I add a slash command?"
 
-Claude will use the skill to access up-to-date official documentation and
-provide accurate answers.
+Claude accesses current official documentation and provides accurate answers.
 
-## How it works
+## Architecture
 
 ### Components
 
-- **Skill** (`skills/claude-docs/`) - Entry point with progressive disclosure
-  guidance
-- **Reference docs** (`skills/claude-docs/reference/`) - 14 official
-  documentation files
-- **SessionStart hook** (`hooks/hooks.json`) - Auto-updates docs on session
-  start
-- **Update script** (`scripts/claude_docs.py`) - Downloads and caches docs
-  from docs.claude.com
+**Skill** (`skills/official-docs/`) - Entry point with progressive disclosure
+guidance
 
-### Documentation files
+**Reference docs** (`skills/official-docs/reference/`) - 17 documentation files
+downloaded from docs.claude.com
 
-- plugins.md, plugins-reference.md, plugin-marketplaces.md
-- skills.md, agent-skills-overview.md, agent-skills-quickstart.md,
-  agent-skills-best-practices.md
-- slash-commands.md
-- hooks-guide.md, hooks.md
-- settings.md, output-styles.md, statusline.md
-- sub-agents.md
+**SessionStart hook** (`hooks/hooks.json`) - Triggers documentation sync on
+session start
 
-### Auto-update behavior
+**Update script** (`scripts/claude_docs.py`) - Downloads and caches
+documentation using HTTP conditional requests
 
-The SessionStart hook runs the update script in JSON mode, which:
+### Documentation Files
 
-1. Checks cached ETags for each documentation file
-2. Downloads only changed files (using HTTP conditional requests)
-3. Completes in <1 second when docs are fresh
-4. Updates `.download_cache.json` with metadata
+Plugins: plugins.md, plugins-reference.md, plugin-marketplaces.md
+
+Skills: skills.md, agent-skills-overview.md, agent-skills-quickstart.md,
+agent-skills-best-practices.md
+
+Automation: slash-commands.md, hooks-guide.md, hooks.md
+
+Configuration: settings.md, output-styles.md, statusline.md, sub-agents.md
+
+Integration: mcp.md, code-execution-with-mcp.md, memory.md
+
+### Auto-Update Mechanism
+
+SessionStart hook executes `claude_docs.py --format json`:
+
+1. Checks cached ETags for each file
+2. Downloads only changed files via HTTP conditional requests
+3. Completes in under 1 second when documentation is current
+4. Updates `.download_cache.json` with ETags and timestamps
 
 ## Development
 
-### Manual doc update
+### Manual Updates
 
-Run the script directly for rich output with performance metrics:
+Run the script directly for detailed output:
 
 ```bash
-./scripts/claude_docs.py
+./scripts/claude_docs.py              # Update curated pages
 ./scripts/claude_docs.py --all        # Download all 70+ pages
-./scripts/claude_docs.py --check      # Check for updates (dry-run)
+./scripts/claude_docs.py --check      # Check for updates without downloading
 ```
 
-### Script options
-
-- `--output-dir DIR` - Custom output directory
-- `--retries N` - Max retry attempts (default: 3)
-- `--all` - Download all pages from docs map
-- `--check` - Dry-run mode
-- `--format json|rich` - Output format (hook uses json, user uses rich)
-
-## Available Scripts
-
-The `scripts/` directory contains multiple implementations for downloading
-Claude Code documentation, each using a different web scraping approach:
-
-### claude_docs.py (Original)
-
-Direct HTTP downloads using `httpx` with caching and incremental updates.
-
-**Best for:** Standard usage, incremental updates, caching
+### Script Options
 
 ```bash
-./scripts/claude_docs.py --output-dir ./ai_docs
+--output-dir DIR      # Custom output directory
+--retries N           # Max retry attempts (default: 3)
+--all                 # Download all pages from docs map
+--check               # Dry-run mode
+--format json|rich    # Output format (hook uses json, CLI uses rich)
 ```
 
-### jina_reader_docs.py
-
-Direct Jina Reader API calls using `requests` library.
-
-**Best for:** Simple scripts, no MCP setup, direct HTTP control
+### Testing
 
 ```bash
-./scripts/jina_reader_docs.py --output-dir ./ai_docs
+pytest plugins/meta/claude-docs/tests/
 ```
-
-### jina_mcp_docs.py
-
-Parallel operations via Claude Agent SDK + Jina MCP Server.
-
-**Best for:** Speed (3x faster), research tasks, batch processing
-
-```bash
-./scripts/jina_mcp_docs.py --batch-size 3 --output-dir ./ai_docs
-```
-
-### firecrawl_mcp_docs.py
-
-Robust scraping via Claude Agent SDK + Firecrawl MCP Server.
-
-**Best for:** Production reliability, complex pages, rich metadata
-
-```bash
-./scripts/firecrawl_mcp_docs.py --main-content-only --output-dir ./ai_docs
-```
-
-**For detailed comparison and decision guide, see:** [docs/script-comparison.md](docs/script-comparison.md)
 
 ## License
 

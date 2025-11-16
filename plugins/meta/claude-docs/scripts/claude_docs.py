@@ -360,11 +360,11 @@ def download_page(
 
 def find_or_create_ai_docs_dir() -> Path:
     """
-    Get reference docs directory for the claude-docs skill.
+    Get reference docs directory for the official-docs skill.
 
-    Returns ../skills/claude-docs/reference/ relative to the script.
+    Returns ../skills/official-docs/reference/ relative to the script.
     Example: if script is at /project/scripts/claude_docs.py,
-    returns /project/skills/claude-docs/reference/
+    returns /project/skills/official-docs/reference/
 
     Returns:
         Path to skill reference directory
@@ -373,7 +373,7 @@ def find_or_create_ai_docs_dir() -> Path:
     script_dir = Path(__file__).parent
 
     # Return path to skill's reference subdirectory
-    return script_dir.parent / "skills" / "claude-docs" / "reference"
+    return script_dir.parent / "skills" / "official-docs" / "reference"
 
 
 def main(

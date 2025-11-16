@@ -1,5 +1,5 @@
 ---
-name: claude-docs
+name: official-docs
 description: Official Claude Code documentation. Use when user asks about
   plugins, skills, agents, hooks, commands, settings, or features.
 ---
@@ -7,18 +7,6 @@ description: Official Claude Code documentation. Use when user asks about
 # Claude Code Documentation
 
 Official documentation from docs.claude.com, auto-updated by the claude-docs plugin.
-
-## When to Use
-
-Use when questions involve:
-
-- Plugins, marketplaces, plugin structure
-- Skills, SKILL.md, skill authoring
-- Slash commands, command syntax
-- Subagents, agent configuration
-- Hooks, event handlers, automation
-- Settings, configuration, customization
-- Claude Code features or capabilities
 
 ## How to Use
 

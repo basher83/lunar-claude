@@ -1,5 +1,5 @@
 ---
-name: claude-skill-auditor-v2
+name: skill-auditor
 description: >
   Expert Claude Code skill reviewer that validates skills against official
   Anthropic specifications AND effectiveness for auto-invocation. Use

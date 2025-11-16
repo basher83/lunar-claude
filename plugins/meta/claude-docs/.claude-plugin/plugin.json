@@ -1,6 +1,6 @@
 {
   "name": "claude-docs",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Auto-sync official Claude Code docs as a skill with fresh reference material",
   "author": {
     "name": "basher83",

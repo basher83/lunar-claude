@@ -1,6 +1,6 @@
 {
   "name": "meta-claude",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Meta tools for creating and composing Claude Code components including skills, agents, hooks, commands, and multi-component system architecture",
   "author": {
     "name": "basher83",

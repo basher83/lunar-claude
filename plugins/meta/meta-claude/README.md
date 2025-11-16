@@ -1,6 +1,6 @@
 # Meta-Claude
 
-Meta tools for creating Claude Code components including skills, agents, hooks, and commands.
+Create Claude Code skills, agents, hooks, and commands with automated tooling and architectural guidance.
 
 ## Installation
 
@@ -20,28 +20,34 @@ Install meta-claude:
 
 ### Skills
 
-Meta-claude provides five skills that Claude invokes automatically:
+Five skills guide component creation and system architecture:
 
 **Creator Skills:**
-- **skill-creator** - Creates new Agent Skills with proper structure and official documentation references
-- **agent-creator** - Generates properly formatted subagent definitions
+
+- **skill-creator** - Creates Agent Skills with proper structure and official documentation
+- **agent-creator** - Generates formatted subagent definitions
 - **hook-creator** - Creates hook configurations following Claude Code patterns
 - **command-creator** - Scaffolds slash commands with frontmatter and examples
 
 **Architectural Guidance:**
-- **multi-agent-composition** - Comprehensive knowledge base for composing multi-component agentic systems. Provides decision frameworks for choosing between skills/sub-agents/hooks/MCP/slash-commands, context management patterns, orchestrator workflows, and anti-patterns to avoid
+
+- **multi-agent-composition** - Guides multi-component system design with decision
+  frameworks for choosing skills, sub-agents, hooks, MCP servers, and slash
+  commands; includes context management patterns, orchestrator workflows, and
+  anti-patterns
 
 ### Commands
 
-- `/new-plugin` - Interactive plugin creation wizard that uses the template structure
+- `/new-plugin` - Interactive wizard creates plugins using the template structure
 
 ## Usage
 
 ### Autonomous Mode (Skills)
 
-Simply ask Claude to create components or make architectural decisions:
+Ask Claude to create components or provide architectural guidance:
 
 **Creating components:**
+
 ```text
 "Help me create a skill for processing terraform configurations"
 "I need an agent for kubernetes operations"
@@ -49,6 +55,7 @@ Simply ask Claude to create components or make architectural decisions:
 ```
 
 **Architectural guidance:**
+
 ```text
 "Should I use a skill or sub-agent for this task?"
 "How do I implement multi-agent orchestration?"
@@ -56,17 +63,17 @@ Simply ask Claude to create components or make architectural decisions:
 "What are common mistakes when composing Claude Code components?"
 ```
 
-Claude will automatically use the appropriate skill based on your request.
+Claude invokes the appropriate skill automatically.
 
 ### Interactive Mode (Command)
 
-For structured plugin creation:
+Create structured plugins with the wizard:
 
 ```bash
 /new-plugin
 ```
 
-Walks through:
+The wizard walks you through:
 
 1. Plugin name and description
 2. Category selection (meta, infrastructure, devops, homelab)
@@ -76,11 +83,14 @@ Walks through:
 
 ## How It Works
 
-Creator skills reference official Claude Code documentation in `ai_docs/` to ensure
-generated components follow current specifications. This extends Anthropic's base
+Creator skills reference official Claude Code documentation to generate
+components that follow current specifications. This extends Anthropic's base
 skill-creator with plugin-specific knowledge.
 
 ## Version History
 
-- 0.2.0 - Added multi-agent-composition skill for architectural guidance and multi-component system design
+- 0.3.0 - Added comprehensive test suite, .gitignore; improved README clarity;
+  fixed agent frontmatter compliance; clarified plugin vs user agent
+  distinction in agent-creator skill
+- 0.2.0 - Added multi-agent-composition skill for architectural guidance
 - 0.1.0 - Initial release with four creator skills and new-plugin command

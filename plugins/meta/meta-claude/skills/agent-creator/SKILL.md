@@ -10,26 +10,83 @@ description: >
 
 ## Overview
 
-Creates subagent definitions for Claude Code plugins. Subagents are specialized assistants
+Creates subagent definitions for Claude Code. Subagents are specialized assistants
 that Claude can invoke for specific tasks.
 
 **When to use:** User requests an agent, wants to add specialized subagent to plugin, or needs agent structure guidance.
 
 **References:** Consult
-`plugins/meta/claude-docs/skills/claude-docs/reference/plugins-reference.md` for agent specifications.
+`plugins/meta/claude-docs/skills/official-docs/reference/plugins-reference.md` and
+`plugins/meta/claude-docs/skills/official-docs/reference/sub-agents.md` for specifications.
 
-## Agent Structure Requirements
+## CRITICAL: Two Types of Agents
 
-Every agent MUST include:
+Claude Code has **two distinct agent types** with **different requirements**:
+
+### Plugin Agents (plugins/*/agents/)
+
+**Purpose:** Agents distributed via plugins for team/community use
+
+**Required frontmatter fields:**
+- `description` (required) - What this agent specializes in
+- `capabilities` (required) - Array of specific capabilities
+
+**Location:** `plugins/<category>/<plugin-name>/agents/agent-name.md`
+
+**Example:**
+```markdown
+---
+description: Expert code reviewer validating security and quality
+capabilities: ["vulnerability detection", "code quality review", "best practices"]
+---
+```
+
+### User/Project Agents (.claude/agents/)
+
+**Purpose:** Personal agents for individual workflows
+
+**Required frontmatter fields:**
+- `name` (required) - Agent identifier
+- `description` (required) - When to invoke this agent
+- `tools` (optional) - Comma-separated tool list
+- `model` (optional) - Model alias (sonnet, opus, haiku)
+
+**Location:** `.claude/agents/agent-name.md` or `~/.claude/agents/agent-name.md`
+
+**Example:**
+```markdown
+---
+name: code-reviewer
+description: Expert code review. Use after code changes.
+tools: Read, Grep, Glob, Bash
+model: sonnet
+---
+```
+
+**Key difference:** User agents have `name` field and system prompt. Plugin agents have `capabilities` array and documentation.
+
+## Agent Structure Requirements (Plugin Agents)
+
+Every **plugin agent** MUST include:
 
 1. **Frontmatter** with `description` and `capabilities` array
 2. **Agent title** as h1
 3. **Capabilities** section explaining what agent does
 4. **When to Use** section with invocation criteria
 5. **Context and Examples** with concrete scenarios
-6. Located in `agents/agent-name.md`
+6. Located in `agents/agent-name.md` within plugin
 
 ## Creation Process
+
+### Step 0: Determine Agent Type
+
+**Ask the user:**
+- Is this for a plugin (team/community distribution)?
+- Or for personal use (.claude/agents/)?
+
+**If personal use:** Use user agent format with `name`, `description`, system prompt. See `plugins/meta/claude-docs/skills/official-docs/reference/sub-agents.md` for examples.
+
+**If plugin:** Continue with plugin agent format below.
 
 ### Step 1: Define Agent Purpose
 
@@ -96,8 +153,11 @@ When Y happens, agent does Z.
 
 ### Step 5: Verify Against Official Docs
 
-Check
-`plugins/meta/claude-docs/skills/claude-docs/reference/plugins-reference.md` for current agent specification.
+**For plugin agents:**
+Check `plugins/meta/claude-docs/skills/official-docs/reference/plugins-reference.md` (requires `capabilities` array).
+
+**For user agents:**
+Check `plugins/meta/claude-docs/skills/official-docs/reference/sub-agents.md` (requires `name` field).
 
 ## Key Principles
 

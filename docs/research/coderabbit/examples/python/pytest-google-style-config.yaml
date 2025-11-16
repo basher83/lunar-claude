@@ -1,0 +1,35 @@
+language: "en"
+early_access: true
+reviews:
+  profile: "chill"
+  request_changes_workflow: false
+  high_level_summary: true
+  poem: true
+  sequence_diagrams: true
+  review_status: true
+  collapse_walkthrough: true
+  path_filters:
+    - "!**/.xml"
+  path_instructions:
+    - path: "src/**/*.py"
+      instructions: |
+        "Review the Python code for conformity with the Google Python style guide, highlighting any deviations. Confirm that:
+        - The docstrings are up-to-date with the implementations. Please highlight the outdated ones.
+        - When an API in a module changes, ensure that all modules that depend on the changed module are updated accordingly.
+        - When seeing a TODO comment, try to write code to complete the todo."
+    - path: "tests/**/*"
+      instructions: |
+        "Assess the unit test code employing the Pytest testing framework. Confirm that:
+        - The tests adhere to Pytest's established best practices.
+        - Test descriptions are sufficiently detailed to clarify the purpose of each test.
+        - The tests cover all methods, classes, and errors."
+  auto_review:
+    enabled: true
+    ignore_title_keywords:
+      - "WIP"
+    drafts: true
+    base_branches:
+      - "develop"
+      - "feat/*"
+chat:
+  auto_reply: true

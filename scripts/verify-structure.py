@@ -1053,6 +1053,11 @@ def check_marketplace_structure() -> dict[str, Any]:
             result["marketplace_errors"].append(f"Plugin '{plugin_name}' missing 'source' field")
             continue
 
+        # TODO: Honor metadata.pluginRoot when resolving plugin_source
+        # If plugin_entry has metadata.pluginRoot, resolve plugin_source relative to that
+        # instead of repo_root. Currently pluginRoot is validated but not used.
+        # Example: pluginRoot="custom-plugins" -> resolve from repo_root/custom-plugins/
+
         # Resolve plugin directory - validate to prevent path traversal
         plugin_dir, error = validate_plugin_path(
             repo_root, plugin_source, f"Plugin '{plugin_name}'"

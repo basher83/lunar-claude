@@ -3,49 +3,69 @@
 # requires-python = ">=3.11"
 # dependencies = [
 #   "firecrawl-py>=1.0.0",
+#   "typer>=0.12.0",
+#   "rich>=13.0.0",
 # ]
 # ///
 """
-Fetch Claude Code hooks guide using Firecrawl and save as markdown.
+Scrape a single URL using Firecrawl and save as markdown.
 
-This script scrapes the Claude Code hooks guide documentation page
-and saves it as a markdown file in the ai_docs/ directory.
+Generic URL scraper that fetches web content and converts it to clean markdown.
+Useful for downloading documentation, articles, or any web page content.
 
 Usage:
     export FIRECRAWL_API_KEY="fc-YOUR-API-KEY"
-    python fetch-hooks-guide.py
 
-Environment Variables:
-    FIRECRAWL_API_KEY - Required Firecrawl API key
+    # Scrape a URL to default location (ai_docs/scraped-content.md)
+    scripts/firecrawl_scrape_url.py "https://docs.example.com/guide"
 
-Output:
-    Creates or overwrites ai_docs/hooks-guide.md with the scraped content
+    # Specify custom output path
+    scripts/firecrawl_scrape_url.py "https://example.com" --output docs/example.md
+
+    # Include full page (headers, footers, navigation)
+    scripts/firecrawl_scrape_url.py "https://example.com" --full-page
+
+    # Scrape with custom options
+    scripts/firecrawl_scrape_url.py "https://example.com" --wait-for 2000 --timeout 60000
 """
 
 import os
 import sys
 from pathlib import Path
 
+import typer
 from firecrawl import Firecrawl
+from rich.console import Console
+
+console = Console()
 
 
-def get_env_var(name: str) -> str:
-    """Get required environment variable or exit with error."""
-    value = os.getenv(name)
-    if not value:
-        print(f"Error: {name} environment variable not set", file=sys.stderr)
-        print(f"Set it with: export {name}='your-api-key'", file=sys.stderr)
+def get_api_key() -> str:
+    """Get Firecrawl API key from environment or exit."""
+    api_key = os.getenv("FIRECRAWL_API_KEY")
+    if not api_key:
+        console.print("[red]Error: FIRECRAWL_API_KEY environment variable not set[/red]")
+        console.print("Set it with: export FIRECRAWL_API_KEY='fc-your-api-key'")
         sys.exit(1)
-    return value
+    return api_key
 
 
-def fetch_hooks_guide(api_key: str, url: str) -> str:
+def scrape_url(
+    api_key: str,
+    url: str,
+    only_main_content: bool = True,
+    wait_for: int | None = None,
+    timeout: int | None = None,
+) -> str:
     """
-    Fetch hooks guide using Firecrawl API.
+    Scrape a URL using Firecrawl API.
 
     Args:
         api_key: Firecrawl API key
         url: URL to scrape
+        only_main_content: If True, exclude navigation/headers/footers
+        wait_for: Milliseconds to wait for page to load
+        timeout: Request timeout in milliseconds
 
     Returns:
         Markdown content of the page
@@ -55,35 +75,40 @@ def fetch_hooks_guide(api_key: str, url: str) -> str:
     """
     try:
         firecrawl = Firecrawl(api_key=api_key)
-        print(f"Scraping: {url}", file=sys.stderr)
+        console.print(f"[cyan]Scraping:[/cyan] {url}")
 
-        # Scrape the page and request markdown format
-        # Use only_main_content to exclude navigation/headers/footers
-        result = firecrawl.scrape(
-            url,
-            formats=["markdown"],
-            only_main_content=True
-        )
+        # Build scrape options
+        scrape_options = {
+            "formats": ["markdown"],
+            "only_main_content": only_main_content,
+        }
+        if wait_for is not None:
+            scrape_options["wait_for"] = wait_for
+        if timeout is not None:
+            scrape_options["timeout"] = timeout
 
-        # Result is a Document object (Pydantic model)
+        # Scrape the page
+        result = firecrawl.scrape(url, **scrape_options)
+
         if not result:
-            print("Error: Empty response from Firecrawl", file=sys.stderr)
+            console.print("[red]Error: Empty response from Firecrawl[/red]")
             sys.exit(1)
 
-        # Access markdown attribute directly from Document object
+        # Access markdown attribute from Document object
         markdown = getattr(result, "markdown", None)
 
         if not markdown:
-            print(f"Error: Could not extract markdown from Document", file=sys.stderr)
-            print(f"Available attributes: {dir(result)}", file=sys.stderr)
+            console.print("[red]Error: Could not extract markdown from response[/red]")
+            console.print(f"[dim]Available attributes: {dir(result)}[/dim]")
             sys.exit(1)
 
         return markdown
 
     except Exception as e:
-        print(f"Error: Failed to scrape page: {e}", file=sys.stderr)
+        console.print(f"[red]Error: Failed to scrape page: {e}[/red]")
         import traceback
-        traceback.print_exc(file=sys.stderr)
+
+        traceback.print_exc()
         sys.exit(1)
 
 
@@ -109,34 +134,77 @@ def save_markdown(content: str, output_path: Path, source_url: str) -> None:
 
         # Write content
         output_path.write_text(full_content, encoding="utf-8")
-        print(f"✓ Saved to: {output_path}", file=sys.stderr)
+        console.print(f"[green]✓ Saved to:[/green] {output_path}")
+        console.print(f"[dim]Characters: {len(content):,}[/dim]")
 
     except Exception as e:
-        print(f"Error: Failed to write file: {e}", file=sys.stderr)
+        console.print(f"[red]Error: Failed to write file: {e}[/red]")
         sys.exit(1)
 
 
-def main():
-    """Main entry point."""
-    # Configuration
-    url = "https://docs.claude.com/en/docs/claude-code/hooks-guide"
+def main(
+    url: str = typer.Argument(..., help="URL to scrape"),
+    output: str = typer.Option(
+        "ai_docs/scraped-content.md",
+        "--output",
+        "-o",
+        help="Output markdown file path",
+    ),
+    full_page: bool = typer.Option(
+        False,
+        "--full-page",
+        "-f",
+        help="Include full page content (headers, footers, navigation)",
+    ),
+    wait_for: int | None = typer.Option(
+        None,
+        "--wait-for",
+        "-w",
+        help="Milliseconds to wait for page to load before scraping",
+    ),
+    timeout: int | None = typer.Option(
+        None,
+        "--timeout",
+        "-t",
+        help="Request timeout in milliseconds",
+    ),
+):
+    """
+    Scrape a single URL using Firecrawl and save as markdown.
 
-    # Get script directory and construct output path
-    script_dir = Path(__file__).parent
-    repo_root = script_dir.parent
-    output_path = repo_root / "ai_docs" / "hooks-guide.md"
+    Examples:
+        # Scrape documentation page
+        scripts/firecrawl_scrape_url.py "https://docs.example.com/guide"
 
-    # Get API key from environment
-    api_key = get_env_var("FIRECRAWL_API_KEY")
+        # Scrape to custom location
+        scripts/firecrawl_scrape_url.py "https://example.com" -o docs/page.md
 
-    # Fetch content
-    markdown = fetch_hooks_guide(api_key, url)
+        # Include full page content
+        scripts/firecrawl_scrape_url.py "https://example.com" --full-page
 
-    # Save to file with source attribution
+        # Wait for dynamic content to load
+        scripts/firecrawl_scrape_url.py "https://spa.example.com" --wait-for 3000
+    """
+    output_path = Path(output)
+
+    # Get API key
+    api_key = get_api_key()
+
+    # Scrape URL
+    only_main_content = not full_page
+    markdown = scrape_url(
+        api_key,
+        url,
+        only_main_content=only_main_content,
+        wait_for=wait_for,
+        timeout=timeout,
+    )
+
+    # Save to file
     save_markdown(markdown, output_path, url)
 
-    print(f"✓ Successfully fetched hooks guide ({len(markdown)} chars)")
+    console.print(f"[green]✓ Successfully scraped {len(markdown):,} characters[/green]")
 
 
 if __name__ == "__main__":
-    main()
+    typer.run(main)

@@ -16,13 +16,17 @@ descriptions match reality. Requires `ANTHROPIC_API_KEY` and `gh` CLI.
 
 ## Documentation and Web Scraping
 
-**fetch-hooks-guide.py** - Scrapes the Claude Code hooks guide using Firecrawl and
-saves it as markdown. Stores documentation in `ai_docs/` for offline reference.
-Requires `FIRECRAWL_API_KEY`.
+**firecrawl_scrape_url.py** - Generic single-URL scraper using Firecrawl. Fetches any
+web page and converts to clean markdown. Supports full-page or main-content-only modes,
+custom wait times for dynamic content, and configurable output paths. Adds source
+attribution headers automatically. Requires `FIRECRAWL_API_KEY`.
 
-**firecrawl_sdk_research.py** - Performs web research by searching, scraping, and
-synthesizing content into a single markdown document. Combines Firecrawl's search and
-scrape APIs to gather and organize research.
+**firecrawl_sdk_research.py** - Advanced web research tool using Firecrawl SDK.
+Searches the web with optional category filtering (github, research, pdf), scrapes
+content with combined API calls for efficiency, filters results by quality scoring,
+and synthesizes into a single markdown document. Includes retry logic with exponential
+backoff and quality indicators (⭐ for high-quality sources). Requires
+`FIRECRAWL_API_KEY`.
 
 **extract_docs_example.py** - Extracts and structures documentation for AI consumption
 using Jina Reader. Adds metadata headers and organizes content by project and section.

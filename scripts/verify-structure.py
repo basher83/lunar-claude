@@ -879,34 +879,34 @@ def check_plugin_manifest(
             results["manifest"].append(
                 f"{plugin_dir.name}: Missing .claude-plugin/plugin.json (required by marketplace.json)"
             )
-            return results
-
-        # Load and validate plugin.json
-        try:
-            with open(plugin_json, encoding="utf-8") as f:
-                data = json.load(f)
-        except PermissionError:
-            results["manifest"].append(f"{plugin_dir.name}: Permission denied reading plugin.json")
-            return results
-        except json.JSONDecodeError as e:
-            results["manifest"].append(
-                f"{plugin_dir.name}: Invalid JSON in plugin.json\n"
-                f"  Line {e.lineno}, column {e.colno}: {e.msg}"
-            )
-            return results
-        except UnicodeDecodeError:
-            results["manifest"].append(
-                f"{plugin_dir.name}: plugin.json is not valid UTF-8\n"
-                f"  Ensure file is text, not binary"
-            )
-            return results
-        except OSError as e:
-            results["manifest"].append(f"{plugin_dir.name}: Cannot read plugin.json: {e}")
-            return results
-
-        # Validate against schema
-        schema_errors = validate_json_schema(data, PLUGIN_MANIFEST_SCHEMA, plugin_dir.name)
-        results["manifest"].extend(schema_errors)
+            data = {}  # Continue with component checks using empty dict
+        else:
+            # Load and validate plugin.json
+            try:
+                with open(plugin_json, encoding="utf-8") as f:
+                    data = json.load(f)
+            except PermissionError:
+                results["manifest"].append(f"{plugin_dir.name}: Permission denied reading plugin.json")
+                data = {}  # Continue with component checks using empty dict
+            except json.JSONDecodeError as e:
+                results["manifest"].append(
+                    f"{plugin_dir.name}: Invalid JSON in plugin.json\n"
+                    f"  Line {e.lineno}, column {e.colno}: {e.msg}"
+                )
+                data = {}  # Continue with component checks using empty dict
+            except UnicodeDecodeError:
+                results["manifest"].append(
+                    f"{plugin_dir.name}: plugin.json is not valid UTF-8\n"
+                    f"  Ensure file is text, not binary"
+                )
+                data = {}  # Continue with component checks using empty dict
+            except OSError as e:
+                results["manifest"].append(f"{plugin_dir.name}: Cannot read plugin.json: {e}")
+                data = {}  # Continue with component checks using empty dict
+            else:
+                # Validate against schema only if we successfully loaded the file
+                schema_errors = validate_json_schema(data, PLUGIN_MANIFEST_SCHEMA, plugin_dir.name)
+                results["manifest"].extend(schema_errors)
 
     # Optional manifest: plugin.json optional
     else:
@@ -919,26 +919,26 @@ def check_plugin_manifest(
                 results["manifest"].append(
                     f"{plugin_dir.name}: Permission denied reading plugin.json"
                 )
-                return results
+                data = {}  # Continue with component checks using empty dict
             except json.JSONDecodeError as e:
                 results["manifest"].append(
                     f"{plugin_dir.name}: Invalid JSON in plugin.json\n"
                     f"  Line {e.lineno}, column {e.colno}: {e.msg}"
                 )
-                return results
+                data = {}  # Continue with component checks using empty dict
             except UnicodeDecodeError:
                 results["manifest"].append(
                     f"{plugin_dir.name}: plugin.json is not valid UTF-8\n"
                     f"  Ensure file is text, not binary"
                 )
-                return results
+                data = {}  # Continue with component checks using empty dict
             except OSError as e:
                 results["manifest"].append(f"{plugin_dir.name}: Cannot read plugin.json: {e}")
-                return results
-
-            # Validate against schema only when plugin.json exists
-            schema_errors = validate_json_schema(data, PLUGIN_MANIFEST_SCHEMA, plugin_dir.name)
-            results["manifest"].extend(schema_errors)
+                data = {}  # Continue with component checks using empty dict
+            else:
+                # Validate against schema only if we successfully loaded the file
+                schema_errors = validate_json_schema(data, PLUGIN_MANIFEST_SCHEMA, plugin_dir.name)
+                results["manifest"].extend(schema_errors)
         else:
             # Use marketplace entry as manifest (don't validate against plugin.json schema)
             data = marketplace_entry if marketplace_entry else {}
@@ -1249,11 +1249,18 @@ Examples:
 
     # Final summary
     if exit_code != 0:
-        message = f"✗ Validation failed with {total_errors} error(s)"
-        if total_warnings > 0:
-            message += f" and {total_warnings} warning(s)"
-        if args.strict and total_warnings > 0:
-            message += " (warnings treated as errors in strict mode)"
+        # Warnings-only failure in strict mode
+        if total_errors == 0 and args.strict and total_warnings > 0:
+            message = (
+                f"✗ Validation failed due to {total_warnings} warning(s) "
+                "(warnings treated as errors in strict mode)"
+            )
+        else:
+            message = f"✗ Validation failed with {total_errors} error(s)"
+            if total_warnings > 0:
+                message += f" and {total_warnings} warning(s)"
+            if args.strict and total_warnings > 0:
+                message += " (warnings treated as errors in strict mode)"
 
         console.print(
             Panel.fit(

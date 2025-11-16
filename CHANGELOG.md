@@ -11,7 +11,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Streamline python-uv-scripts skill documentation
 
-
 ### 🚀 Features
 
 - **mise**: Add intelligent markdown linting tasks
@@ -116,7 +115,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **claude-dev-sandbox**: Add mcp-builder skill for MCP server development
 
-
 ### 🐛 Bug Fixes
 
 - **lint**: Use explicit glob pattern for .claude exclusion
@@ -144,7 +142,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Parse MCP tool responses correctly to avoid duplicate content
 
 - **claude-docs**: Remove ANTHROPIC_API_KEY requirement and fix output directory paths
-
 
 ### 📚 Documentation
 
@@ -238,7 +235,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **claude-docs**: Add script testing results and performance analysis
 
-
 ### ♻️ Refactor
 
 - **scripts**: Migrate intelligent markdown linting to claude-agent-sdk
@@ -265,7 +261,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **ansible-best-practices**: Enhance SKILL.md with pattern decision guide and quick reference
 
-
 ### 🧪 Testing
 
 - Add initial continuous improvement reports
@@ -279,7 +274,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add failing tests for firecrawl_mcp_docs.py
 
 - Verify all script variations work end-to-end
-
 
 ### 🔧 Miscellaneous
 
@@ -322,7 +316,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### 🔒 Security
 
 - **changelog**: Add git-cliff configuration and documentation
-
 
 ### 🚀 Features
 
@@ -416,7 +409,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **scripts**: Add rumdl output parser for intelligent linting
 
-
 ### 🐛 Bug Fixes
 
 - Correct .gitkeep placement in plugin template
@@ -444,7 +436,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **plugins**: Resolve markdown linting in plugins and templates
 
 - **docs**: Resolve markdown linting in docs and examples
-
 
 ### 📚 Documentation
 
@@ -484,7 +475,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **plans**: Add intelligent markdown linting agent MVP plan
 
-
 ### ♻️ Refactor
 
 - **claude-docs-sync**: Add type-safe format enum and fix output handling
@@ -507,16 +497,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Improve code quality across Python scripts
 
-
 ### 🧪 Testing
 
 - Add end-to-end test for intelligent linting
 
-
 ### 👷 CI/CD
 
 - **ruff**: Add ruff configuration and tooling setup
-
 
 ### 🔧 Miscellaneous
 
@@ -544,11 +531,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Release v0.2.0
 
-
 ### Config
 
 - **rumdl**: Increase line length limit to 120 characters
-
 
 ### New Contributors
 

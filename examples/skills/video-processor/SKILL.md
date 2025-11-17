@@ -1,13 +1,16 @@
 ---
 name: Video Processor
-description: Process video files with audio extraction, format conversion (mp4, webm), and Whisper transcription. Use when user mentions video conversion, audio extraction, transcription, mp4, webm, ffmpeg, or whisper transcription.
+description: Process video files with audio extraction, format conversion (mp4, webm), and Whisper
+  transcription. Use when user mentions video conversion, audio extraction, transcription, mp4,
+  webm, ffmpeg, or whisper transcription.
 ---
 
 # Video Processor
 
 ## Instructions
 
-This skill provides video processing utilities including audio extraction, format conversion, and audio transcription using FFmpeg and OpenAI's Whisper model.
+This skill provides video processing utilities including audio extraction, format conversion, and
+audio transcription using FFmpeg and OpenAI's Whisper model.
 
 ### Prerequisites
 
@@ -43,7 +46,8 @@ This skill provides video processing utilities including audio extraction, forma
 
 ### Workflow
 
-Use the `scripts/video_processor.py` script for all video processing tasks. The script provides a simple CLI with the following commands:
+Use the `scripts/video_processor.py` script for all video processing tasks. The script provides a
+simple CLI with the following commands:
 
 #### 1. **Extract Audio from Video**
 
@@ -300,4 +304,5 @@ The video-processor skill provides a unified interface for common video processi
 - **Transcription**: Speech-to-text with multiple output formats
 - **Flexible**: CLI arguments for model selection, language, and output formats
 
-All operations are handled through a single, well-documented script with sensible defaults and comprehensive error handling.
+All operations are handled through a single, well-documented script with sensible defaults and
+comprehensive error handling.

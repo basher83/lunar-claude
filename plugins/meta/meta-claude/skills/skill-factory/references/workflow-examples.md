@@ -182,3 +182,85 @@ Artifacts preserved at:
 
 WORKFLOW EXITS
 ```
+
+## Command Output Reference
+
+### Successful Command Outputs
+
+**Research:**
+
+```bash
+✓ Research completed for terraform-best-practices
+Saved to: docs/research/skills/terraform-best-practices/
+Files: 5 documents (github: 3, research: 2)
+```
+
+**Format:**
+
+```text
+✓ Formatting completed
+Cleaned: 5 files, removed 247 UI artifacts
+Output: docs/research/skills/terraform-best-practices/
+```
+
+**Validation (Pass):**
+
+```text
+✓ Content review passed (5/5 quality dimensions)
+✓ Compliance check passed
+✓ Runtime validation passed
+✓ Integration validation passed
+```
+
+### Failed Command Outputs
+
+**Tier 1 (Auto-fix):**
+
+```json
+{
+  "status": "fail",
+  "issues": [
+    {
+      "tier": "simple",
+      "category": "frontmatter",
+      "description": "Missing description field",
+      "fix": "Add description: 'Terraform infrastructure best practices'",
+      "auto_fixable": true
+    }
+  ]
+}
+```
+
+**Tier 2 (Guided fix):**
+
+```json
+{
+  "status": "fail",
+  "issues": [
+    {
+      "tier": "medium",
+      "category": "examples",
+      "description": "Examples section lacks practical configurations",
+      "suggestion": "[Proposed examples with common patterns]",
+      "auto_fixable": false
+    }
+  ]
+}
+```
+
+**Tier 3 (Complex):**
+
+```json
+{
+  "status": "fail",
+  "issues": [
+    {
+      "tier": "complex",
+      "category": "architectural",
+      "description": "Violates composition rules",
+      "recommendation": "Restructure to use SlashCommand tool",
+      "auto_fixable": false
+    }
+  ]
+}
+```

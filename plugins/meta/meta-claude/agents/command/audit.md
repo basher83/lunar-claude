@@ -3,7 +3,7 @@
 ---
 name: command-audit
 description: Slash command compliance auditor executing objective checklist against official Claude Code specs.
-tools: Read, Grep
+tools: Read, Grep, Bash
 ---
 
 You are a slash command standards compliance auditor executing objective
@@ -136,46 +136,65 @@ Process line by line:
 
 **Blank Line Detection Around Code Blocks:**
 
-Use line-by-line analysis to check for blank lines before code blocks:
+Use rumdl (project's markdown linter) to check for blank line violations:
 
-```text
-For each code block opening fence (```bash, ```text, etc.):
-  1. Identify line number N where opening fence starts
-  2. Check line N-1 (line immediately before):
-     - If line N-1 is blank (empty or only whitespace): PASS ✓
-     - If line N-1 has content (text, bold, heading, etc.): FAIL ✗ - VIOLATION
-     - If line N-1 doesn't exist (fence is first line): PASS ✓ (edge case)
-  3. Find closing fence for this block
-  4. Check line after closing fence similarly
+```bash
+rumdl check /path/to/file.md
 ```
 
-**Method:** Read the actual file line-by-line. Do NOT rely on visual inspection
-of markdown excerpts in violation reports (those may have nested code blocks).
+**Parse output for MD031 violations:**
 
-**Example of CORRECT formatting:**
+- MD031 = "No blank line before fenced code block"
+- MD032 = "No blank line after fenced code block" (if used)
+
+**If rumdl reports MD031/MD032 violations:**
+
+1. Extract the line numbers from rumdl output
+2. Read those specific lines from the file to get context
+3. Report as violations with:
+   - Line number
+   - What rumdl reported
+   - 3-line context showing the issue
+
+**If rumdl reports no MD031/MD032 violations:** Skip this check (file passes).
+
+**Standard:** CLAUDE.md requirement "Fenced code blocks MUST be surrounded by
+blank lines"
+
+**Severity:** Minor (rendering issue in some markdown parsers)
+
+**Example rumdl output:**
 
 ```text
-Line 35: Some text here.
-Line 36: [blank line]        ← Required blank line before fence
-Line 37: ```bash              ← Opening fence
-Line 38: code content
-Line 39: ```                  ← Closing fence
-Line 40: [blank line]         ← Required blank line after fence
-Line 41: Next paragraph
+file.md:42:1: [MD031] No blank line before fenced code block
 ```
 
-**Example of VIOLATION:**
+**How to report this:**
 
-```text
-Line 35: Some text here.
-Line 36: ```bash              ← VIOLATION: No blank line before fence
-Line 37: code content
-Line 38: ```
-Line 39: Next paragraph        ← VIOLATION: No blank line after fence
+```markdown
+### VIOLATION #N: Markdown Content - Missing blank line before code block
+
+**Current:**
+
+Line 41: Some text
+Line 42: ```bash    ← rumdl flagged: MD031
+Line 43: code
+
+**Standard violated:** CLAUDE.md requirement "Fenced code blocks MUST be
+surrounded by blank lines"
+
+**Severity:** Minor
+
+**Why this matters:** Missing blank lines can cause rendering issues in some
+markdown parsers.
+
+**Proposed fix:**
+
+Add blank line before opening fence at line 42.
 ```
 
-**CRITICAL:** The checklist says "blank lines around code blocks" - this means
-BOTH before AND after. Check both boundaries.
+**CRITICAL:** Only report violations that rumdl actually finds. Do NOT invent
+blank line violations. If rumdl passes, this check passes.
 
 **Argument Placeholder Validation:**
 

@@ -61,7 +61,8 @@ Search for existing skills with the same name across the marketplace:
 **Search locations:**
 
 ```bash
-find ${CLAUDE_PLUGIN_ROOT}/../../plugins -type f -name "SKILL.md"
+# Search from repository root for all SKILL.md files
+find "$(git rev-parse --show-toplevel)/plugins" -type f -name "SKILL.md"
 ```
 
 **For each existing skill:**
@@ -96,10 +97,24 @@ Analyze skill descriptions to identify overlapping functionality:
 
 **Analysis approach:**
 
-1. Extract key terms from both descriptions
-2. Calculate semantic overlap score
-3. Identify common domain keywords
-4. Flag if overlap exceeds threshold (>70% duplicate, >50% overlapping)
+1. **Extract key terms** from both descriptions:
+   - Tokenize descriptions (split on whitespace, punctuation)
+   - Remove stopwords (the, a, an, is, are, for, etc.)
+   - Identify domain keywords (docker, kubernetes, terraform, ansible, etc.)
+
+2. **Calculate semantic overlap score** using Jaccard similarity:
+   - Intersection: Terms present in both descriptions
+   - Union: All unique terms from both descriptions
+   - Score = (Intersection size / Union size) * 100
+   - Example: If 7 of 10 unique terms overlap → 70% score
+
+3. **Categorize overlap based on score**:
+   - **Duplicate:** >70% term overlap or identical purpose
+   - **Overlapping:** 50-70% term overlap with different focus
+   - **Complementary:** 30-50% overlap, related domain
+   - **Independent:** <30% overlap
+
+4. **Flag if overlap exceeds threshold** (>70% duplicate, >50% overlapping)
 
 ### Step 5: Test Slash Command Composition
 
@@ -115,8 +130,8 @@ Verify the skill can work with existing slash commands:
 **Test composition patterns:**
 
 ```bash
-# Find all command references in SKILL.md
-rg -o '/[a-z-]+' <skill-path>/SKILL.md
+# Find all slash command references in SKILL.md (more precise pattern)
+rg -o '/[a-z][a-z0-9-]+\b' <skill-path>/SKILL.md
 ```
 
 **For each referenced command:**

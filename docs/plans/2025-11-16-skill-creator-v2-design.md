@@ -3,6 +3,7 @@
 **Date:** 2025-11-16
 **Status:** Design Complete, Ready for Implementation
 **Goal:** Comprehensive workflow for creating, reviewing, and validating Claude Code skills with speed, quality, and accessibility
+**Scope:** Creates ANY skill (conventional-git-commits, docker-master, brand-guidelines, etc.) - not limited to meta-claude plugin
 
 ## Overview
 
@@ -10,12 +11,29 @@ The create-review-validate cycle orchestrates skill creation from research throu
 
 ## Architecture
 
+### Relationship to Existing skill-creator
+
+The meta-claude plugin already contains a `skill-creator` skill that guides the core creation workflow (Understand → Plan → Initialize → Edit → Package → Iterate). This proven workflow creates any skill for any purpose.
+
+**skill-creator-v2 extends this foundation** by adding:
+- **Pre-creation phases:** Research gathering and formatting
+- **Post-creation phases:** Content review and validation
+- **Quality gates:** Compliance checking, runtime testing, integration validation
+
+**Delegation Architecture:**
+skill-creator-v2 orchestrates the full lifecycle while delegating to existing proven tools:
+- **skill-creator skill** → Core creation workflow
+- **quick_validate.py** → Compliance validation (frontmatter, naming, structure)
+- **claude-skill-auditor agent** → Comprehensive audit
+
+This separation maintains the stability of skill-creator while adding research-backed, validated skill creation with quality gates.
+
 ### Core Pattern: Skill Orchestrating Slash Commands
 
 The create-review-validate cycle follows the multi-agent-composition framework where skills are the top compositional layer that orchestrates primitives.
 
 **Components:**
-- **Orchestrator:** `skill-creator-v2` skill (enhanced version, separate from existing skill-creator)
+- **Orchestrator:** `skill-creator-v2` skill (research + validation wrapper around skill-creator)
 - **Primitives:** 8 independent slash commands (each phase is a reusable command)
 - **State Management:** TodoWrite (visual progress tracking, KISS approach)
 - **Workflow Engine:** Conditional logic within the skill based on prompt context
@@ -56,7 +74,13 @@ User: "Create coderabbit skill"
 
 Each command stands alone as an independent, reusable, testable building block. Power users invoke them directly; beginners receive orchestrated guidance.
 
+**Implementation Strategy:**
+- **Delegation:** Commands that invoke existing proven tools (skill-creator skill, quick_validate.py, claude-skill-auditor agent)
+- **New Build:** Commands that implement new functionality (research, formatting, content review, runtime validation, integration testing)
+
 ### 1. `/research-skill <skill-name> [sources]`
+
+**Implementation:** New Build
 
 **Purpose:** Fully automated research gathering
 
@@ -75,6 +99,8 @@ Each command stands alone as an independent, reusable, testable building block. 
 
 ### 2. `/format-skill <research-dir>`
 
+**Implementation:** New Build
+
 **Purpose:** Light cleanup - remove UI artifacts, basic formatting (the car wash analogy: chunks of mud off before detail work)
 
 **Responsibilities:**
@@ -92,14 +118,16 @@ Each command stands alone as an independent, reusable, testable building block. 
 
 ### 3. `/create-skill <skill-name> <research-dir>`
 
-**Purpose:** Create skill using skill-creator workflow
+**Implementation:** Delegation (invokes skill-creator skill)
+
+**Purpose:** Create skill using proven skill-creator workflow
 
 **Responsibilities:**
-- Load existing skill-creator skill OR delegate to it
-- Use cleaned research as context
-- Generate SKILL.md with proper structure
-- Create supporting files if needed
-- Save to: `plugins/meta/meta-claude/skills/<skill-name>/`
+- Invoke skill-creator skill with research context
+- Skill-creator guides through: Understand → Plan → Initialize → Edit → Package
+- Use cleaned research as knowledge base for skill content
+- Generate SKILL.md with proper structure via init_skill.py and package_skill.py
+- Output skill directory at specified location
 
 **Inputs:** Skill name, research directory
 **Outputs:** Complete skill directory structure
@@ -109,6 +137,8 @@ Each command stands alone as an independent, reusable, testable building block. 
 ---
 
 ### 4. `/review-content <skill-path>`
+
+**Implementation:** New Build
 
 **Purpose:** Review content quality (clarity, completeness, usefulness)
 
@@ -128,14 +158,18 @@ Each command stands alone as an independent, reusable, testable building block. 
 
 ### 5. `/review-compliance <skill-path>`
 
+**Implementation:** Delegation (runs quick_validate.py)
+
 **Purpose:** Technical compliance validation
 
 **Responsibilities:**
-- Validate frontmatter format (name, description)
-- Check file structure (SKILL.md exists, proper location)
-- Verify schema compliance
-- Test markdown syntax validity
-- Generate compliance report
+- Run skill-creator/scripts/quick_validate.py on skill directory
+- Validates frontmatter format (valid YAML, required fields: name, description)
+- Checks naming convention (hyphen-case, max 64 chars, no leading/trailing/consecutive hyphens)
+- Verifies description format (no angle brackets, max 1024 chars)
+- Ensures no unexpected frontmatter properties
+- Confirms SKILL.md file exists
+- Generate compliance report from script output
 
 **Inputs:** Path to skill directory
 **Outputs:** Compliance report (pass/fail + specific violations)
@@ -145,6 +179,8 @@ Each command stands alone as an independent, reusable, testable building block. 
 ---
 
 ### 6. `/validate-runtime <skill-path>`
+
+**Implementation:** New Build
 
 **Purpose:** Runtime testing - actually load the skill
 
@@ -164,7 +200,9 @@ Each command stands alone as an independent, reusable, testable building block. 
 
 ### 7. `/validate-integration <skill-path>`
 
-**Purpose:** Integration testing with meta-claude ecosystem
+**Implementation:** New Build
+
+**Purpose:** Integration testing with Claude Code ecosystem
 
 **Responsibilities:**
 - Verify no conflicts with existing skills
@@ -181,13 +219,16 @@ Each command stands alone as an independent, reusable, testable building block. 
 
 ### 8. `/validate-audit <skill-path>`
 
-**Purpose:** Run claude-skill-auditor agent (non-blocking feedback)
+**Implementation:** Delegation (invokes claude-skill-auditor agent)
+
+**Purpose:** Run comprehensive audit (non-blocking feedback)
 
 **Responsibilities:**
-- Invoke existing claude-skill-auditor agent
-- Collect comprehensive audit feedback
-- Generate detailed audit report
-- Never blocks workflow (purely informational)
+- Invoke existing claude-skill-auditor agent from meta-claude
+- Agent performs comprehensive skill analysis against official Anthropic specifications
+- Collect audit feedback on structure, content quality, and best practices
+- Generate detailed audit report with recommendations
+- Never blocks workflow (purely informational, runs even if prior validation failed)
 
 **Inputs:** Path to skill directory
 **Outputs:** Audit report (recommendations + best practices)
@@ -514,14 +555,18 @@ Sequential dependencies ensure quality: content before compliance, runtime befor
 ## Implementation Roadmap
 
 ### Phase 1: Primitives (Start Here)
-- [ ] Implement `/research-skill` command
-- [ ] Implement `/format-skill` command
-- [ ] Implement `/create-skill` command (delegates to existing skill-creator)
-- [ ] Implement `/review-content` command
-- [ ] Implement `/review-compliance` command
-- [ ] Implement `/validate-runtime` command
-- [ ] Implement `/validate-integration` command
-- [ ] Implement `/validate-audit` command (invokes existing auditor agent)
+
+**New Build (5 commands):**
+- [ ] Implement `/research-skill` command (firecrawl automation)
+- [ ] Implement `/format-skill` command (cleanup script)
+- [ ] Implement `/review-content` command (quality assessment)
+- [ ] Implement `/validate-runtime` command (load testing)
+- [ ] Implement `/validate-integration` command (conflict detection)
+
+**Delegation (3 commands):**
+- [ ] Implement `/create-skill` command (invokes skill-creator skill)
+- [ ] Implement `/review-compliance` command (runs quick_validate.py)
+- [ ] Implement `/validate-audit` command (invokes claude-skill-auditor agent)
 
 ### Phase 2: Orchestration
 - [ ] Create `skill-creator-v2` skill (separate from existing)
@@ -604,12 +649,15 @@ Sequential dependencies ensure quality: content before compliance, runtime befor
 
 ## Open Questions
 
-1. **Existing skill-creator conflict:** How to handle existing skill-creator skill?
-   - Rename existing to skill-creator-v1?
-   - Deprecate existing, migrate to v2?
-   - Keep both, different use cases?
+### 1. Existing skill-creator relationship ✅ RESOLVED
 
-2. **Research source defaults:** What are the default firecrawl sources?
+**Decision:** Keep separate via delegation architecture
+- **skill-creator:** Core creation workflow (proven, stable) - remains unchanged
+- **skill-creator-v2:** Research + validation orchestrator that wraps skill-creator
+- **Relationship:** skill-creator-v2 invokes skill-creator skill for Step 3 (creation)
+- **Benefit:** Maintains stability of proven workflow while adding quality gates
+
+### 2. Research source defaults
    - Official Claude Code docs?
    - GitHub repos (if tool-specific)?
    - User always chooses?

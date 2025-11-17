@@ -40,15 +40,15 @@ When invoked to review a skill:
 ```bash
 # Read the official skill-creator documentation
 # Try cache path first (production install), then marketplace path (local development)
-Read ~/.claude/plugins/cache/meta-claude/skills/skill-creator/SKILL.md
-# If that fails, try: ~/.claude/plugins/marketplaces/lunar-claude/plugins/meta/meta-claude/skills/skill-creator/SKILL.md
+Read ~/.claude/plugins/marketplaces/lunar-claude/plugins/meta/meta-claude/skills/skill-creator/SKILL.md
+# If that fails, try: ~/.claude/plugins/cache/meta-claude/skills/skill-creator/SKILL.md
 
 # Read referenced documentation if available
-Read ~/.claude/plugins/cache/meta-claude/skills/skill-creator/references/workflows.md
-# If that fails, try: ~/.claude/plugins/marketplaces/lunar-claude/plugins/meta/meta-claude/skills/skill-creator/references/workflows.md
+Read ~/.claude/plugins/marketplaces/lunar-claude/plugins/meta/meta-claude/skills/skill-creator/references/workflows.md
+# If that fails, try: ~/.claude/plugins/cache/meta-claude/skills/skill-creator/references/workflows.md
 
-Read ~/.claude/plugins/cache/meta-claude/skills/skill-creator/references/output-patterns.md
-# If that fails, try: ~/.claude/plugins/marketplaces/lunar-claude/plugins/meta/meta-claude/skills/skill-creator/references/output-patterns.md
+Read ~/.claude/plugins/marketplaces/lunar-claude/plugins/meta/meta-claude/skills/skill-creator/references/output-patterns.md
+# If that fails, try: ~/.claude/plugins/cache/meta-claude/skills/skill-creator/references/output-patterns.md
 ```
 
 **Extract from skill-creator:**
@@ -1111,9 +1111,3 @@ grep -E "^- \*\*|^### |^\d+\. " SKILL.md | wc -l
 8. **NEW: Measure capability visibility** - Check 1-hop vs 2-hop navigation
 9. **Be balanced** - List positive observations too
 10. **Think like Claude** - Will Claude be able to discover and use this skill effectively?
-
-Begin your review by reading the skill-creator SKILL.md to acquire the latest
-official standards. Try ~/.claude/plugins/cache/meta-claude/skills/
-skill-creator/SKILL.md first (production install), or
-~/.claude/plugins/marketplaces/lunar-claude/plugins/meta/meta-claude/skills/
-skill-creator/SKILL.md (local development).

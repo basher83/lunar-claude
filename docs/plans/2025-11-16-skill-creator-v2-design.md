@@ -86,14 +86,25 @@ Each command stands alone as an independent, reusable, testable building block. 
 
 **Responsibilities:**
 - Mini brainstorm with user to define scope (if sources not provided)
-- Automatically run firecrawl scripts targeting user-chosen sources
+- Select appropriate research script based on context:
+  - **General research:** `firecrawl_sdk_research.py` - Web search with category filtering (github, research, pdf), quality scoring (⭐), retry logic
+  - **Specific URLs:** `firecrawl_scrape_url.py` - Single-URL scraper for known documentation
+  - **Official docs:** `jina_reader_docs.py` - Claude Code documentation via Jina Reader API
+- Execute chosen script with appropriate parameters
 - Save research to default location: `docs/research/skills/<skill-name>/`
 - Support custom path via `--output-dir` flag
 
-**Inputs:** Skill name, optional source URLs/keywords
-**Outputs:** Research markdown files in designated directory
-**Dependencies:** None
-**Exit Codes:** Success (research saved) | Failure (firecrawl errors)
+**Research Script Selection Logic:**
+```text
+If user provides specific URLs → firecrawl_scrape_url.py
+Else if researching Claude Code patterns → jina_reader_docs.py
+Else (general topic research) → firecrawl_sdk_research.py
+```
+
+**Inputs:** Skill name, optional source URLs/keywords/categories
+**Outputs:** Research markdown files in designated directory with source attribution
+**Dependencies:** None (requires FIRECRAWL_API_KEY environment variable)
+**Exit Codes:** Success (research saved) | Failure (API errors, missing credentials)
 
 ---
 
@@ -657,12 +668,16 @@ Sequential dependencies ensure quality: content before compliance, runtime befor
 - **Relationship:** skill-creator-v2 invokes skill-creator skill for Step 3 (creation)
 - **Benefit:** Maintains stability of proven workflow while adding quality gates
 
-### 2. Research source defaults
-   - Official Claude Code docs?
-   - GitHub repos (if tool-specific)?
-   - User always chooses?
+### 2. Research source defaults ✅ RESOLVED
 
-3. **Validation strictness:** How strict should validation be?
+**Decision:** Use existing research scripts with intelligent selection
+- **firecrawl_sdk_research.py:** General research with web search, category filtering (github/research/pdf), quality scoring
+- **firecrawl_scrape_url.py:** Specific known URLs
+- **jina_reader_docs.py:** Official Claude Code documentation
+- **Selection logic:** Based on user input (URLs provided vs. general topic vs. Claude Code patterns)
+- **Benefit:** Reuses proven automation, handles defaults intelligently, supports custom sources
+
+### 3. Validation strictness
    - Strict mode for CI/CD (zero warnings)?
    - Permissive mode for rapid iteration?
    - Configurable via flags?

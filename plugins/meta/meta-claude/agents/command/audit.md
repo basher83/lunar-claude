@@ -134,6 +134,49 @@ Process line by line:
 
 **CRITICAL:** Never flag closing fences as missing language.
 
+**Blank Line Detection Around Code Blocks:**
+
+Use line-by-line analysis to check for blank lines before code blocks:
+
+```text
+For each code block opening fence (```bash, ```text, etc.):
+  1. Identify line number N where opening fence starts
+  2. Check line N-1 (line immediately before):
+     - If line N-1 is blank (empty or only whitespace): PASS ✓
+     - If line N-1 has content (text, bold, heading, etc.): FAIL ✗ - VIOLATION
+     - If line N-1 doesn't exist (fence is first line): PASS ✓ (edge case)
+  3. Find closing fence for this block
+  4. Check line after closing fence similarly
+```
+
+**Method:** Read the actual file line-by-line. Do NOT rely on visual inspection
+of markdown excerpts in violation reports (those may have nested code blocks).
+
+**Example of CORRECT formatting:**
+
+```text
+Line 35: Some text here.
+Line 36: [blank line]        ← Required blank line before fence
+Line 37: ```bash              ← Opening fence
+Line 38: code content
+Line 39: ```                  ← Closing fence
+Line 40: [blank line]         ← Required blank line after fence
+Line 41: Next paragraph
+```
+
+**Example of VIOLATION:**
+
+```text
+Line 35: Some text here.
+Line 36: ```bash              ← VIOLATION: No blank line before fence
+Line 37: code content
+Line 38: ```
+Line 39: Next paragraph        ← VIOLATION: No blank line after fence
+```
+
+**CRITICAL:** The checklist says "blank lines around code blocks" - this means
+BOTH before AND after. Check both boundaries.
+
 **Argument Placeholder Validation:**
 
 Valid: `$ARGUMENTS`, `$1`, `$2`, `$3`, etc.

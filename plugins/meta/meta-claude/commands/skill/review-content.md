@@ -112,6 +112,24 @@ Assess:
 - Missing specialized knowledge
 - Poor description for skill triggering
 
+## Scoring Guidelines
+
+Each quality dimension receives PASS or FAIL based on these criteria:
+
+**PASS if:**
+
+- No issues flagged in that dimension, OR
+- Only Tier 1 (auto-fixable) issues found
+
+**FAIL if:**
+
+- 2+ issues of any tier in that dimension, OR
+- Any Tier 2 (guided fix) issue found, OR
+- Any Tier 3 (complex) issue found
+
+**Rationale:** A dimension with only simple auto-fixable issues should not fail
+the review, but substantive problems should be flagged for remediation.
+
 ## Quality Report Format
 
 Generate a structured report with the following sections:

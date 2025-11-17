@@ -521,21 +521,29 @@ When all phases pass successfully:
 ```text
 ✅ Skill created and validated successfully!
 
-Location: plugins/meta/meta-claude/skills/coderabbit/
+Location: <skill-output-path>/
+
+Research materials: docs/research/skills/<skill-name>/
+Keep research materials? [Keep/Remove] (default: Keep)
 
 Next steps - choose an option:
   [1] Test the skill now - Try invoking it in a new conversation
-  [2] Create PR - Submit skill to meta-claude plugin
-  [3] Add to plugin.json - Integrate with plugin manifest
+  [2] Create PR - Submit skill to repository
+  [3] Add to plugin.json - Integrate with plugin manifest (if applicable)
   [4] Done - Exit workflow
 
 What would you like to do?
 ```
 
+**Artifact Cleanup:**
+- User chooses Keep or Remove for research materials
+- Default: Keep (preserves research for iterations)
+- If Remove: Deletes docs/research/skills/<skill-name>/ directory
+
 **User Actions:**
 1. **Test the skill now** → Skill guides user to test invocation
 2. **Create PR** → Skill creates git branch, commits, pushes, opens PR
-3. **Add to plugin.json** → Skill updates manifest, validates structure
+3. **Add to plugin.json** → Skill updates manifest, validates structure (for plugin skills)
 4. **Done** → Clean exit
 
 Workflow executes the user's choice, then exits cleanly.
@@ -677,15 +685,25 @@ Sequential dependencies ensure quality: content before compliance, runtime befor
 - **Selection logic:** Based on user input (URLs provided vs. general topic vs. Claude Code patterns)
 - **Benefit:** Reuses proven automation, handles defaults intelligently, supports custom sources
 
-### 3. Validation strictness
-   - Strict mode for CI/CD (zero warnings)?
-   - Permissive mode for rapid iteration?
-   - Configurable via flags?
+### 3. Validation strictness ✅ RESOLVED
 
-4. **Artifact cleanup:** Should workflow clean up on success?
-   - Keep research for reference?
-   - Delete temporary files?
-   - User choice?
+**Decision:** Permissive validation (warnings don't fail the workflow)
+- **Rationale:** This is a development/authoring tool, not a CI/CD pipeline
+- **Behavior:** Validation reports issues but allows workflow to continue when possible
+- **Philosophy:** Guide users toward quality without blocking their progress
+- **Hard failures only for:** Critical compliance violations (invalid YAML, missing required fields)
+- **Warnings for:** Style suggestions, best practice recommendations, quality improvements
+- **Benefit:** Supports rapid iteration while still providing quality feedback
+
+### 4. Artifact cleanup ✅ RESOLVED
+
+**Decision:** Ask user at completion
+- **When:** After successful skill creation and validation
+- **Prompt:** "Research materials saved to docs/research/skills/<skill-name>/. Keep or remove? [Keep/Remove]"
+- **Keep:** Preserves research for future iterations, builds knowledge base over time
+- **Remove:** Cleans up workspace, research can be re-gathered if needed later
+- **Default:** Keep (if user doesn't respond or skips)
+- **Benefit:** User decides based on their workflow preferences and disk space concerns
 
 ## Success Metrics
 

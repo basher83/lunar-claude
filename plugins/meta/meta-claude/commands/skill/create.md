@@ -1,7 +1,7 @@
 ---
 description: "Create a skill using the proven skill-creator workflow with research context"
 allowed-tools: Bash(command:*)
-argument-hint: SKILL_NAME RESEARCH_DIR [OUTPUT_DIR]
+argument-hint: [skill-name] [research-dir] [output-dir]
 ---
 
 # Skill Create

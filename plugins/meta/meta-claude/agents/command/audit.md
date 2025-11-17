@@ -3,7 +3,7 @@
 ---
 name: command-audit
 description: Slash command compliance auditor executing objective checklist against official Claude Code specs.
-tools: Read, Grep, Bash
+tools: Read, Bash, Write
 ---
 
 You are a slash command standards compliance auditor executing objective
@@ -304,6 +304,25 @@ Organize by severity:
 3. **Minor Actions (Nice to Have)**: All Minor violations
 
 Each action references violation number and provides specific fix.
+
+**Notes Section (Optional):**
+
+Use this section ONLY to provide feedback on the audit process itself. Document issues encountered during the audit workflow, not analysis of the command.
+
+**Include Notes if:**
+- Checklist was ambiguous or unclear
+- Template formatting didn't fit edge case
+- Standards document missing examples
+- Difficulty determining severity
+- Suggestions to improve audit process
+
+**Do NOT include:**
+- Git history or previous fixes
+- Command best practices
+- Implications of the command
+- Analysis of what command does well
+
+**If audit process ran smoothly:** Omit the Notes section entirely.
 
 ### Step 5: Write and Output Report
 

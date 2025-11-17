@@ -3,7 +3,7 @@
 Audit tracking for slash commands in the meta-claude plugin's skill workflow.
 
 **Last Updated:** 2025-11-17
-**Commands:** 8 total, 7 in progress, 1 compliant
+**Commands:** 8 total, 4 compliant, 3 need fixes, 1 warnings
 
 ---
 
@@ -11,8 +11,9 @@ Audit tracking for slash commands in the meta-claude plugin's skill workflow.
 
 | Status | Count | Commands |
 |--------|-------|----------|
-| ✅ Compliant | 1 | /meta-claude:skill:research |
-| 🔧 In Progress | 7 | /meta-claude:skill:format, /meta-claude:skill:create, /meta-claude:skill:review-content, /meta-claude:skill:review-compliance, /meta-claude:skill:validate-runtime, /meta-claude:skill:validate-integration, /meta-claude:skill:validate-audit |
+| ✅ Compliant | 4 | /meta-claude:skill:research, /meta-claude:skill:create, /meta-claude:skill:format, /meta-claude:skill:review-compliance |
+| 🔴 Need Fixes | 3 | /meta-claude:skill:review-content, /meta-claude:skill:validate-runtime, /meta-claude:skill:validate-integration |
+| ⚠️ Warnings | 1 | /meta-claude:skill:validate-audit |
 
 ---
 
@@ -53,6 +54,7 @@ Commands pass through 9 checks:
 **Result:** PASS - 0 violations (Critical: 0, Major: 0, Minor: 0)
 
 **Highlights:**
+
 - Bash permissions properly scoped
 - Claude-directed perspective throughout
 - Lowercase bracket argument-hint format
@@ -61,124 +63,147 @@ Commands pass through 9 checks:
 
 ---
 
-### 2. `/meta-claude:skill:format` - 🔧 In Progress
+### 2. `/meta-claude:skill:format` - ✅ Compliant
 
 **File:** `commands/skill/format.md`
-**Last Audit:** 2025-11-17 (fdb49ae)
-**Report:** Not yet generated
+**Last Audit:** 2025-11-17
+**Report:** [skill-format.md](skill-format.md)
 
-**Fixed:**
+**Result:** PASS - 1 minor violation (Critical: 0, Major: 0, Minor: 1)
 
-- ✅ argument-hint: lowercase `[research-dir]`
+**Highlights:**
 
-**Remaining:**
-
-- 🔍 Full checklist audit
-- 🔍 Perspective (Claude-directed)
-- 🔍 Bash permissions
-- 🔍 Code blocks, blank lines
+- Correct argument-hint format
+- Clear $ARGUMENTS usage
+- Command is fully functional
+- Minor improvement: bash permissions could be scoped more specifically (`Bash(test:*), Bash(python*:*)` instead of `Bash(command:*)`)
 
 ---
 
-### 3. `/meta-claude:skill:create` - 🔧 In Progress
+### 3. `/meta-claude:skill:create` - ✅ Compliant
 
 **File:** `commands/skill/create.md`
-**Last Audit:** 2025-11-17 (fdb49ae, 4e98fd7)
-**Report:** Not yet generated
+**Last Audit:** 2025-11-17
+**Report:** [skill-create.md](skill-create.md)
 
-**Fixed:**
+**Result:** PASS - 0 violations (Critical: 0, Major: 0, Minor: 0)
 
-- ✅ argument-hint: lowercase `[skill-name] [research-dir] [output-dir]`
-- ✅ Applied audit fixes (4e98fd7)
+**Highlights:**
 
-**Remaining:**
-
-- 🔍 Verify all fixes
-- 🔍 Full validation
+- Bash permissions properly scoped (`Bash(command:*)` for Skill tool)
+- Claude-directed perspective throughout
+- Lowercase bracket argument-hint format
+- All code blocks have language tags
+- Well-structured markdown with examples
 
 ---
 
-### 4. `/meta-claude:skill:review-content` - 🔧 In Progress
+### 4. `/meta-claude:skill:review-content` - 🔴 Need Fixes
 
 **File:** `commands/skill/review-content.md`
-**Last Audit:** 2025-11-17 (2e9d962, 7e0e6e2)
-**Report:** Not yet generated
+**Last Audit:** 2025-11-17
+**Report:** [skill-review-content.md](skill-review-content.md)
 
-**Fixed:**
+**Result:** FAIL - 3 critical violations
 
-- ✅ Applied audit fixes (2e9d962, 7e0e6e2)
-- ✅ Added scoring guidelines (ef85e98)
+**Critical Issues:**
 
-**Remaining:**
-
-- 🔍 Full checklist validation
-- 🔍 Document specific fixes
+- Invalid argument placeholder: `<skill-path>` should be `$ARGUMENTS`
+- Missing `@` prefix for file references in examples (2 instances)
+- Line 226: `plugins/meta/meta-claude/skills/skill-creator` → `@plugins/...`
+- Line 235: `/path/to/draft-skill` → `@/path/to/draft-skill`
 
 ---
 
-### 5. `/meta-claude:skill:review-compliance` - 🔧 In Progress
+### 5. `/meta-claude:skill:review-compliance` - ✅ Compliant
 
 **File:** `commands/skill/review-compliance.md`
 **Last Audit:** 2025-11-17
-**Report:** Not yet generated
+**Report:** [skill-review-compliance.md](skill-review-compliance.md)
 
-**Fixed:**
+**Result:** PASS - 0 violations (Critical: 0, Major: 0, Minor: 0)
 
-- ✅ Added frontmatter (description, argument-hint)
-- ✅ Perspective: "Your task is to..."
-- ✅ Usage example format
+**Highlights:**
 
-**Remaining:**
-
-- 🔍 Full checklist validation
+- Proper file location and naming
+- Valid frontmatter with description and argument-hint
+- Clear argument handling with `$ARGUMENTS`
+- Well-documented with usage examples
+- Claude-directed perspective throughout
+- Single clear purpose with complete examples
 
 ---
 
-### 6. `/meta-claude:skill:validate-runtime` - 🔧 In Progress
+### 6. `/meta-claude:skill:validate-runtime` - 🔴 Need Fixes
 
 **File:** `commands/skill/validate-runtime.md`
-**Last Audit:** None
-**Report:** Not yet generated
+**Last Audit:** 2025-11-17
+**Report:** [skill-validate-runtime.md](skill-validate-runtime.md)
 
-**Fixed:**
+**Result:** FAIL - 6 violations (Critical: 1, Major: 2, Minor: 3)
 
-- None
+**Critical Issues:**
 
-**Remaining:**
+- Invalid placeholder `<skill-path>` in bash examples (must use `$ARGUMENTS` or `$1`)
 
-- 🔍 Full audit needed
+**Major Issues:**
+
+- Missing argument documentation (how to access the argument)
+- Instructions not written from Claude's perspective ("Your task is...")
+
+**Minor Issues:**
+
+- Missing frontmatter description (affects SlashCommand tool discoverability)
+- Missing argument-hint frontmatter
+- Code block language usage (`text` vs `plaintext`)
 
 ---
 
-### 7. `/meta-claude:skill:validate-integration` - 🔧 In Progress
+### 7. `/meta-claude:skill:validate-integration` - 🔴 Need Fixes
 
 **File:** `commands/skill/validate-integration.md`
-**Last Audit:** 2025-11-06 (dca966a)
-**Report:** Not yet generated
+**Last Audit:** 2025-11-17
+**Report:** [skill-validate-integration.md](skill-validate-integration.md)
 
-**Fixed:**
+**Result:** FAIL - 8 violations (Critical: 3, Major: 3, Minor: 2)
 
-- ✅ Code review fixes (dca966a)
+**Critical Issues:**
 
-**Remaining:**
+- Missing `allowed-tools` frontmatter for bash execution
+- Invalid argument placeholder `<skill-path>` in usage example
+- Invalid argument placeholders throughout instructions
 
-- 🔍 Fresh audit against current checklist
+**Major Issues:**
+
+- Unclear bash execution intent (inline vs example)
+- Third-person perspective instead of Claude-directed
+- Missing positional argument documentation
+
+**Minor Issues:**
+
+- Missing language on code blocks (8 instances)
+- Missing frontmatter description field
 
 ---
 
-### 8. `/meta-claude:skill:validate-audit` - 🔧 In Progress
+### 8. `/meta-claude:skill:validate-audit` - ⚠️ Warnings
 
 **File:** `commands/skill/validate-audit.md`
-**Last Audit:** None
-**Report:** Not yet generated
+**Last Audit:** 2025-11-17
+**Report:** [skill-validate-audit.md](skill-validate-audit.md)
 
-**Fixed:**
+**Result:** WARNINGS - 5 violations (Critical: 0, Major: 3, Minor: 2)
 
-- None
+**Major Issues:**
 
-**Remaining:**
+- Missing `$ARGUMENTS` placeholder in instructions
+- Vague "Task tool" reference (not a standard Claude Code tool)
+- Third-person perspective instead of Claude-directed
 
-- 🔍 Full audit needed
+**Minor Issues:**
+
+- Missing frontmatter `argument-hint`
+- Missing frontmatter `description` for SlashCommand tool discoverability
 
 ---
 

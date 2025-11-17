@@ -33,6 +33,24 @@ Use skill-factory when:
 - Domain-specific skills (brand-guidelines, conventional-git-commits)
 - Any skill that extends Claude's capabilities
 
+## Quick Decision Guide
+
+Choose your starting point:
+
+**Most common:** Creating skill from scratch
+→ Use: `skill-factory <skill-name>` (starts research workflow)
+
+**Research already gathered:** You have `docs/research/skills/<name>/`
+→ Use: `skill-factory <skill-name> <research-path>` (skips research)
+
+**Validation only:** Skill exists, need quality check
+→ Use: `/skill-review-content <path>` (direct validation)
+
+**Integration check:** Adding skill to existing plugin
+→ Use: `/skill-validate-integration <path>` (conflict detection)
+
+For full workflow details, see Quick Start section below.
+
 ## Quick Start
 
 ### Path 1: Research Already Gathered

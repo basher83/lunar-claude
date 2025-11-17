@@ -1,7 +1,7 @@
 ---
 description: "Create a skill using the proven skill-creator workflow with research context"
 allowed-tools: Bash(command:*)
-argument-hint: SKILL_NAME RESEARCH_DIR
+argument-hint: SKILL_NAME RESEARCH_DIR [OUTPUT_DIR]
 ---
 
 # Skill Create
@@ -10,13 +10,14 @@ Create a skill using the proven skill-creator workflow with research context.
 
 ## Arguments
 
-- `skill-name` - Name of the skill to create (e.g., docker-master)
-- `research-dir` - Path to directory containing research materials
+- `$1` - Name of the skill to create (e.g., docker-master)
+- `$2` - Path to directory containing research materials
+- `$3` - (Optional) Custom output directory path (defaults to plugins/meta/meta-claude/skills/)
 
 ## Usage
 
 ```bash
-/skill-create <skill-name> <research-dir>
+/meta-claude:skill:create $1 $2 [$3]
 ```
 
 ## Your Task
@@ -41,9 +42,9 @@ Skill(skill: "example-skills:skill-creator")
 Then provide this instruction to the skill:
 
 ```text
-I need to create a new skill called <skill-name>.
+I need to create a new skill called $1.
 
-Research materials are available at: <research-dir>
+Research materials are available at: $2
 
 Please guide me through the skill creation process using this research as context for:
 - Understanding the skill's purpose and use cases
@@ -51,12 +52,11 @@ Please guide me through the skill creation process using this research as contex
 - Implementing SKILL.md with proper structure
 - Creating supporting files if needed
 
-Output location: plugins/meta/meta-claude/skills/<skill-name>/
+Output location: plugins/meta/meta-claude/skills/$1/
 ```
 
-If a custom output location is specified in the arguments (e.g., a different
-plugin directory), replace the output location in the instruction with the
-user-specified path.
+If `$3` is provided (custom output location), replace the output location in the
+instruction with `$3/$1/` instead of the default path.
 
 ## Expected Workflow
 
@@ -71,10 +71,10 @@ Your task is to guide through these phases using skill-creator:
 
 ## Error Handling
 
-**If research-dir missing:**
+**If research directory missing:**
 
-- Report error: "Research directory not found at `<research-dir>`"
-- Suggest: Run `/skill-research` first or provide correct path
+- Report error: "Research directory not found at `$2`"
+- Suggest: Run `/meta-claude:skill:research` first or provide correct path
 - Exit with failure
 
 **If skill-creator errors:**
@@ -88,14 +88,14 @@ Your task is to guide through these phases using skill-creator:
 **Create skill from research:**
 
 ```bash
-/skill-create docker-master docs/research/skills/docker-master/
+/meta-claude:skill:create docker-master docs/research/skills/docker-master/
 # Output: Skill created at plugins/meta/meta-claude/skills/docker-master/
 ```
 
 **With custom output location:**
 
 ```bash
-/skill-create coderabbit plugins/meta/claude-dev-sandbox/skills/coderabbit/ plugins/code-review/claude-dev-sandbox/skills/
-# Note: When custom output path is provided as third argument, use it instead of default
+/meta-claude:skill:create coderabbit plugins/meta/claude-dev-sandbox/skills/coderabbit/ plugins/code-review/claude-dev-sandbox/skills/
+# Note: When custom output path is provided as third argument ($3), use it instead of default
 # Output: Skill created at plugins/code-review/claude-dev-sandbox/skills/coderabbit/
 ```

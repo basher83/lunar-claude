@@ -66,11 +66,11 @@ First, conduct a mini brainstorm with the user to refine scope:
 Let's refine the research scope for "<skill-name>":
 
 1. What specific aspects should we focus on?
-2. Which categories are most relevant?
+2. Which categories are most relevant? (choose one or multiple)
    - github (code examples, repositories)
    - research (academic papers, technical articles)
    - pdf (documentation, guides)
-   - web (general web content - default)
+   - web (general web content - default, omit flag)
 
 3. Any specific keywords or search terms to include?
 ```
@@ -78,16 +78,24 @@ Let's refine the research scope for "<skill-name>":
 Then execute:
 
 ```bash
+# Single category (most common)
 scripts/firecrawl_sdk_research.py "<query>" \
   --limit <num-results> \
   --category <category> \
+  --output "docs/research/skills/<skill-name>/research.md"
+
+# Multiple categories (advanced)
+scripts/firecrawl_sdk_research.py "<query>" \
+  --limit <num-results> \
+  --categories github,research,pdf \
   --output "docs/research/skills/<skill-name>/research.md"
 ```
 
 **Default parameters:**
 
 - `limit`: 10 (adjustable based on scope)
-- `category`: Based on user input or omit for general web search
+- `category`: Based on user input, or use `--categories` for multiple, or omit
+  for general web search
 - `query`: Skill name + refined keywords from brainstorm
 
 ## Output Directory Management
@@ -184,9 +192,16 @@ scripts/jina_reader_docs.py \
 **For general research:**
 
 ```bash
+# Single category
 scripts/firecrawl_sdk_research.py "$query" \
   --limit $limit \
   --category $category \
+  --output "docs/research/skills/<skill-name>/research.md"
+
+# Or multiple categories
+scripts/firecrawl_sdk_research.py "$query" \
+  --limit $limit \
+  --categories github,research,pdf \
   --output "docs/research/skills/<skill-name>/research.md"
 ```
 

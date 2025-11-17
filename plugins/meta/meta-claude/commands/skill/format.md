@@ -1,3 +1,9 @@
+---
+description: "Light cleanup of research materials - remove UI artifacts and basic formatting"
+allowed-tools: Bash(command:*)
+argument-hint: RESEARCH_DIR
+---
+
 # Skill Format
 
 Light cleanup of research materials - remove UI artifacts and apply basic formatting.
@@ -23,11 +29,18 @@ Does NOT restructure content for skill format.
 
 ## Instructions
 
-Run the cleanup script:
+Your task is to format and clean markdown research files.
 
-```bash
-${CLAUDE_PLUGIN_ROOT}/../../scripts/format_skill_research.py <research-dir>
-```
+1. Extract the research directory path from `$ARGUMENTS` (provided by user as research directory)
+1. Verify the directory exists using a test command
+1. If directory doesn't exist, show the error from the Error Handling section
+1. Run the cleanup script with the provided directory path:
+
+    ```bash
+    ${CLAUDE_PLUGIN_ROOT}/../../scripts/format_skill_research.py "$ARGUMENTS"
+    ```
+
+1. Display the script output showing which files were processed
 
 The script processes all `.md` files recursively in the directory.
 

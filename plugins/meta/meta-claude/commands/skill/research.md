@@ -1,7 +1,7 @@
 ---
 description: Fully automated research gathering for skill creation
 argument-hint: skill-name [sources]
-allowed-tools: Bash, Read, Write, AskUserQuestion
+allowed-tools: Bash(scripts/*:*,mkdir,ls,if,for,echo), Read, Write, AskUserQuestion
 ---
 
 # Skill Research
@@ -102,16 +102,6 @@ scripts/firecrawl_sdk_research.py "<query>" \
 
 All research saves to: `docs/research/skills/<skill-name>/`
 
-**If custom path provided via --output-dir flag:**
-
-Use custom path instead of default location.
-
-Parse flags from `$ARGUMENTS`:
-
-```text
-/skill-research coderabbit --output-dir plugins/meta/claude-dev-sandbox/skills/coderabbit/research
-```
-
 ## Execution Process
 
 ### Step 1: Parse Arguments
@@ -121,13 +111,11 @@ Extract skill name and sources from `$ARGUMENTS`:
 - Split arguments by space
 - First argument: skill name (required)
 - Remaining arguments: sources (optional)
-- Check for `--output-dir` flag and extract custom path if present
 
 **Validation:**
 
 - Skill name must be kebab-case (lowercase with hyphens)
 - Skill name cannot be empty
-- If custom output path, verify parent directory exists
 
 ### Step 2: Determine Research Strategy
 
@@ -151,8 +139,6 @@ Else:
 ```bash
 mkdir -p "docs/research/skills/<skill-name>"
 ```
-
-Or use custom path if `--output-dir` provided.
 
 ### Step 4: Execute Research Script
 
@@ -373,23 +359,7 @@ Process:
 4. Execute: `scripts/jina_reader_docs.py --output-dir docs/research/skills/skill-creator-advanced`
 5. Display summary with downloaded docs list
 
-### Example 4: Custom Output Directory
-
-User invocation:
-
-```bash
-/skill-research coderabbit --output-dir plugins/meta/claude-dev-sandbox/skills/coderabbit/research
-```
-
-Process:
-
-1. Parse `--output-dir` flag and extract custom path
-2. Verify parent directory exists: `plugins/meta/claude-dev-sandbox/skills/coderabbit/`
-3. Create research directory: `plugins/meta/claude-dev-sandbox/skills/coderabbit/research/`
-4. Execute general research (no URLs, not Claude Code specific)
-5. Save to custom path instead of default `docs/research/skills/`
-
-### Example 5: Research with Category Filtering
+### Example 4: Research with Category Filtering
 
 User invocation:
 

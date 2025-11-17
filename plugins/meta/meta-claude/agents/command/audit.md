@@ -182,6 +182,39 @@ BOTH before AND after. Check both boundaries.
 Valid: `$ARGUMENTS`, `$1`, `$2`, `$3`, etc.
 Invalid: `$args`, `$input`, `{arg}`, `<arg>`, custom variables
 
+**Argument-Hint Format Validation:**
+
+If `argument-hint` field exists in frontmatter, validate format matches official
+style:
+
+```text
+Check argument-hint value:
+  1. Split into individual argument tokens (by spaces)
+  2. For each token:
+     - If required argument: must be lowercase with brackets [arg-name]
+     - If optional argument: must be lowercase with brackets [arg-name]
+     - UPPERCASE tokens (SKILL_NAME, RESEARCH_DIR) = VIOLATION
+     - Tokens without brackets (skill-name, research-dir) = VIOLATION
+  3. Compare against official examples (slash-commands.md lines 189, 201):
+     - ✓ [message]
+     - ✓ [pr-number] [priority] [assignee]
+     - ✗ SKILL_NAME RESEARCH_DIR
+     - ✗ skill-name research-dir
+```
+
+**Standard:** slash-commands.md line 179 with examples at lines 189, 201
+
+**Severity:** Minor (style inconsistency with official documentation)
+
+**Correct format:** `[lowercase-with-hyphens]` for all arguments
+
+**Example violations:**
+- `argument-hint: SKILL_NAME RESEARCH_DIR` → Use `[skill-name] [research-dir]`
+- `argument-hint: file path` → Use `[file] [path]` or `[file-path]`
+
+**CRITICAL:** This check only applies if `argument-hint` field is present. If
+field is missing, that's valid (it's optional).
+
 **Bash Execution Detection:**
 
 Inline execution: `` !`command` `` (note backticks and ! prefix)

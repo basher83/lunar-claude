@@ -1,9 +1,14 @@
 ---
 name: skill-factory
-description: >
-  Orchestrates the full skill creation lifecycle from research through validation. Use when creating ANY skill
-  (conventional-git-commits, docker-master, brand-guidelines, etc.) with automated research, quality reviews, and
-  comprehensive validation. Guides users through create-review-validate workflow with real-time progress tracking.
+description: |
+  Orchestrates Claude Code skill development using 8 primitive slash commands (/skill-research, /skill-format,
+  /skill-create, /skill-review-content, /skill-review-compliance, /skill-validate-runtime, /skill-validate-integration,
+  /skill-validate-audit). This skill should be used when: (1) Creating SKILL.md files with YAML frontmatter and
+  progressive disclosure, (2) Building skills with scripts/, references/, or assets/ directories, (3) Automating
+  firecrawl-based research gathering for skill domains, (4) Validating skills against Anthropic specifications using
+  quick_validate.py, or (5) Requiring TodoWrite-tracked workflow with tiered error handling (auto-fix, guided-fix,
+  fail-fast). Creates infrastructure skills (terraform-best-practices), development skills (docker-compose-helper),
+  or domain-specific skills (brand-guidelines, conventional-git-commits) extending Claude capabilities.
 ---
 
 # Skill Factory
@@ -233,185 +238,16 @@ before continuing.
 
 ## Error Handling & Fix Strategy
 
-### Core Principle: Fail Fast
+The workflow uses a three-tier fix strategy with fail-fast principles:
 
-When a phase fails without auto-fix capability, the workflow **stops immediately**. No complex recovery, no
-checkpointing, no resume commands—only clean exit with clear error reporting and preserved artifacts.
+- **Tier 1 (Simple):** Auto-fix formatting, frontmatter, markdown syntax - automatically re-run once
+- **Tier 2 (Medium):** Guided fixes for content clarity - ask user approval before applying
+- **Tier 3 (Complex):** Stop and report architectural issues - fail fast with recommendations
 
-### Rule-Based Fix Tiers
+**One-Shot Policy:** Apply fix once, re-run once, then fail fast if still broken (prevents infinite loops).
 
-Issues are categorized into three tiers based on complexity:
-
-#### Tier 1: Simple (Auto-Fix)
-
-**Issue Types:**
-
-- Formatting issues (whitespace, indentation)
-- Missing frontmatter fields (can be inferred)
-- Markdown syntax errors (quote escaping, link formatting)
-- File structure issues (missing directories)
-
-**Actions:**
-
-1. Automatically apply fix
-2. Auto re-run the failed command ONCE
-3. Continue if passes, fail fast if still broken
-
-**Example:**
-
-```text
-/skill-review-compliance fails: "Missing frontmatter description field"
-  ↓
-Tier: Simple → AUTO-FIX
-  ↓
-Fix: Add description field inferred from skill name
-  ↓
-Auto re-run: /skill-review-compliance <skill-path>
-  ↓
-Result: Pass → Mark todo completed, continue to /skill-validate-runtime
-```
-
-#### Tier 2: Medium (Guided Fix with Approval)
-
-**Issue Types:**
-
-- Content clarity suggestions
-- Example improvements
-- Instruction rewording
-- Structure optimization
-
-**Actions:**
-
-1. Present issue and suggested fix
-2. Ask user: "Apply this fix? [Yes/No/Edit]"
-3. If Yes → Apply fix, re-run command once
-4. If No → Fail fast
-5. If Edit → Show fix, let user modify, apply, re-run
-
-**Example:**
-
-```text
-/skill-review-content fails: "Examples section unclear, lacks practical context"
-  ↓
-Tier: Medium → GUIDED FIX
-  ↓
-Suggested fix: [Shows proposed rewrite with clearer examples]
-  ↓
-Ask: "Apply this fix? [Yes/No/Edit]"
-  ↓
-User: Yes
-  ↓
-Apply fix
-  ↓
-Re-run: /skill-review-content <skill-path>
-  ↓
-Result: Pass → Mark todo completed, continue to /skill-review-compliance
-```
-
-#### Tier 3: Complex (Stop and Report)
-
-**Issue Types:**
-
-- Architectural problems (skill design flaws)
-- Insufficient research (missing critical information)
-- Unsupported use cases (doesn't fit Claude Code model)
-- Schema violations (fundamental structure issues)
-- Composition rule violations (e.g., attempting to nest sub-agents)
-
-**Actions:**
-
-1. Report the issue with detailed explanation
-2. Provide recommendations for manual fixes
-3. **Fail fast** - exit workflow immediately
-4. User must fix manually and restart workflow
-
-**Example:**
-
-```text
-/skill-review-content fails: "Skill attempts to nest sub-agents, violates composition rules"
-  ↓
-Tier: Complex → STOP AND REPORT
-  ↓
-Report:
-  ❌ Skill creation failed at: Review Content Quality
-
-  Issue found:
-  - [Tier 3: Complex] Skill attempts to nest sub-agents, which violates composition rules
-
-  Recommendation:
-  - Restructure skill to invoke sub-agents via SlashCommand tool instead
-  - See: plugins/meta/meta-claude/skills/multi-agent-composition/
-
-  Workflow stopped. Please fix manually and restart.
-
-  Artifacts preserved at:
-    Research: docs/research/skills/coderabbit/
-    Partial skill: plugins/meta/meta-claude/skills/coderabbit/
-
-  ↓
-WORKFLOW EXITS (fail fast)
-```
-
-### One-Shot Fix Policy
-
-To prevent infinite loops:
-
-```text
-Phase fails
-  ↓
-Apply fix (auto or guided)
-  ↓
-Re-run command ONCE
-  ↓
-Result:
-  - Pass → Continue to next phase
-  - Fail → FAIL FAST (no second fix attempt)
-```
-
-**Rationale:** If the first fix fails, the issue exceeds initial assessment. Stop and let the user investigate rather
-than looping infinitely.
-
-### Issue Categorization Response Format
-
-Each primitive command returns errors with tier metadata:
-
-```javascript
-{
-  "status": "fail",
-  "issues": [
-    {
-      "tier": "simple",
-      "category": "frontmatter",
-      "description": "Missing description field",
-      "fix": "Add description: 'Guide for CodeRabbit code review'",
-      "auto_fixable": true
-    },
-    {
-      "tier": "medium",
-      "category": "content-clarity",
-      "description": "Examples section unclear, lacks practical context",
-      "suggestion": "[Proposed rewrite with clearer examples]",
-      "auto_fixable": false
-    },
-    {
-      "tier": "complex",
-      "category": "architectural",
-      "description": "Skill violates composition rules by nesting sub-agents",
-      "recommendation": "Restructure to use SlashCommand tool for sub-agent invocation",
-      "auto_fixable": false
-    }
-  ]
-}
-```
-
-**Parsing Command Responses:**
-
-When a command completes, analyze its output to determine status:
-
-- Look for "Success", "PASS", or exit code 0 → Continue
-- Look for "Error", "FAIL", or exit code 1 → Apply fix strategy
-- Parse issue tier metadata (if provided) to select fix approach
-- If no tier metadata, infer tier from issue description
+**Detailed Error Handling:** See [references/error-handling.md](references/error-handling.md) for complete fix tier
+definitions, examples, issue categorization format, and command response parsing guidance.
 
 ## Success Completion
 
@@ -458,188 +294,15 @@ Execute the user's choice, then exit cleanly.
 
 ## Examples
 
-### Example 1: Creating Infrastructure Skill (Path 2)
+The skill-factory workflow supports various scenarios:
 
-```text
-User: "Create terraform-best-practices skill"
+1. **Path 2 (Full Workflow):** Creating skills from scratch with automated research gathering
+2. **Path 1 (Existing Research):** Creating skills when research materials already exist
+3. **Guided Fix Workflow:** Applying Tier 2 fixes with user approval
+4. **Fail-Fast Pattern:** Handling Tier 3 complex issues with immediate exit
 
-skill-factory:
-"Have you already gathered research for this skill?
-[Yes - I have research at <path>]
-[No - Help me gather research]
-[Skip - I'll create from knowledge only]"
-
-User: "No - Help me gather research"
-
-skill-factory initializes TodoWrite with 9 tasks, starts workflow:
-
-[Phase 1: Research]
-Invokes: /skill-research terraform-best-practices
-Mini brainstorm about scope and categories
-Executes firecrawl research script
-Research saved to docs/research/skills/terraform-best-practices/
-✓ Research completed
-
-[Phase 2: Format]
-Invokes: /skill-format docs/research/skills/terraform-best-practices
-Cleans UI artifacts and navigation elements
-✓ Formatting completed
-
-[Phase 3: Create]
-Invokes: /skill-create terraform-best-practices docs/research/skills/terraform-best-practices
-Delegates to skill-creator skill
-Follows Understand → Plan → Initialize → Edit → Package workflow
-✓ Skill created at plugins/infrastructure/terraform-skills/skills/terraform-best-practices/
-
-[Phase 4: Review Content]
-Invokes: /skill-review-content plugins/infrastructure/terraform-skills/skills/terraform-best-practices
-Analyzes clarity, completeness, examples, actionability, usefulness
-✓ Content review passed (5/5 quality dimensions)
-
-[Phase 5: Review Compliance]
-Invokes: /skill-review-compliance plugins/infrastructure/terraform-skills/skills/terraform-best-practices
-Runs quick_validate.py
-✓ Compliance check passed
-
-[Phase 6: Validate Runtime]
-Invokes: /skill-validate-runtime plugins/infrastructure/terraform-skills/skills/terraform-best-practices
-Tests skill loading in Claude Code context
-✓ Runtime validation passed
-
-[Phase 7: Validate Integration]
-Invokes: /skill-validate-integration plugins/infrastructure/terraform-skills/skills/terraform-best-practices
-Checks for conflicts with existing skills
-✓ Integration validation passed
-
-[Phase 8: Audit]
-Invokes: /skill-validate-audit plugins/infrastructure/terraform-skills/skills/terraform-best-practices
-Runs claude-skill-auditor agent
-ℹ Audit completed with recommendations (non-blocking)
-
-[Phase 9: Complete]
-✅ Skill created and validated successfully!
-
-Location: plugins/infrastructure/terraform-skills/skills/terraform-best-practices/
-
-Research materials: docs/research/skills/terraform-best-practices/
-Keep research materials? [Keep/Remove] (default: Keep)
-
-User: Keep
-
-Next steps - choose an option:
-  [1] Test the skill now
-  [2] Create PR
-  [3] Add to plugin.json
-  [4] Done
-
-User: [2] Create PR
-
-skill-factory creates branch, commits skill, pushes, opens PR
-Workflow complete!
-```
-
-### Example 2: Creating Skill with Existing Research (Path 1)
-
-```text
-User: "Create coderabbit skill, research in docs/research/skills/coderabbit/"
-
-skill-factory detects explicit research path, uses Path 1
-
-Initializes TodoWrite with 8 tasks (skips research), starts workflow:
-
-[Phase 1: Format]
-Invokes: /skill-format docs/research/skills/coderabbit
-✓ Formatting completed
-
-[Phase 2: Create]
-Invokes: /skill-create coderabbit docs/research/skills/coderabbit
-✓ Skill created
-
-[Continues through remaining phases...]
-✓ Workflow complete
-```
-
-### Example 3: Workflow Failure with Guided Fix
-
-```text
-[Phase 4: Review Content]
-Invokes: /skill-review-content plugins/meta/meta-claude/skills/docker-compose
-
-Command response:
-{
-  "status": "fail",
-  "issues": [
-    {
-      "tier": "medium",
-      "category": "examples",
-      "description": "Examples section missing practical docker-compose.yml configurations",
-      "suggestion": "[Shows proposed examples with common patterns]",
-      "auto_fixable": false
-    }
-  ]
-}
-
-skill-factory detects Tier 2 (guided fix):
-
-"Content review found issues that can be fixed:
-
-Issue: Examples section missing practical docker-compose.yml configurations
-
-Suggested fix:
-[Shows proposed docker-compose.yml examples]
-
-Apply this fix? [Yes/No/Edit]"
-
-User: Yes
-
-skill-factory applies fix, re-runs command:
-
-Invokes: /skill-review-content plugins/meta/meta-claude/skills/docker-compose
-✓ Content review passed
-
-Continues to next phase...
-```
-
-### Example 4: Workflow Failure with Complex Issue
-
-```text
-[Phase 4: Review Content]
-Invokes: /skill-review-content plugins/meta/meta-claude/skills/advanced-orchestration
-
-Command response:
-{
-  "status": "fail",
-  "issues": [
-    {
-      "tier": "complex",
-      "category": "architectural",
-      "description": "Skill attempts to nest sub-agents within sub-agents, which violates Claude Code composition rules",
-      "recommendation": "Restructure skill to use SlashCommand tool for sub-agent invocation. See multi-agent-composition skill for patterns.",
-      "auto_fixable": false
-    }
-  ]
-}
-
-skill-factory detects Tier 3 (complex), fails fast:
-
-❌ Skill creation failed at: Review Content Quality
-
-Issue found:
-- [Tier 3: Complex] Skill attempts to nest sub-agents within sub-agents, which violates Claude Code composition rules
-
-Recommendation:
-- Restructure skill to use SlashCommand tool for sub-agent invocation
-- See: plugins/meta/meta-claude/skills/multi-agent-composition/patterns/orchestrator-pattern.md
-
-Workflow stopped. Please fix manually and restart with:
-  skill-factory advanced-orchestration docs/research/skills/advanced-orchestration/
-
-Artifacts preserved at:
-  Research: docs/research/skills/advanced-orchestration/
-  Partial skill: plugins/meta/meta-claude/skills/advanced-orchestration/
-
-WORKFLOW EXITS
-```
+**Detailed Examples:** See [references/workflow-examples.md](references/workflow-examples.md) for complete walkthrough
+scenarios showing TodoWrite state transitions, command invocations, error handling, and success paths.
 
 ## Design Principles
 

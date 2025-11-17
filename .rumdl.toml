@@ -53,6 +53,12 @@ exclude = [
     # Plugin-specific exclusions (dense knowledge bases with intentionally long lines)
     "plugins/meta/meta-claude/skills/skill-creator/SKILL.md",
     "plugins/meta/meta-claude/skills/agent-creator/SKILL.md",
+
+    # Template files (contain placeholders that look like invalid references)
+    "docs/templates/**/*.md",
+
+    # Agent files (may have YAML frontmatter before h1, example code blocks)
+    "plugins/meta/meta-claude/agents/**/*.md",
 ]
 
 # Respect .gitignore files when scanning directories (default: true)

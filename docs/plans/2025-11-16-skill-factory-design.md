@@ -1,9 +1,11 @@
-# Skill Creator v2 - Create-Review-Validate Workflow Design
+# Skill Factory - Create-Review-Validate Workflow Design
 
 **Date:** 2025-11-16
 **Status:** Design Complete, Ready for Implementation
 **Goal:** Comprehensive workflow for creating, reviewing, and validating Claude Code skills with speed, quality, and accessibility
 **Scope:** Creates ANY skill (conventional-git-commits, docker-master, brand-guidelines, etc.) - not limited to meta-claude plugin
+**Orchestrator:** `skill-factory` skill
+**Command Namespace:** `commands/skill/*` → `/skill-*` commands
 
 ## Overview
 
@@ -15,13 +17,13 @@ The create-review-validate cycle orchestrates skill creation from research throu
 
 The meta-claude plugin already contains a `skill-creator` skill that guides the core creation workflow (Understand → Plan → Initialize → Edit → Package → Iterate). This proven workflow creates any skill for any purpose.
 
-**skill-creator-v2 extends this foundation** by adding:
+**skill-factory extends this foundation** by adding:
 - **Pre-creation phases:** Research gathering and formatting
 - **Post-creation phases:** Content review and validation
 - **Quality gates:** Compliance checking, runtime testing, integration validation
 
 **Delegation Architecture:**
-skill-creator-v2 orchestrates the full lifecycle while delegating to existing proven tools:
+skill-factory orchestrates the full lifecycle while delegating to existing proven tools:
 - **skill-creator skill** → Core creation workflow
 - **quick_validate.py** → Compliance validation (frontmatter, naming, structure)
 - **claude-skill-auditor agent** → Comprehensive audit
@@ -33,10 +35,35 @@ This separation maintains the stability of skill-creator while adding research-b
 The create-review-validate cycle follows the multi-agent-composition framework where skills are the top compositional layer that orchestrates primitives.
 
 **Components:**
-- **Orchestrator:** `skill-creator-v2` skill (research + validation wrapper around skill-creator)
-- **Primitives:** 8 independent slash commands (each phase is a reusable command)
+- **Orchestrator:** `skill-factory` skill (research + validation wrapper around skill-creator)
+- **Primitives:** 8 independent slash commands under `commands/skill/` namespace
 - **State Management:** TodoWrite (visual progress tracking, KISS approach)
 - **Workflow Engine:** Conditional logic within the skill based on prompt context
+
+### Naming Conventions
+
+**Orchestrator Skill:**
+- Name: `skill-factory`
+- Rationale: Manufacturing metaphor (research → creation → quality assurance)
+- Location: `plugins/meta/meta-claude/skills/skill-factory/`
+
+**Command Namespace:**
+- Directory structure: `commands/skill/` (grouped by component type)
+- Command pattern: `/skill-*` (e.g., `/skill-research`, `/skill-create`)
+- Future expansion: `commands/agent/`, `commands/command/`, `commands/hook/`
+
+**Command Files:**
+```sql
+plugins/meta/meta-claude/commands/skill/
+├── research.md          → /skill-research
+├── format.md            → /skill-format
+├── create.md            → /skill-create
+├── review-content.md    → /skill-review-content
+├── review-compliance.md → /skill-review-compliance
+├── validate-runtime.md  → /skill-validate-runtime
+├── validate-integration.md → /skill-validate-integration
+└── validate-audit.md    → /skill-validate-audit
+```
 
 ### Entry Point Detection
 
@@ -59,15 +86,15 @@ User: "Create coderabbit skill"
 
 **Path 1: Research Exists**
 ```text
-/format-skill → /create-skill → /review-content → /review-compliance →
-/validate-runtime → /validate-integration → /validate-audit → Complete
+/skill-format → /skill-create → /skill-review-content → /skill-review-compliance →
+/skill-validate-runtime → /skill-validate-integration → /skill-validate-audit → Complete
 ```
 
 **Path 2: Research Needed**
 ```text
-/research-skill → /format-skill → /create-skill → /review-content →
-/review-compliance → /validate-runtime → /validate-integration →
-/validate-audit → Complete
+/skill-research → /skill-format → /skill-create → /skill-review-content →
+/skill-review-compliance → /skill-validate-runtime → /skill-validate-integration →
+/skill-validate-audit → Complete
 ```
 
 ## Primitive Slash Commands
@@ -78,7 +105,7 @@ Each command stands alone as an independent, reusable, testable building block. 
 - **Delegation:** Commands that invoke existing proven tools (skill-creator skill, quick_validate.py, claude-skill-auditor agent)
 - **New Build:** Commands that implement new functionality (research, formatting, content review, runtime validation, integration testing)
 
-### 1. `/research-skill <skill-name> [sources]`
+### 1. `/skill-research <skill-name> [sources]`
 
 **Implementation:** New Build
 
@@ -108,7 +135,7 @@ Else (general topic research) → firecrawl_sdk_research.py
 
 ---
 
-### 2. `/format-skill <research-dir>`
+### 2. `/skill-format <research-dir>`
 
 **Implementation:** New Build
 
@@ -122,12 +149,12 @@ Else (general topic research) → firecrawl_sdk_research.py
 
 **Inputs:** Research directory path
 **Outputs:** Cleaned markdown files
-**Dependencies:** Requires `/research-skill` output OR user-provided research
+**Dependencies:** Requires `/skill-research` output OR user-provided research
 **Exit Codes:** Success (cleaned files ready) | Failure (malformed input)
 
 ---
 
-### 3. `/create-skill <skill-name> <research-dir>`
+### 3. `/skill-create <skill-name> <research-dir>`
 
 **Implementation:** Delegation (invokes skill-creator skill)
 
@@ -142,12 +169,12 @@ Else (general topic research) → firecrawl_sdk_research.py
 
 **Inputs:** Skill name, research directory
 **Outputs:** Complete skill directory structure
-**Dependencies:** Requires `/format-skill` output
+**Dependencies:** Requires `/skill-format` output
 **Exit Codes:** Success (skill created) | Failure (skill-creator errors)
 
 ---
 
-### 4. `/review-content <skill-path>`
+### 4. `/skill-review-content <skill-path>`
 
 **Implementation:** New Build
 
@@ -162,12 +189,12 @@ Else (general topic research) → firecrawl_sdk_research.py
 
 **Inputs:** Path to skill directory
 **Outputs:** Quality report (pass/fail + suggestions)
-**Dependencies:** Requires `/create-skill` output
+**Dependencies:** Requires `/skill-create` output
 **Exit Codes:** Pass (quality acceptable) | Fail (issues found, report provided)
 
 ---
 
-### 5. `/review-compliance <skill-path>`
+### 5. `/skill-review-compliance <skill-path>`
 
 **Implementation:** Delegation (runs quick_validate.py)
 
@@ -189,7 +216,7 @@ Else (general topic research) → firecrawl_sdk_research.py
 
 ---
 
-### 6. `/validate-runtime <skill-path>`
+### 6. `/skill-validate-runtime <skill-path>`
 
 **Implementation:** New Build
 
@@ -209,7 +236,7 @@ Else (general topic research) → firecrawl_sdk_research.py
 
 ---
 
-### 7. `/validate-integration <skill-path>`
+### 7. `/skill-validate-integration <skill-path>`
 
 **Implementation:** New Build
 
@@ -228,7 +255,7 @@ Else (general topic research) → firecrawl_sdk_research.py
 
 ---
 
-### 8. `/validate-audit <skill-path>`
+### 8. `/skill-validate-audit <skill-path>`
 
 **Implementation:** Delegation (invokes claude-skill-auditor agent)
 
@@ -251,9 +278,9 @@ Else (general topic research) → firecrawl_sdk_research.py
 ### Review Phase (Sequential)
 
 ```text
-/review-content (no dependency)
+/skill-review-content (no dependency)
   ↓ (must pass)
-/review-compliance (depends on content passing)
+/skill-review-compliance (depends on content passing)
 ```
 
 **Rationale:** Content quality must be acceptable before checking technical compliance. No point validating frontmatter if the content is fundamentally flawed.
@@ -261,11 +288,11 @@ Else (general topic research) → firecrawl_sdk_research.py
 ### Validation Phase (Tiered)
 
 ```text
-/validate-runtime (depends on compliance passing)
+/skill-validate-runtime (depends on compliance passing)
   ↓ (must pass)
-/validate-integration (depends on runtime passing)
+/skill-validate-integration (depends on runtime passing)
   ↓ (runs regardless)
-/validate-audit (non-blocking, informational)
+/skill-validate-audit (non-blocking, informational)
 ```
 
 **Rationale:**
@@ -433,7 +460,7 @@ Report:
   - See: docs/multi-agent-composition/patterns/orchestrator-pattern.md
 
   Workflow stopped. Please fix manually and restart with:
-    /create-skill coderabbit docs/research/skills/coderabbit/
+    /skill-create coderabbit docs/research/skills/coderabbit/
 
   Artifacts preserved at:
     Research: docs/research/skills/coderabbit/
@@ -576,19 +603,19 @@ Sequential dependencies ensure quality: content before compliance, runtime befor
 ### Phase 1: Primitives (Start Here)
 
 **New Build (5 commands):**
-- [ ] Implement `/research-skill` command (firecrawl automation)
-- [ ] Implement `/format-skill` command (cleanup script)
-- [ ] Implement `/review-content` command (quality assessment)
-- [ ] Implement `/validate-runtime` command (load testing)
-- [ ] Implement `/validate-integration` command (conflict detection)
+- [ ] Implement `/skill-research` command (firecrawl automation)
+- [ ] Implement `/skill-format` command (cleanup script)
+- [ ] Implement `/skill-review-content` command (quality assessment)
+- [ ] Implement `/skill-validate-runtime` command (load testing)
+- [ ] Implement `/skill-validate-integration` command (conflict detection)
 
 **Delegation (3 commands):**
-- [ ] Implement `/create-skill` command (invokes skill-creator skill)
-- [ ] Implement `/review-compliance` command (runs quick_validate.py)
-- [ ] Implement `/validate-audit` command (invokes claude-skill-auditor agent)
+- [ ] Implement `/skill-create` command (invokes skill-creator skill)
+- [ ] Implement `/skill-review-compliance` command (runs quick_validate.py)
+- [ ] Implement `/skill-validate-audit` command (invokes claude-skill-auditor agent)
 
 ### Phase 2: Orchestration
-- [ ] Create `skill-creator-v2` skill (separate from existing)
+- [ ] Create `skill-factory` skill (separate from existing)
 - [ ] Implement context-aware entry point detection
 - [ ] Implement TodoWrite-based state management
 - [ ] Implement workflow path selection (research exists vs. needed)
@@ -672,8 +699,8 @@ Sequential dependencies ensure quality: content before compliance, runtime befor
 
 **Decision:** Keep separate via delegation architecture
 - **skill-creator:** Core creation workflow (proven, stable) - remains unchanged
-- **skill-creator-v2:** Research + validation orchestrator that wraps skill-creator
-- **Relationship:** skill-creator-v2 invokes skill-creator skill for Step 3 (creation)
+- **skill-factory:** Research + validation orchestrator that wraps skill-creator
+- **Relationship:** skill-factory invokes skill-creator skill for Step 3 (creation)
 - **Benefit:** Maintains stability of proven workflow while adding quality gates
 
 ### 2. Research source defaults ✅ RESOLVED

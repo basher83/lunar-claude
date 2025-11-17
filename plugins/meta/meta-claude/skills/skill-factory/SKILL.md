@@ -1,9 +1,9 @@
 ---
 name: skill-factory
 description: |
-  Orchestrates Claude Code skill development using 8 primitive slash commands (/skill-research, /skill-format,
-  /skill-create, /skill-review-content, /skill-review-compliance, /skill-validate-runtime, /skill-validate-integration,
-  /skill-validate-audit). This skill should be used when: (1) Creating SKILL.md files with YAML frontmatter and
+  Orchestrates Claude Code skill development using 8 primitive slash commands (/meta-claude:skill:research, /meta-claude:skill:format,
+  /meta-claude:skill:create, /meta-claude:skill:review-content, /meta-claude:skill:review-compliance, /meta-claude:skill:validate-runtime, /meta-claude:skill:validate-integration,
+  /meta-claude:skill:validate-audit). This skill should be used when: (1) Creating SKILL.md files with YAML frontmatter and
   progressive disclosure, (2) Building skills with scripts/, references/, or assets/ directories, (3) Automating
   firecrawl-based research gathering for skill domains, (4) Validating skills against Anthropic specifications using
   quick_validate.py, or (5) Requiring TodoWrite-tracked workflow with tiered error handling (auto-fix, guided-fix,
@@ -44,10 +44,10 @@ Choose your starting point:
 → Use: `skill-factory <skill-name> <research-path>` (skips research)
 
 **Validation only:** Skill exists, need quality check
-→ Use: `/skill-review-content <path>` (direct validation)
+→ Use: `/meta-claude:skill:review-content <path>` (direct validation)
 
 **Integration check:** Adding skill to existing plugin
-→ Use: `/skill-validate-integration <path>` (conflict detection)
+→ Use: `/meta-claude:skill:validate-integration <path>` (conflict detection)
 
 For full workflow details, see Quick Start section below.
 
@@ -184,14 +184,14 @@ For each phase in the workflow:
 3. **Invoke command** using SlashCommand tool:
 
    ```text
-   /skill-research <skill-name> [sources]
-   /skill-format <research-dir>
-   /skill-create <skill-name> <research-dir>
-   /skill-review-content <skill-path>
-   /skill-review-compliance <skill-path>
-   /skill-validate-runtime <skill-path>
-   /skill-validate-integration <skill-path>
-   /skill-validate-audit <skill-path>
+   /meta-claude:skill:research <skill-name> [sources]
+   /meta-claude:skill:format <research-dir>
+   /meta-claude:skill:create <skill-name> <research-dir>
+   /meta-claude:skill:review-content <skill-path>
+   /meta-claude:skill:review-compliance <skill-path>
+   /meta-claude:skill:validate-runtime <skill-path>
+   /meta-claude:skill:validate-integration <skill-path>
+   /meta-claude:skill:validate-audit <skill-path>
    ```
 
 4. **Check result** (success or failure with tier metadata)
@@ -206,27 +206,27 @@ Before running each command, verify dependencies:
 **Review Phase (Sequential):**
 
 ```text
-/skill-review-content (no dependency)
+/meta-claude:skill:review-content (no dependency)
   ↓ (must pass)
-/skill-review-compliance (depends on content passing)
+/meta-claude:skill:review-compliance (depends on content passing)
 ```
 
 **Validation Phase (Tiered):**
 
 ```text
-/skill-validate-runtime (depends on compliance passing)
+/meta-claude:skill:validate-runtime (depends on compliance passing)
   ↓ (must pass)
-/skill-validate-integration (depends on runtime passing)
+/meta-claude:skill:validate-integration (depends on runtime passing)
   ↓ (runs regardless)
-/skill-validate-audit (non-blocking, informational)
+/meta-claude:skill:validate-audit (non-blocking, informational)
 ```
 
 **Dependency Check Pattern:**
 
 ```text
-Before running /skill-review-compliance:
+Before running /meta-claude:skill:review-compliance:
   Check: Is "Review content quality" completed?
-    - Yes → Invoke /skill-review-compliance
+    - Yes → Invoke /meta-claude:skill:review-compliance
     - No → Skip (workflow failed earlier, stop here)
 ```
 
@@ -237,17 +237,17 @@ Use the SlashCommand tool to invoke each primitive command:
 ```javascript
 // Example: Invoking research phase
 SlashCommand({
-  command: "/skill-research ansible-vault-security"
+  command: "/meta-claude:skill:research ansible-vault-security"
 })
 
 // Example: Invoking format phase
 SlashCommand({
-  command: "/skill-format docs/research/skills/ansible-vault-security"
+  command: "/meta-claude:skill:format docs/research/skills/ansible-vault-security"
 })
 
 // Example: Invoking create phase
 SlashCommand({
-  command: "/skill-create ansible-vault-security docs/research/skills/ansible-vault-security"
+  command: "/meta-claude:skill:create ansible-vault-security docs/research/skills/ansible-vault-security"
 })
 ```
 
@@ -389,7 +389,7 @@ Load sections as needed for your use case.
 
 ### Research Phase Fails
 
-**Symptom:** `/skill-research` command fails with API errors
+**Symptom:** `/meta-claude:skill:research` command fails with API errors
 
 **Solutions:**
 
@@ -400,7 +400,7 @@ Load sections as needed for your use case.
 
 ### Content Review Fails Repeatedly
 
-**Symptom:** `/skill-review-content` fails even after applying fixes
+**Symptom:** `/meta-claude:skill:review-content` fails even after applying fixes
 
 **Solutions:**
 
@@ -411,7 +411,7 @@ Load sections as needed for your use case.
 
 ### Compliance Validation Fails
 
-**Symptom:** `/skill-review-compliance` reports frontmatter or naming violations
+**Symptom:** `/meta-claude:skill:review-compliance` reports frontmatter or naming violations
 
 **Solutions:**
 
@@ -422,7 +422,7 @@ Load sections as needed for your use case.
 
 ### Integration Validation Fails
 
-**Symptom:** `/skill-validate-integration` reports conflicts
+**Symptom:** `/meta-claude:skill:validate-integration` reports conflicts
 
 **Solutions:**
 

@@ -27,15 +27,15 @@ Issues are categorized into three tiers based on complexity:
 **Example:**
 
 ```text
-/skill-review-compliance fails: "Missing frontmatter description field"
+/meta-claude:skill:review-compliance fails: "Missing frontmatter description field"
   ↓
 Tier: Simple → AUTO-FIX
   ↓
 Fix: Add description field inferred from skill name
   ↓
-Auto re-run: /skill-review-compliance <skill-path>
+Auto re-run: /meta-claude:skill:review-compliance <skill-path>
   ↓
-Result: Pass → Mark todo completed, continue to /skill-validate-runtime
+Result: Pass → Mark todo completed, continue to /meta-claude:skill:validate-runtime
 ```
 
 ### Tier 2: Medium (Guided Fix with Approval)
@@ -58,7 +58,7 @@ Result: Pass → Mark todo completed, continue to /skill-validate-runtime
 **Example:**
 
 ```text
-/skill-review-content fails: "Examples section unclear, lacks practical context"
+/meta-claude:skill:review-content fails: "Examples section unclear, lacks practical context"
   ↓
 Tier: Medium → GUIDED FIX
   ↓
@@ -70,9 +70,9 @@ User: Yes
   ↓
 Apply fix
   ↓
-Re-run: /skill-review-content <skill-path>
+Re-run: /meta-claude:skill:review-content <skill-path>
   ↓
-Result: Pass → Mark todo completed, continue to /skill-review-compliance
+Result: Pass → Mark todo completed, continue to /meta-claude:skill:review-compliance
 ```
 
 ### Tier 3: Complex (Stop and Report)
@@ -95,7 +95,7 @@ Result: Pass → Mark todo completed, continue to /skill-review-compliance
 **Example:**
 
 ```text
-/skill-review-content fails: "Skill attempts to nest sub-agents, violates composition rules"
+/meta-claude:skill:review-content fails: "Skill attempts to nest sub-agents, violates composition rules"
   ↓
 Tier: Complex → STOP AND REPORT
   ↓

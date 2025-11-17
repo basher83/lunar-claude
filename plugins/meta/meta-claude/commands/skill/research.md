@@ -212,8 +212,8 @@ Research materials ready for formatting and skill creation.
 
 Next steps:
   1. Review research materials
-  2. Run: /skill-format docs/research/skills/<skill-name>
-  3. Run: /skill-create <skill-name> docs/research/skills/<skill-name>
+  2. Run: /meta-claude:skill:format docs/research/skills/<skill-name>
+  3. Run: /meta-claude:skill:create <skill-name> docs/research/skills/<skill-name>
 ```
 
 ## Error Handling
@@ -287,13 +287,13 @@ If user provides no sources but you detect they want URL scraping:
 No URLs provided for research.
 
 Usage:
-  /skill-research <skill-name> <url1> [url2] [url3]
+  /meta-claude:skill:research <skill-name> <url1> [url2] [url3]
 
 Example:
-  /skill-research docker-best-practices https://docs.docker.com/develop/dev-best-practices/
+  /meta-claude:skill:research docker-best-practices https://docs.docker.com/develop/dev-best-practices/
 
 Or run without URLs for general web research:
-  /skill-research docker-best-practices
+  /meta-claude:skill:research docker-best-practices
 ```
 
 Exit with error code 1.
@@ -305,7 +305,7 @@ Exit with error code 1.
 User invocation:
 
 ```bash
-/skill-research ansible-vault-security
+/meta-claude:skill:research ansible-vault-security
 ```
 
 Process:
@@ -328,7 +328,7 @@ Process:
 User invocation:
 
 ```bash
-/skill-research terraform-best-practices \
+/meta-claude:skill:research terraform-best-practices \
   https://developer.hashicorp.com/terraform/tutorials \
   https://spacelift.io/blog/terraform-best-practices
 ```
@@ -347,7 +347,7 @@ Process:
 User invocation:
 
 ```bash
-/skill-research skill-creator-advanced
+/meta-claude:skill:research skill-creator-advanced
 ```
 
 Process:
@@ -364,7 +364,7 @@ Process:
 User invocation:
 
 ```bash
-/skill-research machine-learning-pipelines
+/meta-claude:skill:research machine-learning-pipelines
 ```
 
 Process:

@@ -11,7 +11,7 @@ Light cleanup of research materials - remove UI artifacts and apply basic format
 ## Usage
 
 ```bash
-/skill-format <research-dir>
+/meta-claude:skill:format <research-dir>
 ```
 
 ## What This Does
@@ -64,7 +64,7 @@ Processing: file2.md
 Error: Directory not found: <research-dir>
 ```
 
-Suggest: Check path or run `/skill-research` first
+Suggest: Check path or run `/meta-claude:skill:research` first
 
 **If no markdown files:**
 
@@ -79,13 +79,13 @@ Action: Skip formatting, continue workflow
 **Format research:**
 
 ```bash
-/skill-format docs/research/skills/docker-master/
+/meta-claude:skill:format docs/research/skills/docker-master/
 # Output: ✓ Formatted 5 files in docs/research/skills/docker-master/
 ```
 
 **Already clean:**
 
 ```bash
-/skill-format docs/research/skills/clean-skill/
+/meta-claude:skill:format docs/research/skills/clean-skill/
 # Output: No markdown files found (or no changes needed)
 ```

@@ -10,7 +10,7 @@ Your task is to run technical compliance validation on a skill using quick_valid
 ## Usage
 
 ```bash
-/skill-review-compliance /path/to/skill
+/meta-claude:skill:review-compliance /path/to/skill
 ```
 
 ## What This Does
@@ -76,13 +76,13 @@ Skill is valid!
 **Valid skill:**
 
 ```bash
-/skill-review-compliance plugins/meta/meta-claude/skills/skill-creator
+/meta-claude:skill:review-compliance plugins/meta/meta-claude/skills/skill-creator
 # Output: Skill is valid!
 ```
 
 **Invalid skill:**
 
 ```bash
-/skill-review-compliance plugins/example/broken-skill
+/meta-claude:skill:review-compliance plugins/example/broken-skill
 # Output: Missing 'description' in frontmatter. This is a Tier 1 (auto-fix)
 ```

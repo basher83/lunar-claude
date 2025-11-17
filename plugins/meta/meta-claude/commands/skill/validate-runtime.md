@@ -5,7 +5,7 @@ Test skill by attempting to load it in Claude Code context (runtime validation).
 ## Usage
 
 ```bash
-/skill-validate-runtime <skill-path>
+/meta-claude:skill:validate-runtime <skill-path>
 ```
 
 ## What This Does
@@ -184,7 +184,7 @@ Create a structured report with the following format:
 Error: SKILL.md not found at <skill-path>
 ```
 
-Action: Verify path is correct or run `/skill-create` first
+Action: Verify path is correct or run `/meta-claude:skill:create` first
 
 **If runtime validation passes:**
 
@@ -227,7 +227,7 @@ Runtime validation FAILS if:
 **Valid skill with good runtime characteristics:**
 
 ```bash
-/skill-validate-runtime plugins/meta/meta-claude/skills/skill-creator
+/meta-claude:skill:validate-runtime plugins/meta/meta-claude/skills/skill-creator
 # Output: Runtime Validation: PASS
 # - All syntax checks passed
 # - Frontmatter parsed successfully
@@ -239,7 +239,7 @@ Runtime validation FAILS if:
 **Skill with runtime issues:**
 
 ```bash
-/skill-validate-runtime /path/to/broken-skill
+/meta-claude:skill:validate-runtime /path/to/broken-skill
 # Output: Runtime Validation: FAIL
 #
 # Issues Found:
@@ -254,7 +254,7 @@ Runtime validation FAILS if:
 **Skill with minor warnings:**
 
 ```bash
-/skill-validate-runtime /path/to/working-skill
+/meta-claude:skill:validate-runtime /path/to/working-skill
 # Output: Runtime Validation: PASS
 #
 # Info:
@@ -266,7 +266,7 @@ Runtime validation FAILS if:
 
 - This validation tests **runtime behavior**, not just static compliance
 - Focus on whether the skill actually loads and functions in Claude Code
-- Unlike `/skill-review-compliance` (static validation), this tests live
+- Unlike `/meta-claude:skill:review-compliance` (static validation), this tests live
   loading
 - Runtime validation should be run after compliance validation passes
 - Tests simulate how Claude Code will interact with the skill at runtime

@@ -305,24 +305,47 @@ Organize by severity:
 
 Each action references violation number and provides specific fix.
 
-### Step 5: Output Report
+### Step 5: Write and Output Report
 
-Display the complete report as your final output.
+Generate the report following Step 4, then save it to disk.
+
+**Derive output path from input path:**
+
+```text
+Input:  plugins/meta/meta-claude/commands/skill/research.md
+Output: docs/reviews/audits/meta-claude/commands/skill-research.md
+
+Pattern: Extract command filename → Convert to report filename
+```
+
+**Write report to disk:**
+
+1. Use Write tool to save the complete report
+2. Path pattern: `docs/reviews/audits/meta-claude/commands/{command-name}.md`
+3. Content: The full formatted report from Step 4
+
+**Confirm completion:**
+
+After writing the report, output only:
+
+```text
+Audit complete. Report saved to: [path]
+```
 
 **Do not:**
 
-- Add commentary outside the report
+- Add commentary outside the confirmation
 - Explain your process
 - Ask follow-up questions
 - Provide additional context
 
-**Only output:** The formatted compliance report following the template exactly.
+**Only output:** The confirmation message with the saved file path.
 
 ## Error Handling
 
 **File not found:**
 
-```
+```text
 
 # Slash Command Standards Compliance Review
 

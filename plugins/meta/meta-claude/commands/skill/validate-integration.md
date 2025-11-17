@@ -5,7 +5,7 @@ Test skill integration with Claude Code ecosystem (conflict detection and compat
 ## Usage
 
 ```bash
-/skill-validate-integration <skill-path>
+/meta-claude:skill:validate-integration <skill-path>
 ```
 
 ## What This Does
@@ -161,7 +161,7 @@ Check compatibility with other meta-claude components:
 
 **Example checks:**
 
-- If skill references `/skill-create`, verify it exists
+- If skill references `/meta-claude:skill:create`, verify it exists
 - If skill mentions "skill-auditor agent", verify agent exists
 - If skill uses hooks, verify hook events are valid
 - If skill depends on scripts, verify they exist
@@ -247,7 +247,7 @@ Create a structured report with the following format:
 Error: SKILL.md not found at <skill-path>
 ```
 
-Action: Verify path is correct or run `/skill-create` first
+Action: Verify path is correct or run `/meta-claude:skill:create` first
 
 **If integration validation passes:**
 
@@ -292,7 +292,7 @@ Integration validation FAILS if:
 **Skill with clean integration:**
 
 ```bash
-/skill-validate-integration plugins/meta/meta-claude/skills/docker-security
+/meta-claude:skill:validate-integration plugins/meta/meta-claude/skills/docker-security
 # Output: Integration Validation: PASS
 # - No naming conflicts detected
 # - Functionality is complementary to existing skills
@@ -304,7 +304,7 @@ Integration validation FAILS if:
 **Skill with naming conflict:**
 
 ```bash
-/skill-validate-integration /path/to/duplicate-skill
+/meta-claude:skill:validate-integration /path/to/duplicate-skill
 # Output: Integration Validation: FAIL
 #
 # Conflicts Found:
@@ -317,7 +317,7 @@ Integration validation FAILS if:
 **Skill with functionality overlap:**
 
 ```bash
-/skill-validate-integration /path/to/overlapping-skill
+/meta-claude:skill:validate-integration /path/to/overlapping-skill
 # Output: Integration Validation: FAIL
 #
 # Conflicts Found:
@@ -331,7 +331,7 @@ Integration validation FAILS if:
 **Skill with minor concerns:**
 
 ```bash
-/skill-validate-integration /path/to/new-skill
+/meta-claude:skill:validate-integration /path/to/new-skill
 # Output: Integration Validation: PASS
 #
 # Info:
@@ -343,7 +343,7 @@ Integration validation FAILS if:
 ## Notes
 
 - This validation tests **ecosystem integration**, not runtime or compliance
-- Run after `/skill-validate-runtime` passes
+- Run after `/meta-claude:skill:validate-runtime` passes
 - Focuses on conflicts with existing skills, commands, and components
 - Sequential dependency: requires runtime validation to pass first
 - Integration issues often require human judgment to resolve

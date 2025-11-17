@@ -5,7 +5,7 @@ Run comprehensive skill audit using skill-auditor agent (non-blocking).
 ## Usage
 
 ```bash
-/skill-validate-audit <skill-path>
+/meta-claude:skill:validate-audit <skill-path>
 ```
 
 ## What This Does
@@ -57,13 +57,13 @@ Even if the skill has validation failures, the audit provides debugging feedback
 **Audit a new skill:**
 
 ```bash
-/skill-validate-audit plugins/meta/meta-claude/skills/docker-master
+/meta-claude:skill:validate-audit plugins/meta/meta-claude/skills/docker-master
 # Output: Comprehensive audit report with recommendations
 ```
 
 **Audit after fixes:**
 
 ```bash
-/skill-validate-audit plugins/meta/meta-claude/skills/docker-master
+/meta-claude:skill:validate-audit plugins/meta/meta-claude/skills/docker-master
 # Output: Updated audit showing improvements
 ```

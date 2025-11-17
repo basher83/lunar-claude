@@ -5,7 +5,7 @@ Review content quality (clarity, completeness, usefulness) of a skill's SKILL.md
 ## Usage
 
 ```bash
-/skill-review-content <skill-path>
+/meta-claude:skill:review-content <skill-path>
 ```
 
 ## What This Does
@@ -182,7 +182,7 @@ Generate a structured report with the following sections:
 Error: SKILL.md not found at <skill-path>
 ```
 
-Action: Verify path is correct or run `/skill-create` first
+Action: Verify path is correct or run `/meta-claude:skill:create` first
 
 **If content passes review:**
 
@@ -223,7 +223,7 @@ Content FAILS if:
 **High-quality skill:**
 
 ```bash
-/skill-review-content plugins/meta/meta-claude/skills/skill-creator
+/meta-claude:skill:review-content plugins/meta/meta-claude/skills/skill-creator
 # Output: Content Quality Review: PASS
 # - All quality dimensions passed
 # - Clear structure with progressive disclosure
@@ -233,7 +233,7 @@ Content FAILS if:
 **Skill needing improvement:**
 
 ```bash
-/skill-review-content /path/to/draft-skill
+/meta-claude:skill:review-content /path/to/draft-skill
 # Output: Content Quality Review: FAIL
 #
 # Issues Found:
@@ -248,7 +248,7 @@ Content FAILS if:
 ## Notes
 
 - This review focuses on **content quality**, not technical compliance
-- Technical validation (frontmatter, naming) is handled by `/skill-review-compliance`
+- Technical validation (frontmatter, naming) is handled by `/meta-claude:skill:review-compliance`
 - Be constructive: highlight strengths and provide actionable suggestions
 - Content quality is subjective: use judgment and consider the skill's purpose
 - Focus on whether Claude can effectively use the skill, not perfection

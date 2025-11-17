@@ -16,45 +16,45 @@ User: "No - Help me gather research"
 skill-factory initializes TodoWrite with 9 tasks, starts workflow:
 
 [Phase 1: Research]
-Invokes: /skill-research terraform-best-practices
+Invokes: /meta-claude:skill:research terraform-best-practices
 Mini brainstorm about scope and categories
 Executes firecrawl research script
 Research saved to docs/research/skills/terraform-best-practices/
 ✓ Research completed
 
 [Phase 2: Format]
-Invokes: /skill-format docs/research/skills/terraform-best-practices
+Invokes: /meta-claude:skill:format docs/research/skills/terraform-best-practices
 Cleans UI artifacts and navigation elements
 ✓ Formatting completed
 
 [Phase 3: Create]
-Invokes: /skill-create terraform-best-practices docs/research/skills/terraform-best-practices
+Invokes: /meta-claude:skill:create terraform-best-practices docs/research/skills/terraform-best-practices
 Delegates to skill-creator skill
 Follows Understand → Plan → Initialize → Edit → Package workflow
 ✓ Skill created at plugins/infrastructure/terraform-skills/skills/terraform-best-practices/
 
 [Phase 4: Review Content]
-Invokes: /skill-review-content plugins/infrastructure/terraform-skills/skills/terraform-best-practices
+Invokes: /meta-claude:skill:review-content plugins/infrastructure/terraform-skills/skills/terraform-best-practices
 Analyzes clarity, completeness, examples, actionability, usefulness
 ✓ Content review passed (5/5 quality dimensions)
 
 [Phase 5: Review Compliance]
-Invokes: /skill-review-compliance plugins/infrastructure/terraform-skills/skills/terraform-best-practices
+Invokes: /meta-claude:skill:review-compliance plugins/infrastructure/terraform-skills/skills/terraform-best-practices
 Runs quick_validate.py
 ✓ Compliance check passed
 
 [Phase 6: Validate Runtime]
-Invokes: /skill-validate-runtime plugins/infrastructure/terraform-skills/skills/terraform-best-practices
+Invokes: /meta-claude:skill:validate-runtime plugins/infrastructure/terraform-skills/skills/terraform-best-practices
 Tests skill loading in Claude Code context
 ✓ Runtime validation passed
 
 [Phase 7: Validate Integration]
-Invokes: /skill-validate-integration plugins/infrastructure/terraform-skills/skills/terraform-best-practices
+Invokes: /meta-claude:skill:validate-integration plugins/infrastructure/terraform-skills/skills/terraform-best-practices
 Checks for conflicts with existing skills
 ✓ Integration validation passed
 
 [Phase 8: Audit]
-Invokes: /skill-validate-audit plugins/infrastructure/terraform-skills/skills/terraform-best-practices
+Invokes: /meta-claude:skill:validate-audit plugins/infrastructure/terraform-skills/skills/terraform-best-practices
 Runs claude-skill-auditor agent
 ℹ Audit completed with recommendations (non-blocking)
 
@@ -90,11 +90,11 @@ skill-factory detects explicit research path, uses Path 1
 Initializes TodoWrite with 8 tasks (skips research), starts workflow:
 
 [Phase 1: Format]
-Invokes: /skill-format docs/research/skills/coderabbit
+Invokes: /meta-claude:skill:format docs/research/skills/coderabbit
 ✓ Formatting completed
 
 [Phase 2: Create]
-Invokes: /skill-create coderabbit docs/research/skills/coderabbit
+Invokes: /meta-claude:skill:create coderabbit docs/research/skills/coderabbit
 ✓ Skill created
 
 [Continues through remaining phases...]
@@ -105,7 +105,7 @@ Invokes: /skill-create coderabbit docs/research/skills/coderabbit
 
 ```text
 [Phase 4: Review Content]
-Invokes: /skill-review-content plugins/meta/meta-claude/skills/docker-compose
+Invokes: /meta-claude:skill:review-content plugins/meta/meta-claude/skills/docker-compose
 
 Command response:
 {
@@ -136,7 +136,7 @@ User: Yes
 
 skill-factory applies fix, re-runs command:
 
-Invokes: /skill-review-content plugins/meta/meta-claude/skills/docker-compose
+Invokes: /meta-claude:skill:review-content plugins/meta/meta-claude/skills/docker-compose
 ✓ Content review passed
 
 Continues to next phase...
@@ -146,7 +146,7 @@ Continues to next phase...
 
 ```text
 [Phase 4: Review Content]
-Invokes: /skill-review-content plugins/meta/meta-claude/skills/advanced-orchestration
+Invokes: /meta-claude:skill:review-content plugins/meta/meta-claude/skills/advanced-orchestration
 
 Command response:
 {

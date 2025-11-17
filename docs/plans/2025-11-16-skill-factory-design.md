@@ -49,20 +49,20 @@ The create-review-validate cycle follows the multi-agent-composition framework w
 
 **Command Namespace:**
 - Directory structure: `commands/skill/` (grouped by component type)
-- Command pattern: `/skill-*` (e.g., `/skill-research`, `/skill-create`)
+- Command pattern: `/meta-claude:skill:*` (e.g., `/meta-claude:skill:research`, `/meta-claude:skill:create`)
 - Future expansion: `commands/agent/`, `commands/command/`, `commands/hook/`
 
 **Command Files:**
 ```sql
 plugins/meta/meta-claude/commands/skill/
-├── research.md          → /skill-research
-├── format.md            → /skill-format
-├── create.md            → /skill-create
-├── review-content.md    → /skill-review-content
-├── review-compliance.md → /skill-review-compliance
-├── validate-runtime.md  → /skill-validate-runtime
-├── validate-integration.md → /skill-validate-integration
-└── validate-audit.md    → /skill-validate-audit
+├── research.md          → /meta-claude:skill:research
+├── format.md            → /meta-claude:skill:format
+├── create.md            → /meta-claude:skill:create
+├── review-content.md    → /meta-claude:skill:review-content
+├── review-compliance.md → /meta-claude:skill:review-compliance
+├── validate-runtime.md  → /meta-claude:skill:validate-runtime
+├── validate-integration.md → /meta-claude:skill:validate-integration
+└── validate-audit.md    → /meta-claude:skill:validate-audit
 ```
 
 ### Entry Point Detection
@@ -86,15 +86,15 @@ User: "Create coderabbit skill"
 
 **Path 1: Research Exists**
 ```text
-/skill-format → /skill-create → /skill-review-content → /skill-review-compliance →
-/skill-validate-runtime → /skill-validate-integration → /skill-validate-audit → Complete
+/meta-claude:skill:format → /meta-claude:skill:create → /meta-claude:skill:review-content → /meta-claude:skill:review-compliance →
+/meta-claude:skill:validate-runtime → /meta-claude:skill:validate-integration → /meta-claude:skill:validate-audit → Complete
 ```
 
 **Path 2: Research Needed**
 ```text
-/skill-research → /skill-format → /skill-create → /skill-review-content →
-/skill-review-compliance → /skill-validate-runtime → /skill-validate-integration →
-/skill-validate-audit → Complete
+/meta-claude:skill:research → /meta-claude:skill:format → /meta-claude:skill:create → /meta-claude:skill:review-content →
+/meta-claude:skill:review-compliance → /meta-claude:skill:validate-runtime → /meta-claude:skill:validate-integration →
+/meta-claude:skill:validate-audit → Complete
 ```
 
 ## Primitive Slash Commands
@@ -105,7 +105,7 @@ Each command stands alone as an independent, reusable, testable building block. 
 - **Delegation:** Commands that invoke existing proven tools (skill-creator skill, quick_validate.py, claude-skill-auditor agent)
 - **New Build:** Commands that implement new functionality (research, formatting, content review, runtime validation, integration testing)
 
-### 1. `/skill-research <skill-name> [sources]`
+### 1. `/meta-claude:skill:research <skill-name> [sources]`
 
 **Implementation:** New Build
 
@@ -135,7 +135,7 @@ Else (general topic research) → firecrawl_sdk_research.py
 
 ---
 
-### 2. `/skill-format <research-dir>`
+### 2. `/meta-claude:skill:format <research-dir>`
 
 **Implementation:** New Build
 
@@ -149,12 +149,12 @@ Else (general topic research) → firecrawl_sdk_research.py
 
 **Inputs:** Research directory path
 **Outputs:** Cleaned markdown files
-**Dependencies:** Requires `/skill-research` output OR user-provided research
+**Dependencies:** Requires `/meta-claude:skill:research` output OR user-provided research
 **Exit Codes:** Success (cleaned files ready) | Failure (malformed input)
 
 ---
 
-### 3. `/skill-create <skill-name> <research-dir>`
+### 3. `/meta-claude:skill:create <skill-name> <research-dir>`
 
 **Implementation:** Delegation (invokes skill-creator skill)
 
@@ -169,12 +169,12 @@ Else (general topic research) → firecrawl_sdk_research.py
 
 **Inputs:** Skill name, research directory
 **Outputs:** Complete skill directory structure
-**Dependencies:** Requires `/skill-format` output
+**Dependencies:** Requires `/meta-claude:skill:format` output
 **Exit Codes:** Success (skill created) | Failure (skill-creator errors)
 
 ---
 
-### 4. `/skill-review-content <skill-path>`
+### 4. `/meta-claude:skill:review-content <skill-path>`
 
 **Implementation:** New Build
 
@@ -189,12 +189,12 @@ Else (general topic research) → firecrawl_sdk_research.py
 
 **Inputs:** Path to skill directory
 **Outputs:** Quality report (pass/fail + suggestions)
-**Dependencies:** Requires `/skill-create` output
+**Dependencies:** Requires `/meta-claude:skill:create` output
 **Exit Codes:** Pass (quality acceptable) | Fail (issues found, report provided)
 
 ---
 
-### 5. `/skill-review-compliance <skill-path>`
+### 5. `/meta-claude:skill:review-compliance <skill-path>`
 
 **Implementation:** Delegation (runs quick_validate.py)
 
@@ -216,7 +216,7 @@ Else (general topic research) → firecrawl_sdk_research.py
 
 ---
 
-### 6. `/skill-validate-runtime <skill-path>`
+### 6. `/meta-claude:skill:validate-runtime <skill-path>`
 
 **Implementation:** New Build
 
@@ -236,7 +236,7 @@ Else (general topic research) → firecrawl_sdk_research.py
 
 ---
 
-### 7. `/skill-validate-integration <skill-path>`
+### 7. `/meta-claude:skill:validate-integration <skill-path>`
 
 **Implementation:** New Build
 
@@ -255,7 +255,7 @@ Else (general topic research) → firecrawl_sdk_research.py
 
 ---
 
-### 8. `/skill-validate-audit <skill-path>`
+### 8. `/meta-claude:skill:validate-audit <skill-path>`
 
 **Implementation:** Delegation (invokes claude-skill-auditor agent)
 
@@ -278,9 +278,9 @@ Else (general topic research) → firecrawl_sdk_research.py
 ### Review Phase (Sequential)
 
 ```text
-/skill-review-content (no dependency)
+/meta-claude:skill:review-content (no dependency)
   ↓ (must pass)
-/skill-review-compliance (depends on content passing)
+/meta-claude:skill:review-compliance (depends on content passing)
 ```
 
 **Rationale:** Content quality must be acceptable before checking technical compliance. No point validating frontmatter if the content is fundamentally flawed.
@@ -288,11 +288,11 @@ Else (general topic research) → firecrawl_sdk_research.py
 ### Validation Phase (Tiered)
 
 ```text
-/skill-validate-runtime (depends on compliance passing)
+/meta-claude:skill:validate-runtime (depends on compliance passing)
   ↓ (must pass)
-/skill-validate-integration (depends on runtime passing)
+/meta-claude:skill:validate-integration (depends on runtime passing)
   ↓ (runs regardless)
-/skill-validate-audit (non-blocking, informational)
+/meta-claude:skill:validate-audit (non-blocking, informational)
 ```
 
 **Rationale:**
@@ -460,7 +460,7 @@ Report:
   - See: docs/multi-agent-composition/patterns/orchestrator-pattern.md
 
   Workflow stopped. Please fix manually and restart with:
-    /skill-create coderabbit docs/research/skills/coderabbit/
+    /meta-claude:skill:create coderabbit docs/research/skills/coderabbit/
 
   Artifacts preserved at:
     Research: docs/research/skills/coderabbit/
@@ -603,16 +603,16 @@ Sequential dependencies ensure quality: content before compliance, runtime befor
 ### Phase 1: Primitives (Start Here)
 
 **New Build (5 commands):**
-- [ ] Implement `/skill-research` command (firecrawl automation)
-- [ ] Implement `/skill-format` command (cleanup script)
-- [ ] Implement `/skill-review-content` command (quality assessment)
-- [ ] Implement `/skill-validate-runtime` command (load testing)
-- [ ] Implement `/skill-validate-integration` command (conflict detection)
+- [ ] Implement `/meta-claude:skill:research` command (firecrawl automation)
+- [ ] Implement `/meta-claude:skill:format` command (cleanup script)
+- [ ] Implement `/meta-claude:skill:review-content` command (quality assessment)
+- [ ] Implement `/meta-claude:skill:validate-runtime` command (load testing)
+- [ ] Implement `/meta-claude:skill:validate-integration` command (conflict detection)
 
 **Delegation (3 commands):**
-- [ ] Implement `/skill-create` command (invokes skill-creator skill)
-- [ ] Implement `/skill-review-compliance` command (runs quick_validate.py)
-- [ ] Implement `/skill-validate-audit` command (invokes claude-skill-auditor agent)
+- [ ] Implement `/meta-claude:skill:create` command (invokes skill-creator skill)
+- [ ] Implement `/meta-claude:skill:review-compliance` command (runs quick_validate.py)
+- [ ] Implement `/meta-claude:skill:validate-audit` command (invokes claude-skill-auditor agent)
 
 ### Phase 2: Orchestration
 - [ ] Create `skill-factory` skill (separate from existing)

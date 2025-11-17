@@ -1,12 +1,12 @@
 ---
 description: Fully automated research gathering for skill creation
 argument-hint: [skill-name] [sources]
-allowed-tools: Bash(scripts/*:*,mkdir,ls,if,for,echo), Read, Write, AskUserQuestion
+allowed-tools: Bash(python:*), Bash(mkdir:*), Bash(ls:*), Bash(echo:*), Read, Write, AskUserQuestion
 ---
 
 # Skill Research
 
-Gather research materials for skill creation with intelligent automation.
+Your task is to gather research materials for skill creation with intelligent automation.
 
 ## Purpose
 
@@ -19,7 +19,7 @@ Automate the research phase of skill creation by:
 
 ## Inputs
 
-Parse arguments from `$ARGUMENTS`:
+Your task is to parse arguments from `$ARGUMENTS`:
 
 - **Required:** `skill-name` - Name of skill being researched (kebab-case)
 - **Optional:** `sources` - URLs, keywords, or categories to research
@@ -106,7 +106,7 @@ All research saves to: `docs/research/skills/<skill-name>/`
 
 ### Step 1: Parse Arguments
 
-Extract skill name and sources from `$ARGUMENTS`:
+Your task is to extract skill name and sources from `$ARGUMENTS`:
 
 - Split arguments by space
 - First argument: skill name (required)
@@ -119,7 +119,7 @@ Extract skill name and sources from `$ARGUMENTS`:
 
 ### Step 2: Determine Research Strategy
 
-Analyze sources to select script:
+Your task is to analyze sources to select script:
 
 ```text
 If sources contain URLs (starts with http:// or https://):

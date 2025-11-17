@@ -1,11 +1,16 @@
+---
+description: Run technical compliance validation on a skill using quick_validate.py
+argument-hint: [skill-path]
+---
+
 # Skill Review Compliance
 
-Run technical compliance validation on a skill using quick_validate.py.
+Your task is to run technical compliance validation on a skill using quick_validate.py and report the results.
 
 ## Usage
 
 ```bash
-/skill-review-compliance <skill-path>
+/skill-review-compliance /path/to/skill
 ```
 
 ## What This Does
@@ -21,11 +26,13 @@ Validates:
 
 ## Instructions
 
-Run the quick_validate.py script from skill-creator:
+Run the quick_validate.py script from skill-creator with the skill path provided by the user:
 
 ```bash
-${CLAUDE_PLUGIN_ROOT}/skills/skill-creator/scripts/quick_validate.py <skill-path>
+${CLAUDE_PLUGIN_ROOT}/skills/skill-creator/scripts/quick_validate.py $ARGUMENTS
 ```
+
+Where `$ARGUMENTS` is the skill path provided by the user.
 
 **Expected output if valid:**
 
@@ -49,7 +56,7 @@ Skill is valid!
 **If validation fails:**
 
 - Report the specific violation
-- Categorize as Tier 1 (simple auto-fix) or Tier 3 (complex manual fix)
+- Include categorization in output: "This is a Tier 1 (auto-fix)" or "This is a Tier 3 (manual fix)"
 - Exit with failure
 
 **Tier 1 (Auto-fix) examples:**
@@ -76,6 +83,6 @@ Skill is valid!
 **Invalid skill:**
 
 ```bash
-/skill-review-compliance /path/to/broken-skill
-# Output: Missing 'description' in frontmatter
+/skill-review-compliance plugins/example/broken-skill
+# Output: Missing 'description' in frontmatter. This is a Tier 1 (auto-fix)
 ```

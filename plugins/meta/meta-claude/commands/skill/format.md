@@ -1,7 +1,7 @@
 ---
 description: "Light cleanup of research materials - remove UI artifacts and basic formatting"
 allowed-tools: Bash(command:*)
-argument-hint: RESEARCH_DIR
+argument-hint: [research-dir]
 ---
 
 # Skill Format

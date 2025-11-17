@@ -1,6 +1,6 @@
 ---
 description: Fully automated research gathering for skill creation
-argument-hint: skill-name [sources]
+argument-hint: [skill-name] [sources]
 allowed-tools: Bash(scripts/*:*,mkdir,ls,if,for,echo), Read, Write, AskUserQuestion
 ---
 

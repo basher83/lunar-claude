@@ -241,7 +241,9 @@ Not execution: Regular code blocks with bash examples
 
 ### Step 4: Generate Report
 
-Use `slash-command-validation-report-template.md` format:
+Use `slash-command-validation-report-template.md` format.
+
+**CRITICAL:** Follow the template structure exactly. Do not add sections not in the template. Do not omit template sections (except Notes if process ran smoothly).
 
 **Header Section:**
 

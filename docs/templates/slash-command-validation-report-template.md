@@ -196,7 +196,19 @@ Use this guide when categorizing violations:
 
 ## Notes
 
-- Frontmatter is optional - violations only if present and incorrect
-- Not all checks apply to all commands
-- Focus on user impact when determining severity
-- Reference specific line numbers from slash-commands.md for all violations
+Use this section ONLY to provide feedback on the audit process itself. Document issues encountered during the audit workflow, not analysis of the command.
+
+**Include Notes if:**
+- Checklist was ambiguous or unclear
+- Template formatting didn't fit edge case
+- Standards document missing examples
+- Difficulty determining severity
+- Suggestions to improve audit process
+
+**Do NOT include:**
+- Git history or previous fixes
+- Command best practices
+- Implications of the command
+- Analysis of what command does well
+
+**If audit process ran smoothly:** Omit this section entirely.

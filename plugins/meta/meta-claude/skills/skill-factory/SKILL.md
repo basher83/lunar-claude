@@ -1,14 +1,15 @@
 ---
 name: skill-factory
 description: |
-  Orchestrates Claude Code skill development using 8 primitive slash commands (/meta-claude:skill:research, /meta-claude:skill:format,
-  /meta-claude:skill:create, /meta-claude:skill:review-content, /meta-claude:skill:review-compliance, /meta-claude:skill:validate-runtime, /meta-claude:skill:validate-integration,
-  /meta-claude:skill:validate-audit). This skill should be used when: (1) Creating SKILL.md files with YAML frontmatter and
-  progressive disclosure, (2) Building skills with scripts/, references/, or assets/ directories, (3) Automating
-  firecrawl-based research gathering for skill domains, (4) Validating skills against Anthropic specifications using
-  quick_validate.py, or (5) Requiring TodoWrite-tracked workflow with tiered error handling (auto-fix, guided-fix,
-  fail-fast). Creates infrastructure skills (terraform-best-practices), development skills (docker-compose-helper),
-  or domain-specific skills (brand-guidelines, conventional-git-commits) extending Claude capabilities.
+  Orchestrates Claude Code skill development using 8 primitive slash commands
+  (/meta-claude:skill:research, /meta-claude:skill:format, /meta-claude:skill:create,
+  /meta-claude:skill:review-content, /meta-claude:skill:review-compliance,
+  /meta-claude:skill:validate-runtime, /meta-claude:skill:validate-integration,
+  /meta-claude:skill:validate-audit). Use when: (1) Creating SKILL.md files with YAML frontmatter and
+  progressive disclosure, (2) Building skills with scripts/, references/, or assets/ directories,
+  (3) Automating firecrawl-based research gathering, (4) Validating skills against Anthropic specifications,
+  or (5) Requiring TodoWrite-tracked workflow with tiered error handling (auto-fix, guided-fix, fail-fast).
+  Creates infrastructure, development, or domain-specific skills extending Claude capabilities.
 ---
 
 # Skill Factory
@@ -104,6 +105,196 @@ skill-factory proceeds through Path 2:
 3. Create skill structure
 ... (continues through all phases)
 ```
+
+## When This Skill Is Invoked
+
+**Your role:** You are the skill-factory orchestrator. Your task is to guide the user through creating
+a high-quality, validated skill using 8 primitive slash commands.
+
+### Step 1: Entry Point Detection
+
+Analyze the user's prompt to determine which workflow path to use:
+
+**If research path is explicitly provided:**
+
+```text
+User: "skill-factory coderabbit docs/research/skills/coderabbit/"
+→ Use Path 1 (skip research phase)
+```
+
+**If no research path is provided:**
+
+Ask the user using AskUserQuestion:
+
+```text
+"Have you already gathered research for this skill?"
+
+Options:
+[Yes - I have research at a specific location]
+[No - Help me gather research]
+[Skip - I'll create from knowledge only]
+```
+
+**Based on user response:**
+
+- **Yes** → Ask for research path, use Path 1
+- **No** → Use Path 2 (include research phase)
+- **Skip** → Use Path 1 without research (create from existing knowledge)
+
+### Step 2: Initialize TodoWrite
+
+Create a TodoWrite list based on the selected path:
+
+**Path 2 (Full Workflow with Research):**
+
+```javascript
+TodoWrite([
+  {"content": "Research skill domain", "status": "pending", "activeForm": "Researching skill domain"},
+  {"content": "Format research materials", "status": "pending", "activeForm": "Formatting research materials"},
+  {"content": "Create skill structure", "status": "pending", "activeForm": "Creating skill structure"},
+  {"content": "Review content quality", "status": "pending", "activeForm": "Reviewing content quality"},
+  {"content": "Review technical compliance", "status": "pending", "activeForm": "Reviewing technical compliance"},
+  {"content": "Validate runtime loading", "status": "pending", "activeForm": "Validating runtime loading"},
+  {"content": "Validate integration", "status": "pending", "activeForm": "Validating integration"},
+  {"content": "Run comprehensive audit", "status": "pending", "activeForm": "Running comprehensive audit"},
+  {"content": "Complete workflow", "status": "pending", "activeForm": "Completing workflow"}
+])
+```
+
+**Path 1 (Research Exists or Skipped):**
+
+Omit the first "Research skill domain" task. Start with "Format research materials" or
+"Create skill structure" depending on whether research exists.
+
+### Step 3: Execute Workflow Sequentially
+
+For each phase in the workflow, follow this pattern:
+
+#### 1. Mark phase as in_progress
+
+Update the corresponding TodoWrite item to `in_progress` status.
+
+#### 2. Check dependencies
+
+Before running a command, verify prior phases completed:
+
+- Review-compliance requires review-content to pass
+- Validate-runtime requires review-compliance to pass
+- Validate-integration requires validate-runtime to pass
+- Validate-audit runs regardless (non-blocking feedback)
+
+#### 3. Invoke command using SlashCommand tool
+
+```text
+/meta-claude:skill:research <skill-name> [sources]
+/meta-claude:skill:format <research-dir>
+/meta-claude:skill:create <skill-name> <research-dir>
+/meta-claude:skill:review-content <skill-path>
+/meta-claude:skill:review-compliance <skill-path>
+/meta-claude:skill:validate-runtime <skill-path>
+/meta-claude:skill:validate-integration <skill-path>
+/meta-claude:skill:validate-audit <skill-path>
+```
+
+**IMPORTANT:** Wait for each command to complete before proceeding to the next phase.
+Do not invoke multiple commands in parallel.
+
+#### 4. Check command result
+
+Each command returns success or failure with specific error details.
+
+#### 5. Apply fix strategy if needed
+
+Use the three-tier fix strategy:
+
+**Tier 1 (Simple - Auto-fix):**
+
+- Formatting errors, frontmatter syntax, markdown issues
+- Apply fix automatically, re-run command once
+- If still fails → escalate to Tier 2
+
+**Tier 2 (Medium - Guided-fix):**
+
+- Content clarity issues, instruction rewording
+- Present suggested fix to user
+- Ask: "Apply this fix? [Yes/No/Edit]"
+- If user approves → Apply fix, re-run once
+- If user declines or still fails → fail fast
+
+**Tier 3 (Complex - Fail-fast):**
+
+- Architectural problems, schema violations, composition rule violations
+- Report issue with detailed explanation
+- Provide recommendations for manual fixes
+- **Exit workflow immediately** - user must fix manually
+
+**One-shot policy:** Apply fix once, re-run once. If still broken, fail fast (prevents infinite loops).
+
+#### 6. Mark phase completed
+
+Update TodoWrite item to `completed` status.
+
+#### 7. Continue to next phase
+
+Proceed to the next workflow phase, or exit if fail-fast triggered.
+
+### Step 4: Completion
+
+When all phases pass successfully:
+
+**Present completion summary:**
+
+```text
+✅ Skill created and validated successfully!
+
+Location: <skill-output-path>/
+
+Research materials: docs/research/skills/<skill-name>/
+```
+
+**Ask about artifact cleanup:**
+
+```text
+Keep research materials? [Keep/Remove] (default: Keep)
+```
+
+**Present next steps using AskUserQuestion:**
+
+```text
+Next steps - choose an option:
+[Test the skill now - Try invoking it in a new conversation]
+[Create PR - Submit skill to repository]
+[Add to plugin.json - Integrate with plugin manifest]
+[Done - Exit workflow]
+```
+
+**Execute user's choice:**
+
+- **Test** → Guide user to test skill invocation
+- **Create PR** → Create git branch, commit, push, open PR
+- **Add to plugin.json** → Update manifest, validate structure
+- **Done** → Clean exit
+
+### Key Execution Principles
+
+**Sequential Execution:** Do not run commands in parallel. Wait for each phase to complete before proceeding.
+
+**Context Window Protection:** You are orchestrating commands, not sub-agents. Your context window is safe
+because you're invoking slash commands sequentially, not spawning multiple agents.
+
+**State Management:** TodoWrite provides real-time progress visibility. Update it at every phase
+transition.
+
+**Fail Fast:** When Tier 3 issues occur or user declines fixes, exit immediately with clear guidance.
+Don't attempt complex recovery.
+
+**Dependency Enforcement:** Never skip dependency checks. Review phases are sequential, validation
+phases are tiered.
+
+**One-shot Fixes:** Apply each fix once, re-run once, then fail if still broken. This prevents infinite loops.
+
+**User Communication:** Report progress clearly. Show which phase is running, what the result was,
+and what's happening next.
 
 ## Workflow Architecture
 

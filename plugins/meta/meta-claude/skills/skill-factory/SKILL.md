@@ -52,6 +52,9 @@ The skill-factory provides 8 specialized commands for the create-review-validate
 **Power user tip:** Commands work standalone or orchestrated. Use individual commands for targeted fixes,
 or invoke the skill for full workflow automation.
 
+**Visual learners:** See [workflows/visual-guide.md](workflows/visual-guide.md) for decision trees, state diagrams,
+and workflow visualizations.
+
 ## Quick Decision Guide
 
 ### Full Workflow vs Individual Commands

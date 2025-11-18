@@ -75,10 +75,10 @@ find skill-directory/ -type f
 # Read SKILL.md
 Read skill-directory/SKILL.md
 
-# Read all supporting files
-Read skill-directory/scripts/*
-Read skill-directory/references/*
-Read skill-directory/assets/*
+# Read all supporting files (directory names vary by skill)
+# Examples: scripts/, references/, examples/, templates/, core/, etc.
+find skill-directory/ -type d -maxdepth 1 ! -path skill-directory/
+Read skill-directory/[subdirectory]/*
 ```
 
 ### Step 3: Run Verification Checks
@@ -199,12 +199,12 @@ This is a CRITICAL violation of progressive disclosure principles:
 - [ ] Core explanations exist ONLY in reference files, NOT in SKILL.md
 - [ ] SKILL.md contains ONLY navigation/workflow/essential instructions
 - [ ] No redundant explanations between SKILL.md and supporting files
-- [ ] Detailed information is in references/, not SKILL.md
+- [ ] Detailed information is in supporting files (e.g., reference/, references/, examples/), not SKILL.md
 
 **Check Method:**
 
 1. Identify key concepts/explanatory sections in SKILL.md
-2. Search for same concepts in reference/ files
+2. Search for same concepts in supporting files (reference/, references/, examples/, etc.)
 3. Compare content - if same information in both locations: VIOLATION
 4. Examples of duplication:
    - Same concept explained in both SKILL.md and reference/concepts.md
@@ -670,9 +670,14 @@ From skill-creator: Three-level loading architecture
 
 - [ ] File names are descriptive (not "doc2.md" or "file1.md")
 - [ ] Directory structure organized for discovery
-- [ ] scripts/ contains executable code (if applicable)
-- [ ] references/ contains documentation to load (if applicable)
-- [ ] assets/ contains output files not loaded into context (if applicable)
+- [ ] Directory names are meaningful and describe their contents
+- [ ] Executable code is organized in a clearly named directory (e.g., scripts/, core/)
+- [ ] Documentation files are organized logically (e.g., reference/, references/, examples/)
+
+**Note:** Official Anthropic skills use various directory naming conventions (scripts/, reference/,
+references/, templates/, examples/, themes/, core/, canvas-fonts/, workflows/). There is NO
+requirement to use specific directory names. Choose names that clearly describe the contents and
+aid discoverability. Focus on organization and clarity, not conforming to a specific naming pattern.
 
 ---
 

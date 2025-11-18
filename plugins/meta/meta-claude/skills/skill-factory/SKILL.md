@@ -234,30 +234,16 @@ Each command returns success or failure with specific error details.
 
 #### 5. Apply fix strategy if needed
 
-Use the three-tier fix strategy:
+The workflow uses a three-tier fix strategy:
 
-**Tier 1 (Simple - Auto-fix):**
+- **Tier 1 (Simple):** Auto-fix formatting, frontmatter, markdown syntax
+- **Tier 2 (Medium):** Guided fixes with user approval
+- **Tier 3 (Complex):** Stop and report - requires manual fixes
 
-- Formatting errors, frontmatter syntax, markdown issues
-- Apply fix automatically, re-run command once
-- If still fails → escalate to Tier 2
+**One-shot policy:** Each fix applied once, re-run once, then fail fast if still broken.
 
-**Tier 2 (Medium - Guided-fix):**
-
-- Content clarity issues, instruction rewording
-- Present suggested fix to user
-- Ask: "Apply this fix? [Yes/No/Edit]"
-- If user approves → Apply fix, re-run once
-- If user declines or still fails → fail fast
-
-**Tier 3 (Complex - Fail-fast):**
-
-- Architectural problems, schema violations, composition rule violations
-- Report issue with detailed explanation
-- Provide recommendations for manual fixes
-- **Exit workflow immediately** - user must fix manually
-
-**One-shot policy:** Apply fix once, re-run once. If still broken, fail fast (prevents infinite loops).
+**For complete tier definitions, issue categorization, examples, and fix workflows:**
+See [references/error-handling.md](references/error-handling.md)
 
 #### 6. Mark phase completed
 
@@ -339,19 +325,6 @@ check result → apply fixes → mark completed → continue. Dependencies enfor
 validation tiered). Commands invoked via SlashCommand tool with wait-for-completion pattern.
 
 **Details:** See [references/workflow-execution.md](references/workflow-execution.md)
-
-## Error Handling & Fix Strategy
-
-The workflow uses a three-tier fix strategy with fail-fast principles:
-
-- **Tier 1 (Simple):** Auto-fix formatting, frontmatter, markdown syntax - automatically re-run once
-- **Tier 2 (Medium):** Guided fixes for content clarity - ask user approval before applying
-- **Tier 3 (Complex):** Stop and report architectural issues - fail fast with recommendations
-
-**One-Shot Policy:** Apply fix once, re-run once, then fail fast if still broken (prevents infinite loops).
-
-**Detailed Error Handling:** See [references/error-handling.md](references/error-handling.md) for complete fix tier
-definitions, examples, issue categorization format, and command response parsing guidance.
 
 ## Success Completion
 

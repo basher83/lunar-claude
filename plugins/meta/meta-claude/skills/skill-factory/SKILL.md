@@ -1,15 +1,15 @@
 ---
 name: skill-factory
 description: |
-  Orchestrates Claude Code skill development using 8 primitive slash commands
-  (/meta-claude:skill:research, /meta-claude:skill:format, /meta-claude:skill:create,
-  /meta-claude:skill:review-content, /meta-claude:skill:review-compliance,
-  /meta-claude:skill:validate-runtime, /meta-claude:skill:validate-integration,
-  /meta-claude:skill:validate-audit). Use when: (1) Creating SKILL.md files with YAML frontmatter and
-  progressive disclosure, (2) Building skills with scripts/, references/, or assets/ directories,
-  (3) Automating firecrawl-based research gathering, (4) Validating skills against Anthropic specifications,
-  or (5) Requiring TodoWrite-tracked workflow with tiered error handling (auto-fix, guided-fix, fail-fast).
-  Creates infrastructure, development, or domain-specific skills extending Claude capabilities.
+  Automates skill-factory workflow using firecrawl API research, quick_validate.py compliance checking,
+  and claude-skill-auditor validation. Manages 8 meta-claude slash commands (/meta-claude:skill:research,
+  /meta-claude:skill:format, /meta-claude:skill:create, /meta-claude:skill:review-content,
+  /meta-claude:skill:review-compliance, /meta-claude:skill:validate-runtime,
+  /meta-claude:skill:validate-integration, /meta-claude:skill:validate-audit). Use when running
+  firecrawl-based research gathering, validating SKILL.md YAML frontmatter with quick_validate.py,
+  invoking claude-skill-auditor for Anthropic specification compliance, or managing TodoWrite-tracked
+  workflows with three-tier error handling. Required for meta-claude plugin development and skill
+  creation requiring external validation tools (firecrawl, rumdl, quick_validate.py).
 ---
 
 # Skill Factory
@@ -34,21 +34,49 @@ Use skill-factory when:
 - Domain-specific skills (brand-guidelines, conventional-git-commits)
 - Any skill that extends Claude's capabilities
 
+## Available Operations
+
+The skill-factory provides 8 specialized commands for the create-review-validate lifecycle:
+
+| Command | Purpose | Use When |
+|---------|---------|----------|
+| `/meta-claude:skill:research` | Gather domain knowledge using firecrawl API | Need automated web scraping for skill research |
+| `/meta-claude:skill:format` | Clean and structure research materials | Have raw research needing markdown formatting |
+| `/meta-claude:skill:create` | Generate SKILL.md with YAML frontmatter | Ready to create skill structure from research |
+| `/meta-claude:skill:review-content` | Validate content quality and clarity | Need content review before compliance check |
+| `/meta-claude:skill:review-compliance` | Run quick_validate.py on SKILL.md | Validate YAML frontmatter and naming conventions |
+| `/meta-claude:skill:validate-runtime` | Test skill loading in Claude context | Verify skill loads without syntax errors |
+| `/meta-claude:skill:validate-integration` | Check for conflicts with existing skills | Ensure no duplicate names or overlaps |
+| `/meta-claude:skill:validate-audit` | Invoke claude-skill-auditor agent | Get comprehensive audit against Anthropic specs |
+
+**Power user tip:** Commands work standalone or orchestrated. Use individual commands for targeted fixes,
+or invoke the skill for full workflow automation.
+
 ## Quick Decision Guide
 
-Choose your starting point:
+### Full Workflow vs Individual Commands
 
-**Most common:** Creating skill from scratch
-→ Use: `skill-factory <skill-name>` (starts research workflow)
+**Creating new skill (full workflow):**
 
-**Research already gathered:** You have `docs/research/skills/<name>/`
-→ Use: `skill-factory <skill-name> <research-path>` (skips research)
+- With research → `skill-factory <skill-name> <research-path>`
+- Without research → `skill-factory <skill-name>` (includes firecrawl research)
+- From knowledge only → `skill-factory <skill-name>` → Select "Skip research"
 
-**Validation only:** Skill exists, need quality check
-→ Use: `/meta-claude:skill:review-content <path>` (direct validation)
+**Using individual commands (power users):**
 
-**Integration check:** Adding skill to existing plugin
-→ Use: `/meta-claude:skill:validate-integration <path>` (conflict detection)
+| Scenario | Command | Why |
+|----------|---------|-----|
+| Need web research for skill topic | `/meta-claude:skill:research <name> [sources]` | Automated firecrawl scraping |
+| Have messy research files | `/meta-claude:skill:format <research-dir>` | Clean markdown formatting |
+| Ready to generate SKILL.md | `/meta-claude:skill:create <name> <research-dir>` | Creates structure with YAML |
+| Content unclear or incomplete | `/meta-claude:skill:review-content <skill-path>` | Quality gate before compliance |
+| Check frontmatter syntax | `/meta-claude:skill:review-compliance <skill-path>` | Runs quick_validate.py |
+| Skill won't load in Claude | `/meta-claude:skill:validate-runtime <skill-path>` | Tests actual loading |
+| Worried about name conflicts | `/meta-claude:skill:validate-integration <skill-path>` | Checks existing skills |
+| Want Anthropic spec audit | `/meta-claude:skill:validate-audit <skill-path>` | Runs claude-skill-auditor |
+
+**When to use full workflow:** Creating new skills from scratch
+**When to use individual commands:** Fixing specific issues, power user iteration
 
 For full workflow details, see Quick Start section below.
 
@@ -298,152 +326,18 @@ and what's happening next.
 
 ## Workflow Architecture
 
-### Entry Point Detection
+Two paths based on research availability: Path 1 (research exists) and Path 2 (research needed).
+TodoWrite tracks progress through 7-8 phases. Entry point detection uses prompt analysis and AskUserQuestion.
 
-The skill analyzes your prompt to determine the workflow path:
-
-**Explicit Research Path (Path 1):**
-
-```text
-User: "Create coderabbit skill, research in docs/research/skills/coderabbit/"
-→ Detects research location, uses Path 1 (skip research phase)
-```
-
-**Ambiguous Path:**
-
-```text
-User: "Create coderabbit skill"
-→ Asks: "Have you already gathered research?"
-→ User response determines path
-```
-
-**Research Needed (Path 2):**
-
-```text
-User selects "No - Help me gather research"
-→ Uses Path 2 (full workflow including research)
-```
-
-### Workflow Paths
-
-#### Path 1: Research Exists
-
-```text
-format → create → review-content → review-compliance →
-validate-runtime → validate-integration → validate-audit → complete
-```
-
-#### Path 2: Research Needed
-
-```text
-research → format → create → review-content → review-compliance →
-validate-runtime → validate-integration → validate-audit → complete
-```
-
-### State Management
-
-Progress tracking uses TodoWrite for real-time visibility:
-
-**Path 2 Example (Full Workflow):**
-
-```javascript
-[
-  {"content": "Research skill domain", "status": "in_progress", "activeForm": "Researching skill domain"},
-  {"content": "Format research materials", "status": "pending", "activeForm": "Formatting research materials"},
-  {"content": "Create skill structure", "status": "pending", "activeForm": "Creating skill structure"},
-  {"content": "Review content quality", "status": "pending", "activeForm": "Reviewing content quality"},
-  {"content": "Review technical compliance", "status": "pending", "activeForm": "Reviewing technical compliance"},
-  {"content": "Validate runtime loading", "status": "pending", "activeForm": "Validating runtime loading"},
-  {"content": "Validate integration", "status": "pending", "activeForm": "Validating integration"},
-  {"content": "Audit skill (non-blocking)", "status": "pending", "activeForm": "Auditing skill"},
-  {"content": "Complete workflow", "status": "pending", "activeForm": "Completing workflow"}
-]
-```
-
-**Path 1 Example (Research Exists):**
-
-Omit first "Research skill domain" task from TodoWrite list.
+**Details:** See [references/workflow-architecture.md](references/workflow-architecture.md)
 
 ## Workflow Execution
 
-### Phase Invocation Pattern
+Sequential phase invocation pattern: mark in_progress → check dependencies → invoke command →
+check result → apply fixes → mark completed → continue. Dependencies enforced (review sequential,
+validation tiered). Commands invoked via SlashCommand tool with wait-for-completion pattern.
 
-For each phase in the workflow:
-
-1. **Mark phase as in_progress** (update TodoWrite)
-2. **Check dependencies** (verify prior phases completed)
-3. **Invoke command** using SlashCommand tool:
-
-   ```text
-   /meta-claude:skill:research <skill-name> [sources]
-   /meta-claude:skill:format <research-dir>
-   /meta-claude:skill:create <skill-name> <research-dir>
-   /meta-claude:skill:review-content <skill-path>
-   /meta-claude:skill:review-compliance <skill-path>
-   /meta-claude:skill:validate-runtime <skill-path>
-   /meta-claude:skill:validate-integration <skill-path>
-   /meta-claude:skill:validate-audit <skill-path>
-   ```
-
-4. **Check result** (success or failure with tier metadata)
-5. **Apply fix strategy** (if needed - see Error Handling section)
-6. **Mark phase completed** (update TodoWrite)
-7. **Continue to next phase** (or exit if fail-fast triggered)
-
-### Dependency Enforcement
-
-Before running each command, verify dependencies:
-
-**Review Phase (Sequential):**
-
-```text
-/meta-claude:skill:review-content (no dependency)
-  ↓ (must pass)
-/meta-claude:skill:review-compliance (depends on content passing)
-```
-
-**Validation Phase (Tiered):**
-
-```text
-/meta-claude:skill:validate-runtime (depends on compliance passing)
-  ↓ (must pass)
-/meta-claude:skill:validate-integration (depends on runtime passing)
-  ↓ (runs regardless)
-/meta-claude:skill:validate-audit (non-blocking, informational)
-```
-
-**Dependency Check Pattern:**
-
-```text
-Before running /meta-claude:skill:review-compliance:
-  Check: Is "Review content quality" completed?
-    - Yes → Invoke /meta-claude:skill:review-compliance
-    - No → Skip (workflow failed earlier, stop here)
-```
-
-### Command Invocation with SlashCommand Tool
-
-Use the SlashCommand tool to invoke each primitive command:
-
-```javascript
-// Example: Invoking research phase
-SlashCommand({
-  command: "/meta-claude:skill:research ansible-vault-security"
-})
-
-// Example: Invoking format phase
-SlashCommand({
-  command: "/meta-claude:skill:format docs/research/skills/ansible-vault-security"
-})
-
-// Example: Invoking create phase
-SlashCommand({
-  command: "/meta-claude:skill:create ansible-vault-security docs/research/skills/ansible-vault-security"
-})
-```
-
-**IMPORTANT:** Wait for each command to complete before proceeding to the next phase. Check the response status
-before continuing.
+**Details:** See [references/workflow-execution.md](references/workflow-execution.md)
 
 ## Error Handling & Fix Strategy
 
@@ -515,35 +409,11 @@ scenarios showing TodoWrite state transitions, command invocations, error handli
 
 ## Design Principles
 
-### 1. Primitives First
+Six core principles: (1) Primitives First (slash commands foundation), (2) KISS State Management (TodoWrite only),
+(3) Fail Fast (no complex recovery), (4) Context-Aware Entry (prompt analysis), (5) Composable & Testable
+(standalone or orchestrated), (6) Quality Gates (sequential dependencies).
 
-Slash commands are the foundation. The skill orchestrates them using the SlashCommand tool. This follows the
-multi-agent-composition principle: "Always start with prompts."
-
-### 2. KISS State Management
-
-TodoWrite provides visibility without complexity. No external state files, no databases, no complex checkpointing.
-Simple, effective progress tracking.
-
-### 3. Fail Fast
-
-No complex recovery mechanisms. When something can't be auto-fixed or user declines a fix, exit immediately with
-clear guidance. Preserves artifacts, provides next steps.
-
-### 4. Context-Aware Entry
-
-Detects workflow path from user's prompt. Explicit research location → Path 1. Ambiguous → Ask user. Natural
-language interface.
-
-### 5. Composable & Testable
-
-Every primitive works standalone (power users) or orchestrated (guided users). Each command is independently
-testable and verifiable.
-
-### 6. Quality Gates
-
-Sequential dependencies ensure quality: content before compliance, runtime before integration. Tiered validation
-with non-blocking audit for comprehensive feedback.
+**Details:** See [references/design-principles.md](references/design-principles.md)
 
 ## Implementation Notes
 
@@ -578,49 +448,10 @@ Load sections as needed for your use case.
 
 ## Troubleshooting
 
-### Research Phase Fails
+Common issues: research phase failures (check FIRECRAWL_API_KEY), content review loops (Tier 3 issues need
+redesign), compliance validation (run quick_validate.py manually), integration conflicts (check duplicate names).
 
-**Symptom:** `/meta-claude:skill:research` command fails with API errors
-
-**Solutions:**
-
-- Verify FIRECRAWL_API_KEY is set: `echo $FIRECRAWL_API_KEY`
-- Check network connectivity
-- Verify research script permissions: `chmod +x scripts/firecrawl_*.py`
-- Try manual research and use Path 1 (skip research phase)
-
-### Content Review Fails Repeatedly
-
-**Symptom:** `/meta-claude:skill:review-content` fails even after applying fixes
-
-**Solutions:**
-
-- Review the specific issues in the quality report
-- Check if issues are Tier 3 (complex) - these require manual redesign
-- Consider if the skill design matches Claude Code's composition model
-- Consult multi-agent-composition skill for architectural guidance
-
-### Compliance Validation Fails
-
-**Symptom:** `/meta-claude:skill:review-compliance` reports frontmatter or naming violations
-
-**Solutions:**
-
-- Run quick_validate.py manually: `scripts/quick_validate.py <skill-path>`
-- Check frontmatter YAML syntax (valid YAML, required fields)
-- Verify skill name follows hyphen-case convention
-- Ensure description is clear and within 1024 characters
-
-### Integration Validation Fails
-
-**Symptom:** `/meta-claude:skill:validate-integration` reports conflicts
-
-**Solutions:**
-
-- Check for duplicate skill names in the plugin
-- Review skill description for overlap with existing skills
-- Consider renaming or refining scope to avoid conflicts
-- Ensure skill complements rather than duplicates existing functionality
+**Details:** See [references/troubleshooting.md](references/troubleshooting.md)
 
 ## Success Metrics
 

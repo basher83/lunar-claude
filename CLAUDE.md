@@ -3,6 +3,36 @@
 This file provides guidance to Claude Code (claude.ai/code) when working with
 code in this repository.
 
+## ⚠️ CRITICAL: Audit Agent Protocol
+
+**When invoking ANY audit agent (skill-auditor, command-audit, pr-review, etc.):**
+
+1. **ONLY provide the file path** - Nothing else
+2. **DO NOT mention what you just fixed** - No context about recent changes
+3. **DO NOT hint at what to look for** - No expectations or guidance
+4. **DO NOT use words like "test", "verify", "check"** - Taints the agent's objectivity
+5. **DO NOT explain why you're auditing** - Let the agent form independent conclusions
+
+**Correct audit invocation:**
+
+```text
+plugins/meta/meta-claude/skills/skill-factory
+```
+
+**WRONG - Tainted audit invocation:**
+
+```text
+We just fixed effectiveness issues. Can you audit plugins/meta/meta-claude/skills/skill-factory
+to verify the triggers are now concrete?
+```
+
+**Why this matters:** Tainted context skews audit results. The agent will look for what you
+mentioned instead of finding issues independently. This creates false positives and missed violations.
+
+**Remember:** Trust but verify. Always audit with untainted context.
+
+---
+
 ## Project Overview
 
 **lunar-claude** is a personal Claude Code plugin marketplace for homelab and

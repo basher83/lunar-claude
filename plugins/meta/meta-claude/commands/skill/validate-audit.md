@@ -1,3 +1,8 @@
+---
+argument-hint: [skill-path]
+description: Run comprehensive skill audit using skill-auditor agent (non-blocking)
+---
+
 # Skill Validate Audit
 
 Run comprehensive skill audit using skill-auditor agent (non-blocking).
@@ -22,10 +27,12 @@ Invokes the skill-auditor agent to perform comprehensive analysis against offici
 
 ## Instructions
 
-Use the Task tool to invoke the skill-auditor agent:
+Your task is to invoke the skill-auditor agent using the Agent tool to audit the skill at `$ARGUMENTS`.
+
+Call the Agent tool with the following prompt:
 
 ```text
-I need to audit the skill at <skill-path> for compliance with official Claude Code specifications.
+I need to audit the skill at $ARGUMENTS for compliance with official Claude Code specifications.
 
 Please review:
 - SKILL.md structure and organization

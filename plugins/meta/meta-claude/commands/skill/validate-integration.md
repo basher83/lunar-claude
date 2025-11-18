@@ -1,3 +1,8 @@
+---
+description: Test skill integration with Claude Code ecosystem (conflict detection and compatibility)
+allowed-tools: Bash(test:*), Bash(find:*), Bash(rg:*), Bash(git:*), Read
+---
+
 # Skill Validate Integration
 
 Test skill integration with Claude Code ecosystem (conflict detection and compatibility).
@@ -5,8 +10,12 @@ Test skill integration with Claude Code ecosystem (conflict detection and compat
 ## Usage
 
 ```bash
-/meta-claude:skill:validate-integration <skill-path>
+/meta-claude:skill:validate-integration $ARGUMENTS
 ```
+
+**Arguments:**
+
+- `$1`: Path to the skill directory to validate (required)
 
 ## What This Does
 
@@ -22,22 +31,19 @@ Validates that the skill integrates cleanly with the Claude Code ecosystem:
 
 ## Instructions
 
-Perform integration validation checks on the skill at the provided path.
+Your task is to perform integration validation checks on the skill at the provided path.
 
 ### Step 1: Verify Skill Exists
 
-Check that the skill directory contains a valid SKILL.md file:
+Verify that the skill directory contains a valid SKILL.md file:
 
-```bash
-test -f <skill-path>/SKILL.md && echo "SKILL.md exists" || \
-  echo "Error: SKILL.md not found"
-```
+!`test -f "$1/SKILL.md" && echo "SKILL.md exists" || echo "Error: SKILL.md not found"`
 
 If SKILL.md does not exist, report error and exit.
 
 ### Step 2: Extract Skill Metadata
 
-Read the SKILL.md frontmatter to extract key metadata:
+Read the SKILL.md frontmatter to extract key metadata. The frontmatter format is:
 
 ```yaml
 ---
@@ -46,32 +52,29 @@ description: Skill description text
 ---
 ```
 
-**Extract:**
+**Extract the following from the skill at `$1/SKILL.md`:**
 
 - Skill name
 - Skill description
 - Any additional metadata fields
 
-This metadata is used for conflict detection and overlap analysis.
+Use this metadata for conflict detection and overlap analysis.
 
 ### Step 3: Check for Naming Conflicts
 
-Search for existing skills with the same name across the marketplace:
+Search for existing skills with the same name across the marketplace.
 
-**Search locations:**
+**Find all SKILL.md files:**
 
-```bash
-# Search from repository root for all SKILL.md files
-find "$(git rev-parse --show-toplevel)/plugins" -type f -name "SKILL.md"
-```
+!`find "$(git rev-parse --show-toplevel)/plugins" -type f -name "SKILL.md"`
 
-**For each existing skill:**
+**For each existing skill, perform the following analysis:**
 
 1. Extract the skill name from frontmatter
-2. Compare with the new skill's name
+2. Compare with the new skill's name (from `$1/SKILL.md`)
 3. If names match, record as a naming conflict
 
-**Conflict detection:**
+**Detect these types of conflicts:**
 
 - Exact name matches (case-insensitive comparison)
 - Similar names that differ only by pluralization
@@ -118,23 +121,18 @@ Analyze skill descriptions to identify overlapping functionality:
 
 ### Step 5: Test Slash Command Composition
 
-Verify the skill can work with existing slash commands:
-
-**Check for:**
+Verify the skill can work with existing slash commands by checking for:
 
 - References to non-existent commands
 - Circular dependencies between skills and commands
 - Incompatible parameter expectations
 - Missing prerequisite commands
 
-**Test composition patterns:**
+**Find all slash command references:**
 
-```bash
-# Find all slash command references in SKILL.md (more precise pattern)
-rg -o '/[a-z][a-z0-9-]+\b' <skill-path>/SKILL.md
-```
+!`rg -o '/[a-z][a-z0-9-]+\b' "$1/SKILL.md"`
 
-**For each referenced command:**
+**For each referenced command, perform these checks:**
 
 1. Verify command exists in marketplace
 2. Check parameter compatibility
@@ -143,23 +141,23 @@ rg -o '/[a-z][a-z0-9-]+\b' <skill-path>/SKILL.md
 
 ### Step 6: Validate Component Integration
 
-Check compatibility with other meta-claude components:
+Verify compatibility with other meta-claude components.
 
-**Meta-claude components to verify:**
+**Analyze integration with these meta-claude components:**
 
 - **Skills:** Other skills in meta-claude plugin
 - **Agents:** Agent definitions that might invoke this skill
 - **Hooks:** Automation hooks that trigger skills
 - **Commands:** Slash commands in the same plugin
 
-**Integration checks:**
+**Perform these integration checks:**
 
 1. Verify skill doesn't conflict with existing meta-claude workflows
 2. Check if skill references valid agent definitions
 3. Ensure skill uses correct hook event names
 4. Validate skill works with plugin architecture
 
-**Example checks:**
+**Examples of what to verify:**
 
 - If skill references `/meta-claude:skill:create`, verify it exists
 - If skill mentions "skill-auditor agent", verify agent exists
@@ -186,9 +184,9 @@ Evaluate whether the skill complements existing capabilities:
 
 ### Generate Integration Report
 
-Create a structured report with the following format:
+Generate a structured report in the following format:
 
-```text
+```markdown
 ## Integration Validation Report: <skill-name>
 
 **Overall Status:** PASS | FAIL
@@ -244,24 +242,28 @@ Create a structured report with the following format:
 **If SKILL.md not found:**
 
 ```text
-Error: SKILL.md not found at <skill-path>
+Error: SKILL.md not found at $1
 ```
 
-Action: Verify path is correct or run `/meta-claude:skill:create` first
+Report this error and advise verifying the path is correct or running `/meta-claude:skill:create` first.
 
 **If integration validation passes:**
 
-- Report: "Integration Validation: PASS"
-- Show validation results summary
-- Note any complementary skills
-- Exit with success
+Report the following:
+
+- Status: "Integration Validation: PASS"
+- Validation results summary
+- Any complementary skills found
+- Success confirmation
 
 **If integration validation fails:**
 
-- Report: "Integration Validation: FAIL"
-- List all conflicts categorized by severity
-- Provide specific resolution recommendations
-- Exit with failure
+Report the following:
+
+- Status: "Integration Validation: FAIL"
+- All conflicts categorized by severity
+- Specific resolution recommendations
+- Failure indication
 
 **Conflict Severity Levels:**
 

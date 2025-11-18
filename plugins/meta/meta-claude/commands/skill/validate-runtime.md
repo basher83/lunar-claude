@@ -1,3 +1,9 @@
+---
+description: Test skill by attempting to load it in Claude Code context (runtime validation)
+argument-hint: [skill-path]
+allowed-tools: Bash(test:*), Read
+---
+
 # Skill Validate Runtime
 
 Test skill by attempting to load it in Claude Code context (runtime validation).
@@ -7,6 +13,8 @@ Test skill by attempting to load it in Claude Code context (runtime validation).
 ```bash
 /meta-claude:skill:validate-runtime <skill-path>
 ```
+
+The skill path is available as `$ARGUMENTS` in the command context.
 
 ## What This Does
 
@@ -24,22 +32,19 @@ not just static analysis.
 
 ## Instructions
 
-Perform runtime validation checks on the skill at the provided path.
+Your task is to perform runtime validation checks on the skill at the provided path.
 
 ### Step 1: Verify Skill Structure
 
-Check that the skill directory contains a valid SKILL.md file:
+Your task is to check that the skill directory contains a valid SKILL.md file:
 
-```bash
-test -f <skill-path>/SKILL.md && echo "SKILL.md exists" || \
-  echo "Error: SKILL.md not found"
-```
+!`test -f $ARGUMENTS/SKILL.md && echo "SKILL.md exists" || echo "Error: SKILL.md not found"`
 
 If SKILL.md does not exist, report error and exit.
 
 ### Step 2: Validate Markdown Syntax
 
-Read the SKILL.md file and check for markdown syntax issues:
+Your task is to read the SKILL.md file and check for markdown syntax issues:
 
 - Verify all code blocks are properly fenced with language identifiers
 - Check for balanced heading levels (no missing hierarchy)
@@ -56,7 +61,7 @@ Read the SKILL.md file and check for markdown syntax issues:
 
 ### Step 3: Parse Frontmatter
 
-Extract and parse the YAML frontmatter block:
+Your task is to extract and parse the YAML frontmatter block:
 
 ```yaml
 ---
@@ -75,7 +80,7 @@ description: Skill description text
 
 ### Step 4: Test Description Triggering
 
-Evaluate whether the skill description would trigger appropriately:
+Your task is to evaluate whether the skill description would trigger appropriately:
 
 **Check for:**
 
@@ -98,7 +103,7 @@ Evaluate whether the skill description would trigger appropriately:
 
 ### Step 5: Verify Progressive Disclosure
 
-Check that the skill content follows progressive disclosure principles:
+Your task is to check that the skill content follows progressive disclosure principles:
 
 **Key aspects:**
 
@@ -118,7 +123,7 @@ Check that the skill content follows progressive disclosure principles:
 
 ### Step 6: Test Context Loading
 
-Simulate loading the skill content to verify it would work in Claude's context:
+Your task is to simulate loading the skill content to verify it would work in Claude's context:
 
 **Checks:**
 
@@ -130,9 +135,9 @@ Simulate loading the skill content to verify it would work in Claude's context:
 
 ### Generate Runtime Test Report
 
-Create a structured report with the following format:
+Your task is to create a structured report with the following format:
 
-```text
+```plaintext
 ## Runtime Validation Report: <skill-name>
 
 **Overall Status:** PASS | FAIL
@@ -180,8 +185,8 @@ Create a structured report with the following format:
 
 **If SKILL.md not found:**
 
-```text
-Error: SKILL.md not found at <skill-path>
+```plaintext
+Error: SKILL.md not found at $ARGUMENTS
 ```
 
 Action: Verify path is correct or run `/meta-claude:skill:create` first

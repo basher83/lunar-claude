@@ -5,7 +5,7 @@ Review content quality (clarity, completeness, usefulness) of a skill's SKILL.md
 ## Usage
 
 ```bash
-/meta-claude:skill:review-content <skill-path>
+/meta-claude:skill:review-content [skill-path]
 ```
 
 ## What This Does
@@ -223,7 +223,7 @@ Content FAILS if:
 **High-quality skill:**
 
 ```bash
-/meta-claude:skill:review-content plugins/meta/meta-claude/skills/skill-creator
+/meta-claude:skill:review-content @plugins/meta/meta-claude/skills/skill-creator
 # Output: Content Quality Review: PASS
 # - All quality dimensions passed
 # - Clear structure with progressive disclosure
@@ -233,7 +233,7 @@ Content FAILS if:
 **Skill needing improvement:**
 
 ```bash
-/meta-claude:skill:review-content /path/to/draft-skill
+/meta-claude:skill:review-content @/path/to/draft-skill
 # Output: Content Quality Review: FAIL
 #
 # Issues Found:

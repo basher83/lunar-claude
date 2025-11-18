@@ -246,6 +246,81 @@ body"
 
 **Why Critical:** Body only loads AFTER skill triggers, so trigger info must be in description.
 
+### 6.5 Description Progressive Disclosure Compliance (CRITICAL)
+
+From agent-skills-overview.md: "Level 1: Metadata - ~100 tokens per Skill"
+From agent-skills-best-practices.md: "description must provide enough detail for Claude to know when to select this Skill, while the rest of SKILL.md provides the implementation details"
+
+Descriptions MUST contain ONLY discovery information (WHAT, WHEN), NOT implementation details (HOW, WHICH tools).
+
+**Official specification:** Anthropic's progressive disclosure architecture defines three loading levels:
+- Level 1 (Metadata): name + description (~100 tokens) - discovery only
+- Level 2 (SKILL.md body): implementation instructions
+- Level 3 (Resources): bundled files and scripts
+
+**Forbidden content in descriptions:**
+
+- [ ] NO tool names (firecrawl, quick_validate.py, rumdl, pdfplumber, etc.)
+- [ ] NO slash command paths (/meta-claude:skill:*, /command-name, etc.)
+- [ ] NO script names (file.py, script.sh, helper.js, etc.)
+- [ ] NO implementation patterns (three-tier error handling, TodoWrite workflows, validation pipelines, etc.)
+- [ ] NO internal architecture details (agent names, validation tools, internal commands)
+- [ ] NO file extensions indicating code/tools (.py, .sh, .js, .md in context of tools)
+
+**What SHOULD be in descriptions:**
+- ✅ WHAT the skill does (capabilities, features)
+- ✅ WHEN to use it (trigger conditions, contexts)
+- ✅ Key domain terms (PDF, Excel, database, etc.)
+- ✅ Use cases (analyzing data, creating reports, etc.)
+
+**Detection method:**
+
+```bash
+echo "=== DESCRIPTION PROGRESSIVE DISCLOSURE CHECK ==="
+
+# Extract description
+DESCRIPTION=$(grep -A 10 "^description:" SKILL.md | grep -v "^---" | tr '\n' ' ')
+
+# Check for tool file extensions
+echo "=== Checking for file extensions ==="
+echo "$DESCRIPTION" | grep -oE '\w+\.(py|sh|js|md|txt|json)' || echo "None found"
+
+# Check for slash commands
+echo "=== Checking for slash commands ==="
+echo "$DESCRIPTION" | grep -oE '/[a-z-]+:[a-z-]+' || echo "None found"
+
+# Check for implementation keywords
+echo "=== Checking for implementation keywords ==="
+echo "$DESCRIPTION" | grep -iE 'error.handling|workflow|validation|compliance.checking|three-tier|pipeline' || echo "None found"
+
+# Check for common tool names
+echo "=== Checking for tool names ==="
+echo "$DESCRIPTION" | grep -iE 'firecrawl|rumdl|quick_validate|pdfplumber|pypdf|pandas|numpy' || echo "None found"
+```
+
+**Examples:**
+
+**VIOLATION (implementation details in description):**
+```yaml
+description: Automates skill-factory workflow using firecrawl API research,
+  quick_validate.py compliance checking, and claude-skill-auditor validation.
+  Manages 8 meta-claude slash commands (/meta-claude:skill:research,
+  /meta-claude:skill:format). Use when running firecrawl-based research.
+```
+**Problems:** Lists tools (firecrawl, quick_validate.py, claude-skill-auditor), slash commands (/meta-claude:skill:*), implementation details.
+
+**CORRECT (discovery information only):**
+```yaml
+description: Comprehensive workflow for creating high-quality Claude Code skills
+  with automated research, content review, and validation. Use when creating or
+  validating skills that require research gathering or compliance verification.
+```
+**Why correct:** States WHAT (workflow for creating skills), WHEN (creating/validating skills), capabilities (research, review, validation). No implementation details.
+
+**Why Critical:** Violates official Anthropic progressive disclosure architecture (agent-skills-overview.md:101-106, agent-skills-best-practices.md:211-213). Implementation details belong in SKILL.md body (Level 2), not description metadata (Level 1). Bloated descriptions waste always-loaded context tokens on information that should load on-demand.
+
+**Reference:** All three official Anthropic docs (agent-skills-overview.md, agent-skills-best-practices.md, skills.md) consistently show descriptions containing ONLY discovery information, never implementation details.
+
 ### 7. Third Person Voice Requirement
 
 From skill-creator best practices: Descriptions must be in third person
@@ -809,6 +884,7 @@ IMPROVED: [stronger example using generic categories]
 - [✅/❌] No content duplication
 - [✅/❌] SKILL.md under 500 lines
 - [✅/❌] Description includes all triggers
+- [✅/❌] Description free of implementation details (progressive disclosure)
 - [✅/❌] Third person voice
 - [✅/❌] No backslashes in paths
 
@@ -890,13 +966,14 @@ IMPROVED: [stronger example using generic categories]
 
 ## Compliance Summary
 
-**Official Requirements Met:** [X/8]
+**Official Requirements Met:** [X/9]
 
 - ✅/❌ Valid YAML frontmatter
 - ✅/❌ No forbidden files
 - ✅/❌ No content duplication
 - ✅/❌ Under 500 lines
 - ✅/❌ Description includes triggers
+- ✅/❌ Description free of implementation details
 - ✅/❌ Third person voice
 - ✅/❌ Forward slashes only
 - ✅/❌ SKILL.md exists
@@ -953,7 +1030,7 @@ Report generated by claude-skill-auditor-v2
 ### Priority Order
 
 1. **Read skill-creator first** - Always start with official standards
-2. **Check critical violations** - Forbidden files, duplication, YAML
+2. **Check critical violations** - Forbidden files, duplication, YAML, description progressive disclosure
 3. **Check effectiveness** - Trigger quality, capability visibility (NEW)
 4. **Run verification commands** - Use bash to confirm
 5. **Check best practices** - Size, conciseness, structure
@@ -1106,8 +1183,9 @@ grep -E "^- \*\*|^### |^\d+\. " SKILL.md | wc -l
 3. **Be specific** - Every issue needs exact location and fix
 4. **Check for duplication** - This is a common critical violation
 5. **Check for README.md** - This is explicitly forbidden
-6. **Quote official docs** - Cite skill-creator for every requirement
-7. **NEW: Analyze trigger quality** - Check concrete vs abstract, unique identifiers
-8. **NEW: Measure capability visibility** - Check 1-hop vs 2-hop navigation
-9. **Be balanced** - List positive observations too
-10. **Think like Claude** - Will Claude be able to discover and use this skill effectively?
+6. **Check description for implementation details** - Descriptions must have ONLY discovery info (WHAT/WHEN), not implementation details (tools, commands, patterns)
+7. **Quote official docs** - Cite skill-creator for every requirement
+8. **NEW: Analyze trigger quality** - Check concrete vs abstract, unique identifiers
+9. **NEW: Measure capability visibility** - Check 1-hop vs 2-hop navigation
+10. **Be balanced** - List positive observations too
+11. **Think like Claude** - Will Claude be able to discover and use this skill effectively?

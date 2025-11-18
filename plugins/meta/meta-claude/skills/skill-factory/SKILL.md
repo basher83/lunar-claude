@@ -1,15 +1,13 @@
 ---
 name: skill-factory
 description: |
-  Automates skill-factory workflow using firecrawl API research, quick_validate.py compliance checking,
-  and claude-skill-auditor validation. Manages 8 meta-claude slash commands (/meta-claude:skill:research,
-  /meta-claude:skill:format, /meta-claude:skill:create, /meta-claude:skill:review-content,
-  /meta-claude:skill:review-compliance, /meta-claude:skill:validate-runtime,
-  /meta-claude:skill:validate-integration, /meta-claude:skill:validate-audit). Use when running
-  firecrawl-based research gathering, validating SKILL.md YAML frontmatter with quick_validate.py,
-  invoking claude-skill-auditor for Anthropic specification compliance, or managing TodoWrite-tracked
-  workflows with three-tier error handling. Required for meta-claude plugin development and skill
-  creation requiring external validation tools (firecrawl, rumdl, quick_validate.py).
+  Comprehensive workflow for creating high-quality Claude Code skills with automated research,
+  content review, and multi-tier validation against official Anthropic specifications. Guides
+  through the complete skill creation lifecycle from initial research gathering through final
+  compliance audit. Use when creating or updating Claude Code skills, when ensuring compliance
+  with SKILL.md formatting requirements, or when automated research and validation workflows
+  are preferred over manual processes. Suitable for creating skills for any domain: infrastructure,
+  development, homelab, or specialized tools.
 ---
 
 # Skill Factory

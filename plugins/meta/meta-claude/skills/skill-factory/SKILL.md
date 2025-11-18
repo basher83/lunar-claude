@@ -1,13 +1,13 @@
 ---
 name: skill-factory
 description: |
-  Comprehensive workflow for creating high-quality Claude Code skills with automated research,
-  content review, and multi-tier validation against official Anthropic specifications. Guides
-  through the complete skill creation lifecycle from initial research gathering through final
-  compliance audit. Use when creating or updating Claude Code skills, when ensuring compliance
-  with SKILL.md formatting requirements, or when automated research and validation workflows
-  are preferred over manual processes. Suitable for creating skills for any domain: infrastructure,
-  development, homelab, or specialized tools.
+  Automated skill creation system for Claude Code extensions. Orchestrates research gathering,
+  YAML frontmatter generation, progressive disclosure structuring, and quality gate validation
+  against official Anthropic specifications. Manages complete skill lifecycle from concept through
+  packaging and compliance verification. Use when building Claude Code skills requiring research
+  automation, skill packaging workflows, or Anthropic specification compliance checking. Supports
+  all skill domains: infrastructure automation (Terraform, Ansible), development tools (Docker, Git),
+  homelab utilities (NetBox, PowerDNS), and specialized knowledge areas.
 ---
 
 # Skill Factory

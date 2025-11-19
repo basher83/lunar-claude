@@ -355,194 +355,185 @@ These validate whether the skill will actually be discovered and auto-invoked by
 
 **Why Critical:** The description is the ONLY thing Claude sees before deciding to load a skill.
 
-#### 9.1 Concrete vs Abstract Trigger Analysis
+**Core Principle:** Based on Anthropic's agent-development skill, triggering works through **quoted phrases and examples**, NOT keyword frequency analysis. Skills should include specific quoted phrases that match how users actually ask for functionality.
 
-**Principle:** Specific, concrete triggers enable discovery. Generic, abstract triggers get lost in noise.
+#### 9.1 Quoted Trigger Phrase Analysis (DETERMINISTIC)
+
+**Principle:** Anthropic uses pattern matching against quoted phrases in descriptions, similar to how agents use `<example>` blocks. Quoted phrases show exact user language.
 
 **Check Method:**
 
 1. Extract description field from SKILL.md YAML frontmatter
-2. Identify all trigger keywords (nouns, technologies, domains, operations)
-3. Classify each trigger as CONCRETE or ABSTRACT:
-   - **CONCRETE:** Specific nouns (technology names, domain terms, unique operations)
-   - **ABSTRACT:** Generic terms (data, information, work, help, search, find)
-4. Calculate ratio: `concrete_triggers / total_triggers`
-5. Apply threshold:
-   - If <50% concrete: ⚠️ WARNING
-   - If <25% concrete: ⚠️⚠️ EFFECTIVENESS-CRITICAL
+2. Identify all quoted phrases (text within double quotes "...")
+3. For each quoted phrase, check specificity:
+   - **SPECIFIC:** Contains concrete artifacts, actions, or domain terms
+   - **GENERIC:** Contains only vague verbs or common words
+4. Count: total quotes, specific quotes
+5. Calculate specificity ratio: `specific_quotes / total_quotes`
 
-**Classification Guidelines:**
+**Specificity Classification (Objective Rules):**
 
 ```text
-CONCRETE triggers (high specificity):
-✅ Technology names: "PDF", "PostgreSQL", "React", "BigQuery"
-✅ Domain terminology: "orderbooks", "invoices", "medical records", "schemas"
-✅ Specific operations: "form filling", "text extraction", "rate limiting"
-✅ Brand/product names: Tool-specific identifiers
-✅ File formats: ".docx", ".xlsx", "JSON", "XML"
+SPECIFIC quoted phrases (pass at least one test):
+✅ Contains file/format name: "SKILL.md", "YAML frontmatter", ".skill files"
+✅ Contains domain + action: "create Claude skills", "validate skill structure"
+✅ Contains technology name: "Python scripts", "React components"
+✅ Contains specific operation: "generate skill packages", "audit against specifications"
 
-ABSTRACT triggers (low specificity):
-❌ Generic nouns: "data", "information", "content", "files"
-❌ Vague verbs: "help", "assist", "support", "manage"
-❌ Common actions: "search", "find", "get", "process"
-❌ General concepts: "work", "tasks", "items", "things"
-❌ Ambiguous terms: "resources", "tools", "utilities"
+GENERIC quoted phrases (fail all specificity tests):
+❌ Vague helper phrases: "help me", "do this", "use when needed"
+❌ Generic actions only: "create", "build", "validate" (without domain)
+❌ Question fragments: "what is", "how to", "can you"
 ```
 
-**Test for Specificity:**
+**Measurement Commands:**
 
-For each trigger, ask: **"How many different tools/skills could this describe?"**
+```bash
+# Extract all quoted phrases
+grep -oP '"[^"]+"' <(grep -A 10 "^description:" SKILL.md) | sed 's/"//g'
 
-- Answer >10: Too abstract (low specificity)
-- Answer 3-5: Moderate specificity
-- Answer 1-2: Good specificity (concrete)
+# Count total quotes
+grep -oP '"[^"]+"' <(grep -A 10 "^description:" SKILL.md) | wc -l
+
+# Check each quote for specificity markers:
+# - File extensions: \.md|\.py|\.js|\.yaml
+# - Format names: SKILL|YAML|JSON|PDF
+# - Specific domains: Claude|skill|frontmatter
+```
+
+**Thresholds (Deterministic):**
+
+- Total quoted phrases <3: ⚠️⚠️ EFFECTIVENESS-CRITICAL
+- Total quoted phrases ≥3 AND specificity ratio <50%: ⚠️ WARNING
+- Total quoted phrases ≥3 AND specificity ratio ≥50%: ✅ PASS
+- Total quoted phrases ≥5 AND specificity ratio ≥70%: ✅✅ EXCELLENT
 
 **Effectiveness Checks:**
 
-- [ ] >50% of triggers are CONCRETE nouns (not generic terms)
-- [ ] Triggers include technology-specific or domain-specific terms
-- [ ] Description uses specific terminology, not generic language
+- [ ] Description contains ≥3 quoted trigger phrases
+- [ ] ≥50% of quoted phrases are specific (not generic)
+- [ ] Quoted phrases show different ways users might ask for same thing
 
-#### 9.2 Unique Identifier Check
+**Example Analysis:**
 
-**Principle:** Skills need unique identifiers to differentiate from other tools.
+```yaml
+# GOOD (5 specific quotes):
+description: Use when "create SKILL.md", "validate YAML frontmatter",
+  "generate skill packages", "build Claude skills", "audit skill structure"
+Analysis: 5/5 = 100% specific (all contain formats/artifacts)
+Result: ✅✅ EXCELLENT
+
+# BORDERLINE (3 quotes, 2 specific):
+description: Use when "help me", "create skills", "validate structure"
+Analysis: 2/3 = 67% specific
+Result: ✅ PASS (meets minimum thresholds)
+
+# POOR (generic quotes):
+description: Use when "do this", "help with that", "process data"
+Analysis: 0/3 = 0% specific
+Result: ⚠️⚠️ EFFECTIVENESS-CRITICAL
+```
+
+#### 9.2 Trigger Phrase Variation Check
+
+**Principle:** Different users ask for the same thing in different ways. Good descriptions show multiple phrasings.
 
 **Check Method:**
 
-1. Read description field
-2. Search for unique identifiers:
-   - System/tool names (brand names, product names, service names)
-   - Technology names (programming languages, databases, frameworks)
-   - Domain-specific terminology (field-specific jargon)
-3. Count unique identifiers
-4. Apply threshold:
-   - If 0 unique identifiers: ⚠️⚠️ EFFECTIVENESS-CRITICAL
-   - If 1 unique identifier: ⚠️ WARNING
-   - If ≥2 unique identifiers: ✅ PASS
+1. Examine quoted phrases in description
+2. Group by semantic similarity (same intent, different wording)
+3. Count distinct intents covered
+4. Verify variation within each intent
 
-**Unique Identifier Types:**
+**What to Check:**
 
 ```text
-✅ SYSTEM/SERVICE NAMES:
-- Product names: "BigQuery", "Salesforce", "Jira"
-- Tool names: "pdfplumber", "pandas", "React Router"
-- Service names: "AWS Lambda", "Cloud Functions"
+GOOD variation (same intent, different phrasings):
+✅ "create SKILL.md" + "generate SKILL.md" + "build SKILL.md files"
+✅ "validate structure" + "check compliance" + "verify format"
 
-✅ TECHNOLOGY IDENTIFIERS:
-- Programming languages: "Python", "TypeScript", "Go"
-- Frameworks: "Django", "Next.js", "FastAPI"
-- Databases: "PostgreSQL", "MongoDB", "Redis"
-- File formats: "PDF", "DOCX", "XLSX"
-
-✅ DOMAIN-SPECIFIC TERMS:
-- Finance: "orderbooks", "market data", "invoices"
-- Healthcare: "FHIR", "HL7", "medical records"
-- Legal: "contracts", "NDAs", "compliance"
-
-❌ NOT UNIQUE IDENTIFIERS:
-- Generic: "database", "server", "API", "tool"
-- Vague: "system", "platform", "service"
-- Common: "data", "files", "documents"
+POOR variation (too similar):
+❌ "create skills" + "create skill" + "create a skill"
+❌ "help me" + "help" + "can you help"
 ```
 
 **Effectiveness Checks:**
 
-- [ ] Description includes ≥2 unique identifiers
-- [ ] At least 1 identifier is the skill's primary technology/system/domain
+- [ ] Multiple quoted phrases present (not just one)
+- [ ] Phrases show variation (not all nearly identical)
+- [ ] Covers both verb forms: "create X" and "X creation"
 
-#### 9.3 Scope Differentiation (For Overlapping Domains)
+#### 9.3 Domain Specificity Check (OBJECTIVE)
 
-**Principle:** Skills that operate in domains where Claude has native
-capabilities must clearly differentiate their scope.
+**Principle:** Descriptions should reference specific artifacts, formats, or systems unique to the skill's domain.
 
-**When to Check:** If skill operates in these common domains:
+**Check Method:**
+
+1. Extract description text
+2. Search for domain-specific indicators:
+   - File format mentions: SKILL.md, YAML, JSON, .skill
+   - System names: Claude Code, Anthropic
+   - Technology names: Python, TypeScript, PDF
+   - Specific operations: frontmatter validation, compliance checking
+3. Count unique domain indicators
+4. Apply threshold
+
+**Domain Indicators (Objective Detection):**
+
+```bash
+# Check for file formats
+echo "$DESCRIPTION" | grep -iE 'SKILL\.md|\.yaml|\.skill|frontmatter|JSON|\.py'
+
+# Check for system names
+echo "$DESCRIPTION" | grep -iE 'Claude Code|Anthropic|MCP'
+
+# Check for specific operations
+echo "$DESCRIPTION" | grep -iE 'frontmatter|compliance|validation|specification'
+```
+
+**Thresholds:**
+
+- 0 domain indicators: ⚠️⚠️ EFFECTIVENESS-CRITICAL (too generic)
+- 1-2 domain indicators: ⚠️ WARNING (borderline)
+- ≥3 domain indicators: ✅ PASS (sufficiently specific)
+
+**Effectiveness Checks:**
+
+- [ ] Description mentions ≥3 skill-specific artifacts/formats/systems
+- [ ] At least 1 indicator is unique to this skill's domain
+
+#### 9.4 Scope Differentiation (For Overlapping Domains)
+
+**Principle:** If skill overlaps with Claude's native capabilities, description must clarify scope boundary.
+
+**When to Check:** Only if skill operates in these domains:
 
 - Memory/history (Claude has conversation memory)
-- Code generation (Claude can write code)
-- Text analysis (Claude can analyze text)
+- Code/text generation (Claude can write)
+- Analysis/summarization (Claude can analyze)
 - File operations (Claude can read/write files)
-- Search/retrieval (Claude can search)
 
 **Check Method:**
 
-1. Identify if skill operates in a domain where Claude has native capabilities
-2. Check if description includes scope differentiation keywords:
-   - **Temporal:** "previous sessions", "days/weeks/months ago", "before", "already"
-   - **Spatial:** "external database", "persistent storage", "API", "service"
-   - **Explicit exclusion:** "NOT in current conversation", "outside Claude's knowledge"
-   - **System-specific:** "stored in [system]", "managed by [service]"
+1. Determine if skill overlaps with native Claude capabilities
+2. If YES, check for differentiation keywords:
+   - **Temporal:** "previous sessions", "past conversations", "last week/month"
+   - **Spatial:** "external database", "persistent storage", "API"
+   - **Explicit:** "NOT in current conversation", "outside this session"
 3. Count differentiation keywords
-4. Apply threshold:
-   - If overlapping domain + 0 differentiation keywords: ⚠️ WARNING
-   - If overlapping domain + <2 differentiation keywords: ⚠️ WARNING
-   - If overlapping domain + ≥3 differentiation keywords: ✅ PASS
+4. Apply threshold (only if overlapping domain)
 
-**Differentiation Keyword Categories:**
+**Thresholds (Conditional Check):**
 
-```text
-TEMPORAL (For historical/past data skills):
-✅ Time distance: "days ago", "weeks ago", "months ago", "last year"
-✅ Session differentiation: "previous sessions", "past conversations"
-✅ Temporal adverbs: "already", "before", "previously", "earlier"
-✅ Historical: "history of", "when did", "timeline"
-
-SPATIAL (For external data skills):
-✅ Storage location: "external database", "API", "cloud storage"
-✅ System names: "stored in [X]", "managed by [Y]"
-✅ Persistence: "persistent storage", "permanent records"
-
-EXPLICIT EXCLUSION (For clarity):
-✅ Negation: "NOT in current conversation", "outside current context"
-✅ Boundary: "beyond Claude's knowledge", "external to session"
-```
+- Overlapping domain + 0 keywords: ⚠️ WARNING
+- Overlapping domain + 1-2 keywords: ⚠️ WARNING
+- Overlapping domain + ≥3 keywords: ✅ PASS
+- Non-overlapping domain: N/A (skip check)
 
 **Effectiveness Checks:**
 
-- [ ] If skill overlaps with Claude's native capabilities:
-  - [ ] Description includes ≥3 differentiation keywords
-  - [ ] Keywords clearly define scope boundaries
-  - [ ] Temporal keywords present (for historical data)
-  - [ ] Spatial keywords present (for external data)
-
-#### 9.4 Domain Overlap Analysis
-
-**Principle:** Triggers that Claude can answer natively will rarely trigger skill invocation.
-
-**Check Method:**
-
-1. Extract primary triggers from description
-2. For each trigger, ask: **"Can Claude answer questions about this using only current conversation context?"**
-3. Count triggers where answer is YES (overlapping)
-4. Count triggers where answer is NO (unique to skill)
-5. Calculate overlap ratio: `overlapping_triggers / total_triggers`
-6. Apply threshold:
-   - If >80% overlap: ⚠️⚠️ EFFECTIVENESS-CRITICAL
-   - If 50-80% overlap: ⚠️ WARNING
-   - If <50% overlap: ✅ PASS
-
-**Claude's Native Capabilities (Common Overlaps):**
-
-```text
-Claude CAN do from current conversation:
-❌ "code in this conversation" (remembers code discussed)
-❌ "bugs mentioned today" (remembers bugs from current session)
-❌ "files we modified now" (remembers current file operations)
-❌ "decisions made in this chat" (remembers current conversation)
-❌ "text analysis" (native capability)
-❌ "summarization" (native capability)
-
-Claude CANNOT do without skill:
-✅ "data from external API" (requires API access)
-✅ "database queries" (requires database connection)
-✅ "work from sessions last month" (no cross-session memory)
-✅ "specialized domain analysis" (requires domain tools)
-✅ "file format manipulation" (PDF, DOCX internals)
-```
-
-**Effectiveness Checks:**
-
-- [ ] <50% of triggers overlap with Claude's native capabilities
-- [ ] Primary use cases require external data/tools/systems
+- [ ] If overlapping domain: ≥3 differentiation keywords present
+- [ ] Keywords clearly show WHY skill is needed vs native Claude
 
 ---
 
@@ -1113,9 +1104,9 @@ grep -E "^- \*\*|^### |^\d+\. " SKILL.md | wc -l
    - If SKILL.md explains a concept AND reference file explains the same concept: VIOLATION
    - If SKILL.md only references/links to concept AND reference file has full explanation: CORRECT
 
-## Effectiveness Analysis Method (NEW)
+## Effectiveness Analysis Method (DETERMINISTIC)
 
-### Trigger Quality Analysis
+### Trigger Quality Analysis (Quoted Phrase Method)
 
 1. **Extract description:**
 
@@ -1123,38 +1114,64 @@ grep -E "^- \*\*|^### |^\d+\. " SKILL.md | wc -l
    grep -A 10 "^description:" SKILL.md | grep -v "^---"
    ```
 
-2. **Identify all trigger keywords** (manual analysis required)
+2. **Count quoted phrases:**
 
-3. **Classify each trigger:**
-   - CONCRETE: Technology names, domain terms, specific operations
-   - ABSTRACT: Generic terms like "data", "work", "help"
+   ```bash
+   # Extract all quoted phrases
+   QUOTES=$(grep -oP '"[^"]+"' <(grep -A 10 "^description:" SKILL.md) | sed 's/"//g')
+   TOTAL_QUOTES=$(echo "$QUOTES" | wc -l)
+   ```
 
-4. **Calculate concrete percentage:**
-   - Count concrete triggers
-   - Count total triggers
-   - Calculate: concrete / total * 100%
+3. **Check specificity of each quote:**
 
-5. **Apply threshold:**
-   - <25%: EFFECTIVENESS-CRITICAL
-   - 25-50%: WARNING
-   - >50%: PASS
+   For each quoted phrase, test if it passes ANY specificity criterion:
+   - Contains file/format: SKILL.md, YAML, .md, .skill, JSON
+   - Contains domain + action: "create Claude skills", "validate frontmatter"
+   - Contains technology: Python, TypeScript, PDF, MCP
+   - Contains specific operation: "frontmatter validation", "compliance checking"
 
-6. **Count unique identifiers:**
-   - Look for system names, technology names, domain terms
-   - Count unique identifiers
-   - 0: CRITICAL, 1: WARNING, ≥2: PASS
+   ```bash
+   # Count specific quotes (contains domain indicators)
+   SPECIFIC=$(echo "$QUOTES" | grep -iE 'SKILL\.md|YAML|\.skill|Claude|frontmatter|validation|specification|compliance|package' | wc -l)
+   ```
 
-7. **Check scope differentiation** (if overlapping domain):
-   - Count temporal keywords ("days ago", "previous sessions", "already")
-   - Count spatial keywords ("external database", "persistent storage")
-   - Count exclusion keywords ("NOT in current conversation")
-   - <2 total: WARNING, ≥3 total: PASS
+4. **Calculate specificity ratio:**
 
-8. **Assess domain overlap:**
-   - For each trigger, ask: "Can Claude answer this from current conversation?"
-   - Count overlapping triggers
-   - Calculate: overlapping / total * 100%
-   - >80%: CRITICAL, 50-80%: WARNING, <50%: PASS
+   ```bash
+   RATIO=$((SPECIFIC * 100 / TOTAL_QUOTES))
+   ```
+
+5. **Apply thresholds:**
+   - TOTAL_QUOTES <3: EFFECTIVENESS-CRITICAL
+   - TOTAL_QUOTES ≥3 AND RATIO <50%: WARNING
+   - TOTAL_QUOTES ≥3 AND RATIO ≥50%: PASS
+   - TOTAL_QUOTES ≥5 AND RATIO ≥70%: EXCELLENT
+
+6. **Check domain indicators:**
+
+   ```bash
+   # Count domain-specific mentions
+   DOMAIN_INDICATORS=$(grep -oiE 'SKILL\.md|YAML|frontmatter|Claude Code|Anthropic|\.skill|compliance|specification|validation' <(grep -A 10 "^description:" SKILL.md) | sort -u | wc -l)
+   ```
+
+   - 0 indicators: EFFECTIVENESS-CRITICAL
+   - 1-2 indicators: WARNING
+   - ≥3 indicators: PASS
+
+7. **Check scope differentiation** (only if overlapping domain):
+
+   ```bash
+   # Count differentiation keywords
+   TEMPORAL=$(grep -oiE 'previous sessions?|past conversations?|last (week|month|year)|days? ago|weeks? ago|months? ago|before|already|previously|earlier|history' <(grep -A 10 "^description:" SKILL.md) | wc -l)
+   SPATIAL=$(grep -oiE 'external (database|storage|API)|persistent|API|service|stored in|managed by' <(grep -A 10 "^description:" SKILL.md) | wc -l)
+   EXPLICIT=$(grep -oiE 'NOT in (current )?conversation|outside (current )?context|beyond Claude' <(grep -A 10 "^description:" SKILL.md) | wc -l)
+
+   TOTAL_DIFF=$((TEMPORAL + SPATIAL + EXPLICIT))
+   ```
+
+   - Only check if skill overlaps with Claude's native capabilities
+   - <3 keywords: WARNING (if overlapping)
+   - ≥3 keywords: PASS
 
 ### Capability Visibility Analysis
 

@@ -3,14 +3,14 @@
 **Skill Path:** `plugins/meta/meta-claude/skills/skill-factory/`
 **Test Date:** 2025-11-19
 **Test Type:** Parallel execution determinism verification
-**Auditor:** claude-skill-auditor-v2
+**Auditor:** claude-skill-auditor
 **Runs:** 3 parallel executions
 
 ---
 
 ## Objective
 
-Verify that skill-auditor-v2 produces deterministic results after implementing quoted-phrase methodology and dependency rules.
+Verify that skill-auditor produces deterministic results after implementing quoted-phrase methodology and dependency rules.
 
 ---
 

@@ -829,9 +829,9 @@ Executive Summary:
 ### Issue #1: Description Contains Implementation Details
 
 **Problems Found:**
-1. Tool name "firecrawl" (appears 2 times)
-2. Architecture details "multi-tier", "8-phase"
-3. Command references "/meta-claude:skill:validate"
+1. Tool name "pdfplumber" (appears 2 times)
+2. Architecture details "three-tier", "5-phase"
+3. Script references "validate.py", "check_format.sh"
 
 **Fix:** Remove all implementation details, focus on capabilities
 ```

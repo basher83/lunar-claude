@@ -39,8 +39,18 @@ def extract_skill_metrics(skill_path: Path) -> Dict[str, Any]:
     # Extract quoted phrases (deterministic regex)
     quoted_phrases = re.findall(r'"([^"]+)"', description)
 
+    # Extract domain indicators (exact regex from v5 agent)
+    domain_pattern = (
+        r'\b(SKILL\.md|\.skill|YAML|Claude Code|Anthropic|'
+        r'skill|research|validation|compliance|specification|frontmatter)\b'
+    )
+    domain_matches = re.findall(domain_pattern, description, re.IGNORECASE)
+    domain_indicators = list(set(domain_matches))  # Unique only
+
     return {
         "description": description,
         "quoted_phrases": quoted_phrases,
         "quoted_count": len(quoted_phrases),
+        "domain_indicators": domain_indicators,
+        "domain_count": len(domain_indicators),
     }

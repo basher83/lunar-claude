@@ -16,7 +16,7 @@ for i in $(seq 1 $RUNS); do
 
     # Extract deterministic metrics to separate file
     {
-        grep "^**Status:**" "/tmp/audit-run-$i.txt" || echo "No status found"
+        grep "^**Status:**" "/tmp/audit-run-$i.txt" | head -1 || echo "No status found"
         grep "^   - Quoted phrases:" "/tmp/audit-run-$i.txt" || echo "No quoted phrases count"
         grep "^   - Domain indicators:" "/tmp/audit-run-$i.txt" || echo "No domain indicators count"
         grep "^   - Line count:" "/tmp/audit-run-$i.txt" || echo "No line count"

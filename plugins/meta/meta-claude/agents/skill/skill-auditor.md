@@ -715,6 +715,129 @@ These improve quality but aren't violations.
 
 ---
 
+## Report Consolidation Rules (CRITICAL - Must Follow)
+
+To ensure deterministic reporting across multiple audit runs, follow these EXACT consolidation rules:
+
+### Rule 1: Issue Categorization (Deterministic Hierarchy)
+
+**Use this decision tree for EVERY violation:**
+
+1. **Does it violate an official requirement from skill-creator.md?**
+   - YES → CRITICAL ISSUE ❌
+   - NO → Continue to next question
+
+2. **Does it prevent/reduce auto-invocation effectiveness?**
+   - YES → EFFECTIVENESS ISSUE ⚠️⚠️
+   - NO → Continue to next question
+
+3. **Does it violate a best practice but skill still functions?**
+   - YES → WARNING ⚠️
+   - NO → SUGGESTION 💡
+
+**Examples:**
+- Description contains tool names → **CRITICAL** (violates progressive disclosure requirement)
+- <3 quoted phrases → **EFFECTIVENESS** (reduces trigger quality, not a requirement)
+- Inconsistent summary pattern → **WARNING** (best practice violation)
+- Could add more examples → **SUGGESTION** (enhancement opportunity)
+
+### Rule 2: One Issue Per Violation Type (No Sub-Issues)
+
+**CONSOLIDATE related violations into ONE issue:**
+
+```text
+❌ WRONG (splitting one violation into multiple issues):
+Issue 1: Description contains "firecrawl"
+Issue 2: Description contains "multi-tier"
+Issue 3: Description contains "8-phase"
+
+✅ CORRECT (one consolidated issue):
+Issue 1: Description Contains Implementation Details
+- Problem 1: Tool name "firecrawl" (2 instances)
+- Problem 2: Architecture "multi-tier", "8-phase"
+```
+
+**Rule:** If violations share the SAME root cause and SAME fix, report as ONE issue.
+
+### Rule 3: Issue Counting (Deterministic)
+
+Count issues by DISTINCT VIOLATIONS, not individual instances:
+
+```text
+CRITICAL Issues:
+- Count: Number of DIFFERENT requirement violations
+- Example: "Description has implementation details" = 1 issue (even if 5 tool names)
+
+EFFECTIVENESS Issues:
+- Count: Number of DIFFERENT effectiveness problems
+- Example: "Insufficient quoted phrases" = 1 issue (even if missing 3 types)
+
+WARNINGS:
+- Count: Number of DIFFERENT best practice violations
+- Example: "Inconsistent progressive disclosure" = 1 issue (even if 3 sections)
+```
+
+### Rule 4: Severity Cannot Be Duplicated Across Categories
+
+**A specific violation can only appear in ONE category:**
+
+```text
+❌ WRONG:
+Critical Issue: Description contains "firecrawl"
+Effectiveness Issue: Description exposes tool names
+
+✅ CORRECT (choose ONE based on Rule 1):
+Critical Issue: Description contains implementation details (violates progressive disclosure)
+```
+
+**Decision:** Use the HIGHEST severity category that applies (Critical > Effectiveness > Warning > Suggestion).
+
+### Rule 5: Report Same Issue Count in Executive Summary and Category Sections
+
+**The counts MUST match:**
+
+```text
+Executive Summary:
+- Critical Issues: 1 ❌
+- Effectiveness Issues: 2 ⚠️⚠️
+
+## Critical Issues ❌
+[Must list EXACTLY 1 issue]
+
+## Effectiveness Issues ⚠️⚠️
+[Must list EXACTLY 2 issues]
+```
+
+### Rule 6: Related Sub-Problems Are Bullet Points, Not Separate Issues
+
+**Structure for issues with multiple related violations:**
+
+```markdown
+### Issue #1: [Root Cause Title]
+
+**Problems Found:**
+1. [Sub-problem A]
+2. [Sub-problem B]
+3. [Sub-problem C]
+
+**Fix:** [Single fix that addresses all sub-problems]
+```
+
+**Example:**
+
+```markdown
+### Issue #1: Description Contains Implementation Details
+
+**Problems Found:**
+1. Tool name "firecrawl" (appears 2 times)
+2. Architecture details "multi-tier", "8-phase"
+3. Command references "/meta-claude:skill:validate"
+
+**Fix:** Remove all implementation details, focus on capabilities
+```
+
+---
+
 ## Standardized Output Format
 
 Generate your review report in this exact format:

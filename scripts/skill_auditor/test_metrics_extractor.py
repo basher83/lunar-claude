@@ -87,9 +87,10 @@ description: >
         metrics = extract_skill_metrics(tmp_path)
 
         assert "domain_indicators" in metrics
-        # Should find: SKILL.md, YAML, frontmatter, Claude Code, skill, compliance
+        # Should find: skill.md, yaml, frontmatter, claude code, skill, compliance
+        # All normalized to lowercase
         assert len(metrics["domain_indicators"]) >= 5
-        assert "SKILL.md" in metrics["domain_indicators"]
+        assert "skill.md" in metrics["domain_indicators"]
         assert "domain_count" in metrics
         assert metrics["domain_count"] >= 5
         print("✅ test_extract_domain_indicators passed")
@@ -133,6 +134,35 @@ description: >
         assert skill_count == 1, "Domain indicators should be unique"
         print("✅ test_domain_indicators_unique passed")
 
+def test_domain_indicators_mixed_case_deduplication():
+    """Test domain indicators with mixed case are properly deduplicated."""
+    with tempfile.TemporaryDirectory() as tmp:
+        tmp_path = Path(tmp)
+        skill_md = tmp_path / "SKILL.md"
+        skill_md.write_text("""---
+name: test-skill
+description: >
+  Research the specification for compliance validation.
+  The research shows that Validation requires Research.
+---
+""")
+
+        metrics = extract_skill_metrics(tmp_path)
+
+        # 'research', 'Research' should be deduplicated to one
+        # 'validation', 'Validation' should be deduplicated to one
+        research_count = sum(1 for indicator in metrics["domain_indicators"] if indicator.lower() == "research")
+        validation_count = sum(1 for indicator in metrics["domain_indicators"] if indicator.lower() == "validation")
+
+        assert research_count == 1, "Mixed-case 'research'/'Research' should be deduplicated"
+        assert validation_count == 1, "Mixed-case 'validation'/'Validation' should be deduplicated"
+
+        # Verify all indicators are lowercase
+        for indicator in metrics["domain_indicators"]:
+            assert indicator == indicator.lower(), f"Domain indicator '{indicator}' should be lowercase"
+
+        print("✅ test_domain_indicators_mixed_case_deduplication passed")
+
 if __name__ == "__main__":
     test_extract_description_from_skill_md()
     test_extract_quoted_phrases()
@@ -140,4 +170,5 @@ if __name__ == "__main__":
     test_extract_domain_indicators()
     test_domain_indicators_case_insensitive()
     test_domain_indicators_unique()
+    test_domain_indicators_mixed_case_deduplication()
     print("\n✅ All tests passed!")

@@ -45,7 +45,7 @@ def extract_skill_metrics(skill_path: Path) -> Dict[str, Any]:
         r'skill|research|validation|compliance|specification|frontmatter)\b'
     )
     domain_matches = re.findall(domain_pattern, description, re.IGNORECASE)
-    domain_indicators = list(set(domain_matches))  # Unique only
+    domain_indicators = list(set(match.lower() for match in domain_matches))  # Unique, case-normalized
 
     return {
         "description": description,

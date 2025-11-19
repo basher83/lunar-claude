@@ -22,14 +22,25 @@ def extract_skill_metrics(skill_path: Path) -> Dict[str, Any]:
 
     content = skill_md.read_text()
 
-    # Extract description (between 'description: >' and '---')
+    # Extract description (handles both multiline '>' and single-line formats)
+    # Try multiline format first
     desc_match = re.search(
         r'description:\s*>\s*(.*?)^---',
         content,
         re.MULTILINE | re.DOTALL
     )
-    description = desc_match.group(1).strip() if desc_match else ""
+    if desc_match:
+        description = desc_match.group(1).strip()
+    else:
+        # Try single-line format
+        simple_match = re.search(r'^description:\s*(.+)$', content, re.MULTILINE)
+        description = simple_match.group(1).strip() if simple_match else ""
+
+    # Extract quoted phrases (deterministic regex)
+    quoted_phrases = re.findall(r'"([^"]+)"', description)
 
     return {
         "description": description,
+        "quoted_phrases": quoted_phrases,
+        "quoted_count": len(quoted_phrases),
     }

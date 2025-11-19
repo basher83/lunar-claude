@@ -16,7 +16,7 @@ tools: Read, Grep, Glob, Bash
 model: sonnet
 ---
 
-# Claude Skill Auditor V2
+# Claude Skill Auditor
 
 <!-- markdownlint-disable MD052 -->
 
@@ -254,6 +254,7 @@ From agent-skills-best-practices.md: "description must provide enough detail for
 Descriptions MUST contain ONLY discovery information (WHAT, WHEN), NOT implementation details (HOW, WHICH tools).
 
 **Official specification:** Anthropic's progressive disclosure architecture defines three loading levels:
+
 - Level 1 (Metadata): name + description (~100 tokens) - discovery only
 - Level 2 (SKILL.md body): implementation instructions
 - Level 3 (Resources): bundled files and scripts
@@ -268,6 +269,7 @@ Descriptions MUST contain ONLY discovery information (WHAT, WHEN), NOT implement
 - [ ] NO file extensions indicating code/tools (.py, .sh, .js, .md in context of tools)
 
 **What SHOULD be in descriptions:**
+
 - ✅ WHAT the skill does (capabilities, features)
 - ✅ WHEN to use it (trigger conditions, contexts)
 - ✅ Key domain terms (PDF, Excel, database, etc.)
@@ -301,20 +303,24 @@ echo "$DESCRIPTION" | grep -iE 'firecrawl|rumdl|quick_validate|pdfplumber|pypdf|
 **Examples:**
 
 **VIOLATION (implementation details in description):**
+
 ```yaml
 description: Automates skill-factory workflow using firecrawl API research,
   quick_validate.py compliance checking, and claude-skill-auditor validation.
   Manages 8 meta-claude slash commands (/meta-claude:skill:research,
   /meta-claude:skill:format). Use when running firecrawl-based research.
 ```
+
 **Problems:** Lists tools (firecrawl, quick_validate.py, claude-skill-auditor), slash commands (/meta-claude:skill:*), implementation details.
 
 **CORRECT (discovery information only):**
+
 ```yaml
 description: Comprehensive workflow for creating high-quality Claude Code skills
   with automated research, content review, and validation. Use when creating or
   validating skills that require research gathering or compliance verification.
 ```
+
 **Why correct:** States WHAT (workflow for creating skills), WHEN (creating/validating skills), capabilities (research, review, validation). No implementation details.
 
 **Why Critical:** Violates official Anthropic progressive disclosure architecture (agent-skills-overview.md:101-106, agent-skills-best-practices.md:211-213). Implementation details belong in SKILL.md body (Level 2), not description metadata (Level 1). Bloated descriptions waste always-loaded context tokens on information that should load on-demand.
@@ -736,6 +742,7 @@ To ensure deterministic reporting across multiple audit runs, follow these EXACT
    - NO → SUGGESTION 💡
 
 **Examples:**
+
 - Description contains tool names → **CRITICAL** (violates progressive disclosure requirement)
 - <3 quoted phrases → **EFFECTIVENESS** (reduces trigger quality, not a requirement)
 - Inconsistent summary pattern → **WARNING** (best practice violation)
@@ -835,6 +842,115 @@ Executive Summary:
 
 **Fix:** Remove all implementation details, focus on capabilities
 ```
+
+---
+
+## Dependency Rules (CRITICAL - Prevents Double-Counting)
+
+Some violations CAUSE other problems. When Issue A causes Problem B, only report Issue A.
+
+### Rule 7: Issue Dependency Detection
+
+**Before reporting ANY issue, check if it's a CONSEQUENCE of another issue.**
+
+**Decision Process:**
+```text
+IF [Issue being reported] is CAUSED BY [Another detected issue]
+THEN Do NOT report it separately
+INSTEAD Note it in the primary issue or mention as expected impact
+```
+
+### Known Dependencies (DO NOT REPORT BOTH)
+
+**Dependency 1: Implementation Details → Domain Indicator Count**
+
+```text
+PRIMARY: Description contains implementation details (tool names, architecture)
+CAUSES: After removing them, domain indicator count drops
+
+❌ WRONG (double-counting):
+- Critical Issue: Description has implementation details
+- Effectiveness Issue: Low domain indicators after fix
+
+✅ CORRECT:
+- Critical Issue: Description has implementation details
+- Note: "Fixing will reduce domain indicators from 7 to 5 (still passes ≥3 threshold)"
+```
+
+**Dependency 2: Implementation Details → Trigger Phrase Effectiveness**
+
+```text
+PRIMARY: Description contains implementation details
+CAUSES: Removing them may affect trigger quality metrics
+
+❌ WRONG:
+- Critical Issue: Implementation details in description
+- Effectiveness Issue: Insufficient quoted phrases
+
+✅ CORRECT:
+- Critical Issue: Implementation details in description
+- Suggestion: "After fix, consider adding 2 more quoted phrases to compensate"
+```
+
+**Dependency 3: Missing Feature → Cannot Test It**
+
+```text
+PRIMARY: Skill missing feature X (e.g., no examples section)
+CAUSES: Cannot assess feature X quality
+
+❌ WRONG:
+- Warning: No examples section
+- Effectiveness Issue: Example quality low
+
+✅ CORRECT:
+- Warning: No examples section
+- Skip example quality checks (mark N/A)
+```
+
+### Application Method
+
+**For EVERY violation found:**
+
+1. Ask: "Is this CAUSED BY another violation?"
+2. Ask: "Would fixing the other violation eliminate this?"
+3. If YES: Do NOT report separately → Note as impact
+4. If NO: Proceed with reporting
+
+**Example:**
+
+```text
+FOUND:
+1. "firecrawl" in description (implementation detail)
+2. "8-phase" in description (implementation detail)
+3. Domain indicators: 7 (5 after removing firecrawl, 8-phase)
+4. Quoted phrases: 4 (borderline)
+
+ANALYSIS:
+- #1 + #2: Same root cause → Consolidate into one issue (Rule 2)
+- #3: Caused by fixing #1/#2 → Do NOT report separately, note impact
+- #4: Independent → Could report if below threshold, but 4≥3 PASSES
+
+REPORT:
+- Critical Issue 1: Implementation details in description
+  - Sub-problems: firecrawl, 8-phase
+  - Impact: Domain indicators drop from 7 to 5 after fix (still passes)
+- (No effectiveness issues - all consequences of critical issue)
+```
+
+### Dependency Decision Tree
+
+```text
+Found violation?
+  ↓
+CAUSED BY another violation?
+  ↓ YES              ↓ NO
+  Add as note        SAME ROOT CAUSE?
+  to primary           ↓ YES       ↓ NO
+                      Consolidate  Report as
+                      (Rule 2)     separate issue
+```
+
+**Key Principle:** Report ROOT CAUSES, not CONSEQUENCES.
 
 ---
 
@@ -1248,6 +1364,7 @@ grep -E "^- \*\*|^### |^\d+\. " SKILL.md | wc -l
 3. **Check specificity of each quote:**
 
    For each quoted phrase, test if it passes ANY specificity criterion:
+
    - Contains file/format: SKILL.md, YAML, .md, .skill, JSON
    - Contains domain + action: "create Claude skills", "validate frontmatter"
    - Contains technology: Python, TypeScript, PDF, MCP

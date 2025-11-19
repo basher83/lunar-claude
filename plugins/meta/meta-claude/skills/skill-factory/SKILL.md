@@ -1,13 +1,12 @@
 ---
 name: skill-factory
 description: >
-  This skill should be used when the user asks to "automate skill creation", "orchestrate skill
-  workflow", "create skill with validation", "research and build skill", "validate skill
-  compliance", "audit against Anthropic specs", "generate SKILL.md with frontmatter", "review skill
-  quality", needs TodoWrite-tracked skill creation workflow, automated research gathering with
-  firecrawl, multi-tier quality validation (content, compliance, runtime, integration, audit), or
-  requires complete skill lifecycle automation from concept through packaging for Claude Code
-  extensions.
+  Comprehensive framework for creating Claude Code skills following Anthropic specifications with
+  automated research, content review, and compliance validation. Use when "creating Claude Code
+  skills", "generating SKILL.md with YAML frontmatter", "validating skill compliance", "auditing
+  against Anthropic specifications", needs skill development with research gathering and quality
+  gates, compliance verification, or requires skill creation from design through packaging with
+  progressive disclosure and bundled resources for Claude Code extensions.
 ---
 
 # Skill Factory

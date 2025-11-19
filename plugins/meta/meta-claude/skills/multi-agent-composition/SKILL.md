@@ -1,6 +1,12 @@
 ---
 name: multi-agent-composition
-description: Provides decision frameworks and patterns for composing multi-component agentic systems. Use when choosing between skills, sub-agents, hooks, MCP servers, and slash commands, or when building orchestrator workflows and managing context across agents.
+description: >
+  This skill should be used when the user asks to "choose between skill and agent", "compose
+  multi-agent system", "orchestrate agents", "manage agent context", "design component
+  architecture", "should I use a skill or agent", "when to use hooks vs MCP", "build orchestrator
+  workflow", needs decision frameworks for Claude Code components (skills, sub-agents, hooks, MCP
+  servers, slash commands), context management patterns, or wants to build effective multi-component
+  agentic systems with proper orchestration and anti-patterns guidance.
 ---
 
 # Multi-Agent Composition
@@ -92,20 +98,21 @@ This skill uses progressive disclosure. Start here, then navigate to specific to
 
 ### Anti-Patterns
 
-**Common mistakes to avoid**
+#### Common mistakes to avoid
 
-- **[common-mistakes.md](anti-patterns/common-mistakes.md)** - Converting all slash commands to skills, using skills for one-offs, context explosion, and more
+- **[common-mistakes.md](anti-patterns/common-mistakes.md)** - Converting all slash commands to
+  skills, using skills for one-offs, context explosion, and more
 
 ### Examples
 
-**Real-world case studies and progression paths**
+#### Real-world case studies and progression paths
 
 - **[progression-example.md](examples/progression-example.md)** - Evolution from prompt → sub-agent → skill (work tree manager example)
 - **[case-studies.md](examples/case-studies.md)** - Scout-builder patterns, orchestration workflows, multi-agent systems
 
 ### Workflows
 
-**Visual guides and decision trees**
+#### Visual guides and decision trees
 
 - **[decision-tree.md](workflows/decision-tree.md)** - Decision trees, mindmaps, and visual guides for choosing components
 
@@ -149,7 +156,8 @@ This skill uses progressive disclosure. Start here, then navigate to specific to
 
 > "It is very clear this does not replace any existing feature or capability. It is a higher compositional level."
 
-Skills orchestrate other components; they don't replace them. Don't convert all your slash commands to skills—that's a huge mistake.
+Skills orchestrate other components; they don't replace them. Don't convert all your
+slash commands to skills—that's a huge mistake.
 
 ### Observability is Everything
 

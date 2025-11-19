@@ -1,9 +1,11 @@
 ---
 name: agent-creator
 description: >
-  Generates Claude Code subagent definitions when user requests specialized agent creation, needs agent structure
-  guidance, or wants to add subagents to plugins. Creates proper frontmatter, capabilities lists, and invocation
-  criteria.
+  This skill should be used when the user asks to "create an agent", "write a subagent", "generate
+  agent definition", "add agent to plugin", "write agent frontmatter", "create autonomous agent",
+  "build subagent", needs agent structure guidance, YAML frontmatter configuration, invocation
+  criteria with examples, or wants to add specialized subagents to Claude Code plugins with proper
+  capabilities lists and tool access definitions.
 ---
 
 # Agent Creator

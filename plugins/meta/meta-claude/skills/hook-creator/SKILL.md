@@ -1,8 +1,12 @@
 ---
 name: hook-creator
 description: >
-  Creates hook configurations for Claude Code event handling. Use when automating workflows, implementing
-  event-driven behavior, or needing hooks to respond to tool usage, session events, or user prompts.
+  This skill should be used when the user asks to "create a hook", "write hook config", "add
+  hooks.json", "configure event hooks", "create PreToolUse hook", "add SessionStart hook",
+  "implement hook validation", "set up event-driven automation", needs guidance on hooks.json
+  structure, hook events (PreToolUse, PostToolUse, Stop, SessionStart, SessionEnd,
+  UserPromptSubmit), or wants to automate workflows and implement event-driven behavior in Claude
+  Code plugins.
 ---
 
 # Hook Creator

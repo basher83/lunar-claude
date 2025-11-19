@@ -22,6 +22,10 @@ def extract_skill_metrics(skill_path: Path) -> Dict[str, Any]:
 
     content = skill_md.read_text()
 
+    # Extract YAML frontmatter fields
+    name_match = re.search(r'^name:\s*(.+)$', content, re.MULTILINE)
+    skill_name = name_match.group(1).strip() if name_match else "unknown"
+
     # Extract description (handles both multiline '>' and single-line formats)
     # Try multiline format first
     desc_match = re.search(
@@ -47,10 +51,38 @@ def extract_skill_metrics(skill_path: Path) -> Dict[str, Any]:
     domain_matches = re.findall(domain_pattern, description, re.IGNORECASE)
     domain_indicators = list(set(match.lower() for match in domain_matches))  # Unique, case-normalized
 
+    # Check for forbidden files (B1)
+    forbidden_patterns = ["README*", "INSTALL*", "CHANGELOG*", "QUICK*"]
+    forbidden_files = []
+    for pattern in forbidden_patterns:
+        forbidden_files.extend([f.name for f in skill_path.glob(pattern)])
+
+    # Check for implementation details in description (B4)
+    impl_pattern = r'\w+\.(py|sh|js|md|txt|json)|/[a-z-]+:[a-z-]+'
+    implementation_details = re.findall(impl_pattern, description)
+
+    # Line count (B3)
+    line_count = len(content.split('\n'))
+
+    # Check for YAML frontmatter (B2)
+    has_frontmatter = content.startswith('---')
+    yaml_delimiters = len(re.findall(r'^---$', content, re.MULTILINE))
+    has_name = name_match is not None
+    has_description = desc_match is not None or simple_match is not None
+
     return {
+        "skill_name": skill_name,
+        "skill_path": str(skill_path),
         "description": description,
         "quoted_phrases": quoted_phrases,
         "quoted_count": len(quoted_phrases),
         "domain_indicators": domain_indicators,
         "domain_count": len(domain_indicators),
+        "forbidden_files": forbidden_files,
+        "implementation_details": implementation_details,
+        "line_count": line_count,
+        "has_frontmatter": has_frontmatter,
+        "yaml_delimiters": yaml_delimiters,
+        "has_name": has_name,
+        "has_description": has_description,
     }

@@ -163,6 +163,197 @@ description: >
 
         print("✅ test_domain_indicators_mixed_case_deduplication passed")
 
+def test_forbidden_files_detection():
+    """Test detection of forbidden files."""
+    with tempfile.TemporaryDirectory() as tmp:
+        tmp_path = Path(tmp)
+        skill_md = tmp_path / "SKILL.md"
+        skill_md.write_text("---\nname: test\n---")
+
+        # Create forbidden file
+        (tmp_path / "README.md").write_text("Forbidden")
+
+        metrics = extract_skill_metrics(tmp_path)
+
+        assert "forbidden_files" in metrics
+        assert len(metrics["forbidden_files"]) == 1
+        assert "README.md" in metrics["forbidden_files"]
+        print("✅ test_forbidden_files_detection passed")
+
+def test_forbidden_files_multiple():
+    """Test detection of multiple forbidden files."""
+    with tempfile.TemporaryDirectory() as tmp:
+        tmp_path = Path(tmp)
+        skill_md = tmp_path / "SKILL.md"
+        skill_md.write_text("---\nname: test\n---")
+
+        # Create multiple forbidden files
+        (tmp_path / "README.md").write_text("Forbidden")
+        (tmp_path / "INSTALL.txt").write_text("Forbidden")
+        (tmp_path / "CHANGELOG.md").write_text("Forbidden")
+        (tmp_path / "QUICKSTART.md").write_text("Forbidden")
+
+        metrics = extract_skill_metrics(tmp_path)
+
+        assert "forbidden_files" in metrics
+        assert len(metrics["forbidden_files"]) == 4
+        assert "README.md" in metrics["forbidden_files"]
+        assert "INSTALL.txt" in metrics["forbidden_files"]
+        assert "CHANGELOG.md" in metrics["forbidden_files"]
+        assert "QUICKSTART.md" in metrics["forbidden_files"]
+        print("✅ test_forbidden_files_multiple passed")
+
+def test_no_forbidden_files():
+    """Test that no forbidden files returns empty list."""
+    with tempfile.TemporaryDirectory() as tmp:
+        tmp_path = Path(tmp)
+        skill_md = tmp_path / "SKILL.md"
+        skill_md.write_text("---\nname: test\n---")
+
+        # Only allowed file
+        (tmp_path / "helper_script.py").write_text("# Helper")
+
+        metrics = extract_skill_metrics(tmp_path)
+
+        assert "forbidden_files" in metrics
+        assert len(metrics["forbidden_files"]) == 0
+        print("✅ test_no_forbidden_files passed")
+
+def test_line_count():
+    """Test SKILL.md line count."""
+    with tempfile.TemporaryDirectory() as tmp:
+        tmp_path = Path(tmp)
+        skill_md = tmp_path / "SKILL.md"
+        content = "---\nname: test\n---\n" + "\n".join([f"Line {i}" for i in range(100)])
+        skill_md.write_text(content)
+
+        metrics = extract_skill_metrics(tmp_path)
+
+        assert "line_count" in metrics
+        assert metrics["line_count"] > 100
+        print("✅ test_line_count passed")
+
+def test_implementation_details_detection():
+    """Test detection of implementation details in description."""
+    with tempfile.TemporaryDirectory() as tmp:
+        tmp_path = Path(tmp)
+        skill_md = tmp_path / "SKILL.md"
+        skill_md.write_text("""---
+name: test-skill
+description: Uses script.py and helper.sh with /slash:command
+---
+""")
+
+        metrics = extract_skill_metrics(tmp_path)
+
+        assert "implementation_details" in metrics
+        assert len(metrics["implementation_details"]) >= 2  # .py, .sh, /slash:command
+        print("✅ test_implementation_details_detection passed")
+
+def test_implementation_details_various_patterns():
+    """Test detection of various implementation detail patterns."""
+    with tempfile.TemporaryDirectory() as tmp:
+        tmp_path = Path(tmp)
+        skill_md = tmp_path / "SKILL.md"
+        skill_md.write_text("""---
+name: test-skill
+description: >
+  Uses tools like script.py, helper.sh, config.json,
+  and commands like /commit:push or /review:code
+---
+""")
+
+        metrics = extract_skill_metrics(tmp_path)
+
+        assert "implementation_details" in metrics
+        # Should find: script.py, helper.sh, config.json, /commit:push, /review:code
+        assert len(metrics["implementation_details"]) >= 5
+        print("✅ test_implementation_details_various_patterns passed")
+
+def test_no_implementation_details():
+    """Test that clean description has no implementation details."""
+    with tempfile.TemporaryDirectory() as tmp:
+        tmp_path = Path(tmp)
+        skill_md = tmp_path / "SKILL.md"
+        skill_md.write_text("""---
+name: test-skill
+description: >
+  Use when creating skills or validating content.
+  Focus on quality and compliance.
+---
+""")
+
+        metrics = extract_skill_metrics(tmp_path)
+
+        assert "implementation_details" in metrics
+        assert len(metrics["implementation_details"]) == 0
+        print("✅ test_no_implementation_details passed")
+
+def test_yaml_frontmatter_valid():
+    """Test detection of valid YAML frontmatter."""
+    with tempfile.TemporaryDirectory() as tmp:
+        tmp_path = Path(tmp)
+        skill_md = tmp_path / "SKILL.md"
+        skill_md.write_text("""---
+name: test-skill
+description: Valid skill
+---
+
+Content here.
+""")
+
+        metrics = extract_skill_metrics(tmp_path)
+
+        assert "has_frontmatter" in metrics
+        assert metrics["has_frontmatter"] is True
+        assert "yaml_delimiters" in metrics
+        assert metrics["yaml_delimiters"] == 2
+        assert "has_name" in metrics
+        assert metrics["has_name"] is True
+        assert "has_description" in metrics
+        assert metrics["has_description"] is True
+        print("✅ test_yaml_frontmatter_valid passed")
+
+def test_yaml_frontmatter_missing():
+    """Test detection of missing YAML frontmatter."""
+    with tempfile.TemporaryDirectory() as tmp:
+        tmp_path = Path(tmp)
+        skill_md = tmp_path / "SKILL.md"
+        skill_md.write_text("""# Skill without frontmatter
+
+This is bad.
+""")
+
+        metrics = extract_skill_metrics(tmp_path)
+
+        assert "has_frontmatter" in metrics
+        assert metrics["has_frontmatter"] is False
+        assert "yaml_delimiters" in metrics
+        assert metrics["yaml_delimiters"] == 0
+        print("✅ test_yaml_frontmatter_missing passed")
+
+def test_yaml_frontmatter_incomplete():
+    """Test detection of incomplete YAML frontmatter."""
+    with tempfile.TemporaryDirectory() as tmp:
+        tmp_path = Path(tmp)
+        skill_md = tmp_path / "SKILL.md"
+        skill_md.write_text("""---
+name: test-skill
+---
+
+Missing description field.
+""")
+
+        metrics = extract_skill_metrics(tmp_path)
+
+        assert "has_frontmatter" in metrics
+        assert metrics["has_frontmatter"] is True
+        assert "has_name" in metrics
+        assert metrics["has_name"] is True
+        assert "has_description" in metrics
+        assert metrics["has_description"] is False
+        print("✅ test_yaml_frontmatter_incomplete passed")
+
 if __name__ == "__main__":
     test_extract_description_from_skill_md()
     test_extract_quoted_phrases()
@@ -171,4 +362,14 @@ if __name__ == "__main__":
     test_domain_indicators_case_insensitive()
     test_domain_indicators_unique()
     test_domain_indicators_mixed_case_deduplication()
+    test_forbidden_files_detection()
+    test_forbidden_files_multiple()
+    test_no_forbidden_files()
+    test_line_count()
+    test_implementation_details_detection()
+    test_implementation_details_various_patterns()
+    test_no_implementation_details()
+    test_yaml_frontmatter_valid()
+    test_yaml_frontmatter_missing()
+    test_yaml_frontmatter_incomplete()
     print("\n✅ All tests passed!")

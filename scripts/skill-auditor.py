@@ -2,7 +2,7 @@
 # /// script
 # requires-python = ">=3.11"
 # dependencies = [
-#     "claude-agent-sdk>=0.1.6",
+#     "claude-agent-sdk>=0.1.8",
 # ]
 # ///
 """
@@ -50,15 +50,6 @@ async def audit_skill(skill_path: Path):
 
     # Step 2: Configure SDK with NO tools (analysis only)
     options = ClaudeAgentOptions(
-        system_prompt="""You are a skill auditor analyzing pre-extracted metrics.
-
-CRITICAL RULES:
-- DO NOT re-extract metrics
-- DO NOT run bash commands
-- DO NOT make up data
-- ONLY analyze the JSON provided
-
-Apply binary checks to the metrics and generate an audit report.""",
         allowed_tools=[],  # NO TOOLS - prevents hallucination
         model="claude-sonnet-4-5",
         max_turns=1  # Single analysis, no conversation

@@ -24,6 +24,7 @@ from claude_agent_sdk import AssistantMessage, ClaudeAgentOptions, ResultMessage
 # Import metrics extractor
 sys.path.insert(0, str(Path(__file__).parent / "skill_auditor"))
 from metrics_extractor import extract_skill_metrics
+from validation import validate_metrics_structure
 
 
 async def audit_skill(skill_path: Path):
@@ -45,7 +46,6 @@ async def audit_skill(skill_path: Path):
         return
 
     # Validate metrics structure before proceeding
-    from validation import validate_metrics_structure
 
     try:
         validate_metrics_structure(metrics)

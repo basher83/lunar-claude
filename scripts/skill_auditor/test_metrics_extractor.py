@@ -3,7 +3,11 @@
 # requires-python = ">=3.11"
 # dependencies = []
 # ///
-"""Tests for metrics_extractor module."""
+"""
+Unit tests for metrics extraction module.
+
+For integration/determinism tests, see test_determinism.py
+"""
 
 import tempfile
 from pathlib import Path

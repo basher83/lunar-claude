@@ -429,6 +429,61 @@ def test_extract_metrics_unicode_decode_error():
         print("✅ test_extract_metrics_unicode_decode_error passed")
 
 
+def test_yaml_frontmatter_empty_description():
+    """Test detection of empty description field."""
+    with tempfile.TemporaryDirectory() as tmp:
+        tmp_path = Path(tmp)
+        skill_md = tmp_path / "SKILL.md"
+        skill_md.write_text("""---
+name: test-skill
+description: ""
+---
+# Content
+""")
+
+        metrics = extract_skill_metrics(tmp_path)
+
+        # Empty quoted string should result in empty description
+        assert metrics["description"] == '""', \
+            f"Expected empty quoted description, got: {metrics['description']}"
+        assert metrics["quoted_count"] == 0, \
+            f"Expected 0 quoted phrases in empty description, got: {metrics['quoted_count']}"
+        # Empty description may still match "description" as domain indicator
+        assert metrics["domain_count"] == 0, \
+            f"Expected 0 domain indicators in empty description, got: {metrics['domain_count']}"
+
+        print("✅ test_yaml_frontmatter_empty_description passed")
+
+
+def test_description_with_special_regex_characters():
+    """Test extraction handles regex special characters in description."""
+    with tempfile.TemporaryDirectory() as tmp:
+        tmp_path = Path(tmp)
+        skill_md = tmp_path / "SKILL.md"
+        skill_md.write_text("""---
+name: test-skill
+description: >
+  Use for $pecial (characters) like [brackets] and *.wildcards
+  with "nested 'quotes' inside" patterns.
+---
+""")
+
+        metrics = extract_skill_metrics(tmp_path)
+
+        assert "$pecial" in metrics["description"], \
+            "Should preserve $ characters"
+        assert "(characters)" in metrics["description"], \
+            "Should preserve parentheses"
+        assert "[brackets]" in metrics["description"], \
+            "Should preserve brackets"
+        assert "*.wildcards" in metrics["description"], \
+            "Should preserve asterisks"
+        assert "nested 'quotes' inside" in metrics["quoted_phrases"], \
+            f"Should extract nested quotes, got: {metrics['quoted_phrases']}"
+
+        print("✅ test_description_with_special_regex_characters passed")
+
+
 if __name__ == "__main__":
     test_extract_description_from_skill_md()
     test_extract_quoted_phrases()
@@ -449,4 +504,6 @@ if __name__ == "__main__":
     test_yaml_frontmatter_incomplete()
     test_extract_metrics_permission_error()
     test_extract_metrics_unicode_decode_error()
+    test_yaml_frontmatter_empty_description()
+    test_description_with_special_regex_characters()
     print("\n✅ All tests passed!")

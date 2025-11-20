@@ -14,16 +14,17 @@ Usage:
     ./scripts/skill-auditor.py /path/to/skill/directory
 """
 
-import sys
 import json
+import sys
 from pathlib import Path
 
 import anyio
-from claude_agent_sdk import query, ClaudeAgentOptions, AssistantMessage, TextBlock, ResultMessage
+from claude_agent_sdk import AssistantMessage, ClaudeAgentOptions, ResultMessage, TextBlock, query
 
 # Import metrics extractor
 sys.path.insert(0, str(Path(__file__).parent / "skill_auditor"))
 from metrics_extractor import extract_skill_metrics
+
 
 async def audit_skill(skill_path: Path):
     """
@@ -43,6 +44,15 @@ async def audit_skill(skill_path: Path):
         print(f"❌ Error: {e}")
         return
 
+    # Validate metrics structure before proceeding
+    from validation import validate_metrics_structure
+
+    try:
+        validate_metrics_structure(metrics)
+    except ValueError as e:
+        print(f"❌ Internal Error: {e}")
+        return
+
     print(f"✅ Extracted {len(metrics)} metrics")
     print(f"   - Quoted phrases: {metrics['quoted_count']}")
     print(f"   - Domain indicators: {metrics['domain_count']}")
@@ -52,7 +62,7 @@ async def audit_skill(skill_path: Path):
     options = ClaudeAgentOptions(
         allowed_tools=[],  # NO TOOLS - prevents hallucination
         model="claude-sonnet-4-5",
-        max_turns=1  # Single analysis, no conversation
+        max_turns=1,  # Single analysis, no conversation
     )
 
     # Step 3: Build analysis prompt with metrics
@@ -73,6 +83,7 @@ async def audit_skill(skill_path: Path):
             if message.duration_ms:
                 print(f"⏱️  Duration: {message.duration_ms}ms")
 
+
 def build_analysis_prompt(metrics: dict) -> str:
     """
     Build the analysis prompt with extracted metrics.
@@ -85,9 +96,7 @@ def build_analysis_prompt(metrics: dict) -> str:
     """
     # Calculate binary check results
     b1_pass = len(metrics["forbidden_files"]) == 0
-    b2_pass = (metrics["yaml_delimiters"] == 2 and
-               metrics["has_name"] and
-               metrics["has_description"])
+    b2_pass = metrics["yaml_delimiters"] == 2 and metrics["has_name"] and metrics["has_description"]
     b3_pass = metrics["line_count"] < 500
     b4_pass = len(metrics["implementation_details"]) == 0
 
@@ -145,6 +154,7 @@ IMPORTANT: Base your analysis ONLY on the metrics provided above. Do not re-extr
 
     return prompt
 
+
 async def main():
     """Main entry point."""
     if len(sys.argv) != 2:
@@ -162,6 +172,7 @@ async def main():
         sys.exit(1)
 
     await audit_skill(skill_path)
+
 
 if __name__ == "__main__":
     anyio.run(main)

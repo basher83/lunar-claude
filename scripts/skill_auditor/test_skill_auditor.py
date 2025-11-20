@@ -2,6 +2,10 @@
 """Tests for skill-auditor main application logic."""
 
 import sys
+from pathlib import Path
+
+# Add parent directory to path for imports
+sys.path.insert(0, str(Path(__file__).parent))
 
 # This is a workaround since skill-auditor.py is a script, not a module
 # We'll copy the logic we're testing here and verify against it
@@ -225,6 +229,51 @@ def test_build_analysis_prompt_all_pass():
     assert "W3: ≥3 domain indicators → ✅ PASS" in prompt
 
 
+def test_validate_metrics_structure_missing_keys():
+    """Test that validation catches missing required keys."""
+    incomplete_metrics = {
+        "forbidden_files": [],
+        "yaml_delimiters": 2,
+        # Missing: has_name, has_description, line_count, etc.
+    }
+
+    # This should raise ValueError
+    try:
+        # Assume we'll create a validate_metrics_structure function
+        from validation import validate_metrics_structure
+
+        validate_metrics_structure(incomplete_metrics)
+        assert False, "Should have raised ValueError"
+    except ValueError as e:
+        assert "missing" in str(e).lower()
+        assert "has_name" in str(e)
+
+
+def test_validate_metrics_structure_complete():
+    """Test that validation passes with complete metrics."""
+    complete_metrics = {
+        "forbidden_files": [],
+        "yaml_delimiters": 2,
+        "has_name": True,
+        "has_description": True,
+        "line_count": 100,
+        "implementation_details": [],
+        "quoted_count": 5,
+        "domain_count": 5,
+        "skill_name": "test",
+        "skill_path": "/tmp/test",
+        "description": "test description",
+        "quoted_phrases": ["phrase1"],
+        "domain_indicators": ["yaml"],
+        "has_frontmatter": True,
+    }
+
+    from validation import validate_metrics_structure
+
+    # Should not raise
+    validate_metrics_structure(complete_metrics)
+
+
 if __name__ == "__main__":
     tests = [
         test_build_analysis_prompt_b1_forbidden_files_fail,
@@ -237,6 +286,8 @@ if __name__ == "__main__":
         test_build_analysis_prompt_w1_quoted_phrases,
         test_build_analysis_prompt_w3_domain_indicators,
         test_build_analysis_prompt_all_pass,
+        test_validate_metrics_structure_missing_keys,
+        test_validate_metrics_structure_complete,
     ]
 
     failed = []

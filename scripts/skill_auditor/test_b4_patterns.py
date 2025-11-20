@@ -8,13 +8,13 @@ sys.path.insert(0, str(Path(__file__).parent))
 from metrics_extractor import check_b4_implementation_details
 
 
-def test_b4_function_exists():
+def test_b4_function_exists() -> None:
     """B4 check function should be callable"""
     result = check_b4_implementation_details("clean description")
     assert isinstance(result, list)
 
 
-def test_b4_catches_architecture_patterns():
+def test_b4_catches_architecture_patterns() -> None:
     """B4 should detect architecture terminology"""
     cases = [
         ("uses multi-tier approach", ["multi-tier"]),
@@ -30,7 +30,7 @@ def test_b4_catches_architecture_patterns():
             assert violation in result, f"Should detect '{violation}' in: {description}"
 
 
-def test_b4_catches_tool_names():
+def test_b4_catches_tool_names() -> None:
     """B4 should detect specific tool and library names"""
     cases = [
         ("uses firecrawl for scraping", ["firecrawl"]),
@@ -46,7 +46,7 @@ def test_b4_catches_tool_names():
             assert violation in result, f"Should detect '{violation}' in: {description}"
 
 
-def test_b4_allows_conceptual_terms():
+def test_b4_allows_conceptual_terms() -> None:
     """B4 should NOT flag conceptual/abstract terminology"""
     cases = [
         "processes data in multiple tiers",  # "tiers" not "multi-tier"

@@ -191,12 +191,33 @@ async def main():
 
     skill_path = Path(sys.argv[1])
 
+    # Resolve to absolute path
+    try:
+        skill_path = skill_path.resolve()
+    except (OSError, RuntimeError) as e:
+        print(f"❌ Error: Unable to resolve path {skill_path}: {e}")
+        print("   Please ensure the path is valid and you have permission to access it.")
+        sys.exit(1)
+
     if not skill_path.exists():
         print(f"❌ Error: Path does not exist: {skill_path}")
+        print("   Please provide a valid path to a skill directory.")
+        print(
+            "   Example: ./scripts/skill-auditor.py plugins/meta/meta-claude/skills/skill-factory"
+        )
         sys.exit(1)
 
     if not skill_path.is_dir():
         print(f"❌ Error: Path is not a directory: {skill_path}")
+        print("   Please provide a path to a skill directory (not a file).")
+        sys.exit(1)
+
+    # Check if we can read the directory
+    try:
+        list(skill_path.iterdir())
+    except PermissionError:
+        print(f"❌ Permission Error: Cannot read directory {skill_path}")
+        print("   Please check directory permissions and try again.")
         sys.exit(1)
 
     await audit_skill(skill_path)

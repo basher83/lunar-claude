@@ -56,7 +56,6 @@ impl_pattern = "|".join(f"(?:{p})" for p in IMPL_PATTERNS)
 - Row 6-10: Catches "firecrawl" and other tool names
 - Maintains determinism (regex = 0pp variance)
 
-
 ### Task 1.2: Add Pattern Documentation
 
 **Add comment block above pattern definition:**
@@ -77,7 +76,6 @@ def check_b4_no_implementation_details(description: str) -> Tuple[bool, List[str
         (passes_check, evidence_list)
     """
 ```
-
 
 ***
 
@@ -105,7 +103,7 @@ python skill-auditor.py ../plugins/meta/meta-claude/skills/skill-factory/SKILL.m
 
 **Expected output:**
 
-```
+```bash
 Skill: skill-factory
 Total Blockers: 1
 
@@ -119,7 +117,6 @@ Total Blockers: 1
 - Blocker count = 1 (not 0)
 - Evidence list includes all 3 terms
 - Consistent across multiple runs
-
 
 ### Task 2.3: Determinism Verification
 
@@ -193,7 +190,6 @@ python -m pytest skill_auditor/test_skill_auditor.py::test_b4_tool_names -v
 python -m pytest skill_auditor/test_skill_auditor.py::test_b4_false_positives -v
 ```
 
-
 ### Task 3.2: Create Baseline Dataset
 
 **Create:** `scripts/skill_auditor/test_data/baseline_skills.json`
@@ -241,7 +237,6 @@ def test_baseline_consistency():
             f"{skill_name}: Expected {expected['expected_blockers']} blockers, got {blocker_count}"
 ```
 
-
 ***
 
 ## Phase 4: v6 Hybrid Integration (1 hour)
@@ -252,7 +247,7 @@ def test_baseline_consistency():
 
 **Verify this workflow exists:**
 
-```
+```text
 1. Execute: skill-auditor.py <skill_path>
 2. Read: metrics JSON output
 3. If blockers found: semantic validation
@@ -275,7 +270,6 @@ For each blocker detected by SDK:
    - Accept majority vote
    - If no majority: Flag for manual review
 ```
-
 
 ### Task 4.2: Test v6 on skill-factory
 
@@ -333,11 +327,10 @@ Tested on skill-factory:
 
 python skill-auditor.py <skill_path>
 
-```
+```bash
 
 Output includes JSON metrics file for hybrid agent consumption.
 ```
-
 
 ### Task 5.2: Update RESEARCH-FINDINGS.md
 
@@ -376,7 +369,6 @@ Chose **pattern expansion over ML/NLP** because:
 - [ ] v6 hybrid validation on 10+ skills
 - [ ] Production deployment
 ```
-
 
 ***
 
@@ -433,7 +425,6 @@ chmod +x run_full_audit.sh
 ./run_full_audit.sh
 ```
 
-
 ***
 
 ## Success Metrics
@@ -443,7 +434,6 @@ chmod +x run_full_audit.sh
 - ❌ SDK detected 0/3 violations in skill-factory
 - ❌ v1 agent: 17-50% effectiveness variance
 - ❌ Pattern gap documented but unresolved
-
 
 ### After Enhancement (Target)
 
@@ -483,7 +473,6 @@ IMPL_PATTERNS = [
 python -m pytest skill_auditor/test_determinism.py -v
 ```
 
-
 ***
 
 ## Timeline Summary
@@ -499,7 +488,6 @@ python -m pytest skill_auditor/test_determinism.py -v
 | **Total (Critical)** | **2 hours** |  |
 | **Total (Complete)** | **3.5 hours** |  |
 
-
 ***
 
 ## Completion Checklist
@@ -513,14 +501,12 @@ python -m pytest skill_auditor/test_determinism.py -v
 - [ ] Test v6 hybrid on skill-factory
 - [ ] Update RESEARCH-FINDINGS.md with results
 
-
 ### Recommended (Should Do)
 
 - [ ] Add 9 new unit tests for pattern coverage
 - [ ] Create baseline dataset
 - [ ] Document pattern detection strategy
 - [ ] Test v6 on 3-5 additional skills
-
 
 ### Optional (Nice to Have)
 
@@ -543,4 +529,3 @@ cd scripts
 Then execute phases 1-4 sequentially. You should see skill-factory detection improve from 0/3 to 3/3 within the first 30 minutes of implementation.
 
 Your research is solid, your architecture is sound—this is just closing the pattern coverage gap you've already identified. 🚀
-

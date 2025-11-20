@@ -7,6 +7,8 @@ from pathlib import Path
 # Add parent directory to path for imports
 sys.path.insert(0, str(Path(__file__).parent))
 
+from validation import validate_metrics_structure
+
 # This is a workaround since skill-auditor.py is a script, not a module
 # We'll copy the logic we're testing here and verify against it
 # In production, consider refactoring to make build_analysis_prompt importable
@@ -59,7 +61,7 @@ def build_analysis_prompt(metrics: dict) -> str:
     return prompt
 
 
-def test_build_analysis_prompt_b1_forbidden_files_fail():
+def test_build_analysis_prompt_b1_forbidden_files_fail() -> None:
     """Test B1 check fails when forbidden files present."""
     metrics = {
         "forbidden_files": ["README.md"],
@@ -76,7 +78,7 @@ def test_build_analysis_prompt_b1_forbidden_files_fail():
     assert "B1: No forbidden files → ❌ FAIL" in prompt
 
 
-def test_build_analysis_prompt_b1_forbidden_files_pass():
+def test_build_analysis_prompt_b1_forbidden_files_pass() -> None:
     """Test B1 check passes when no forbidden files."""
     metrics = {
         "forbidden_files": [],
@@ -93,7 +95,7 @@ def test_build_analysis_prompt_b1_forbidden_files_pass():
     assert "B1: No forbidden files → ✅ PASS" in prompt
 
 
-def test_build_analysis_prompt_b2_yaml_missing_delimiters():
+def test_build_analysis_prompt_b2_yaml_missing_delimiters() -> None:
     """Test B2 check fails when YAML delimiters missing."""
     metrics = {
         "forbidden_files": [],
@@ -110,7 +112,7 @@ def test_build_analysis_prompt_b2_yaml_missing_delimiters():
     assert "B2: Valid YAML frontmatter → ❌ FAIL" in prompt
 
 
-def test_build_analysis_prompt_b2_yaml_missing_name():
+def test_build_analysis_prompt_b2_yaml_missing_name() -> None:
     """Test B2 check fails when name field missing."""
     metrics = {
         "forbidden_files": [],
@@ -127,7 +129,7 @@ def test_build_analysis_prompt_b2_yaml_missing_name():
     assert "B2: Valid YAML frontmatter → ❌ FAIL" in prompt
 
 
-def test_build_analysis_prompt_b2_yaml_missing_description():
+def test_build_analysis_prompt_b2_yaml_missing_description() -> None:
     """Test B2 check fails when description field missing."""
     metrics = {
         "forbidden_files": [],
@@ -144,7 +146,7 @@ def test_build_analysis_prompt_b2_yaml_missing_description():
     assert "B2: Valid YAML frontmatter → ❌ FAIL" in prompt
 
 
-def test_build_analysis_prompt_b3_line_count_threshold():
+def test_build_analysis_prompt_b3_line_count_threshold() -> None:
     """Test B3 check fails when line count exceeds 500."""
     metrics = {
         "forbidden_files": [],
@@ -161,7 +163,7 @@ def test_build_analysis_prompt_b3_line_count_threshold():
     assert "B3: SKILL.md under 500 lines → ❌ FAIL" in prompt
 
 
-def test_build_analysis_prompt_b4_implementation_details():
+def test_build_analysis_prompt_b4_implementation_details() -> None:
     """Test B4 check fails when implementation details present."""
     metrics = {
         "forbidden_files": [],
@@ -178,7 +180,7 @@ def test_build_analysis_prompt_b4_implementation_details():
     assert "B4: No implementation details → ❌ FAIL" in prompt
 
 
-def test_build_analysis_prompt_w1_quoted_phrases():
+def test_build_analysis_prompt_w1_quoted_phrases() -> None:
     """Test W1 check fails when fewer than 3 quoted phrases."""
     metrics = {
         "forbidden_files": [],
@@ -195,7 +197,7 @@ def test_build_analysis_prompt_w1_quoted_phrases():
     assert "W1: ≥3 quoted phrases → ❌ FAIL" in prompt
 
 
-def test_build_analysis_prompt_w3_domain_indicators():
+def test_build_analysis_prompt_w3_domain_indicators() -> None:
     """Test W3 check fails when fewer than 3 domain indicators."""
     metrics = {
         "forbidden_files": [],
@@ -212,7 +214,7 @@ def test_build_analysis_prompt_w3_domain_indicators():
     assert "W3: ≥3 domain indicators → ❌ FAIL" in prompt
 
 
-def test_build_analysis_prompt_all_pass():
+def test_build_analysis_prompt_all_pass() -> None:
     """Test all checks pass with valid metrics."""
     metrics = {
         "forbidden_files": [],
@@ -234,7 +236,7 @@ def test_build_analysis_prompt_all_pass():
     assert "W3: ≥3 domain indicators → ✅ PASS" in prompt
 
 
-def test_validate_metrics_structure_missing_keys():
+def test_validate_metrics_structure_missing_keys() -> None:
     """Test that validation catches missing required keys."""
     incomplete_metrics = {
         "forbidden_files": [],
@@ -244,9 +246,6 @@ def test_validate_metrics_structure_missing_keys():
 
     # This should raise ValueError
     try:
-        # Assume we'll create a validate_metrics_structure function
-        from validation import validate_metrics_structure
-
         validate_metrics_structure(incomplete_metrics)
         raise AssertionError("Should have raised ValueError")
     except ValueError as e:
@@ -254,7 +253,7 @@ def test_validate_metrics_structure_missing_keys():
         assert "has_name" in str(e)
 
 
-def test_validate_metrics_structure_complete():
+def test_validate_metrics_structure_complete() -> None:
     """Test that validation passes with complete metrics."""
     complete_metrics = {
         "forbidden_files": [],
@@ -272,8 +271,6 @@ def test_validate_metrics_structure_complete():
         "domain_indicators": ["yaml"],
         "has_frontmatter": True,
     }
-
-    from validation import validate_metrics_structure
 
     # Should not raise
     validate_metrics_structure(complete_metrics)

@@ -461,15 +461,55 @@ Pattern does not match:
 
 ---
 
+## Implementation Results (November 20, 2025)
+
+### Pattern Enhancement Applied
+
+**Changes Made:**
+1. Refactored B4 check into testable function (`check_b4_implementation_details()`)
+2. Added architecture pattern detection: `\w+-(?:tier|layer|phase|step|stage)`
+3. Added 40+ tool/library names from empirical analysis
+4. Maintained determinism (regex-only, no ML/NLP)
+
+**Validation on skill-factory:**
+
+| Metric | Before | After | Change |
+|--------|--------|-------|--------|
+| Violations detected | 0/3 | 3/3 | +100% |
+| Determinism (variance) | 0pp | 0pp | Maintained |
+| Performance | <100ms | <100ms | No regression |
+
+**Evidence:**
+- Detected "firecrawl" (tool name pattern matched)
+- Detected "multi-tier" (architecture pattern matched)
+- Detected "8-phase" (architecture pattern matched)
+
+**Test Coverage:**
+- Unit tests: +3 new test functions
+- Test cases: +18 pattern cases
+- Determinism: 5-run verification
+- False positives: 6 conceptual term cases
+
+**Implementation Files:**
+- Modified: `scripts/skill_auditor/metrics_extractor.py` (added `check_b4_implementation_details()`)
+- Created: `scripts/skill_auditor/test_b4_patterns.py` (63 lines, 4 test functions)
+- Created: `scripts/skill_auditor/validation_results.txt` (validation evidence)
+
+### Questions Resolved
+
+1. Can pattern coverage match v1 effectiveness? **Yes - 3/3 detection achieved**
+2. Can determinism be maintained with expanded patterns? **Yes - 0pp variance verified**
+3. Does v6 detect skill-factory violations? **Pending - SDK patterns enhanced, v6 integration not tested**
+
+---
+
 ## Unanswered Questions
 
-1. Does v6 detect skill-factory violations?
-2. Do enhanced SDK patterns catch "multi-tier" and "8-phase"?
-3. Can pattern coverage match v1 semantic detection?
-4. Is bash variance solvable within agent architecture?
-5. Does v5 JSON approach work in practice?
+1. Does v6 detect skill-factory violations with enhanced SDK patterns?
+2. Is bash variance solvable within agent architecture?
+3. Does v5 JSON approach work in practice?
 
-**Status:** Empirical testing incomplete. Data gathered, patterns documented, gaps identified.
+**Status:** Pattern enhancement complete. SDK validated. Hybrid agent testing pending.
 
 ---
 

@@ -6,6 +6,46 @@ from pathlib import Path
 from typing import Any
 
 
+def check_b4_implementation_details(description: str) -> list[str]:
+    """
+    Extract implementation details from description.
+
+    B4 Check: Descriptions must not contain implementation details.
+
+    Detects:
+    - File extensions: .py, .js, .md, etc.
+    - Command paths: /commands:name
+    - Architecture terms: multi-tier, 8-phase, three-stage
+    - Tool/library names: firecrawl, docker, pandas, react, etc.
+
+    Args:
+        description: Skill description text to check
+
+    Returns:
+        List of detected implementation detail strings
+    """
+    impl_patterns = [
+        # File extensions
+        r"\w+\.(?:yaml|json|jsx|tsx|yml|csv|sql|txt|env|md|py|sh|js|ts)",
+
+        # Command paths
+        r"/[a-z-]+:[a-z-]+",
+
+        # Architecture patterns
+        r"\b\w+-(?:tier|layer|phase|step|stage)\b",
+
+        # Common tools/libraries (curated list)
+        r"\b(?:firecrawl|pdfplumber|pandas|numpy|tensorflow|scikit-learn)\b",
+        r"\b(?:docker|kubernetes|postgresql|mysql|mongodb|redis|elasticsearch)\b",
+        r"\b(?:react|vue|angular|next\.js|express|webpack|vite)\b",
+        r"\b(?:playwright|selenium|puppeteer|scrapy|beautifulsoup)\b",
+        r"\b(?:fastapi|flask|django|streamlit|gradio)\b",
+    ]
+
+    combined_pattern = "|".join(f"(?:{p})" for p in impl_patterns)
+    return re.findall(combined_pattern, description, re.IGNORECASE)
+
+
 def extract_skill_metrics(skill_path: Path) -> dict[str, Any]:
     """
     Extract all audit metrics from a skill directory.
@@ -75,8 +115,7 @@ def extract_skill_metrics(skill_path: Path) -> dict[str, Any]:
         forbidden_files.extend([f.name for f in skill_path.glob(pattern)])
 
     # Check for implementation details in description (B4)
-    impl_pattern = r"\w+\.(py|sh|js|md|txt|json)|/[a-z-]+:[a-z-]+"
-    implementation_details = re.findall(impl_pattern, description)
+    implementation_details = check_b4_implementation_details(description)
 
     # Line count (B3)
     line_count = len(content.split("\n"))

@@ -43,6 +43,24 @@ async def audit_skill(skill_path: Path):
         metrics = extract_skill_metrics(skill_path)
     except FileNotFoundError as e:
         print(f"❌ Error: {e}")
+        print(f"   Please ensure SKILL.md exists in {skill_path}")
+        return
+    except PermissionError as e:
+        print(f"❌ Permission Error: {e}")
+        print("   Please check file permissions and try again.")
+        return
+    except ValueError as e:
+        # This catches UnicodeDecodeError wrapped as ValueError
+        print(f"❌ Encoding Error: {e}")
+        print("   Please ensure SKILL.md is properly UTF-8 encoded.")
+        return
+    except OSError as e:
+        print(f"❌ I/O Error: {e}")
+        print("   Please check that all files are accessible.")
+        return
+    except Exception as e:
+        print(f"❌ Unexpected Error during metrics extraction: {type(e).__name__}: {e}")
+        print("   This may be a bug. Please report it with the error details above.")
         return
 
     # Validate metrics structure before proceeding

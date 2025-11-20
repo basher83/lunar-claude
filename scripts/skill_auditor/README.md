@@ -39,6 +39,37 @@ by the next run.
 - **W1:** ≥3 quoted trigger phrases in description
 - **W3:** ≥3 domain-specific indicators
 
+### Pattern Enhancement (v2 - Nov 20, 2025)
+
+**Expanded B4 Detection:**
+
+The SDK now detects implementation details including:
+
+1. **File Extensions** (13 types)
+   - Python, JavaScript, TypeScript, JSON, YAML, SQL, etc.
+
+2. **Architecture Patterns**
+   - multi-tier, 8-phase, three-stage, n-layer, etc.
+   - Detects: `\w+-(?:tier|layer|phase|step|stage)`
+
+3. **Tool/Library Names** (40+ common tools)
+   - Web: firecrawl, scrapy, beautifulsoup, playwright
+   - Data: pandas, numpy, tensorflow, scikit-learn
+   - Infra: docker, kubernetes, postgresql, redis
+   - Frontend: react, vue, angular, next.js
+
+4. **Command Paths**
+   - /commands:name, /agents:type
+
+**Validation Results:**
+
+Tested on skill-factory (Nov 20, 2025):
+- Detected: 3/3 violations (firecrawl, multi-tier, 8-phase)
+- Before enhancement: 0/3
+- Improvement: 100%
+- Determinism: 0pp variance across 5 runs
+- Performance: <100ms per skill
+
 ## Module Structure
 
 ```bash

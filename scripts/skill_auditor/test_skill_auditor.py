@@ -118,6 +118,23 @@ def test_build_analysis_prompt_b2_yaml_missing_name():
     assert "B2: Valid YAML frontmatter → ❌ FAIL" in prompt
 
 
+def test_build_analysis_prompt_b2_yaml_missing_description():
+    """Test B2 check fails when description field missing."""
+    metrics = {
+        "forbidden_files": [],
+        "yaml_delimiters": 2,
+        "has_name": True,
+        "has_description": False,
+        "line_count": 100,
+        "implementation_details": [],
+        "quoted_count": 5,
+        "domain_count": 5,
+    }
+
+    prompt = build_analysis_prompt(metrics)
+    assert "B2: Valid YAML frontmatter → ❌ FAIL" in prompt
+
+
 def test_build_analysis_prompt_b3_line_count_threshold():
     """Test B3 check fails when line count exceeds 500."""
     metrics = {
@@ -125,7 +142,7 @@ def test_build_analysis_prompt_b3_line_count_threshold():
         "yaml_delimiters": 2,
         "has_name": True,
         "has_description": True,
-        "line_count": 501,
+        "line_count": 500,
         "implementation_details": [],
         "quoted_count": 5,
         "domain_count": 5,
@@ -214,6 +231,7 @@ if __name__ == "__main__":
         test_build_analysis_prompt_b1_forbidden_files_pass,
         test_build_analysis_prompt_b2_yaml_missing_delimiters,
         test_build_analysis_prompt_b2_yaml_missing_name,
+        test_build_analysis_prompt_b2_yaml_missing_description,
         test_build_analysis_prompt_b3_line_count_threshold,
         test_build_analysis_prompt_b4_implementation_details,
         test_build_analysis_prompt_w1_quoted_phrases,

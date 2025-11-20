@@ -26,6 +26,11 @@ sys.path.insert(0, str(Path(__file__).parent / "skill_auditor"))
 from metrics_extractor import extract_skill_metrics
 from validation import validate_metrics_structure
 
+# Audit thresholds
+MAX_SKILL_LINE_COUNT = 500  # Official Claude Code skill specification limit
+MIN_QUOTED_PHRASES = 3  # Minimum for concrete, actionable triggers
+MIN_DOMAIN_INDICATORS = 3  # Minimum for domain-focused description
+
 
 async def audit_skill(skill_path: Path):
     """
@@ -143,11 +148,11 @@ def build_analysis_prompt(metrics: dict) -> str:
     # Calculate binary check results
     b1_pass = len(metrics["forbidden_files"]) == 0
     b2_pass = metrics["yaml_delimiters"] == 2 and metrics["has_name"] and metrics["has_description"]
-    b3_pass = metrics["line_count"] < 500
+    b3_pass = metrics["line_count"] < MAX_SKILL_LINE_COUNT
     b4_pass = len(metrics["implementation_details"]) == 0
 
-    w1_pass = metrics["quoted_count"] >= 3
-    w3_pass = metrics["domain_count"] >= 3
+    w1_pass = metrics["quoted_count"] >= MIN_QUOTED_PHRASES
+    w3_pass = metrics["domain_count"] >= MIN_DOMAIN_INDICATORS
 
     prompt = f"""Audit the following skill metrics:
 

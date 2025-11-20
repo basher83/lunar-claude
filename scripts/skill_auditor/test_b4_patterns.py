@@ -44,3 +44,19 @@ def test_b4_catches_tool_names():
         assert len(result) > 0, f"Should detect violations in: {description}"
         for violation in expected_violations:
             assert violation in result, f"Should detect '{violation}' in: {description}"
+
+
+def test_b4_allows_conceptual_terms():
+    """B4 should NOT flag conceptual/abstract terminology"""
+    cases = [
+        "processes data in multiple tiers",  # "tiers" not "multi-tier"
+        "works in phases",  # "phases" not "8-phase"
+        "handles web content",  # conceptual, not "firecrawl"
+        "provides an API for users",  # conceptual use, not implementation
+        "manages database connections",  # conceptual, not "postgresql"
+        "framework-agnostic approach",  # mentions framework conceptually
+    ]
+
+    for description in cases:
+        result = check_b4_implementation_details(description)
+        assert len(result) == 0, f"Should NOT flag: '{description}' but found: {result}"

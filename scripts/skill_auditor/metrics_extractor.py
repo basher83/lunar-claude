@@ -56,7 +56,10 @@ def extract_skill_metrics(skill_path: Path) -> dict[str, Any]:
     # Extract quoted phrases (deterministic regex)
     quoted_phrases = re.findall(r'"([^"]+)"', description)
 
-    # Extract domain indicators (exact regex from v5 agent)
+    # Extract domain indicators - skill-specific technical terms that indicate
+    # the description focuses on skill domain rather than implementation details.
+    # Terms: SKILL.md, .skill, YAML, Claude Code, Anthropic, skill, research,
+    # validation, compliance, specification, frontmatter
     domain_pattern = (
         r"\b(SKILL\.md|\.skill|YAML|Claude Code|Anthropic|"
         r"skill|research|validation|compliance|specification|frontmatter)\b"

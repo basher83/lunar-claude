@@ -7,17 +7,14 @@ This module validates the check_b4_implementation_details() function's ability t
 - Detect tool/library names (e.g., firecrawl, docker, pandas)
 - Avoid false positives on conceptual terms
 
-Run directly: python test_b4_patterns.py
-Run with pytest: pytest test_b4_patterns.py
+Run as a module:
+    python -m scripts.skill_auditor.test_b4_patterns
+
+Run with pytest:
+    pytest scripts/skill_auditor/test_b4_patterns.py
 """
-import sys
-from pathlib import Path
 
-# Ensure we can import from the same directory
-if __name__ == "__main__":
-    sys.path.insert(0, str(Path(__file__).parent))
-
-from metrics_extractor import check_b4_implementation_details
+from .metrics_extractor import check_b4_implementation_details
 
 
 def test_b4_function_exists() -> None:
@@ -109,8 +106,8 @@ def test_b4_allows_conceptual_terms() -> None:
         assert len(result) == 0, f"Should NOT flag: '{description}' but found: {result}"
 
 
-if __name__ == "__main__":
-    # Run all tests
+def main() -> None:
+    """Run all tests when executed as a module."""
     test_b4_function_exists()
     print("✅ test_b4_function_exists")
 
@@ -130,3 +127,7 @@ if __name__ == "__main__":
     print("✅ test_b4_allows_conceptual_terms")
 
     print("\nAll tests passed!")
+
+
+if __name__ == "__main__":
+    main()

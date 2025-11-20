@@ -1,9 +1,12 @@
 """Tests for B4 implementation detail detection patterns."""
-try:
-    from .metrics_extractor import check_b4_implementation_details
-except ImportError:
-    # When run directly, not as a module
-    from metrics_extractor import check_b4_implementation_details
+import sys
+from pathlib import Path
+
+# Ensure we can import from the same directory
+if __name__ == "__main__":
+    sys.path.insert(0, str(Path(__file__).parent))
+
+from metrics_extractor import check_b4_implementation_details
 
 
 def test_b4_function_exists() -> None:

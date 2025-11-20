@@ -1,11 +1,9 @@
 """Tests for B4 implementation detail detection patterns."""
-import sys
-from pathlib import Path
-
-# Add parent directory to path for imports
-sys.path.insert(0, str(Path(__file__).parent))
-
-from metrics_extractor import check_b4_implementation_details
+try:
+    from .metrics_extractor import check_b4_implementation_details
+except ImportError:
+    # When run directly, not as a module
+    from metrics_extractor import check_b4_implementation_details
 
 
 def test_b4_function_exists() -> None:
@@ -60,3 +58,20 @@ def test_b4_allows_conceptual_terms() -> None:
     for description in cases:
         result = check_b4_implementation_details(description)
         assert len(result) == 0, f"Should NOT flag: '{description}' but found: {result}"
+
+
+if __name__ == "__main__":
+    # Run all tests
+    test_b4_function_exists()
+    print("✅ test_b4_function_exists")
+
+    test_b4_catches_architecture_patterns()
+    print("✅ test_b4_catches_architecture_patterns")
+
+    test_b4_catches_tool_names()
+    print("✅ test_b4_catches_tool_names")
+
+    test_b4_allows_conceptual_terms()
+    print("✅ test_b4_allows_conceptual_terms")
+
+    print("\nAll tests passed!")

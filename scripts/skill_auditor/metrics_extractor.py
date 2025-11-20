@@ -13,8 +13,9 @@ def check_b4_implementation_details(description: str) -> list[str]:
     B4 Check: Descriptions must not contain implementation details.
 
     Detects:
-    - File extensions: .py, .js, .md, etc.
+    - File extensions: .py, .js, .md, .txt, etc.
     - Command paths: /commands:name
+    - Architecture terms: multi-tier, 8-phase, three-stage
 
     Args:
         description: Skill description text to check
@@ -22,8 +23,14 @@ def check_b4_implementation_details(description: str) -> list[str]:
     Returns:
         List of detected implementation detail strings
     """
-    impl_pattern = r"\w+\.(py|sh|js|md|txt|json)|/[a-z-]+:[a-z-]+"
-    return re.findall(impl_pattern, description, re.IGNORECASE)
+    impl_patterns = [
+        r"\w+\.(?:py|sh|js|jsx|ts|tsx|md|json|yaml|yml|sql|csv|txt|env)",
+        r"/[a-z-]+:[a-z-]+",
+        r"\b\w+-(?:tier|layer|phase|step|stage)\b",  # multi-tier, 8-phase
+    ]
+
+    combined_pattern = "|".join(f"(?:{p})" for p in impl_patterns)
+    return re.findall(combined_pattern, description, re.IGNORECASE)
 
 
 def extract_skill_metrics(skill_path: Path) -> dict[str, Any]:

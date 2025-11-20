@@ -1,9 +1,30 @@
 """Tests for B4 implementation detail detection patterns."""
-import pytest
-from skill_auditor.metrics_extractor import check_b4_implementation_details
+import sys
+from pathlib import Path
+
+# Add parent directory to path for imports
+sys.path.insert(0, str(Path(__file__).parent))
+
+from metrics_extractor import check_b4_implementation_details
 
 
 def test_b4_function_exists():
     """B4 check function should be callable"""
     result = check_b4_implementation_details("clean description")
     assert isinstance(result, list)
+
+
+def test_b4_catches_architecture_patterns():
+    """B4 should detect architecture terminology"""
+    cases = [
+        ("uses multi-tier approach", ["multi-tier"]),
+        ("implements 8-phase processing", ["8-phase"]),
+        ("three-stage pipeline", ["three-stage"]),
+        ("5-step workflow", ["5-step"]),
+    ]
+
+    for description, expected_violations in cases:
+        result = check_b4_implementation_details(description)
+        assert len(result) > 0, f"Should detect violations in: {description}"
+        for violation in expected_violations:
+            assert violation in result, f"Should detect '{violation}' in: {description}"

@@ -12,6 +12,39 @@ def test_b4_function_exists() -> None:
     assert isinstance(result, list)
 
 
+def test_b4_catches_file_extensions() -> None:
+    """B4 should detect file extensions in descriptions"""
+    # Note: Integration tests in test_metrics_extractor.py also cover file extensions
+    cases = [
+        ("loads config from settings.yaml", ["settings.yaml"]),
+        ("runs script.py and helper.sh", ["script.py", "helper.sh"]),
+        ("processes data.json and output.csv", ["data.json", "output.csv"]),
+        ("executes main.ts with config.yml", ["main.ts", "config.yml"]),
+    ]
+
+    for description, expected_violations in cases:
+        result = check_b4_implementation_details(description)
+        assert len(result) > 0, f"Should detect violations in: {description}"
+        for violation in expected_violations:
+            assert violation in result, f"Should detect '{violation}' in: {description}"
+
+
+def test_b4_catches_command_paths() -> None:
+    """B4 should detect command path patterns like /commands:name"""
+    # Note: Integration tests in test_metrics_extractor.py also cover command paths
+    cases = [
+        ("invokes /commands:sync and /tools:analyze", ["/commands:sync", "/tools:analyze"]),
+        ("uses /commit:push for changes", ["/commit:push"]),
+        ("runs /review:code before merge", ["/review:code"]),
+    ]
+
+    for description, expected_violations in cases:
+        result = check_b4_implementation_details(description)
+        assert len(result) > 0, f"Should detect violations in: {description}"
+        for violation in expected_violations:
+            assert violation in result, f"Should detect '{violation}' in: {description}"
+
+
 def test_b4_catches_architecture_patterns() -> None:
     """B4 should detect architecture terminology"""
     cases = [
@@ -64,6 +97,12 @@ if __name__ == "__main__":
     # Run all tests
     test_b4_function_exists()
     print("✅ test_b4_function_exists")
+
+    test_b4_catches_file_extensions()
+    print("✅ test_b4_catches_file_extensions")
+
+    test_b4_catches_command_paths()
+    print("✅ test_b4_catches_command_paths")
 
     test_b4_catches_architecture_patterns()
     print("✅ test_b4_catches_architecture_patterns")

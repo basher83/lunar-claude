@@ -33,10 +33,12 @@ echo "Comparing runs for consistency..."
 # Compare extracted metrics (not full output, as Claude text varies)
 if diff -q /tmp/audit-metrics-1.txt /tmp/audit-metrics-2.txt && \
    diff -q /tmp/audit-metrics-2.txt /tmp/audit-metrics-3.txt; then
-    echo "✅ PASS: All runs produced identical metrics (deterministic)"
+    echo "✅ PASS: All runs produced identical metrics (Python extraction is deterministic)"
+    echo "Note: Claude's analysis prose may vary, but metric counts remain consistent"
     exit 0
 else
     echo "❌ FAIL: Runs produced different metrics (non-deterministic)"
+    echo "This indicates a problem with Python metric extraction, not Claude analysis"
     echo ""
     echo "Metric differences:"
     diff /tmp/audit-metrics-1.txt /tmp/audit-metrics-2.txt || true

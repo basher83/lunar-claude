@@ -45,7 +45,7 @@ by the next run.
 
 The SDK now detects implementation details including:
 
-1. **File Extensions** (13 types)
+1. **File Extensions** (14 types)
    - Python, JavaScript, TypeScript, JSON, YAML, SQL, etc.
 
 2. **Architecture Patterns**

@@ -372,6 +372,166 @@ Chose **pattern expansion over ML/NLP** because:
 
 ***
 
+## Phase 5A: Alternative - Embedded Agent Architecture (RECOMMENDED)
+
+### Problem Statement
+
+**Current Architecture (v6 hybrid):**
+- v6 agent calls skill-auditor.py as external script
+- Script execution subject to path/environment issues
+- Observed discrepancy: agent reports different results than manual execution
+- Root cause: script execution context differs in agent environment
+
+**Solution:** Embed agent logic directly into SDK
+
+### Architecture Change
+
+**Before (External Script):**
+```text
+v6 Agent → Bash → skill-auditor.py → metrics_extractor.py → results
+          ↑ Environment issues here
+```
+
+**After (Embedded Agent):**
+```text
+skill-auditor.py --hybrid → metrics_extractor.py → agent logic → results
+                            ↑ All in same process
+```
+
+### Implementation Approach
+
+#### Option 1: Hybrid Mode in skill-auditor.py (RECOMMENDED)
+
+**File:** `scripts/skill-auditor.py`
+
+**Add hybrid mode:**
+```python
+import argparse
+
+def main():
+    parser = argparse.ArgumentParser(description="Skill Auditor")
+    parser.add_argument("skill_path", help="Path to skill directory or SKILL.md")
+    parser.add_argument("--hybrid", action="store_true",
+                        help="Run hybrid audit with semantic validation")
+    parser.add_argument("--format", choices=["text", "json"], default="text")
+
+    args = parser.parse_args()
+
+    if args.hybrid:
+        return hybrid_audit(args.skill_path, format=args.format)
+    else:
+        return deterministic_audit(args.skill_path, format=args.format)
+
+def hybrid_audit(skill_path: str, format: str = "text"):
+    """
+    Hybrid audit combining deterministic checks + semantic validation.
+
+    Workflow:
+    1. Run deterministic metrics extraction
+    2. For each blocker: perform semantic validation
+    3. Generate comprehensive report with evidence
+    """
+    # Extract metrics (deterministic)
+    metrics = extract_skill_metrics(skill_path)
+
+    # Perform semantic validation on violations
+    validated_blockers = []
+    for blocker in metrics["blockers"]:
+        confidence = len(blocker["evidence"])
+
+        if confidence >= 5:
+            # High confidence: accept as-is
+            validated_blockers.append(blocker)
+        elif confidence >= 2:
+            # Medium confidence: single semantic check
+            if semantic_validate(blocker):
+                validated_blockers.append(blocker)
+        else:
+            # Low confidence: triple-run voting
+            if consensus_validate(blocker):
+                validated_blockers.append(blocker)
+
+    # Generate report
+    return generate_hybrid_report(metrics, validated_blockers, format)
+```
+
+**Benefits:**
+- ✅ Same process space - no environment issues
+- ✅ Always uses current patterns
+- ✅ Single entry point for both modes
+- ✅ Backward compatible (no --hybrid = deterministic only)
+
+#### Option 2: Separate Hybrid Script
+
+**File:** `scripts/skill-auditor-hybrid.py`
+
+**Standalone hybrid auditor:**
+```python
+from skill_auditor.metrics_extractor import extract_skill_metrics
+from skill_auditor.semantic_validator import validate_blocker
+
+def main():
+    # Extract metrics
+    metrics = extract_skill_metrics(skill_path)
+
+    # Validate with built-in agent logic
+    validated = validate_all_blockers(metrics)
+
+    # Generate report
+    print_hybrid_report(validated)
+```
+
+**Benefits:**
+- ✅ Clean separation of concerns
+- ✅ Dedicated hybrid entry point
+- ❌ Requires maintaining two scripts
+
+**Recommendation:** Use Option 1 (hybrid mode flag)
+
+### Migration Path
+
+**Step 1: Add hybrid mode to SDK**
+```bash
+cd scripts
+# Add --hybrid flag and hybrid_audit() function to skill-auditor.py
+```
+
+**Step 2: Simplify v6 agent**
+```markdown
+# Old v6 agent
+Run: /path/to/skill-auditor.py <skill>
+Then: Read output and add semantic validation
+
+# New v6 agent
+Run: skill-auditor.py --hybrid <skill>
+Done: Report already includes semantic validation
+```
+
+**Step 3: Test**
+```bash
+# Test hybrid mode
+python scripts/skill-auditor.py plugins/meta/meta-claude/skills/skill-factory --hybrid
+
+# Should show:
+# - Deterministic checks
+# - Semantic validation results
+# - Comprehensive report
+```
+
+### Expected Outcome
+
+**Before (v6 agent calling external script):**
+- Environment-dependent behavior
+- Inconsistent results between agent and manual execution
+- Complex debugging
+
+**After (embedded hybrid mode):**
+- Consistent results (same process, same patterns)
+- Simplified agent (just calls `--hybrid`)
+- Single source of truth for audit logic
+
+***
+
 ## Phase 6: Production Validation (Optional, 30 minutes)
 
 ### Task 6.1: Run on All Skills

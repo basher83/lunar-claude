@@ -21,9 +21,15 @@ from metrics_extractor import check_b4_implementation_details
 
 
 def test_b4_function_exists() -> None:
-    """B4 check function should be callable"""
+    """B4 check function should be callable and handle edge cases."""
     result = check_b4_implementation_details("clean description")
     assert isinstance(result, list)
+    assert len(result) == 0, "Clean description should have no violations"
+
+    # Edge cases
+    assert check_b4_implementation_details("") == [], "Empty string should return empty list"
+    result_special = check_b4_implementation_details("!@#$%^&*()")
+    assert isinstance(result_special, list), "Special characters should not raise exceptions"
 
 
 def test_b4_catches_file_extensions() -> None:
@@ -38,9 +44,8 @@ def test_b4_catches_file_extensions() -> None:
 
     for description, expected_violations in cases:
         result = check_b4_implementation_details(description)
-        assert len(result) > 0, f"Should detect violations in: {description}"
-        for violation in expected_violations:
-            assert violation in result, f"Should detect '{violation}' in: {description}"
+        assert set(result) == set(expected_violations), \
+            f"Expected {expected_violations}, got {result} for: {description}"
 
 
 def test_b4_catches_command_paths() -> None:
@@ -54,9 +59,8 @@ def test_b4_catches_command_paths() -> None:
 
     for description, expected_violations in cases:
         result = check_b4_implementation_details(description)
-        assert len(result) > 0, f"Should detect violations in: {description}"
-        for violation in expected_violations:
-            assert violation in result, f"Should detect '{violation}' in: {description}"
+        assert set(result) == set(expected_violations), \
+            f"Expected {expected_violations}, got {result} for: {description}"
 
 
 def test_b4_catches_architecture_patterns() -> None:
@@ -70,9 +74,8 @@ def test_b4_catches_architecture_patterns() -> None:
 
     for description, expected_violations in cases:
         result = check_b4_implementation_details(description)
-        assert len(result) > 0, f"Should detect violations in: {description}"
-        for violation in expected_violations:
-            assert violation in result, f"Should detect '{violation}' in: {description}"
+        assert set(result) == set(expected_violations), \
+            f"Expected {expected_violations}, got {result} for: {description}"
 
 
 def test_b4_catches_tool_names() -> None:
@@ -86,9 +89,8 @@ def test_b4_catches_tool_names() -> None:
 
     for description, expected_violations in cases:
         result = check_b4_implementation_details(description)
-        assert len(result) > 0, f"Should detect violations in: {description}"
-        for violation in expected_violations:
-            assert violation in result, f"Should detect '{violation}' in: {description}"
+        assert set(result) == set(expected_violations), \
+            f"Expected {expected_violations}, got {result} for: {description}"
 
 
 def test_b4_allows_conceptual_terms() -> None:

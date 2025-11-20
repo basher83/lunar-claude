@@ -1,5 +1,3 @@
-<img src="https://r2cdn.perplexity.ai/pplx-full-logo-primary-dark%402x.png" style="height:64px;margin-right:32px"/>
-
 # Implementation Plan: Skill Auditor Enhancement
 
 **Objective:** Achieve both consistency (0pp variance) and effectiveness (3/3 violation detection) through enhanced pattern library + hybrid validation

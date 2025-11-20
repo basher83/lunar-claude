@@ -7,7 +7,9 @@
 
 import tempfile
 from pathlib import Path
+
 from metrics_extractor import extract_skill_metrics
+
 
 def test_extract_description_from_skill_md():
     """Test extraction of description field from YAML frontmatter."""
@@ -33,6 +35,7 @@ Content here.
         assert "quoted phrases" in metrics["description"]
         print("✅ test_extract_description_from_skill_md passed")
 
+
 def test_extract_quoted_phrases():
     """Test extraction of quoted phrases from description."""
     with tempfile.TemporaryDirectory() as tmp:
@@ -55,6 +58,7 @@ description: >
         assert "auditing against specs" in metrics["quoted_phrases"]
         print("✅ test_extract_quoted_phrases passed")
 
+
 def test_quoted_phrase_count():
     """Test quoted phrase count metric."""
     with tempfile.TemporaryDirectory() as tmp:
@@ -70,6 +74,7 @@ description: Test with "phrase one" and "phrase two"
 
         assert metrics["quoted_count"] == 2
         print("✅ test_quoted_phrase_count passed")
+
 
 def test_extract_domain_indicators():
     """Test extraction of domain-specific indicators."""
@@ -95,6 +100,7 @@ description: >
         assert metrics["domain_count"] >= 5
         print("✅ test_extract_domain_indicators passed")
 
+
 def test_domain_indicators_case_insensitive():
     """Test domain indicators extraction is case-insensitive."""
     with tempfile.TemporaryDirectory() as tmp:
@@ -114,6 +120,7 @@ description: >
         assert len(metrics["domain_indicators"]) >= 3
         print("✅ test_domain_indicators_case_insensitive passed")
 
+
 def test_domain_indicators_unique():
     """Test domain indicators are unique (no duplicates)."""
     with tempfile.TemporaryDirectory() as tmp:
@@ -130,9 +137,12 @@ description: >
 
         # 'skill' appears 3 times but should only be counted once
         # Should find: skill, YAML, validation
-        skill_count = sum(1 for indicator in metrics["domain_indicators"] if indicator.lower() == "skill")
+        skill_count = sum(
+            1 for indicator in metrics["domain_indicators"] if indicator.lower() == "skill"
+        )
         assert skill_count == 1, "Domain indicators should be unique"
         print("✅ test_domain_indicators_unique passed")
+
 
 def test_domain_indicators_mixed_case_deduplication():
     """Test domain indicators with mixed case are properly deduplicated."""
@@ -151,17 +161,24 @@ description: >
 
         # 'research', 'Research' should be deduplicated to one
         # 'validation', 'Validation' should be deduplicated to one
-        research_count = sum(1 for indicator in metrics["domain_indicators"] if indicator.lower() == "research")
-        validation_count = sum(1 for indicator in metrics["domain_indicators"] if indicator.lower() == "validation")
+        research_count = sum(
+            1 for indicator in metrics["domain_indicators"] if indicator.lower() == "research"
+        )
+        validation_count = sum(
+            1 for indicator in metrics["domain_indicators"] if indicator.lower() == "validation"
+        )
 
         assert research_count == 1, "Mixed-case 'research'/'Research' should be deduplicated"
         assert validation_count == 1, "Mixed-case 'validation'/'Validation' should be deduplicated"
 
         # Verify all indicators are lowercase
         for indicator in metrics["domain_indicators"]:
-            assert indicator == indicator.lower(), f"Domain indicator '{indicator}' should be lowercase"
+            assert indicator == indicator.lower(), (
+                f"Domain indicator '{indicator}' should be lowercase"
+            )
 
         print("✅ test_domain_indicators_mixed_case_deduplication passed")
+
 
 def test_forbidden_files_detection():
     """Test detection of forbidden files."""
@@ -179,6 +196,7 @@ def test_forbidden_files_detection():
         assert len(metrics["forbidden_files"]) == 1
         assert "README.md" in metrics["forbidden_files"]
         print("✅ test_forbidden_files_detection passed")
+
 
 def test_forbidden_files_multiple():
     """Test detection of multiple forbidden files."""
@@ -203,6 +221,7 @@ def test_forbidden_files_multiple():
         assert "QUICKSTART.md" in metrics["forbidden_files"]
         print("✅ test_forbidden_files_multiple passed")
 
+
 def test_no_forbidden_files():
     """Test that no forbidden files returns empty list."""
     with tempfile.TemporaryDirectory() as tmp:
@@ -219,6 +238,7 @@ def test_no_forbidden_files():
         assert len(metrics["forbidden_files"]) == 0
         print("✅ test_no_forbidden_files passed")
 
+
 def test_line_count():
     """Test SKILL.md line count."""
     with tempfile.TemporaryDirectory() as tmp:
@@ -232,6 +252,7 @@ def test_line_count():
         assert "line_count" in metrics
         assert metrics["line_count"] > 100
         print("✅ test_line_count passed")
+
 
 def test_implementation_details_detection():
     """Test detection of implementation details in description."""
@@ -249,6 +270,7 @@ description: Uses script.py and helper.sh with /slash:command
         assert "implementation_details" in metrics
         assert len(metrics["implementation_details"]) >= 2  # .py, .sh, /slash:command
         print("✅ test_implementation_details_detection passed")
+
 
 def test_implementation_details_various_patterns():
     """Test detection of various implementation detail patterns."""
@@ -270,6 +292,7 @@ description: >
         assert len(metrics["implementation_details"]) >= 5
         print("✅ test_implementation_details_various_patterns passed")
 
+
 def test_no_implementation_details():
     """Test that clean description has no implementation details."""
     with tempfile.TemporaryDirectory() as tmp:
@@ -288,6 +311,7 @@ description: >
         assert "implementation_details" in metrics
         assert len(metrics["implementation_details"]) == 0
         print("✅ test_no_implementation_details passed")
+
 
 def test_yaml_frontmatter_valid():
     """Test detection of valid YAML frontmatter."""
@@ -314,6 +338,7 @@ Content here.
         assert metrics["has_description"] is True
         print("✅ test_yaml_frontmatter_valid passed")
 
+
 def test_yaml_frontmatter_missing():
     """Test detection of missing YAML frontmatter."""
     with tempfile.TemporaryDirectory() as tmp:
@@ -331,6 +356,7 @@ This is bad.
         assert "yaml_delimiters" in metrics
         assert metrics["yaml_delimiters"] == 0
         print("✅ test_yaml_frontmatter_missing passed")
+
 
 def test_yaml_frontmatter_incomplete():
     """Test detection of incomplete YAML frontmatter."""
@@ -354,6 +380,55 @@ Missing description field.
         assert metrics["has_description"] is False
         print("✅ test_yaml_frontmatter_incomplete passed")
 
+
+def test_extract_metrics_permission_error():
+    """Test that PermissionError on SKILL.md read is handled gracefully."""
+    with tempfile.TemporaryDirectory() as tmp:
+        tmp_path = Path(tmp)
+        skill_md = tmp_path / "SKILL.md"
+        skill_md.write_text("---\nname: test\n---\n")
+
+        # Make file unreadable
+        skill_md.chmod(0o000)
+
+        try:
+            try:
+                extract_skill_metrics(tmp_path)
+                # If we get here, the test fails - no exception was raised
+                assert False, "Expected PermissionError to be raised but it was not"
+            except PermissionError as e:
+                # Verify error message is helpful
+                error_msg = str(e)
+                assert "Permission denied" in error_msg, f"Expected 'Permission denied' in error message, got: {error_msg}"
+                assert str(skill_md) in error_msg, f"Expected file path in error message, got: {error_msg}"
+        finally:
+            # Restore permissions for cleanup
+            skill_md.chmod(0o644)
+
+        print("✅ test_extract_metrics_permission_error passed")
+
+
+def test_extract_metrics_unicode_decode_error():
+    """Test that UnicodeDecodeError on SKILL.md is handled gracefully."""
+    with tempfile.TemporaryDirectory() as tmp:
+        tmp_path = Path(tmp)
+        skill_md = tmp_path / "SKILL.md"
+
+        # Write invalid UTF-8 bytes
+        skill_md.write_bytes(b"\xff\xfe Invalid UTF-8 \x80\x81")
+
+        try:
+            extract_skill_metrics(tmp_path)
+            # If we get here, the test fails - no exception was raised
+            assert False, "Expected ValueError to be raised but it was not"
+        except ValueError as e:
+            error_msg = str(e)
+            assert "encoding issues" in error_msg.lower(), f"Expected 'encoding issues' in error message, got: {error_msg}"
+            assert "UTF-8" in error_msg, f"Expected 'UTF-8' in error message, got: {error_msg}"
+
+        print("✅ test_extract_metrics_unicode_decode_error passed")
+
+
 if __name__ == "__main__":
     test_extract_description_from_skill_md()
     test_extract_quoted_phrases()
@@ -372,4 +447,6 @@ if __name__ == "__main__":
     test_yaml_frontmatter_valid()
     test_yaml_frontmatter_missing()
     test_yaml_frontmatter_incomplete()
+    test_extract_metrics_permission_error()
+    test_extract_metrics_unicode_decode_error()
     print("\n✅ All tests passed!")

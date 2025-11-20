@@ -24,7 +24,7 @@ def check_b4_implementation_details(description: str) -> list[str]:
         List of detected implementation detail strings
     """
     impl_patterns = [
-        r"\w+\.(?:py|sh|js|jsx|ts|tsx|md|json|yaml|yml|sql|csv|txt|env)",
+        r"\w+\.(?:yaml|json|jsx|tsx|yml|csv|sql|txt|env|md|py|sh|js|ts)",
         r"/[a-z-]+:[a-z-]+",
         r"\b\w+-(?:tier|layer|phase|step|stage)\b",  # multi-tier, 8-phase
     ]

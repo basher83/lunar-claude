@@ -28,3 +28,19 @@ def test_b4_catches_architecture_patterns():
         assert len(result) > 0, f"Should detect violations in: {description}"
         for violation in expected_violations:
             assert violation in result, f"Should detect '{violation}' in: {description}"
+
+
+def test_b4_catches_tool_names():
+    """B4 should detect specific tool and library names"""
+    cases = [
+        ("uses firecrawl for scraping", ["firecrawl"]),
+        ("built with docker and kubernetes", ["docker", "kubernetes"]),
+        ("leverages pandas and numpy", ["pandas", "numpy"]),
+        ("implements with react and express", ["react", "express"]),
+    ]
+
+    for description, expected_violations in cases:
+        result = check_b4_implementation_details(description)
+        assert len(result) > 0, f"Should detect violations in: {description}"
+        for violation in expected_violations:
+            assert violation in result, f"Should detect '{violation}' in: {description}"

@@ -1,4 +1,15 @@
-"""Tests for B4 implementation detail detection patterns."""
+"""Tests for B4 implementation detail detection patterns.
+
+This module validates the check_b4_implementation_details() function's ability to:
+- Detect file extensions (e.g., .yaml, .py, .js)
+- Detect command paths (e.g., /commands:sync)
+- Detect architecture patterns (e.g., multi-tier, 8-phase)
+- Detect tool/library names (e.g., firecrawl, docker, pandas)
+- Avoid false positives on conceptual terms
+
+Run directly: python test_b4_patterns.py
+Run with pytest: pytest test_b4_patterns.py
+"""
 import sys
 from pathlib import Path
 

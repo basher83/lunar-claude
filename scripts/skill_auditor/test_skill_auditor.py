@@ -13,8 +13,8 @@ sys.path.insert(0, str(Path(__file__).parent))
 
 # Audit thresholds (must match constants in skill-auditor.py)
 MAX_SKILL_LINE_COUNT = 500  # Official Claude Code skill specification limit
-MIN_QUOTED_PHRASES = 3      # Minimum for concrete, actionable triggers
-MIN_DOMAIN_INDICATORS = 3   # Minimum for domain-focused description
+MIN_QUOTED_PHRASES = 3  # Minimum for concrete, actionable triggers
+MIN_DOMAIN_INDICATORS = 3  # Minimum for domain-focused description
 
 
 def build_analysis_prompt(metrics: dict) -> str:
@@ -248,7 +248,7 @@ def test_validate_metrics_structure_missing_keys():
         from validation import validate_metrics_structure
 
         validate_metrics_structure(incomplete_metrics)
-        assert False, "Should have raised ValueError"
+        raise AssertionError("Should have raised ValueError")
     except ValueError as e:
         assert "missing" in str(e).lower()
         assert "has_name" in str(e)

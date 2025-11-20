@@ -65,9 +65,8 @@ def extract_skill_metrics(skill_path: Path) -> dict[str, Any]:
         r"skill|research|validation|compliance|specification|frontmatter)\b"
     )
     domain_matches = re.findall(domain_pattern, description, re.IGNORECASE)
-    domain_indicators = list(
-        set(match.lower() for match in domain_matches)
-    )  # Unique, case-normalized
+    # Deduplicate with case-insensitive matching and sort for deterministic ordering
+    domain_indicators = sorted({match.lower() for match in domain_matches})
 
     # Check for forbidden files (B1)
     forbidden_patterns = ["README*", "INSTALL*", "CHANGELOG*", "QUICK*"]

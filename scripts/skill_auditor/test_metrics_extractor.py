@@ -399,12 +399,16 @@ def test_extract_metrics_permission_error():
             try:
                 extract_skill_metrics(tmp_path)
                 # If we get here, the test fails - no exception was raised
-                assert False, "Expected PermissionError to be raised but it was not"
+                raise AssertionError("Expected PermissionError to be raised but it was not")
             except PermissionError as e:
                 # Verify error message is helpful
                 error_msg = str(e)
-                assert "Permission denied" in error_msg, f"Expected 'Permission denied' in error message, got: {error_msg}"
-                assert str(skill_md) in error_msg, f"Expected file path in error message, got: {error_msg}"
+                assert "Permission denied" in error_msg, (
+                    f"Expected 'Permission denied' in error message, got: {error_msg}"
+                )
+                assert str(skill_md) in error_msg, (
+                    f"Expected file path in error message, got: {error_msg}"
+                )
         finally:
             # Restore permissions for cleanup
             skill_md.chmod(0o644)
@@ -424,10 +428,12 @@ def test_extract_metrics_unicode_decode_error():
         try:
             extract_skill_metrics(tmp_path)
             # If we get here, the test fails - no exception was raised
-            assert False, "Expected ValueError to be raised but it was not"
+            raise AssertionError("Expected ValueError to be raised but it was not")
         except ValueError as e:
             error_msg = str(e)
-            assert "encoding issues" in error_msg.lower(), f"Expected 'encoding issues' in error message, got: {error_msg}"
+            assert "encoding issues" in error_msg.lower(), (
+                f"Expected 'encoding issues' in error message, got: {error_msg}"
+            )
             assert "UTF-8" in error_msg, f"Expected 'UTF-8' in error message, got: {error_msg}"
 
         print("✅ test_extract_metrics_unicode_decode_error passed")
@@ -448,13 +454,16 @@ description: ""
         metrics = extract_skill_metrics(tmp_path)
 
         # Empty quoted string should result in empty description
-        assert metrics["description"] == '""', \
+        assert metrics["description"] == '""', (
             f"Expected empty quoted description, got: {metrics['description']}"
-        assert metrics["quoted_count"] == 0, \
+        )
+        assert metrics["quoted_count"] == 0, (
             f"Expected 0 quoted phrases in empty description, got: {metrics['quoted_count']}"
+        )
         # Empty description may still match "description" as domain indicator
-        assert metrics["domain_count"] == 0, \
+        assert metrics["domain_count"] == 0, (
             f"Expected 0 domain indicators in empty description, got: {metrics['domain_count']}"
+        )
 
         print("✅ test_yaml_frontmatter_empty_description passed")
 
@@ -474,16 +483,13 @@ description: >
 
         metrics = extract_skill_metrics(tmp_path)
 
-        assert "$pecial" in metrics["description"], \
-            "Should preserve $ characters"
-        assert "(characters)" in metrics["description"], \
-            "Should preserve parentheses"
-        assert "[brackets]" in metrics["description"], \
-            "Should preserve brackets"
-        assert "*.wildcards" in metrics["description"], \
-            "Should preserve asterisks"
-        assert "nested 'quotes' inside" in metrics["quoted_phrases"], \
+        assert "$pecial" in metrics["description"], "Should preserve $ characters"
+        assert "(characters)" in metrics["description"], "Should preserve parentheses"
+        assert "[brackets]" in metrics["description"], "Should preserve brackets"
+        assert "*.wildcards" in metrics["description"], "Should preserve asterisks"
+        assert "nested 'quotes' inside" in metrics["quoted_phrases"], (
             f"Should extract nested quotes, got: {metrics['quoted_phrases']}"
+        )
 
         print("✅ test_description_with_special_regex_characters passed")
 

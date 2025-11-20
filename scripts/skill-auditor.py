@@ -71,17 +71,45 @@ async def audit_skill(skill_path: Path):
     # Step 4: Query Claude for analysis
     print("\n🤖 Analyzing metrics with Claude...")
 
-    async for message in query(prompt=prompt, options=options):
-        if isinstance(message, AssistantMessage):
-            for block in message.content:
-                if isinstance(block, TextBlock):
-                    print(block.text)
+    try:
+        async for message in query(prompt=prompt, options=options):
+            if isinstance(message, AssistantMessage):
+                for block in message.content:
+                    if isinstance(block, TextBlock):
+                        print(block.text)
 
-        elif isinstance(message, ResultMessage):
-            if message.total_cost_usd:
-                print(f"\n💰 Cost: ${message.total_cost_usd:.4f}")
-            if message.duration_ms:
-                print(f"⏱️  Duration: {message.duration_ms}ms")
+            elif isinstance(message, ResultMessage):
+                if message.total_cost_usd:
+                    print(f"\n💰 Cost: ${message.total_cost_usd:.4f}")
+                if message.duration_ms:
+                    print(f"⏱️  Duration: {message.duration_ms}ms")
+
+    except Exception as e:
+        error_type = type(e).__name__
+        error_msg = str(e)
+
+        print(f"\n❌ Claude API Error: {error_type}")
+        print(f"   {error_msg}")
+
+        # Provide actionable guidance based on error type
+        error_lower = (error_type + " " + error_msg).lower()
+        if (
+            "authentication" in error_lower
+            or "auth" in error_lower
+            or "api key" in error_lower
+            or "invalid" in error_lower
+        ):
+            print("\n   💡 Please check your ANTHROPIC_API_KEY environment variable.")
+            print("      Set it with: export ANTHROPIC_API_KEY=your-key-here")
+        elif "connection" in error_lower or "network" in error_lower:
+            print("\n   💡 Please check your internet connection and try again.")
+        elif "rate" in error_lower or "limit" in error_lower:
+            print("\n   💡 Rate limit exceeded. Please wait a moment and try again.")
+        else:
+            print("\n   💡 This may be a temporary service issue. Please try again later.")
+            print("      If the problem persists, check https://status.anthropic.com")
+
+        return
 
 
 def build_analysis_prompt(metrics: dict) -> str:

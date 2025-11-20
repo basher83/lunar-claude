@@ -21,3 +21,14 @@ SDK correctly flagged B4 violation with evidence:
 - "firecrawl" (tool name pattern matched)
 - "multi-tier" (architecture pattern matched)
 - "8-phase" (architecture pattern matched)
+
+Determinism Test:
+- Runs: 5 consecutive executions
+- Variance: 0pp (identical results)
+- Metrics checked: All 14 metrics
+- Tests run:
+  - test_metrics_extraction_is_deterministic ✓
+  - test_domain_indicators_deduplication_is_deterministic ✓
+- Status: PASS
+
+Pattern determinism confirmed.

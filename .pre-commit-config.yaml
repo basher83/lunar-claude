@@ -1,4 +1,4 @@
-minimum_prek_version: '0.2.0'
+minimum_prek_version: "0.2.0"
 
 default_install_hook_types:
   - pre-commit
@@ -31,10 +31,16 @@ repos:
       - id: check-symlinks
 
   - repo: https://github.com/rvben/rumdl-pre-commit
-    rev: v0.0.166  # Use the latest release tag
+    rev: v0.0.166 # Use the latest release tag
     hooks:
       - id: rumdl
         # To only check (default):
         # args: []
         # To automatically fix issues:
         # args: [--fix]
+
+  - repo: https://github.com/renovatebot/pre-commit-hooks
+    rev: 42.19.3
+    hooks:
+      - id: renovate-config-validator
+        args: [--strict]

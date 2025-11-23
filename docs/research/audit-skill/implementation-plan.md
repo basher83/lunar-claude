@@ -27,21 +27,21 @@ impl_pattern = r"\w+\.(py|sh|js|md|json)|/[a-z-]+:[a-z-]+"
 IMPL_PATTERNS = [
     # File extensions (expanded)
     r"\w+\.(py|sh|js|jsx|ts|tsx|md|json|yaml|yml|sql|csv|txt|env)",
-    
+
     # Command paths
     r"/[a-z-]+:[a-z-]+",
-    
+
     # Architecture patterns (catches "multi-tier", "8-phase")
     r"\b\w+-(?:tier|layer|phase|step|stage|process)\b",
     r"\b\d+-(?:phase|step|stage|tier|layer|process)\b",
-    
+
     # Common tools/libraries (curated list from skill-factory analysis)
     r"\b(firecrawl|pdfplumber|pandas|numpy|tensorflow|scikit-learn)\b",
     r"\b(docker|kubernetes|postgresql|mysql|mongodb|redis|elasticsearch)\b",
     r"\b(react|vue|angular|next\.js|express|webpack|vite)\b",
     r"\b(playwright|selenium|puppeteer|scrapy|beautifulsoup)\b",
     r"\b(fastapi|flask|django|streamlit|gradio)\b",
-    
+
     # Framework-specific patterns
     r"\b(api|sdk|cli|gui|ui|frontend|backend|database)\b",
 ]
@@ -64,14 +64,14 @@ impl_pattern = "|".join(f"(?:{p})" for p in IMPL_PATTERNS)
 def check_b4_no_implementation_details(description: str) -> Tuple[bool, List[str]]:
     """
     B4: Description must not contain implementation details.
-    
+
     Enhanced detection patterns:
     - File extensions: .py, .js, .md, etc.
     - Command paths: /commands:name
     - Architecture terms: multi-tier, 8-phase, 3-stage
     - Tool/library names: firecrawl, docker, pandas
     - Framework keywords: api, sdk, frontend, backend
-    
+
     Returns:
         (passes_check, evidence_list)
     """
@@ -221,7 +221,7 @@ def test_baseline_consistency():
     """Verify SDK produces expected results on known skills"""
     baseline_path = Path("test_data/baseline_skills.json")
     baseline = json.loads(baseline_path.read_text())
-    
+
     for skill_name, expected in baseline.items():
         # Run auditor
         result = subprocess.run(
@@ -229,10 +229,10 @@ def test_baseline_consistency():
             capture_output=True,
             text=True
         )
-        
+
         # Parse output (you'll need to adapt based on actual output format)
         blocker_count = extract_blocker_count(result.stdout)
-        
+
         assert blocker_count == expected["expected_blockers"], \
             f"{skill_name}: Expected {expected['expected_blockers']} blockers, got {blocker_count}"
 ```
@@ -550,7 +550,7 @@ mkdir -p "$OUTPUT_DIR"
 for skill_dir in "$SKILLS_DIR"/*; do
     skill_name=$(basename "$skill_dir")
     skill_file="$skill_dir/SKILL.md"
-    
+
     if [ -f "$skill_file" ]; then
         echo "Auditing: $skill_name"
         python skill-auditor.py "$skill_file" > "$OUTPUT_DIR/${skill_name}.txt"

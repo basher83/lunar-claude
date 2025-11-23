@@ -79,19 +79,19 @@ from skill_auditor.validation import validate_metrics
 def hybrid_audit(skill_path: str, format: str = "text"):
     """
     Hybrid audit: deterministic checks + semantic validation.
-    
+
     This eliminates environment issues by keeping everything in-process.
     """
     # Step 1: Extract metrics (deterministic)
     metrics = extract_skill_metrics(skill_path)
-    
+
     # Step 2: For blockers with evidence, validate semantically
     validated_blockers = []
-    
+
     for blocker_key, blocker_data in metrics.get("blockers", {}).items():
         evidence = blocker_data.get("evidence", [])
         confidence_level = len(evidence)
-        
+
         if confidence_level >= 5:
             # High confidence: accept as-is
             validated_blockers.append({
@@ -117,7 +117,7 @@ def hybrid_audit(skill_path: str, format: str = "text"):
                 "validated": True,
                 "note": "Single evidence item - review recommended"
             })
-    
+
     # Step 3: Generate report
     if format == "json":
         import json
@@ -133,7 +133,7 @@ def hybrid_audit(skill_path: str, format: str = "text"):
 def deterministic_audit(skill_path: str, format: str = "text"):
     """Original deterministic-only audit."""
     metrics = extract_skill_metrics(skill_path)
-    
+
     if format == "json":
         import json
         return json.dumps(metrics, indent=2)
@@ -159,21 +159,21 @@ def main():
         default="text",
         help="Output format"
     )
-    
+
     args = parser.parse_args()
-    
+
     try:
         if args.hybrid:
             result = hybrid_audit(args.skill_path, format=args.format)
         else:
             result = deterministic_audit(args.skill_path, format=args.format)
-        
+
         print(result)
-        
+
         # Exit code based on blockers
         # (you can parse result to determine this)
         sys.exit(0)
-        
+
     except Exception as e:
         print(f"Error: {e}", file=sys.stderr)
         sys.exit(1)
@@ -364,4 +364,3 @@ Your embedded agent approach (`--hybrid` flag) is:
 [^1]: 11-implementation-validation.md
 
 [^2]: implementation-plan-2.md
-

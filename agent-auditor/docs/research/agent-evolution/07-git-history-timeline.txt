@@ -1,0 +1,87 @@
+* d430168 2025-11-19 docs: document deterministic vs semantic audit checks
+* 58fe6f8 2025-11-19 feat(meta-claude): add skill-auditor-v6 hybrid agent
+* 7183d9c 2025-11-19 docs(skill-auditor): document all modules in README
+*   80bb957 2025-11-19 Merge branch 'feature/skill-auditor-sdk'
+| * 6b6b512 2025-11-19 fix(skill-auditor): add return type annotations to test functions
+| * e8196da 2025-11-19 fix(skill-auditor): address CodeRabbit review feedback
+| * 85d10f9 2025-11-19 refactor(skill-auditor): remove redundant bash determinism test
+| * 71b088e 2025-11-19 test(skill-auditor): add automated determinism integration tests
+| * 1a55617 2025-11-19 test(skill-auditor): add edge case tests for extraction
+| * d2be322 2025-11-19 refactor(skill-auditor): extract magic numbers to named constants
+| * 36190ba 2025-11-19 docs(skill-auditor): improve domain indicator comment
+| * 5848d78 2025-11-19 fix(skill-auditor): clarify determinism test messages
+| * 317a749 2025-11-19 fix(skill-auditor): add comprehensive exception handling to audit_skill
+| * 5ddcb7d 2025-11-19 fix(skill-auditor): improve path validation with helpful messages
+| * 5bcd977 2025-11-19 fix(skill-auditor): add comprehensive Claude SDK error handling
+| * 95a0549 2025-11-19 refactor(skill-auditor): move validation import to module level
+| * 02d4fc2 2025-11-19 feat(skill-auditor): add metrics structure validation
+| * 5f882db 2025-11-19 test(skill-auditor): fix B2/B3 test coverage gaps
+| * e399b3b 2025-11-19 test(skill-auditor): add tests for build_analysis_prompt logic
+| * 786cb69 2025-11-19 fix(skill-auditor): add error handling for file read failures
+| * 6d4c3ae 2025-11-19 feat(skill-auditor): implement Skill Auditor SDK application with deterministic metrics extraction and analysis
+| * 4cd5a43 2025-11-19 refactor(skill-auditor): remove redundant system_prompt and update SDK version
+| * 063c7b2 2025-11-19 fix(skill-auditor): fix false failures in determinism test script
+| * 0bbb75e 2025-11-19 test(skill-auditor): add determinism verification test
+| * efd6034 2025-11-19 docs(skill-auditor): add architecture and usage documentation
+| * 56d2984 2025-11-19 feat(skill-auditor): add Claude Agent SDK application with deterministic analysis
+| * a983ac8 2025-11-19 feat(skill-auditor): add forbidden files, line count, and implementation detail checks
+| * af2c384 2025-11-19 fix(skill-auditor): fix case-insensitive deduplication bug in metrics extractor
+| * 051dcd0 2025-11-19 feat(skill-auditor): add domain indicator extraction
+| * 55dc015 2025-11-19 feat(skill-auditor): add quoted phrase extraction
+| * 2e81ad6 2025-11-19 feat(skill-auditor): add description extraction from SKILL.md
+* c1dc5a9 2025-11-19 feat(meta-claude): add skill-auditor-v5 with convergent feedback architecture
+* 21b17f6 2025-11-19 feat(meta-claude): add skill-auditor-v4 with surgical determinism fix
+* 49c7b85 2025-11-19 feat(meta-claude): add skill-auditor-v3 with deterministic scoring
+* ebf4451 2025-11-19 docs: document skill-auditor determinism test results
+* 1401308 2025-11-19 feat(skill-auditor): add deterministic report consolidation rules
+* 7cd3be5 2025-11-19 fix(skill-auditor): use generic examples to avoid confirmation bias
+* e299ea5 2025-11-19 feat(skill-auditor): add deterministic report consolidation rules
+* e7a0890 2025-11-19 fix(skill-auditor): replace subjective trigger analysis with deterministic quoted-phrase methodology
+* aa45b1a 2025-11-19 fix(skill-factory): implement auditor recommendations for effectiveness
+* 846d885 2025-11-18 fix(skill-auditor): remove invalid directory name restrictions
+* de111a4 2025-11-17 feat(meta-claude): add description progressive disclosure check to skill-auditor
+* 9768cd4 2025-11-17 docs: add critical audit agent protocol to CLAUDE.md
+* c8accc4 2025-11-17 feat(meta-claude): fix all skill-factory audit issues - achieve 100% effectiveness
+* 47caed6 2025-11-17 docs(meta-claude): complete slash command audit for all 8 skill commands
+* b19fcf6 2025-11-17 refactor(meta-claude): clarify audit Notes section and enforce template adherence
+* 48ca47a 2025-11-17 feat(meta-claude): complete first command audit and refine audit process
+* c8bddf2 2025-11-17 docs: create slash command audit tracking system and fix command references
+* 2e9d962 2025-11-17 fix(meta-claude): apply audit fixes to skill slash commands
+* df430f5 2025-11-17 fix(meta-claude): add argument-hint format validation algorithm to audit agent
+* 982105a 2025-11-17 fix(meta-claude): add blank line detection algorithm to audit agent
+* 4e98fd7 2025-11-17 fix(meta-claude): apply audit fixes to skill create command
+* bb3e675 2025-11-16 delete(audit-command): remove outdated slash command compliance auditor agent
+* 73ba0df 2025-11-16 feat(meta-claude): implement objective slash command validation framework
+* 7e0e6e2 2025-11-16 fix(meta-claude): apply audit fixes to skill slash commands
+* b2e9e77 2025-11-16 fix(skill-auditor): update skill documentation paths for improved clarity
+* 8467d93 2025-11-16 fix(skill-factory): implement audit recommendations for improved discoverability
+* 352e5e1 2025-11-16 feat(skill): add /skill-validate-audit command
+* 4181470 2025-11-16 chore(meta-claude): remove obsolete claude-skill-auditor-v2 agent file
+| * c0c38d7 2025-11-15 fix: improve validation of dict-valued plugin sources
+| * 87b91f8 2025-11-15 refactor: replace regex-based frontmatter validation with YAML parsing
+| * 8f2e1ac 2025-11-14 fix: add error handling to schema validation
+| * dd98966 2025-11-14 feat: integrate marketplace validation and remove hardcoded checks
+| * c988b40 2025-11-14 feat: add marketplace.json schema validation
+| * d3cba2c 2025-11-14 feat: add marketplace.json schema validation
+* | 644bd4a 2025-11-06 fix: add API key validation and improve error handling in firecrawl_mcp_docs.py
+* | 1060db7 2025-11-11 feat(meta): add audit-command slash command compliance auditor
+* | 2ee2ed2 2025-11-10 feat(meta): add claude-skill-auditor-v2 with effectiveness validation
+* | 4497d07 2025-11-10 docs: add skill auditor effectiveness improvement proposals
+* | 9dcf76d 2025-11-10 test: remove temporary test files for audit command
+* | 25016db 2025-11-10 fix: remove executable bash patterns from audit-command documentation
+* | db2a8bf 2025-11-09 feat: finalize slash command audit system (Task 8)
+* | 65352d8 2025-11-09 test: add comprehensive test suite for audit command
+* | 356e8c8 2025-11-09 feat: implement architectural standards validation
+* | 055b504 2025-11-09 feat: implement quality practices validation
+* | 8677804 2025-11-09 feat: implement technical compliance validation
+* | 6e9bd9f 2025-11-09 feat: add audit-command slash command structure
+* | 157f935 2025-11-09 docs: add slash command audit implementation plan
+* | a6370e8 2025-11-09 docs: add slash command audit system design
+* | 368e0a3 2025-11-08 refactor(meta-claude): reorganize audit report and update skill auditor
+* | 04bf238 2025-11-08 docs: add skill auditor reviews and YouTube transcripts
+| * aa8af40 2025-11-06 fix: add API key validation and improve error handling in firecrawl_mcp_docs.py
+* c8ab54b 2025-11-06 docs: add plugin-auditor agent design
+* d4311f1 2025-11-05 docs(reviews): add comprehensive skill audit system
+* a18364c 2025-11-04 feat(docs): add comprehensive validation framework with checklist-template-subagent pattern
+* | a8c6f56 2025-11-04 feat(agents): add claude-skill-auditor subagent for comprehensive skill validation
+* dfab27f 2025-10-31 feat(meta): enhance verify-structure.py with comprehensive validation

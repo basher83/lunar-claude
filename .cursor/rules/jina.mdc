@@ -2,8 +2,177 @@
 alwaysApply: true
 ---
 
+# Jina MCP Tools Usage Rules
+
+## Always Use Jina MCP Tools for Research and Verification
+
 When you are uncertain about knowledge, or the user doubts your answer, always use Jina MCP tools to search and read
-best practices and latest information. Use search_arxiv and read_url together when questions relate to theoretical deep
-learning or algorithm details. search_web and search_arxiv cannot be used alone - always combine with read_url or
-parallel_read_url to read from multiple sources. Remember: every search must be complemented with read_url to read the
-source URL content. For maximum efficiency, use parallel_ * versions of search and read when necessary.
+best practices and latest information.
+
+## Why Use Jina MCP Tools
+
+1. **Up-to-date information**: Access current web content and academic papers
+2. **Comprehensive search**: Search web, academic papers (arXiv), and images
+3. **Efficient reading**: Parallel reading capabilities for multiple sources
+4. **Quality sources**: Access academic papers and verified web content
+5. **Deduplication**: Built-in tools to remove duplicate content
+
+## Available Jina MCP Tools
+
+### Search Tools
+
+- `mcp_jina-mcp-server_search_web` - Search the web for current information, news, articles
+- `mcp_jina-mcp-server_search_arxiv` - Search academic papers and preprints on arXiv
+- `mcp_jina-mcp-server_search_images` - Search for images across the web
+- `mcp_jina-mcp-server_parallel_search_web` - Run multiple web searches in parallel
+- `mcp_jina-mcp-server_parallel_search_arxiv` - Run multiple arXiv searches in parallel
+- `mcp_jina-mcp-server_expand_query` - Expand and rewrite search queries for better results
+
+### Reading Tools
+
+- `mcp_jina-mcp-server_read_url` - Extract and convert web page content to markdown
+- `mcp_jina-mcp-server_parallel_read_url` - Read multiple web pages in parallel
+- `mcp_jina-mcp-server_capture_screenshot_url` - Capture screenshots of web pages
+- `mcp_jina-mcp-server_guess_datetime_url` - Guess last updated/published datetime
+
+### Utility Tools
+
+- `mcp_jina-mcp-server_sort_by_relevance` - Rerank documents by relevance to a query
+- `mcp_jina-mcp-server_deduplicate_strings` - Get top-k semantically unique strings
+- `mcp_jina-mcp-server_deduplicate_images` - Get top-k semantically unique images
+
+## Critical Rule: Search Must Be Complemented with Read
+
+**NEVER use search tools alone.** Every search must be complemented with `read_url` or `parallel_read_url` to read the
+source URL content.
+
+### Why This Matters
+
+- Search results only provide snippets and metadata
+- Full context requires reading the actual source content
+- Ensures accurate and complete information
+- Prevents making assumptions based on search snippets alone
+
+## When to Use Which Tools
+
+### For General Web Research
+
+1. Use `search_web` to find relevant sources
+2. Extract URLs from search results
+3. Use `parallel_read_url` to read multiple sources simultaneously
+4. Use `sort_by_relevance` if you have many documents to prioritize
+
+### For Academic/Technical Research
+
+1. Use `search_arxiv` for theoretical deep learning or algorithm details
+2. Extract paper URLs from search results
+3. Use `parallel_read_url` to read multiple papers
+4. Combine with `search_web` for complementary information
+
+### For Image Research
+
+1. Use `search_images` to find relevant images
+2. Use `deduplicate_images` if you have many similar images
+3. Use `read_url` to get context from pages containing images
+
+### For Complex Queries
+
+1. Use `expand_query` to generate diverse search queries
+2. Use `parallel_search_web` or `parallel_search_arxiv` with expanded queries
+3. Read all relevant sources with `parallel_read_url`
+
+## Common Patterns
+
+### Pattern 1: Web Search + Read
+
+```python
+# ✅ CORRECT - Search then read
+results = mcp_jina-mcp-server_search_web(query="MCP server best practices")
+urls = [result.url for result in results]
+content = mcp_jina-mcp-server_parallel_read_url(urls=urls[:5])
+
+# ❌ WRONG - Search without reading
+results = mcp_jina-mcp-server_search_web(query="MCP server best practices")
+# Missing: reading the actual content
+```
+
+### Pattern 2: Academic Research
+
+```python
+# ✅ CORRECT - Search arXiv and read papers
+papers = mcp_jina-mcp-server_search_arxiv(query="transformer architecture")
+paper_urls = [paper.url for paper in papers]
+content = mcp_jina-mcp-server_parallel_read_url(urls=paper_urls[:5])
+
+# Also search web for complementary information
+web_results = mcp_jina-mcp-server_search_web(query="transformer architecture practical guide")
+web_urls = [result.url for result in web_results]
+web_content = mcp_jina-mcp-server_parallel_read_url(urls=web_urls[:3])
+```
+
+### Pattern 3: Parallel Search for Comprehensive Coverage
+
+```python
+# ✅ CORRECT - Parallel searches for efficiency
+queries = ["MCP server design", "MCP protocol specification", "MCP best practices"]
+search_results = mcp_jina-mcp-server_parallel_search_web(searches=[
+    {"query": q, "num": 10} for q in queries
+])
+
+# Extract and read all URLs
+all_urls = [url for result_set in search_results for url in result_set.urls]
+content = mcp_jina-mcp-server_parallel_read_url(urls=all_urls[:10])
+```
+
+### Pattern 4: Query Expansion for Deep Research
+
+```python
+# ✅ CORRECT - Expand query then search and read
+expanded = mcp_jina-mcp-server_expand_query(query="machine learning optimization")
+searches = mcp_jina-mcp-server_parallel_search_web(searches=[
+    {"query": q, "num": 5} for q in expanded[:3]
+])
+urls = [url for result_set in searches for url in result_set.urls]
+content = mcp_jina-mcp-server_parallel_read_url(urls=urls[:10])
+```
+
+## Best Practices
+
+### Efficiency
+
+- **Use parallel versions**: `parallel_search_web`, `parallel_search_arxiv`, `parallel_read_url` for multiple
+  queries/sources
+- **Limit results**: Don't read more URLs than necessary (typically 5-10 sources)
+- **Deduplicate**: Use `deduplicate_strings` or `deduplicate_images` when you have many similar results
+
+### Accuracy
+
+- **Always read sources**: Never rely solely on search snippets
+- **Read multiple sources**: Cross-reference information from multiple sources
+- **Prioritize relevance**: Use `sort_by_relevance` when you have many documents
+
+### When to Use Jina Tools
+
+- When uncertain about current best practices
+- When user doubts your answer
+- When you need up-to-date information
+- When researching theoretical concepts (use arXiv)
+- When you need to-date documentation or guides
+
+## Error Handling
+
+If Jina MCP tools fail:
+
+1. Verify the query is clear and specific
+2. Try expanding the query with `expand_query`
+3. Try alternative search terms
+4. Check if URLs are accessible
+5. Consider using fewer parallel operations if hitting limits
+
+## Remember
+
+- **Never use search tools alone** - always complement with `read_url` or `parallel_read_url`
+- **Use parallel versions** for efficiency when dealing with multiple queries or sources
+- **Combine arXiv and web searches** for comprehensive research on technical topics
+- **Read multiple sources** to cross-reference and verify information
+- **Use query expansion** for complex research topics to get diverse perspectives

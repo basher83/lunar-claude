@@ -1,0 +1,119 @@
+---
+alwaysApply: true
+---
+
+# GitHub Content Access Rules
+
+## Always Use GitHub MCP Tools for GitHub Content
+
+When accessing content from GitHub repositories, **ALWAYS use GitHub MCP tools** instead of web scraping,
+Firecrawl, or other methods.
+
+## Why Use GitHub MCP Tools
+
+1. **Purpose-built**: Designed specifically for GitHub API access
+2. **More reliable**: Uses official GitHub API with proper authentication
+3. **Better performance**: Handles rate limits and caching automatically
+4. **Structured data**: Returns metadata (SHA, file size, URLs) along with content
+5. **Version control**: Can access specific commits, branches, or tags
+
+## Available GitHub MCP Tools
+
+### File and Directory Access
+
+- `mcp_github_get_file_contents` - Get file or directory contents
+  - Use for: Reading files, listing directories, accessing specific commits/branches
+  - Example: `mcp_github_get_file_contents(owner="anthropics", repo="skills", path="mcp-builder/SKILL.md")`
+
+### Repository Information
+
+- `mcp_github_get_commit` - Get commit details
+- `mcp_github_list_commits` - List commits in a branch
+- `mcp_github_list_branches` - List repository branches
+- `mcp_github_list_tags` - List repository tags
+
+### Code Search
+
+- `mcp_github_search_code` - Search code across repositories
+- `mcp_github_search_repositories` - Search for repositories
+
+### Pull Requests and Issues
+
+- `mcp_github_get_pull_request` - Get PR details
+- `mcp_github_get_pull_request_files` - Get files changed in PR
+- `mcp_github_get_pull_request_diff` - Get PR diff
+- `mcp_github_list_issues` - List repository issues
+- `mcp_github_get_issue` - Get issue details
+
+## When to Use GitHub MCP vs Other Tools
+
+### Use GitHub MCP For
+
+- Reading files from GitHub repositories
+- Listing directory contents
+- Accessing specific commits, branches, or tags
+- Searching code within GitHub
+- Getting PR/issue information
+- Any GitHub content access
+
+### Do NOT Use GitHub MCP For
+
+- Non-GitHub websites (use Firecrawl/web_search)
+- GitHub pages/docs sites (use Firecrawl if GitHub MCP doesn't work)
+- General web content
+
+## Common Patterns
+
+### Reading a File
+
+```python
+# ✅ CORRECT - Use GitHub MCP
+mcp_github_get_file_contents(
+    owner="anthropics",
+    repo="skills",
+    path="mcp-builder/SKILL.md"
+)
+
+# ❌ WRONG - Don't use Firecrawl for GitHub files
+mcp_firecrawl-mcp_firecrawl_scrape(
+    url="https://raw.githubusercontent.com/anthropics/skills/main/mcp-builder/SKILL.md"
+)
+```
+
+### Accessing Specific Commit
+
+```python
+# ✅ CORRECT - Use GitHub MCP with ref parameter
+mcp_github_get_file_contents(
+    owner="anthropics",
+    repo="skills",
+    path="mcp-builder/SKILL.md",
+    ref="main"  # or specific commit SHA, branch, or tag
+)
+```
+
+### Listing Directory Contents
+
+```python
+# ✅ CORRECT - Use GitHub MCP
+mcp_github_get_file_contents(
+    owner="anthropics",
+    repo="skills",
+    path="mcp-builder/"  # Trailing slash for directories
+)
+```
+
+## Error Handling
+
+If GitHub MCP fails:
+
+1. First verify the repository, path, and ref are correct
+2. Check if authentication is required (private repos)
+3. Only then consider alternatives (Firecrawl) as a last resort
+4. Document why GitHub MCP couldn't be used
+
+## Remember
+
+- **Never use Firecrawl or web scraping for GitHub repository content**
+- **Always prefer GitHub MCP tools first**
+- **GitHub MCP provides better data quality and reliability**

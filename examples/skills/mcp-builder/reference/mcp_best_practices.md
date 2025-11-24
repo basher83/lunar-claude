@@ -1,10 +1,4 @@
-# MCP Server Development Best Practices and Guidelines
-
-## Overview
-
-This document compiles essential best practices and guidelines for building Model Context Protocol (MCP) servers. It covers naming conventions, tool design, response formats, pagination, error handling, security, and compliance requirements.
-
----
+# MCP Server Best Practices
 
 ## Quick Reference
 
@@ -37,107 +31,82 @@ This document compiles essential best practices and guidelines for building Mode
 - Truncate gracefully with clear messages
 - Provide guidance on filtering
 
----
+### Transport
 
-## Table of Contents
-
-1. Server Naming Conventions
-2. Tool Naming and Design
-3. Response Format Guidelines
-4. Pagination Best Practices
-5. Character Limits and Truncation
-6. Tool Development Best Practices
-7. Transport Best Practices
-8. Testing Requirements
-9. OAuth and Security Best Practices
-10. Resource Management Best Practices
-11. Prompt Management Best Practices
-12. Error Handling Standards
-13. Documentation Requirements
-14. Compliance and Monitoring
+- **Streamable HTTP**: For remote servers, multi-client scenarios
+- **stdio**: For local integrations, command-line tools
+- Avoid SSE (deprecated in favor of streamable HTTP)
 
 ---
 
-## 1. Server Naming Conventions
+## Server Naming Conventions
 
-Follow these standardized naming patterns for MCP servers:
+Follow these standardized naming patterns:
 
 **Python**: Use format `{service}_mcp` (lowercase with underscores)
 
-- Examples: `slack_mcp`, `github_mcp`, `jira_mcp`, `stripe_mcp`
+- Examples: `slack_mcp`, `github_mcp`, `jira_mcp`
 
 **Node/TypeScript**: Use format `{service}-mcp-server` (lowercase with hyphens)
 
 - Examples: `slack-mcp-server`, `github-mcp-server`, `jira-mcp-server`
 
-The name should be:
-
-- General (not tied to specific features)
-- Descriptive of the service/API being integrated
-- Easy to infer from the task description
-- Without version numbers or dates
+The name should be general, descriptive of the service being integrated, easy to infer from the task description, and without version numbers.
 
 ---
 
-## 2. Tool Naming and Design
+## Tool Naming and Design
 
-### Tool Naming Best Practices
+### Tool Naming
 
 1. **Use snake_case**: `search_users`, `create_project`, `get_channel_info`
 2. **Include service prefix**: Anticipate that your MCP server may be used alongside other MCP servers
    - Use `slack_send_message` instead of just `send_message`
    - Use `github_create_issue` instead of just `create_issue`
-   - Use `asana_list_tasks` instead of just `list_tasks`
 3. **Be action-oriented**: Start with verbs (get, list, search, create, etc.)
 4. **Be specific**: Avoid generic names that could conflict with other servers
-5. **Maintain consistency**: Use consistent naming patterns within your server
 
-### Tool Design Guidelines
+### Tool Design
 
 - Tool descriptions must narrowly and unambiguously describe functionality
 - Descriptions must precisely match actual functionality
-- Should not create confusion with other MCP servers
-- Should provide tool annotations (readOnlyHint, destructiveHint, idempotentHint, openWorldHint)
+- Provide tool annotations (readOnlyHint, destructiveHint, idempotentHint, openWorldHint)
 - Keep tool operations focused and atomic
 
 ---
 
-## 3. Response Format Guidelines
+## Response Formats
 
-All tools that return data should support multiple formats for flexibility:
+All tools that return data should support multiple formats:
 
 ### JSON Format (`response_format="json"`)
 
 - Machine-readable structured data
 - Include all available fields and metadata
 - Consistent field names and types
-- Suitable for programmatic processing
-- Use for when LLMs need to process data further
+- Use for programmatic processing
 
 ### Markdown Format (`response_format="markdown"`, typically default)
 
 - Human-readable formatted text
 - Use headers, lists, and formatting for clarity
-- Convert timestamps to human-readable format (e.g., "2024-01-15 10:30:00 UTC" instead of epoch)
-- Show display names with IDs in parentheses (e.g., "@john.doe (U123456)")
-- Omit verbose metadata (e.g., show only one profile image URL, not all sizes)
-- Group related information logically
-- Use for when presenting information to users
+- Convert timestamps to human-readable format
+- Show display names with IDs in parentheses
+- Omit verbose metadata
 
 ---
 
-## 4. Pagination Best Practices
+## Pagination
 
 For tools that list resources:
 
-- **Always respect the `limit` parameter**: Never load all results when a limit is specified
+- **Always respect the `limit` parameter**
 - **Implement pagination**: Use `offset` or cursor-based pagination
 - **Return pagination metadata**: Include `has_more`, `next_offset`/`next_cursor`, `total_count`
 - **Never load all results into memory**: Especially important for large datasets
 - **Default to reasonable limits**: 20-50 items is typical
-- **Include clear pagination info in responses**: Make it easy for LLMs to request more data
 
-Example pagination response structure:
+Example pagination response:
 
 ```json
 {
@@ -152,7 +121,7 @@ Example pagination response structure:
 
 ---
 
-## 5. Character Limits and Truncation
+## Character Limits and Truncation
 
 To prevent overwhelming responses with too much data:
 
@@ -178,183 +147,59 @@ if len(result) > CHARACTER_LIMIT:
 
 ---
 
-## 6. Transport Options
+## Transport Options
 
-MCP servers support multiple transport mechanisms for different deployment scenarios:
+### Streamable HTTP
 
-### Stdio Transport
-
-**Best for**: Command-line tools, local integrations, subprocess execution
+**Best for**: Remote servers, web services, multi-client scenarios
 
 **Characteristics**:
 
-- Standard input/output stream communication
-- Simple setup, no network configuration needed
-- Runs as a subprocess of the client
-- Ideal for desktop applications and CLI tools
-
-**Use when**:
-
-- Building tools for local development environments
-- Integrating with desktop applications (e.g., Claude Desktop)
-- Creating command-line utilities
-- Single-user, single-session scenarios
-
-### HTTP Transport
-
-**Best for**: Web services, remote access, multi-client scenarios
-
-**Characteristics**:
-
-- Request-response pattern over HTTP
+- Bidirectional communication over HTTP
 - Supports multiple simultaneous clients
 - Can be deployed as a web service
-- Requires network configuration and security considerations
+- Enables server-to-client notifications
 
 **Use when**:
 
 - Serving multiple clients simultaneously
 - Deploying as a cloud service
 - Integration with web applications
-- Need for load balancing or scaling
 
-### Server-Sent Events (SSE) Transport
+### stdio
 
-**Best for**: Real-time updates, push notifications, streaming data
+**Best for**: Local integrations, command-line tools
 
 **Characteristics**:
 
-- One-way server-to-client streaming over HTTP
-- Enables real-time updates without polling
-- Long-lived connections for continuous data flow
-- Built on standard HTTP infrastructure
+- Standard input/output stream communication
+- Simple setup, no network configuration needed
+- Runs as a subprocess of the client
 
 **Use when**:
 
-- Clients need real-time data updates
-- Implementing push notifications
-- Streaming logs or monitoring data
-- Progressive result delivery for long operations
+- Building tools for local development environments
+- Integrating with desktop applications
+- Single-user, single-session scenarios
 
-### Transport Selection Criteria
+**Note**: stdio servers should NOT log to stdout (use stderr for logging)
 
-| Criterion | Stdio | HTTP | SSE |
-|-----------|-------|------|-----|
-| **Deployment** | Local | Remote | Remote |
-| **Clients** | Single | Multiple | Multiple |
-| **Communication** | Bidirectional | Request-Response | Server-Push |
-| **Complexity** | Low | Medium | Medium-High |
-| **Real-time** | No | No | Yes |
+### Transport Selection
 
----
-
-## 7. Tool Development Best Practices
-
-### General Guidelines
-
-1. Tool names should be descriptive and action-oriented
-2. Use parameter validation with detailed JSON schemas
-3. Include examples in tool descriptions
-4. Implement proper error handling and validation
-5. Use progress reporting for long operations
-6. Keep tool operations focused and atomic
-7. Document expected return value structures
-8. Implement proper timeouts
-9. Consider rate limiting for resource-intensive operations
-10. Log tool usage for debugging and monitoring
-
-### Security Considerations for Tools
-
-#### Input Validation
-
-- Validate all parameters against schema
-- Sanitize file paths and system commands
-- Validate URLs and external identifiers
-- Check parameter sizes and ranges
-- Prevent command injection
-
-#### Access Control
-
-- Implement authentication where needed
-- Use appropriate authorization checks
-- Audit tool usage
-- Rate limit requests
-- Monitor for abuse
-
-#### Error Handling
-
-- Don't expose internal errors to clients
-- Log security-relevant errors
-- Handle timeouts appropriately
-- Clean up resources after errors
-- Validate return values
-
-### Tool Annotations
-
-- Provide readOnlyHint and destructiveHint annotations
-- Remember annotations are hints, not security guarantees
-- Clients should not make security-critical decisions based solely on annotations
+| Criterion | stdio | Streamable HTTP |
+|-----------|-------|-----------------|
+| **Deployment** | Local | Remote |
+| **Clients** | Single | Multiple |
+| **Complexity** | Low | Medium |
+| **Real-time** | No | Yes |
 
 ---
 
-## 8. Transport Best Practices
-
-### General Transport Guidelines
-
-1. Handle connection lifecycle properly
-2. Implement proper error handling
-3. Use appropriate timeout values
-4. Implement connection state management
-5. Clean up resources on disconnection
-
-### Security Best Practices for Transport
-
-- Follow security considerations for DNS rebinding attacks
-- Implement proper authentication mechanisms
-- Validate message formats
-- Handle malformed messages gracefully
-
-### Stdio Transport Specific
-
-- Local MCP servers should NOT log to stdout (interferes with protocol)
-- Use stderr for logging messages
-- Handle standard I/O streams properly
-
----
-
-## 9. Testing Requirements
-
-A comprehensive testing strategy should cover:
-
-### Functional Testing
-
-- Verify correct execution with valid/invalid inputs
-
-### Integration Testing
-
-- Test interaction with external systems
-
-### Security Testing
-
-- Validate auth, input sanitization, rate limiting
-
-### Performance Testing
-
-- Check behavior under load, timeouts
-
-### Error Handling
-
-- Ensure proper error reporting and cleanup
-
----
-
-## 10. OAuth and Security Best Practices
+## Security Best Practices
 
 ### Authentication and Authorization
 
-MCP servers that connect to external services should implement proper authentication:
-
-**OAuth 2.1 Implementation:**
+**OAuth 2.1 Implementation**:
 
 - Use secure OAuth 2.1 with certificates from recognized authorities
 - Validate access tokens before processing requests
@@ -362,16 +207,14 @@ MCP servers that connect to external services should implement proper authentica
 - Reject tokens without proper audience claims
 - Never pass through tokens received from MCP clients
 
-**API Key Management:**
+**API Key Management**:
 
 - Store API keys in environment variables, never in code
 - Validate keys on server startup
 - Provide clear error messages when authentication fails
 - Use secure transmission for sensitive credentials
 
-### Input Validation and Security
-
-**Always validate inputs:**
+### Input Validation
 
 - Sanitize file paths to prevent directory traversal
 - Validate URLs and external identifiers
@@ -379,7 +222,7 @@ MCP servers that connect to external services should implement proper authentica
 - Prevent command injection in system calls
 - Use schema validation (Pydantic/Zod) for all inputs
 
-**Error handling security:**
+### Error Handling
 
 - Don't expose internal errors to clients
 - Log security-relevant errors server-side
@@ -388,22 +231,72 @@ MCP servers that connect to external services should implement proper authentica
 
 ### Privacy and Data Protection
 
-**Data collection principles:**
+**Data collection principles**:
 
 - Only collect data strictly necessary for functionality
 - Don't collect extraneous conversation data
 - Don't collect PII unless explicitly required for the tool's purpose
 - Provide clear information about what data is accessed
 
-**Data transmission:**
+**Data transmission**:
 
 - Don't send data to servers outside your organization without disclosure
 - Use secure transmission (HTTPS) for all network communication
 - Validate certificates for external services
 
+### DNS Rebinding Protection
+
+For streamable HTTP servers running locally:
+
+- Enable DNS rebinding protection
+- Validate the `Origin` header on all incoming connections
+- Bind to `127.0.0.1` rather than `0.0.0.0`
+
 ---
 
-## 11. Resource Management Best Practices
+## Tool Annotations
+
+Provide annotations to help clients understand tool behavior:
+
+| Annotation | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `readOnlyHint` | boolean | false | Tool does not modify its environment |
+| `destructiveHint` | boolean | true | Tool may perform destructive updates |
+| `idempotentHint` | boolean | false | Repeated calls with same args have no additional effect |
+| `openWorldHint` | boolean | true | Tool interacts with external entities |
+
+**Important**: Annotations are hints, not security guarantees. Clients should not make security-critical decisions based solely on annotations.
+
+---
+
+## Error Handling
+
+- Use standard JSON-RPC error codes
+- Report tool errors within result objects (not protocol-level errors)
+- Provide helpful, specific error messages with suggested next steps
+- Don't expose internal implementation details
+- Clean up resources properly on errors
+
+Example error handling:
+
+```typescript
+try {
+  const result = performOperation();
+  return { content: [{ type: "text", text: result }] };
+} catch (error) {
+  return {
+    isError: true,
+    content: [{
+      type: "text",
+      text: `Error: ${error.message}. Try using filter='active_only' to reduce results.`
+    }]
+  };
+}
+```
+
+---
+
+## Resource Management Best Practices
 
 1. Only suggest necessary resources
 2. Use clear, descriptive names for roots
@@ -413,7 +306,7 @@ MCP servers that connect to external services should implement proper authentica
 
 ---
 
-## 12. Prompt Management Best Practices
+## Prompt Management Best Practices
 
 - Clients should show users proposed prompts
 - Users should be able to modify or reject prompts
@@ -423,39 +316,25 @@ MCP servers that connect to external services should implement proper authentica
 
 ---
 
-## 13. Error Handling Standards
+## Testing Requirements
 
-- Use standard JSON-RPC error codes
-- Report tool errors within result objects (not protocol-level)
-- Provide helpful, specific error messages
-- Don't expose internal implementation details
-- Clean up resources properly on errors
+Comprehensive testing should cover:
+
+- **Functional testing**: Verify correct execution with valid/invalid inputs
+- **Integration testing**: Test interaction with external systems
+- **Security testing**: Validate auth, input sanitization, rate limiting
+- **Performance testing**: Check behavior under load, timeouts
+- **Error handling**: Ensure proper error reporting and cleanup
 
 ---
 
-## 14. Documentation Requirements
+## Documentation Requirements
 
 - Provide clear documentation of all tools and capabilities
 - Include working examples (at least 3 per major feature)
 - Document security considerations
 - Specify required permissions and access levels
 - Document rate limits and performance characteristics
-
----
-
-## 15. Compliance and Monitoring
-
-- Implement logging for debugging and monitoring
-- Track tool usage patterns
-- Monitor for potential abuse
-- Maintain audit trails for security-relevant operations
-- Be prepared for ongoing compliance reviews
-
----
-
-## Summary
-
-These best practices represent the comprehensive guidelines for building secure, efficient, and compliant MCP servers that work well within the ecosystem. Developers should follow these guidelines to ensure their MCP servers meet the standards for inclusion in the MCP directory and provide a safe, reliable experience for users.
 
 ---
 

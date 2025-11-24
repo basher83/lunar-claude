@@ -3,6 +3,7 @@
 # requires-python = ">=3.11"
 # dependencies = [
 #     "claude-agent-sdk>=0.1.6",
+#     "langsmith[claude-agent-sdk]",
 # ]
 # ///
 """
@@ -17,9 +18,15 @@ A Claude Agent SDK application demonstrating:
 - Hook-based safety (blocking dangerous commands)
 - Interactive REPL with streaming responses
 - WebFetch integration for URL summarization
+- LangSmith tracing integration
 
 Usage:
     ./scripts/note_smith.py
+
+Environment Variables (for LangSmith tracing):
+    LANGSMITH_API_KEY     - Your LangSmith API key
+    LANGSMITH_PROJECT     - Project name (optional, defaults to "default")
+    LANGSMITH_TRACING     - Set to "true" to enable tracing
 
 Commands:
     /summarize <url>  - Summarize a webpage
@@ -29,7 +36,12 @@ Commands:
     /exit             - Quit
 
 Examples:
+    # Basic usage
     ./scripts/note_smith.py
+
+    # With LangSmith tracing
+    LANGSMITH_API_KEY=your_key LANGSMITH_TRACING=true ./scripts/note_smith.py
+
     # Then use interactive commands like:
     # /note Remember to check logs
     # /find logs
@@ -38,6 +50,7 @@ Examples:
 
 import asyncio
 import json
+import os
 import sys
 from datetime import datetime
 from pathlib import Path
@@ -56,6 +69,15 @@ from claude_agent_sdk import (
     create_sdk_mcp_server,
     tool,
 )
+
+# Configure LangSmith tracing if enabled
+if os.getenv("LANGSMITH_TRACING", "").lower() == "true":
+    try:
+        from langsmith.integrations.claude_agent_sdk import configure_claude_agent_sdk
+        configure_claude_agent_sdk()
+        print("✓ LangSmith tracing enabled", file=sys.stderr)
+    except ImportError:
+        print("⚠ LangSmith not installed. Run: uv add langsmith[claude-agent-sdk]", file=sys.stderr)
 
 # ----------------------------
 # Storage (simple local notes)

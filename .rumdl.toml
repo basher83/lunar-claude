@@ -38,6 +38,9 @@ exclude = [
     # Implementation plans (working documents)
     "docs/plans/**/*.md",
 
+    # Cursor plans (have HTML comments before h1 heading)
+    ".cursor/plans/**/*.md",
+
     # Test fixtures (intentionally contain errors for testing)
     "tests/fixtures/**/*.md",
 

@@ -186,9 +186,9 @@ Only attempt manual fixes within these limits:
 
 | Threshold | Limit |
 |-----------|-------|
-| Per-file | ≤5 violations |
-| Files affected | ≤3 files |
-| Total violations | ≤10 |
+| Per-file | ≤15 violations |
+| Files affected | ≤5 files |
+| Total violations | ≤25 |
 
 If any threshold exceeded → escalate to user.
 

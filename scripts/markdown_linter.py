@@ -68,16 +68,96 @@ from claude_agent_sdk import (
 )
 
 # ═══════════════════════════════════════════════════════════════════════════════
+# ERROR HANDLING INFRASTRUCTURE
+# ═══════════════════════════════════════════════════════════════════════════════
+
+
+class MarkdownLinterError(Exception):
+    """Base exception for markdown linter errors."""
+
+    pass
+
+
+class RumdlNotFoundError(MarkdownLinterError):
+    """Raised when rumdl executable is not found."""
+
+    def __init__(self) -> None:
+        super().__init__(
+            "rumdl not found. Install with: cargo install rumdl\nVerify: rumdl --version"
+        )
+
+
+class RumdlExecutionError(MarkdownLinterError):
+    """Raised when rumdl command fails unexpectedly."""
+
+    def __init__(self, command: str, returncode: int, stderr: str) -> None:
+        super().__init__(f"rumdl failed (exit {returncode}): {command}")
+        self.command = command
+        self.returncode = returncode
+        self.stderr = stderr
+
+
+def run_rumdl_command(args: list[str], *, timeout: int = 30) -> subprocess.CompletedProcess[str]:
+    """
+    Execute rumdl command with error handling and timeout.
+
+    Args:
+        args: Command arguments (e.g., ['check', '--output-format', 'json', '.'])
+        timeout: Timeout in seconds (default 30)
+
+    Returns:
+        CompletedProcess with stdout, stderr, returncode
+
+    Raises:
+        RumdlNotFoundError: If rumdl not installed
+        subprocess.TimeoutExpired: If command times out
+    """
+    try:
+        result = subprocess.run(
+            ["rumdl", *args],
+            capture_output=True,
+            text=True,
+            timeout=timeout,
+        )
+        # Log stderr if present (warnings, etc.)
+        if result.stderr:
+            print(f"rumdl stderr: {result.stderr[:500]}", file=sys.stderr)
+        return result
+    except FileNotFoundError:
+        raise RumdlNotFoundError() from None
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
 # LANGSMITH TRACING (optional)
 # ═══════════════════════════════════════════════════════════════════════════════
 
 if os.getenv("LANGSMITH_TRACING", "").lower() == "true":
     try:
         from langsmith.integrations.claude_agent_sdk import configure_claude_agent_sdk
+
         configure_claude_agent_sdk()
         print("✓ LangSmith tracing enabled", file=sys.stderr)
     except ImportError:
-        print("⚠ LangSmith not installed. Run: uv add langsmith[claude-agent-sdk]", file=sys.stderr)
+        print(
+            "⚠ LangSmith not installed. Run: uv add langsmith[claude-agent-sdk]",
+            file=sys.stderr,
+        )
+    except ValueError as e:
+        print(f"⚠ LangSmith configuration error: {e}", file=sys.stderr)
+        print("   Check LANGSMITH_API_KEY environment variable", file=sys.stderr)
+    except Exception as e:
+        print(
+            f"⚠ LangSmith initialization failed: {type(e).__name__}: {e}",
+            file=sys.stderr,
+        )
+        print("   Continuing without tracing...", file=sys.stderr)
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# MODEL CONFIGURATION
+# ═══════════════════════════════════════════════════════════════════════════════
+
+# Single source of truth for model selection - update here when changing models
+MODEL_ID = "claude-sonnet-4-5-20250929"
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # RUMDL HELPER FUNCTIONS (from rumdl-parser.py)
@@ -150,8 +230,23 @@ def parse_rumdl_json(json_output: str) -> dict[str, Any]:
     """Parse rumdl JSON output and categorize errors."""
     try:
         data = json.loads(json_output)
-    except json.JSONDecodeError:
-        return {"error": "Failed to parse rumdl JSON output", "files": []}
+    except json.JSONDecodeError as e:
+        print(
+            f"⚠ JSON parse failed: Line {e.lineno}, Col {e.colno}: {e.msg}",
+            file=sys.stderr,
+        )
+        return {
+            "error": f"JSON parse failed: {e.msg}",
+            "details": f"Line {e.lineno}, column {e.colno}",
+            "files": [],
+        }
+
+    # Validate structure
+    if not isinstance(data, dict):
+        return {"error": f"Expected JSON object, got {type(data).__name__}", "files": []}
+
+    if "files" not in data:
+        return {"error": "JSON missing 'files' key", "files": []}
 
     files_data = []
     total_auto_fixable = 0
@@ -181,14 +276,18 @@ def parse_rumdl_json(json_output: str) -> dict[str, Any]:
                 total_skip += 1
 
         if errors:
-            files_data.append({
-                "path": file_path,
-                "error_count": len(errors),
-                "auto_fixable_count": sum(1 for e in errors if e["category"] == "auto_fixable"),
-                "investigation_count": sum(1 for e in errors if e["category"] == "needs_investigation"),
-                "skip_count": sum(1 for e in errors if e["category"] == "skip"),
-                "errors": errors,
-            })
+            files_data.append(
+                {
+                    "path": file_path,
+                    "error_count": len(errors),
+                    "auto_fixable_count": sum(1 for e in errors if e["category"] == "auto_fixable"),
+                    "investigation_count": sum(
+                        1 for e in errors if e["category"] == "needs_investigation"
+                    ),
+                    "skip_count": sum(1 for e in errors if e["category"] == "skip"),
+                    "errors": errors,
+                }
+            )
 
     # Sort by investigation count (highest first - those need agent attention)
     files_data.sort(key=lambda x: x["investigation_count"], reverse=True)
@@ -241,14 +340,18 @@ def parse_rumdl_text(text_output: str) -> dict[str, Any]:
 
     files_data = []
     for path, errors in errors_by_file.items():
-        files_data.append({
-            "path": path,
-            "error_count": len(errors),
-            "auto_fixable_count": sum(1 for e in errors if e["category"] == "auto_fixable"),
-            "investigation_count": sum(1 for e in errors if e["category"] == "needs_investigation"),
-            "skip_count": sum(1 for e in errors if e["category"] == "skip"),
-            "errors": errors,
-        })
+        files_data.append(
+            {
+                "path": path,
+                "error_count": len(errors),
+                "auto_fixable_count": sum(1 for e in errors if e["category"] == "auto_fixable"),
+                "investigation_count": sum(
+                    1 for e in errors if e["category"] == "needs_investigation"
+                ),
+                "skip_count": sum(1 for e in errors if e["category"] == "skip"),
+                "errors": errors,
+            }
+        )
 
     files_data.sort(key=lambda x: x["investigation_count"], reverse=True)
 
@@ -279,43 +382,72 @@ async def rumdl_check(args: dict[str, Any]) -> dict[str, Any]:
     """
     path = args.get("path", ".")
 
-    # Try JSON output first
-    result = subprocess.run(
-        ["rumdl", "check", "--output-format", "json", path],
-        capture_output=True,
-        text=True,
-    )
-
-    if result.returncode == 0 and not result.stdout.strip():
+    # Validate path
+    if not os.path.exists(path):
         return {
-            "content": [{
-                "type": "text",
-                "text": json.dumps({
-                    "status": "clean",
-                    "message": "No linting errors found!",
-                    "total_errors": 0,
-                }, indent=2)
-            }]
+            "content": [
+                {
+                    "type": "text",
+                    "text": json.dumps({"error": f"Path not found: {path}"}, indent=2),
+                }
+            ]
         }
 
-    # Parse JSON output
-    if result.stdout.strip().startswith("{"):
-        parsed = parse_rumdl_json(result.stdout)
-    else:
-        # Fallback to text parsing
-        text_result = subprocess.run(
-            ["rumdl", "check", path],
-            capture_output=True,
-            text=True,
-        )
-        parsed = parse_rumdl_text(text_result.stdout + text_result.stderr)
+    try:
+        # Try JSON output first
+        result = run_rumdl_command(["check", "--output-format", "json", path])
 
-    return {
-        "content": [{
-            "type": "text",
-            "text": json.dumps(parsed, indent=2)
-        }]
-    }
+        if result.returncode == 0 and not result.stdout.strip():
+            return {
+                "content": [
+                    {
+                        "type": "text",
+                        "text": json.dumps(
+                            {
+                                "status": "clean",
+                                "message": "No linting errors found!",
+                                "total_errors": 0,
+                            },
+                            indent=2,
+                        ),
+                    }
+                ]
+            }
+
+        # Parse JSON output
+        if result.stdout.strip().startswith("{"):
+            parsed = parse_rumdl_json(result.stdout)
+        else:
+            # Fallback to text parsing
+            text_result = run_rumdl_command(["check", path])
+            parsed = parse_rumdl_text(text_result.stdout + text_result.stderr)
+
+        return {"content": [{"type": "text", "text": json.dumps(parsed, indent=2)}]}
+
+    except RumdlNotFoundError as e:
+        return {
+            "content": [
+                {
+                    "type": "text",
+                    "text": json.dumps({"error": str(e), "category": "configuration"}, indent=2),
+                }
+            ]
+        }
+    except subprocess.TimeoutExpired:
+        return {
+            "content": [
+                {
+                    "type": "text",
+                    "text": json.dumps(
+                        {
+                            "error": "Command timed out after 30s",
+                            "suggestion": "Try a smaller path",
+                        },
+                        indent=2,
+                    ),
+                }
+            ]
+        }
 
 
 @tool("rumdl_fix", "Auto-fix markdown errors that rumdl can handle", {"path": str})
@@ -328,45 +460,81 @@ async def rumdl_fix(args: dict[str, Any]) -> dict[str, Any]:
     """
     path = args.get("path", ".")
 
-    # Get before count
-    before_result = subprocess.run(
-        ["rumdl", "check", path],
-        capture_output=True,
-        text=True,
-    )
-    before_lines = [l for l in before_result.stdout.split("\n") if l.strip() and "[" in l]
-    before_count = len(before_lines)
+    # Validate path
+    if not os.path.exists(path):
+        return {
+            "content": [
+                {
+                    "type": "text",
+                    "text": json.dumps({"error": f"Path not found: {path}"}, indent=2),
+                }
+            ]
+        }
 
-    # Run fix
-    fix_result = subprocess.run(
-        ["rumdl", "check", "--fix", path],
-        capture_output=True,
-        text=True,
-    )
+    try:
+        # Get before count
+        before_result = run_rumdl_command(["check", path])
+        before_lines = [
+            line for line in before_result.stdout.split("\n") if line.strip() and "[" in line
+        ]
+        before_count = len(before_lines)
 
-    # Get after count
-    after_result = subprocess.run(
-        ["rumdl", "check", path],
-        capture_output=True,
-        text=True,
-    )
-    after_lines = [l for l in after_result.stdout.split("\n") if l.strip() and "[" in l]
-    after_count = len(after_lines)
+        # Run fix
+        fix_result = run_rumdl_command(["check", "--fix", path])
 
-    fixed_count = before_count - after_count
+        # Get after count
+        after_result = run_rumdl_command(["check", path])
+        after_lines = [
+            line for line in after_result.stdout.split("\n") if line.strip() and "[" in line
+        ]
+        after_count = len(after_lines)
 
-    return {
-        "content": [{
-            "type": "text",
-            "text": json.dumps({
-                "status": "completed",
-                "errors_before": before_count,
-                "errors_after": after_count,
-                "errors_fixed": fixed_count,
-                "fix_output": fix_result.stdout[:1000] if fix_result.stdout else "No output",
-            }, indent=2)
-        }]
-    }
+        fixed_count = before_count - after_count
+
+        return {
+            "content": [
+                {
+                    "type": "text",
+                    "text": json.dumps(
+                        {
+                            "status": "completed",
+                            "errors_before": before_count,
+                            "errors_after": after_count,
+                            "errors_fixed": fixed_count,
+                            "fix_output": fix_result.stdout[:1000]
+                            if fix_result.stdout
+                            else "No output",
+                        },
+                        indent=2,
+                    ),
+                }
+            ]
+        }
+
+    except RumdlNotFoundError as e:
+        return {
+            "content": [
+                {
+                    "type": "text",
+                    "text": json.dumps({"error": str(e), "category": "configuration"}, indent=2),
+                }
+            ]
+        }
+    except subprocess.TimeoutExpired:
+        return {
+            "content": [
+                {
+                    "type": "text",
+                    "text": json.dumps(
+                        {
+                            "error": "Command timed out after 30s",
+                            "suggestion": "Try a smaller path",
+                        },
+                        indent=2,
+                    ),
+                }
+            ]
+        }
 
 
 @tool("rumdl_statistics", "Get rule violation statistics for the path", {"path": str})
@@ -378,20 +546,27 @@ async def rumdl_statistics(args: dict[str, Any]) -> dict[str, Any]:
     """
     path = args.get("path", ".")
 
-    result = subprocess.run(
-        ["rumdl", "check", "--statistics", path],
-        capture_output=True,
-        text=True,
-    )
+    # Validate path
+    if not os.path.exists(path):
+        return {"content": [{"type": "text", "text": f"❌ Error: Path not found: {path}"}]}
 
-    output = result.stdout + result.stderr
+    try:
+        result = run_rumdl_command(["check", "--statistics", path])
+        output = result.stdout + result.stderr
 
-    return {
-        "content": [{
-            "type": "text",
-            "text": f"Rule violation statistics for {path}:\n\n{output}"
-        }]
-    }
+        return {
+            "content": [
+                {
+                    "type": "text",
+                    "text": f"Rule violation statistics for {path}:\n\n{output}",
+                }
+            ]
+        }
+
+    except RumdlNotFoundError as e:
+        return {"content": [{"type": "text", "text": f"❌ Error: {e}"}]}
+    except subprocess.TimeoutExpired:
+        return {"content": [{"type": "text", "text": "❌ Error: Command timed out after 30s"}]}
 
 
 @tool("rumdl_diff", "Preview what changes rumdl --fix would make", {"path": str})
@@ -403,20 +578,22 @@ async def rumdl_diff(args: dict[str, Any]) -> dict[str, Any]:
     """
     path = args.get("path", ".")
 
-    result = subprocess.run(
-        ["rumdl", "check", "--diff", path],
-        capture_output=True,
-        text=True,
-    )
+    # Validate path
+    if not os.path.exists(path):
+        return {"content": [{"type": "text", "text": f"❌ Error: Path not found: {path}"}]}
 
-    output = result.stdout if result.stdout else "No changes would be made."
+    try:
+        result = run_rumdl_command(["check", "--diff", path])
+        output = result.stdout if result.stdout else "No changes would be made."
 
-    return {
-        "content": [{
-            "type": "text",
-            "text": f"Diff preview for {path}:\n\n{output[:5000]}"
-        }]
-    }
+        return {
+            "content": [{"type": "text", "text": f"Diff preview for {path}:\n\n{output[:5000]}"}]
+        }
+
+    except RumdlNotFoundError as e:
+        return {"content": [{"type": "text", "text": f"❌ Error: {e}"}]}
+    except subprocess.TimeoutExpired:
+        return {"content": [{"type": "text", "text": "❌ Error: Command timed out after 30s"}]}
 
 
 # Create the MCP server with all rumdl tools
@@ -528,7 +705,7 @@ INVESTIGATOR_AGENT = AgentDefinition(
     description="Autonomous analyzer that determines if markdown errors are fixable or false positives. Use for MD033, MD052, MD053, MD041, MD013, MD036 errors.",
     prompt=INVESTIGATOR_PROMPT,
     tools=["Read", "Grep", "Glob"],
-    model="sonnet",
+    model=MODEL_ID,
 )
 
 FIXER_PROMPT = """You are the Markdown Fixer. Your role is to execute fixes for confirmed errors.
@@ -599,7 +776,7 @@ FIXER_AGENT = AgentDefinition(
     description="Executes markdown fixes based on confirmed errors and investigation context. Use after investigator has determined what's fixable.",
     prompt=FIXER_PROMPT,
     tools=["Read", "Edit"],
-    model="sonnet",
+    model=MODEL_ID,
 )
 
 
@@ -667,6 +844,7 @@ ORCHESTRATOR_PROMPT = """You are the Markdown Linting Orchestrator. Coordinate t
 def get_options(target_path: str) -> ClaudeAgentOptions:
     """Create ClaudeAgentOptions with orchestrator configuration."""
     return ClaudeAgentOptions(
+        setting_sources=["user", "project", "local"],
         system_prompt={
             "type": "preset",
             "preset": "claude_code",
@@ -690,7 +868,7 @@ def get_options(target_path: str) -> ClaudeAgentOptions:
         },
         mcp_servers={"rumdl": RUMDL_SERVER},
         permission_mode="acceptEdits",
-        model="claude-sonnet-4-5",
+        model=MODEL_ID,
     )
 
 
@@ -724,6 +902,11 @@ async def run_linting(target_path: str) -> None:
     print(f"   Target: {target_path}")
     print("=" * 60)
 
+    # Validate target path
+    if not os.path.exists(target_path):
+        print(f"\n❌ Error: Target path does not exist: {target_path}", file=sys.stderr)
+        sys.exit(1)
+
     options = get_options(target_path)
 
     prompt = f"""Run the intelligent markdown linting workflow on: {target_path}
@@ -737,11 +920,36 @@ Execute all phases:
 
 Be thorough and report clear before/after metrics."""
 
-    async with ClaudeSDKClient(options=options) as client:
-        await client.query(prompt)
+    try:
+        async with ClaudeSDKClient(options=options) as client:
+            await client.query(prompt)
 
-        async for message in client.receive_response():
-            display_message(message)
+            async for message in client.receive_response():
+                display_message(message)
+    except Exception as e:
+        error_type = type(e).__name__
+        error_msg = str(e)
+
+        print(f"\n❌ Claude SDK Error: {error_type}", file=sys.stderr)
+        print(f"   {error_msg}", file=sys.stderr)
+
+        # Category-based guidance
+        error_lower = (error_type + " " + error_msg).lower()
+        if "authentication" in error_lower or "api key" in error_lower:
+            print("\n   💡 Check Claude Code CLI auth. Run: claude login", file=sys.stderr)
+        elif "connection" in error_lower or "network" in error_lower:
+            print("\n   💡 Check internet connection and try again.", file=sys.stderr)
+        elif "rate" in error_lower or "limit" in error_lower:
+            print("\n   💡 Rate limit exceeded. Wait and try again.", file=sys.stderr)
+        elif "setting" in error_lower or "config" in error_lower:
+            print("\n   💡 Check .claude/settings.json configuration.", file=sys.stderr)
+        else:
+            print(
+                "\n   💡 Try again. If persists, check https://status.anthropic.com",
+                file=sys.stderr,
+            )
+
+        sys.exit(1)
 
     print()
 
@@ -757,14 +965,26 @@ async def main() -> None:
     else:
         target_path = "."
 
-    # Verify rumdl is available
     try:
-        subprocess.run(["rumdl", "--version"], capture_output=True, check=True)
-    except (subprocess.CalledProcessError, FileNotFoundError):
-        print("Error: rumdl not found. Install with: cargo install rumdl")
-        sys.exit(1)
+        # Verify rumdl is available
+        result = run_rumdl_command(["--version"], timeout=5)
+        print(f"✓ rumdl: {result.stdout.strip()}", file=sys.stderr)
 
-    await run_linting(target_path)
+        await run_linting(target_path)
+
+    except RumdlNotFoundError as e:
+        print(f"❌ {e}", file=sys.stderr)
+        sys.exit(1)
+    except KeyboardInterrupt:
+        print("\n⚠ Interrupted by user", file=sys.stderr)
+        sys.exit(130)
+    except Exception as e:
+        print(f"\n❌ Unexpected Error: {type(e).__name__}: {e}", file=sys.stderr)
+        if os.getenv("DEBUG"):
+            import traceback
+
+            traceback.print_exc()
+        sys.exit(1)
 
 
 if __name__ == "__main__":

@@ -1,0 +1,1 @@
+Add "langsmith[claude-agent-sdk]" to note_smith.py for tracing

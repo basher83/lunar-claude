@@ -255,7 +255,7 @@ Always commit together:
 
 - package.json + package-lock.json
 - Gemfile + Gemfile.lock
-- pyproject.toml + poetry.lock
+- pyproject.toml + uv.lock
 
 ### Deleted Files
 

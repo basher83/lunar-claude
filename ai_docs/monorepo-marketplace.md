@@ -82,6 +82,7 @@ Add plugins to the `plugins` array in `marketplace.json`.
 ```
 
 **Required:**
+
 - `name` - Plugin identifier (kebab-case)
 - `source` - Location of plugin files
 
@@ -212,11 +213,13 @@ The `${CLAUDE_PLUGIN_ROOT}` variable resolves to the plugin installation directo
 The `strict` field controls plugin.json requirements:
 
 **Default (`strict: true`):**
+
 - Plugin must contain `.claude-plugin/plugin.json`
 - Marketplace entry supplements plugin manifest
 - Plugin manifest takes precedence
 
 **Relaxed (`strict: false`):**
+
 - Plugin.json is optional
 - Marketplace entry serves as complete manifest
 - Use when plugin has no manifest file
@@ -236,16 +239,19 @@ The `strict` field controls plugin.json requirements:
 Users add the marketplace by repository location:
 
 **GitHub:**
+
 ```text
 /plugin marketplace add owner/repository
 ```
 
 **Git URL:**
+
 ```text
 /plugin marketplace add https://git.example.com/org/plugins.git
 ```
 
 **Local path:**
+
 ```text
 /plugin marketplace add /path/to/marketplace
 ```

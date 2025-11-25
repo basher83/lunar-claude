@@ -41,14 +41,17 @@ versioning, and clear communication about change types.
 
 **When to use Conventional Commits vs Custom Parsers**:
 
-- **Use Conventional Commits** when your project strictly follows the Conventional Commits specification. This provides structured, automated changelog generation with semantic versioning support.
+- **Use Conventional Commits** when your project strictly follows the Conventional Commits specification. This
+  provides structured, automated changelog generation with semantic versioning support.
 - **Use Custom Parsers** when you need flexibility beyond Conventional Commits, such as:
   - Grouping commits by custom criteria (author, keywords, etc.)
   - Filtering commits that don't fit conventional categories
   - Extracting specific information not covered by conventional commits
   - Supporting legacy commit message formats
 
-**Hybrid Approach**: You can use both! Conventional commits parse first, then custom parsers can override groups or add additional categorization. This is useful for projects transitioning to conventional commits or needing extra categorization.
+**Hybrid Approach**: You can use both! Conventional commits parse first, then custom parsers can override groups or
+add additional categorization. This is useful for projects transitioning to conventional commits or needing extra
+categorization.
 
 **Supported commit types**:
 
@@ -121,7 +124,8 @@ repo = "lunar-claude"
 2. **Command-line argument**: `--github-token`
 3. **Configuration file**: `token = "..."` (not recommended for security)
 
-**Token Permissions**: No special permissions required. Even a token with no scopes works, providing rate limit increase from 60 to 5000 requests/hour. For private repositories, use a token with `repo` scope.
+**Token Permissions**: No special permissions required. Even a token with no scopes works, providing rate limit increase
+from 60 to 5000 requests/hour. For private repositories, use a token with `repo` scope.
 
 **Rate Limiting**:
 
@@ -603,7 +607,8 @@ conventional_commits = true  # Must be explicitly enabled
 - `filter_unconventional = true`: Silently excludes non-conventional commits (default behavior)
 - `require_conventional = true`: **Fails** changelog generation if any non-conventional commits are found (stricter)
 
-Use `require_conventional` only when you want to enforce strict compliance. For gradual adoption, use `filter_unconventional`.
+Use `require_conventional` only when you want to enforce strict compliance. For gradual adoption, use
+`filter_unconventional`.
 
 ### Incorrect Regex Patterns in Commit Parsers
 

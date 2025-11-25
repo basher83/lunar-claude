@@ -1,12 +1,15 @@
 # Objective Analysis: verify-structure.py
 
-Comparison of `/scripts/verify-structure.py` against requirements in `ai_docs/monorepo-marketplace.md`.
+Comparison of `/scripts/verify-structure.py` against requirements in
+`ai_docs/monorepo-marketplace.md`.
 
 ## Summary
 
-The script validates plugin manifests and components correctly but has gaps in marketplace-level validation and strict mode handling.
+The script validates plugin manifests and components correctly but has gaps in
+marketplace-level validation and strict mode handling.
 
 **Status by Area:**
+
 - ✅ Plugin manifest schema validation
 - ✅ Component placement validation
 - ✅ Component content validation
@@ -22,11 +25,13 @@ The script validates plugin manifests and components correctly but has gaps in m
 **Documentation Requirements:**
 
 Required fields:
+
 - `name` - Marketplace identifier (kebab-case)
 - `owner` - Maintainer information (object with name, email)
 - `plugins` - Array of plugin entries
 
 Optional fields:
+
 - `metadata.description`
 - `metadata.version`
 - `metadata.pluginRoot`
@@ -34,6 +39,7 @@ Optional fields:
 **Script Implementation:**
 
 Lines 596-612:
+
 ```python
 marketplace_json = repo_root / ".claude-plugin" / "marketplace.json"
 if not marketplace_json.exists():
@@ -46,6 +52,7 @@ if "plugins" not in marketplace_data:
 ```
 
 **Gaps:**
+
 - ❌ Does not validate `name` field exists
 - ❌ Does not validate `owner` field exists or structure
 - ❌ Does not validate `name` follows kebab-case pattern
@@ -59,10 +66,12 @@ if "plugins" not in marketplace_data:
 **Documentation Requirements:**
 
 Required fields in marketplace plugin entries:
+
 - `name` - Plugin identifier (kebab-case)
 - `source` - Location (string or object)
 
 Optional fields:
+
 - `description`, `version`, `author`, `homepage`, `repository`, `license`
 - `keywords`, `category`, `tags`
 - `strict` - Controls plugin.json requirement (default: true)
@@ -71,6 +80,7 @@ Optional fields:
 **Script Implementation:**
 
 Lines 615-621:
+
 ```python
 for plugin_entry in marketplace_data["plugins"]:
     plugin_name = plugin_entry.get("name", "unknown")
@@ -81,6 +91,7 @@ for plugin_entry in marketplace_data["plugins"]:
 ```
 
 **Gaps:**
+
 - ❌ Does not validate `name` follows kebab-case pattern
 - ❌ Does not validate optional fields (description, version, etc.)
 - ❌ Does not validate `source` format/type
@@ -102,11 +113,13 @@ Three source types supported:
 **Script Implementation:**
 
 Lines 624-625:
+
 ```python
 plugin_dir = repo_root / plugin_source.lstrip("./")
 ```
 
 **Gaps:**
+
 - ❌ Only handles string sources (relative paths)
 - ❌ Does not handle GitHub object sources
 - ❌ Does not handle Git URL object sources
@@ -126,6 +139,7 @@ plugin_dir = repo_root / plugin_source.lstrip("./")
 **Script Implementation:**
 
 Lines 528-530:
+
 ```python
 if not plugin_json.exists():
     results['manifest'].append(f"{plugin_dir.name}: Missing .claude-plugin/plugin.json")
@@ -133,26 +147,31 @@ if not plugin_json.exists():
 ```
 
 **Gaps:**
+
 - ❌ Always requires plugin.json exists
 - ❌ Does not check `strict` field from marketplace entry
 - ❌ Does not allow plugins without plugin.json when `strict: false`
 
-**Impact:** Plugins with `strict: false` in marketplace would fail validation even though they are valid per documentation.
+**Impact:** Plugins with `strict: false` in marketplace would fail validation even
+though they are valid per documentation.
 
 ### 5. Plugin Manifest Validation
 
 **Documentation Requirements:**
 
 Required field:
+
 - `name` - Plugin identifier (kebab-case)
 
 Optional fields:
+
 - `version`, `description`, `author`, `homepage`, `repository`, `license`, `keywords`
 - Component paths: `commands`, `agents`, `hooks`, `mcpServers`
 
 **Script Implementation:**
 
 Lines 61-141: PLUGIN_MANIFEST_SCHEMA
+
 - Requires `name` field
 - Validates kebab-case pattern for name
 - Validates semantic version format
@@ -161,6 +180,7 @@ Lines 61-141: PLUGIN_MANIFEST_SCHEMA
 - Validates component path types
 
 Lines 541-542:
+
 ```python
 schema_errors = validate_json_schema(data, PLUGIN_MANIFEST_SCHEMA, plugin_dir.name)
 results['manifest'].extend(schema_errors)
@@ -173,6 +193,7 @@ results['manifest'].extend(schema_errors)
 **Documentation Requirements:**
 
 Components must be at plugin root, not in `.claude-plugin/`:
+
 - `skills/`
 - `commands/`
 - `agents/`
@@ -181,6 +202,7 @@ Components must be at plugin root, not in `.claude-plugin/`:
 **Script Implementation:**
 
 Lines 192-208:
+
 ```python
 invalid_locations = ["commands", "agents", "skills", "hooks"]
 
@@ -199,6 +221,7 @@ for component in invalid_locations:
 **Skills Validation:**
 
 Lines 211-249:
+
 - Checks skills/ directory structure
 - Validates SKILL.md files exist
 - Validates frontmatter (name, description)
@@ -208,6 +231,7 @@ Lines 211-249:
 **Commands Validation:**
 
 Lines 252-281:
+
 - Checks commands/ directory
 - Validates .md files
 - Validates frontmatter (description)
@@ -217,6 +241,7 @@ Lines 252-281:
 **Agents Validation:**
 
 Lines 284-313:
+
 - Checks agents/ directory
 - Validates .md files
 - Validates frontmatter (description, capabilities)
@@ -226,6 +251,7 @@ Lines 284-313:
 **Hooks Validation:**
 
 Lines 316-399:
+
 - Validates hooks.json or inline hooks
 - Checks valid event types (PreToolUse, PostToolUse, etc.)
 - Checks valid hook types (command, validation, notification)
@@ -237,6 +263,7 @@ Lines 316-399:
 **MCP Validation:**
 
 Lines 402-460:
+
 - Validates .mcp.json or inline config
 - Checks mcpServers structure
 - Validates ${CLAUDE_PLUGIN_ROOT} usage
@@ -247,6 +274,7 @@ Lines 402-460:
 **Custom Paths Validation:**
 
 Lines 463-496:
+
 - Validates custom component paths start with "./"
 - Checks paths exist
 
@@ -261,6 +289,7 @@ Each plugin should have README.md (per directory structure example).
 **Script Implementation:**
 
 Lines 545-546:
+
 ```python
 if not (plugin_dir / "README.md").exists():
     results['manifest'].append(f"{plugin_dir.name}: Missing README.md")
@@ -273,6 +302,7 @@ if not (plugin_dir / "README.md").exists():
 **Script Implementation:**
 
 Lines 583-593:
+
 ```python
 required_dirs = [
     "plugins/meta",
@@ -284,6 +314,7 @@ required_dirs = [
 ```
 
 **Analysis:**
+
 - Hardcoded for lunar-claude repository structure
 - Not applicable to general marketplace validation
 - Would fail for marketplaces with different category names
@@ -301,6 +332,7 @@ Optional field `metadata.pluginRoot` sets base path for relative plugin sources.
 None - field is not read or used.
 
 **Gap:**
+
 - ❌ Does not read metadata.pluginRoot
 - ❌ Does not apply base path to relative sources
 
@@ -315,6 +347,7 @@ None - field is not read or used.
 **Description:** Script always requires plugin.json, ignoring `strict: false` setting.
 
 **Example:**
+
 ```json
 {
   "name": "simple-plugin",
@@ -331,6 +364,7 @@ None - field is not read or used.
 **Location:** Lines 528-530, 615-634
 
 **Fix Required:**
+
 1. Read `strict` field from marketplace plugin entry
 2. Skip plugin.json validation when `strict: false`
 3. Validate marketplace entry as complete manifest when strict mode off
@@ -342,6 +376,7 @@ None - field is not read or used.
 **Description:** Script only processes relative path sources, skips GitHub/Git URL sources.
 
 **Example:**
+
 ```json
 {
   "name": "external-plugin",
@@ -358,6 +393,7 @@ None - field is not read or used.
 **Location:** Lines 624-625
 
 **Fix Options:**
+
 1. Skip validation for external sources (document limitation)
 2. Fetch and validate external sources (complex)
 
@@ -368,6 +404,7 @@ None - field is not read or used.
 **Description:** marketplace.json structure not validated against schema.
 
 **Missing Validations:**
+
 - `name` field required and kebab-case
 - `owner` field required with name/email structure
 - `plugins` array validates entry schemas
@@ -386,6 +423,7 @@ None - field is not read or used.
 **Location:** Lines 583-593
 
 **Fix Options:**
+
 1. Make configurable
 2. Remove from general validation
 3. Document as repository-specific check
@@ -435,41 +473,46 @@ None - field is not read or used.
 
 ### Priority 2: Important
 
-3. **Handle external sources gracefully**
+1. **Handle external sources gracefully**
    - Detect GitHub/Git URL source objects
    - Skip validation with informational message
    - Document limitation in script output
 
-4. **Add plugin entry schema validation**
+2. **Add plugin entry schema validation**
    - Validate each entry in marketplace plugins array
    - Check required fields and formats
    - Validate source type structures
 
 ### Priority 3: Enhancement
 
-5. **Make category directories configurable**
+1. **Make category directories configurable**
    - Move hardcoded paths to configuration
    - Or remove repository-specific checks
    - Document as optional repository validation
 
-6. **Support metadata.pluginRoot**
+2. **Support metadata.pluginRoot**
    - Read and apply base path to relative sources
    - Document if unsupported
 
 ## Conclusion
 
-The script provides strong validation for plugin manifests and component structure but has significant gaps in marketplace-level validation and strict mode handling.
+The script provides strong validation for plugin manifests and component structure
+but has significant gaps in marketplace-level validation and strict mode handling.
 
 **Works correctly:**
+
 - Plugin manifest schema validation
 - Component placement and content validation
 - ${CLAUDE_PLUGIN_ROOT} usage verification
 - README existence checks
 
 **Needs implementation:**
+
 - Strict mode support (critical gap)
 - Marketplace schema validation
 - External source handling
 - Plugin entry format validation
 
-The script is suitable for validating plugins within lunar-claude but would need updates to validate arbitrary marketplace repositories per the official documentation.
+The script is suitable for validating plugins within lunar-claude but would need
+updates to validate arbitrary marketplace repositories per the official
+documentation.

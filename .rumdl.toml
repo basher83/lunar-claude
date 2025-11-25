@@ -91,3 +91,14 @@ headings = true     # Include headings in line length check
 # [MD044]
 # names = ["rumdl", "Markdown", "GitHub"]  # Proper names that should be capitalized correctly
 # code-blocks = false  # Check code blocks for proper names (default: false, skips code blocks)
+
+[MD033]
+# Allow specific HTML elements that are intentionally used in documentation
+allowed-elements = ["span", "div", "Tip"]
+
+# Per-file rule ignores for known false positives
+[per-file-ignores]
+# TOML section headers [name] look like markdown links to MD052
+"docs/developer/git-cliff-configuration.md" = ["MD052"]
+# Supplementary footnotes intentionally defined but not referenced inline
+"ai_docs/Python-uv-Script-Examples-and-References.md" = ["MD053"]

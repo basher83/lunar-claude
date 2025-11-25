@@ -1,6 +1,6 @@
-<img src="https://r2cdn.perplexity.ai/pplx-full-logo-primary-dark%402x.png" style="height:64px;margin-right:32px"/>
-
 # Python uv Script Examples and References
+
+![Perplexity Logo](https://r2cdn.perplexity.ai/pplx-full-logo-primary-dark%402x.png)
 
 Based on your request for good references and examples of Python scripts utilizing uv, I've compiled a comprehensive
 list of resources beyond the official Astral documentation and the blog post you mentioned.

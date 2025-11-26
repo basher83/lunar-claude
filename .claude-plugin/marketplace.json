@@ -85,6 +85,18 @@
       "author": {
         "name": "basher83"
       }
+    },
+    {
+      "name": "hookify",
+      "source": "./plugins/meta/hookify",
+      "description": "Easily create hooks to prevent unwanted behaviors by analyzing conversation patterns",
+      "version": "0.1.1",
+      "category": "meta",
+      "keywords": ["hooks", "automation", "rules", "validation", "behavior"],
+      "author": {
+        "name": "Daisy Hollman",
+        "email": "daisy@anthropic.com"
+      }
     }
   ]
 }

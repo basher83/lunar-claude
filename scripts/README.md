@@ -41,6 +41,10 @@ logic. Best for simple automation and environments without MCP.
 errors. Dispatches investigator and fixer subagents using the Claude Agent SDK to
 analyze and correct markdown issues.
 
+**markdown_linter.py** - Standalone markdown linter using rumdl with custom MCP tools.
+Provides rumdl_check, rumdl_fix, rumdl_statistics, and rumdl_diff tools for
+intelligent linting workflows. Requires rumdl installed via cargo.
+
 **markdown_formatter.py** - Fixes missing language tags and spacing issues in markdown
 files. Detects programming languages in unlabeled code fences and adds appropriate
 identifiers. Works as a Claude Code hook or standalone CLI tool.
@@ -49,7 +53,19 @@ identifiers. Works as a Claude Code hook or standalone CLI tool.
 frontmatter, categorizes errors, and optionally distributes work across multiple
 subagents.
 
+**cleanup_bash_research.py** - Removes GitHub UI clutter and formatting artifacts from
+scraped markdown files. Cleans navigation elements, redundant metadata, permalinks,
+and HTML artifacts while preserving technical content.
+
+**format_skill_research.py** - Generic markdown formatter for skill research files.
+Removes GitHub UI elements and applies basic markdown formatting rules. Processes
+all markdown files in a directory recursively.
+
 ## Development Tools
+
+**skill-auditor.py** - Audits skills using deterministic Python extraction and Claude
+analysis. Extracts metrics (quoted phrases, domain indicators, line count) and
+validates against Claude Code skill specifications. Requires skill directory path.
 
 **note_smith.py** - Interactive research assistant demonstrating Claude Agent SDK
 features. Provides custom MCP tools for saving and searching notes, WebFetch integration

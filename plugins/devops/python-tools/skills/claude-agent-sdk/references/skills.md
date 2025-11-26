@@ -45,6 +45,8 @@ cwd="/path/to/project",  # Project with .claude/skills/          cwd="/path/to/p
           allowed_tools=["Skill", "Read", "Write", "Bash"]  # Enable Skill tool
       )
 
+```
+
 ```python
 async for message in query(      async for message in query(
           prompt="Help me process this PDF document",
@@ -65,7 +67,6 @@ options: {    options: {
   }
 
   ```text
-
 
 ## Skill Locations
 
@@ -93,21 +94,19 @@ For complete guidance on creating Skills, including SKILL.md structure, multi-fi
 
 ## Tool Restrictions
 
-
   The `allowed-tools` frontmatter field in SKILL.md is only supported when using Claude Code CLI directly. **It does not apply when using Skills through the SDK**.
 
   When using the SDK, control tool access through the main `allowedTools` option in your query configuration.
 
-
 To restrict tools for Skills in SDK applications, use the `allowedTools` option:
 
-
   Import statements from the first example are assumed in the following code snippets.
-
 
   ```python Python theme={null}
   options = ClaudeAgentOptions(
       setting_sources=["user", "project"],  # Load Skills from filesystem
+```
+
 ```python
 allowed_tools=["Skill", "Read", "Grep", "Glob"]  # Restricted toolset      allowed_tools=["Skill", "Read", "Grep", "Glob"]  # Restricted toolset
   )
@@ -159,13 +158,11 @@ options: {    options: {
 
   ```text
 
-
 Claude will list the available Skills based on your current working directory and installed plugins.
 
 ## Testing Skills
 
 Test Skills by asking questions that match their descriptions:
-
 
   ```python Python theme={null}
   options = ClaudeAgentOptions(
@@ -203,12 +200,15 @@ Claude automatically invokes the relevant Skill if the description matches your 
 **Check settingSources configuration**: Skills are only loaded when you explicitly configure `settingSources`/`setting_sources`. This is the most common issue:
 
   ```python Python theme={null}
-  # Wrong - Skills won't be loaded
+
+## Wrong - Skills won't be loaded
+
   options = ClaudeAgentOptions(
       allowed_tools=["Skill"]
   )
 
-  # Correct - Skills will be loaded
+## Correct - Skills will be loaded
+
   options = ClaudeAgentOptions(
       setting_sources=["user", "project"],  # Required to load Skills
 ```python
@@ -226,7 +226,9 @@ For more details on `settingSources`/`setting_sources`, see the [TypeScript SDK 
 **Check working directory**: The SDK loads Skills relative to the `cwd` option. Ensure it points to a directory containing `.claude/skills/`:
 
   ```python Python theme={null}
-  # Ensure your cwd points to the directory containing .claude/skills/
+
+## Ensure your cwd points to the directory containing .claude/skills/
+
   options = ClaudeAgentOptions(
       cwd="/path/to/project",  # Must contain .claude/skills/
 ```python
@@ -246,10 +248,13 @@ See the "Using Skills with the SDK" section above for the complete pattern.
 **Verify filesystem location**:
 
 ```bash  theme={null}
-# Check project Skills
+
+## Check project Skills
+
 ls .claude/skills/*/SKILL.md
 
-# Check personal Skills
+## Check personal Skills
+
 ls ~/.claude/skills/*/SKILL.md
   ```
 

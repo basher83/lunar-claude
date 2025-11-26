@@ -62,10 +62,13 @@ options=ClaudeAgentOptions(      options=ClaudeAgentOptions(
   ):
 
 ## The first message is a system init message with the session ID
+```
+
 ```python
 if hasattr(message, 'subtype') and message.subtype == 'init':      if hasattr(message, 'subtype') and message.subtype == 'init':
           session_id = message.data.get('session_id')
           print(f"Session started with ID: {session_id}")
+
           # You can save this ID for later resumption
 
 ```
@@ -113,6 +116,8 @@ options: {    options: {
 
   async for message in query(
       prompt="Continue implementing the authentication system from where we left off",
+```
+
 ```python
 options=ClaudeAgentOptions(      options=ClaudeAgentOptions(
           resume="session-xyz",  # Session ID from previous conversation
@@ -122,7 +127,7 @@ options=ClaudeAgentOptions(      options=ClaudeAgentOptions(
   ):
       print(message)
 
-  # The conversation continues with full context from the previous session
+## The conversation continues with full context from the previous session
   ```
 
 The SDK automatically handles loading the conversation history and context when you resume a session, allowing Claude to continue exactly where it left off.

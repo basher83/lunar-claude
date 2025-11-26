@@ -15,13 +15,15 @@ Before starting, use the **claude-agent-sdk skill** to ensure you follow SDK bes
 ```
 
 The skill provides:
+
 - SDK templates (assets/sdk-template.py)
 - Official examples (examples/)
 - Best practices and patterns (references/)
 - Validation checklist (assets/sdk-validation-checklist.md)
 
 Also reference the official documentation:
-- Python SDK reference: https://docs.claude.com/en/api/agent-sdk/python
+
+- Python SDK reference: <https://docs.claude.com/en/api/agent-sdk/python>
 
 **IMPORTANT**: Always check for and use the latest SDK version (targeting >= 0.1.6).
 
@@ -75,7 +77,7 @@ Based on the user's answers, create a plan that includes:
 
 2. **Check for Latest Versions**:
 
-   - BEFORE installing, check PyPI for the latest version: https://pypi.org/project/claude-agent-sdk/
+   - BEFORE installing, check PyPI for the latest version: <https://pypi.org/project/claude-agent-sdk/>
    - Inform the user which version you're using (targeting >= 0.1.6)
 
 3. **SDK Installation**:
@@ -88,6 +90,7 @@ Based on the user's answers, create a plan that includes:
 4. **Create starter files**:
 
    Based on user's choice:
+
    - **query() example**: Simple one-shot task (no conversation memory)
    - **ClaudeSDKClient example**: Multi-turn conversation with context
    - **Orchestrator**: Main orchestrator with programmatically registered subagents
@@ -164,7 +167,7 @@ Once setup is complete and verified, provide the user with:
 
 2. **Useful resources**:
 
-   - Python SDK reference: https://docs.claude.com/en/api/agent-sdk/python
+   - Python SDK reference: <https://docs.claude.com/en/api/agent-sdk/python>
    - claude-agent-sdk skill: `/skill claude-agent-sdk` for patterns and examples
    - Key concepts to explore:
      - System prompts (preset vs custom)

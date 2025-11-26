@@ -38,11 +38,9 @@ prompt="Hello Claude",          prompt="Hello Claude",
   asyncio.run(main())
   ```
 
-
 ## Sending Slash Commands
 
 Send slash commands by including them in your prompt string, just like regular text:
-
 
 options: { maxTurns: 1 }    options: { maxTurns: 1 }
   })) {
@@ -60,6 +58,8 @@ console.log("Command executed:", message.result);      console.log("Command exec
   async def main():
 
       # Send a slash command
+```
+
 ```python
 async for message in query(      async for message in query(
           prompt="/compact",
@@ -94,6 +94,8 @@ console.log("Compaction completed");      console.log("Compaction completed");
 
   async def main():
       async for message in query(
+```
+
 ```python
 prompt="/compact",          prompt="/compact",
           options={"max_turns": 1}
@@ -108,11 +110,9 @@ prompt="/compact",          prompt="/compact",
   asyncio.run(main())
   ```
 
-
 ### `/clear` - Clear Conversation
 
 The `/clear` command starts a fresh conversation by clearing all previous history:
-
 
 options: { maxTurns: 1 }    options: { maxTurns: 1 }
   })) {
@@ -185,6 +185,7 @@ model: claude-sonnet-4-5
 ---
 
 Analyze the codebase for security vulnerabilities including:
+
 - SQL injection risks
 - XSS vulnerabilities
 - Exposed credentials
@@ -224,7 +225,8 @@ options: { maxTurns: 1 }    options: { maxTurns: 1 }
   from claude_agent_sdk import query
 
   async def main():
-      # Use a custom command
+
+# Use a custom command
 ```python
 async for message in query(      async for message in query(
           prompt="/refactor src/auth/login.py",
@@ -246,10 +248,9 @@ async for message in query(      async for message in query(
   asyncio.run(main())
   ```
 
+## Advanced Features
 
-### Advanced Features
-
-#### Arguments and Placeholders
+### Arguments and Placeholders
 
 Custom commands support dynamic arguments using placeholders:
 
@@ -266,7 +267,6 @@ Check the issue description and implement the necessary changes.
 ```
 
 Use in SDK:
-
 
 options: { maxTurns: 5 }    options: { maxTurns: 5 }
   })) {
@@ -290,7 +290,9 @@ async for message in query(      async for message in query(
           prompt="/fix-issue 123 high",
           options={"max_turns": 5}
       ):
-          # Command will process with $1="123" and $2="high"
+
+# Command will process with $1="123" and $2="high"
+
           if message.type == "result":
               print("Issue fixed:", message.result)
 
@@ -331,6 +333,7 @@ description: Review configuration files
 ---
 
 Review the following configuration files for issues:
+
 - Package config: @package.json
 - TypeScript config: @tsconfig.json
 - Environment config: @.env
@@ -368,14 +371,17 @@ description: Comprehensive code review
 ---
 
 ## Changed Files
+
 !`git diff --name-only HEAD~1`
 
 ## Detailed Changes
+
 !`git diff HEAD~1`
 
 ## Review Checklist
 
 Review the above changes for:
+
 1. Code quality and readability
 2. Security vulnerabilities
 3. Performance implications
@@ -427,7 +433,8 @@ options: { maxTurns: 5 }    options: { maxTurns: 5 }
   from claude_agent_sdk import query
 
   async def main():
-      # Run code review
+
+# Run code review
 ```python
 async for message in query(      async for message in query(
           prompt="/code-review",
@@ -449,11 +456,10 @@ async for message in query(      async for message in query(
   asyncio.run(main())
   ```
 
-
 ## See Also
 
-* [Slash Commands](/en/docs/claude-code/slash-commands) - Complete slash command documentation
-* [Subagents in the SDK](/en/api/agent-sdk/subagents) - Similar filesystem-based configuration for subagents
-* [TypeScript SDK reference](/en/docs/claude-code/typescript-sdk-reference) - Complete API documentation
-* [SDK overview](/en/api/agent-sdk/overview) - General SDK concepts
-* [CLI reference](/en/docs/claude-code/cli-reference) - Command-line interface
+- [Slash Commands](/en/docs/claude-code/slash-commands) - Complete slash command documentation
+- [Subagents in the SDK](/en/api/agent-sdk/subagents) - Similar filesystem-based configuration for subagents
+- [TypeScript SDK reference](/en/docs/claude-code/typescript-sdk-reference) - Complete API documentation
+- [SDK overview](/en/api/agent-sdk/overview) - General SDK concepts
+- [CLI reference](/en/docs/claude-code/cli-reference) - Command-line interface

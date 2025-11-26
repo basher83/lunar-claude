@@ -62,6 +62,10 @@ exclude = [
 
     # Agent files (may have YAML frontmatter before h1, example code blocks)
     "plugins/meta/meta-claude/agents/**/*.md",
+    "plugins/meta/hookify/agents/**/*.md",
+
+    # Hook example files (have YAML frontmatter for rule configuration)
+    "plugins/meta/hookify/examples/**/*.md",
 ]
 
 # Respect .gitignore files when scanning directories (default: true)

@@ -64,6 +64,7 @@ The SDK now detects implementation details including:
 **Validation Results:**
 
 Tested on skill-factory (Nov 20, 2025):
+
 - Detected: 3/3 violations (firecrawl, multi-tier, 8-phase)
 - Before enhancement: 0/3
 - Improvement: 100%

@@ -49,8 +49,8 @@ Use this checklist when:
     ```
 
   - **Incorrect example:**
-    - All items grouped under single generic "Commands" heading
-    - No logical organization by category
+- All items grouped under single generic "Commands" heading
+- No logical organization by category
 
 - [ ] **No introductory paragraphs**
   - Do NOT include paragraphs explaining "This file provides guidance..."

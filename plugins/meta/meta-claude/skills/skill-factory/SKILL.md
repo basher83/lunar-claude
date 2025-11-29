@@ -4,7 +4,7 @@ description: >
   Research-backed skill creation workflow with automated firecrawl research gathering, multi-tier
   validation, and comprehensive auditing. Use when "create skills with research automation",
   "build research-backed skills", "validate skills end-to-end", "automate skill research and
-  creation", needs 8-phase workflow from research through final audit, wants firecrawl-powered
+  creation", needs 9-phase workflow from research through final audit, wants firecrawl-powered
   research combined with validation, or requires quality-assured skill creation following
   Anthropic specifications for Claude Code.
 ---
@@ -33,13 +33,14 @@ Use skill-factory when:
 
 ## Available Operations
 
-The skill-factory provides 8 specialized commands for the create-review-validate lifecycle:
+The skill-factory provides 9 specialized commands for the create-review-validate lifecycle:
 
 | Command | Purpose | Use When |
 |---------|---------|----------|
 | `/meta-claude:skill:research` | Gather domain knowledge using firecrawl API | Need automated web scraping for skill research |
 | `/meta-claude:skill:format` | Clean and structure research materials | Have raw research needing markdown formatting |
-| `/meta-claude:skill:create` | Generate SKILL.md with YAML frontmatter | Ready to create skill structure from research |
+| `/meta-claude:skill:create` | Initialize skill structure with references | Ready to scaffold skill directory from research |
+| `/meta-claude:skill:write` | Synthesize references into SKILL.md content | Skill initialized but needs content written |
 | `/meta-claude:skill:review-content` | Validate content quality and clarity | Need content review before compliance check |
 | `/meta-claude:skill:review-compliance` | Run quick_validate.py on SKILL.md | Validate YAML frontmatter and naming conventions |
 | `/meta-claude:skill:validate-runtime` | Test skill loading in Claude context | Verify skill loads without syntax errors |
@@ -68,7 +69,8 @@ and workflow visualizations.
 |----------|---------|-----|
 | Need web research for skill topic | `/meta-claude:skill:research <name> [sources]` | Automated firecrawl scraping |
 | Have messy research files | `/meta-claude:skill:format <research-dir>` | Clean markdown formatting |
-| Ready to generate SKILL.md | `/meta-claude:skill:create <name> <research-dir>` | Creates structure with YAML |
+| Ready to scaffold skill directory | `/meta-claude:skill:create <name> <research-dir>` | Creates structure with references |
+| Skill initialized, needs content | `/meta-claude:skill:write <skill-path>` | Synthesizes references into SKILL.md |
 | Content unclear or incomplete | `/meta-claude:skill:review-content <skill-path>` | Quality gate before compliance |
 | Check frontmatter syntax | `/meta-claude:skill:review-compliance <skill-path>` | Runs quick_validate.py |
 | Skill won't load in Claude | `/meta-claude:skill:validate-runtime <skill-path>` | Tests actual loading |
@@ -94,13 +96,14 @@ skill-factory <skill-name> docs/research/skills/<skill-name>/
 The skill will:
 
 1. Format research materials
-2. Create skill structure
-3. Review content quality
-4. Review technical compliance
-5. Validate runtime loading
-6. Validate integration
-7. Run comprehensive audit
-8. Present completion options
+2. Create skill structure (scaffold)
+3. Write skill content (synthesize references)
+4. Review content quality
+5. Review technical compliance
+6. Validate runtime loading
+7. Validate integration
+8. Run comprehensive audit
+9. Present completion options
 
 ### Path 2: Research Needed
 
@@ -180,6 +183,7 @@ TodoWrite([
   {"content": "Research skill domain", "status": "pending", "activeForm": "Researching skill domain"},
   {"content": "Format research materials", "status": "pending", "activeForm": "Formatting research materials"},
   {"content": "Create skill structure", "status": "pending", "activeForm": "Creating skill structure"},
+  {"content": "Write skill content", "status": "pending", "activeForm": "Writing skill content"},
   {"content": "Review content quality", "status": "pending", "activeForm": "Reviewing content quality"},
   {"content": "Review technical compliance", "status": "pending", "activeForm": "Reviewing technical compliance"},
   {"content": "Validate runtime loading", "status": "pending", "activeForm": "Validating runtime loading"},
@@ -217,6 +221,7 @@ Before running a command, verify prior phases completed:
 /meta-claude:skill:research <skill-name> [sources]
 /meta-claude:skill:format <research-dir>
 /meta-claude:skill:create <skill-name> <research-dir>
+/meta-claude:skill:write <skill-path>
 /meta-claude:skill:review-content <skill-path>
 /meta-claude:skill:review-compliance <skill-path>
 /meta-claude:skill:validate-runtime <skill-path>
@@ -313,7 +318,7 @@ and what's happening next.
 ## Workflow Architecture
 
 Two paths based on research availability: Path 1 (research exists) and Path 2 (research needed).
-TodoWrite tracks progress through 7-8 phases. Entry point detection uses prompt analysis and AskUserQuestion.
+TodoWrite tracks progress through 8-10 phases. Entry point detection uses prompt analysis and AskUserQuestion.
 
 **Details:** See [references/workflow-architecture.md](references/workflow-architecture.md)
 

@@ -68,19 +68,6 @@ conventions, and release workflow.
 ./scripts/verify-structure.py --strict
 ```
 
-### Local Plugin Testing
-
-```bash
-# Add marketplace locally
-/plugin marketplace add /workspaces/lunar-claude
-
-# Install a plugin for testing
-/plugin install plugin-name@lunar-claude
-
-# Uninstall plugin
-/plugin uninstall plugin-name@lunar-claude
-```
-
 ## Architecture
 
 ### Plugin Marketplace System
@@ -125,16 +112,6 @@ User Request → Claude Code CLI → marketplace.json → Plugin Components
 ```
 
 ## Creating New Plugins
-
-### Using meta-claude Plugin
-
-```bash
-# Install meta-claude if not already installed
-/plugin install meta-claude@lunar-claude
-
-# Interactive plugin creation
-/new-plugin
-```
 
 ### Manual Creation
 

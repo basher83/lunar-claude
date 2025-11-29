@@ -55,3 +55,7 @@ Intelligent automation and multi-agent orchestration for Claude Code
 A collection of production-ready slash commands for Claude Code
 
 - <https://github.com/wshobson/commands>
+
+## Offical docs
+
+<https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices.md>

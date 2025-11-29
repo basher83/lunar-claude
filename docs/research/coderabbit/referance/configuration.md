@@ -59,6 +59,7 @@ reviews:
       enabled: true
     gitleaks:
       enabled: true
+
 ```
 
 ### Reference
@@ -1148,6 +1149,7 @@ chat:
   integrations:
     jira:
       usage: enabled
+
 ```
 
 ### Reference
@@ -1219,6 +1221,7 @@ knowledge_base:
     filePatterns:
       - "**/.cursorrules"
       - "**/CODING_STANDARDS.md"
+
 ```
 
 ### Reference
@@ -1390,6 +1393,7 @@ code_generation:
     language: en-US
   unit_tests:
     path_instructions: []
+
 ```
 
 ### Reference
@@ -1472,6 +1476,7 @@ code_generation:
 language: en-US
 tone_instructions: "Be concise and focus on critical issues only"
 early_access: false
+
 ```
 
 ### Reference
@@ -1530,6 +1535,7 @@ early_access: false
         eslint:
           enabled: true
     ```
+
   </Tab>
 
   <Tab title="Advanced Setup" icon="settings">
@@ -1570,6 +1576,7 @@ early_access: false
           - "**/technology-stack-and-usage.md"
           - "**/CODING_STANDARDS.md"
     ```
+
   </Tab>
 
   <Tab title="Team Setup" icon="users">
@@ -1614,6 +1621,7 @@ early_access: false
       issues:
         scope: global
     ```
+
   </Tab>
 </Tabs>
 

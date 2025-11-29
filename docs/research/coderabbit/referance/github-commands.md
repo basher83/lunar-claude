@@ -22,13 +22,17 @@ CodeRabbit commands are triggered by mentioning `@coderabbitai` in pull request 
 **Description:** Triggers an incremental review of new changes only
 **Usage:** Post as a comment in your pull request
 **When to use:**
+
 - Automatic reviews are disabled
 - You want to manually request a review of recent changes
 - You've made updates and want focused feedback on new code
 
 **Example:**
+
 ```
+
 @coderabbitai review
+
 ```
 
 **Response time:** Typically completes within a few minutes, depending on PR size and complexity.
@@ -39,13 +43,17 @@ CodeRabbit commands are triggered by mentioning `@coderabbitai` in pull request 
 **Description:** Triggers a complete review from scratch
 **Usage:** Post as a comment in your pull request
 **When to use:**
+
 - You want a comprehensive review of all changes
 - Previous review context may be outdated
 - You want fresh analysis of the entire PR
 
 **Example:**
+
 ```
+
 @coderabbitai full review
+
 ```
 
 **Response time:** May take longer than incremental reviews as it analyzes all changes.
@@ -58,13 +66,17 @@ CodeRabbit commands are triggered by mentioning `@coderabbitai` in pull request 
 **Description:** Temporarily stops automatic reviews for this PR
 **Usage:** Post as a comment in your pull request
 **When to use:**
+
 - You're making rapid changes and want to pause reviews temporarily
 - You want to batch changes before review
 - Reviews are interfering with your workflow
 
 **Example:**
+
 ```
+
 @coderabbitai pause
+
 ```
 
 **Response time:** Takes effect immediately.
@@ -77,12 +89,16 @@ CodeRabbit commands are triggered by mentioning `@coderabbitai` in pull request 
 **Description:** Restarts automatic reviews after pause
 **Usage:** Post as a comment in your pull request
 **When to use:**
+
 - You've paused reviews and are ready to resume
 - You want to re-enable automatic reviews
 
 **Example:**
+
 ```
+
 @coderabbitai resume
+
 ```
 
 **Response time:** Takes effect immediately.
@@ -93,19 +109,24 @@ CodeRabbit commands are triggered by mentioning `@coderabbitai` in pull request 
 **Description:** Permanently disables automatic reviews for this PR
 **Usage:** Add anywhere in the pull request **description** (not comments)
 **When to use:**
+
 - Want to handle the review process manually
 - PR contains sensitive or experimental code
 - Working on a hotfix that needs immediate deployment
 
 **Example:**
 Add to PR description:
+
 ```
+
 This PR fixes the critical bug.
 
 @coderabbitai ignore
+
 ```
 
 **Important:**
+
 - This command must be placed in the PR description, not in comments
 - To re-enable reviews, remove this text from the description
 - CodeRabbit will not automatically review any commits while this text remains
@@ -120,13 +141,17 @@ This PR fixes the critical bug.
 **Description:** Regenerates the PR summary
 **Usage:** Post as a comment in your pull request
 **When to use:**
+
 - Summary is outdated after new changes
 - You want a fresh summary of the PR
 - Summary placeholder was missed initially
 
 **Example:**
+
 ```
+
 @coderabbitai summary
+
 ```
 
 **Response time:** Typically completes within a few minutes.
@@ -139,16 +164,21 @@ This PR fixes the critical bug.
 **Description:** Generates docstrings for functions and classes in the PR
 **Usage:** Post as a comment in your pull request
 **When to use:**
+
 - Code lacks proper documentation
 - Want consistent docstring formatting
 - Need to improve code documentation quickly
 
 **Example:**
+
 ```
+
 @coderabbitai generate docstrings
+
 ```
 
 **Requirements:**
+
 - Must be enabled in configuration: `reviews.finishing_touches.docstrings.enabled: true`
 - Requires Pro plan
 - Feature must be enabled in CodeRabbit settings
@@ -168,16 +198,21 @@ This PR fixes the critical bug.
 **Description:** Generates unit tests for code in the PR
 **Usage:** Post as a comment in your pull request
 **When to use:**
+
 - New code lacks test coverage
 - Want to ensure edge cases are covered
 - Need comprehensive test suite
 
 **Example:**
+
 ```
+
 @coderabbitai generate unit tests
+
 ```
 
 **Requirements:**
+
 - Must be enabled in configuration: `reviews.finishing_touches.unit_tests.enabled: true`
 - Requires Pro plan
 - Feature must be enabled in CodeRabbit settings
@@ -196,13 +231,17 @@ This PR fixes the critical bug.
 **Description:** Creates a visual sequence diagram showing code flow
 **Usage:** Post as a comment in your pull request
 **When to use:**
+
 - Want visual representation of code flow
 - Need to understand system interactions
 - Documentation requires diagrams
 
 **Example:**
+
 ```
+
 @coderabbitai generate sequence diagram
+
 ```
 
 **Configuration:** Controlled by `reviews.sequence_diagrams` setting.
@@ -217,13 +256,17 @@ This PR fixes the critical bug.
 **Description:** Resolves all CodeRabbit review comments
 **Usage:** Post as a comment in your pull request
 **When to use:**
+
 - All CodeRabbit comments have been addressed
 - You want to mark all comments as resolved
 - Preparing for merge
 
 **Example:**
+
 ```
+
 @coderabbitai resolve
+
 ```
 
 **Response time:** Takes effect immediately.
@@ -238,13 +281,17 @@ This PR fixes the critical bug.
 **Description:** Shows current CodeRabbit configuration settings
 **Usage:** Post as a comment in your pull request
 **When to use:**
+
 - Want to see what configuration is active
 - Debugging configuration issues
 - Exporting configuration to YAML file
 
 **Example:**
+
 ```
+
 @coderabbitai configuration
+
 ```
 
 **Output:** Returns current configuration in YAML format, which can be copied to `.coderabbit.yaml`.
@@ -257,13 +304,17 @@ This PR fixes the critical bug.
 **Description:** Shows command reference and guidance
 **Usage:** Post as a comment in your pull request
 **When to use:**
+
 - Need command reference
 - Troubleshooting command issues
 - Learning available commands
 
 **Example:**
+
 ```
+
 @coderabbitai help
+
 ```
 
 **Response time:** Takes effect immediately.
@@ -292,7 +343,9 @@ Beyond commands, you can have natural conversations with CodeRabbit:
 ### Ask Questions
 
 ```
+
 @coderabbitai Why do all of these functions need docstrings? Isn't it obvious enough what they do?
+
 ```
 
 CodeRabbit will explain its reasoning and can adjust future behavior based on your feedback.
@@ -300,13 +353,17 @@ CodeRabbit will explain its reasoning and can adjust future behavior based on yo
 ### Request Explanations
 
 ```
+
 @coderabbitai Can you explain why you flagged this as a security issue?
+
 ```
 
 ### Provide Context
 
 ```
+
 @coderabbitai This is a hotfix for production. Please focus on critical issues only.
+
 ```
 
 CodeRabbit learns from these interactions and applies preferences to future reviews.
@@ -314,6 +371,7 @@ CodeRabbit learns from these interactions and applies preferences to future revi
 ## Command Response Times
 
 **Immediate commands** (take effect right away):
+
 - `@coderabbitai pause`
 - `@coderabbitai resume`
 - `@coderabbitai ignore`
@@ -321,19 +379,23 @@ CodeRabbit learns from these interactions and applies preferences to future revi
 - `@coderabbitai help`
 
 **Quick commands** (typically seconds to minutes):
+
 - `@coderabbitai configuration`
 - `@coderabbitai summary`
 
 **Review commands** (typically minutes, depends on PR size):
+
 - `@coderabbitai review`
 - `@coderabbitai full review`
 
 **Generation commands** (varies by complexity):
+
 - `@coderabbitai generate docstrings` - Minutes to tens of minutes
 - `@coderabbitai generate unit tests` - Minutes to tens of minutes
 - `@coderabbitai generate sequence diagram` - Typically minutes
 
 **Factors affecting response time:**
+
 - PR size and complexity
 - Number of files changed
 - Codebase size and context
@@ -355,16 +417,19 @@ If a command doesn't seem to work:
 ### Common Issues
 
 **Command ignored:**
+
 - Ensure `@coderabbitai` is mentioned exactly
 - Check that CodeRabbit has repository access
 - Verify the command is in the correct location (description vs comment)
 
 **No response:**
+
 - Wait a few minutes for processing
 - Check if CodeRabbit is paused or ignored
 - Verify repository permissions
 
 **Feature not available:**
+
 - Check if feature requires Pro plan
 - Verify feature is enabled in configuration
 - Ensure feature is enabled in CodeRabbit settings

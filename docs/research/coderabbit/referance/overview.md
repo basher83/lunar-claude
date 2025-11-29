@@ -50,8 +50,10 @@ You're already using CodeRabbit for PR reviews. With the CLI, you can now catch 
 Here's a complete prompt you can use with Claude Code, Cursor, or other AI coding agents:
 
 ```
+
 Please implement phase 7.3 of the planning doc and then run coderabbit --prompt-only,
 let it run as long as it needs (run it in the background) and fix any issues.
+
 ```
 
 ### Components of a good prompt
@@ -75,21 +77,25 @@ Breaking down what makes an effective CodeRabbit + AI agent workflow:
     # With specific base branch
     coderabbit --prompt-only --base develop
     ```
+
   </Step>
 
   <Step title="Run in the background">
     CodeRabbit reviews can take 7-30+ minutes depending on the scope of changes. Instruct your AI agent to run CodeRabbit in the background and set up a timer to check periodically:
 
     ```
+
     Run coderabbit --prompt-only --type uncommitted in the background, let it take as long as it needs,
     and check on it periodically.
     ```
+
   </Step>
 
   <Step title="Evaluate and implement fixes">
     Once CodeRabbit completes, have your AI agent evaluate the findings and prioritize:
 
     ```
+
     Evaluate the fixes and considerations. Fix major issues only, or fix any critical
     issues and ignore the nits.
     ```
@@ -101,15 +107,18 @@ Breaking down what makes an effective CodeRabbit + AI agent workflow:
     Run CodeRabbit one more time to ensure fixes didn't introduce new issues:
 
     ```
+
     Once those changes are implemented, run CodeRabbit CLI one more time to make sure
     we addressed all the critical issues and didn't introduce any additional bugs.
     ```
+
   </Step>
 
   <Step title="Set loop limits">
     Prevent infinite iteration by setting clear completion criteria:
 
     ```
+
     Only run the loop twice. If on the second run you don't find any critical issues,
     ignore the nits and you're complete. Give me a summary of everything that was
     completed and why.
@@ -187,6 +196,7 @@ See CodeRabbit CLI in action with Claude Code:
     ```bash  theme={null}
     curl -fsSL https://cli.coderabbit.ai/install.sh | sh
     ```
+
   </Step>
 
   <Step title="Restart your shell">
@@ -196,6 +206,7 @@ See CodeRabbit CLI in action with Claude Code:
     # Restart your shell or run:
     source ~/.zshrc
     ```
+
   </Step>
 
   <Step title="Authenticate">
@@ -248,6 +259,7 @@ coderabbit --plain
 
 # Prompt-only mode - minimal output optimized for AI agents
 coderabbit --prompt-only
+
 ```
 
 ## Working with review results
@@ -313,6 +325,7 @@ Remove CodeRabbit CLI based on how you installed it.
 
 ```bash  theme={null}
 rm $(which coderabbit)
+
 ```
 
 This removes the CodeRabbit binary from your PATH.
@@ -321,4 +334,5 @@ This removes the CodeRabbit binary from your PATH.
 
 ```bash  theme={null}
 brew remove coderabbit
+
 ```

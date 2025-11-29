@@ -66,6 +66,7 @@ CodeRabbit analyzes your code changes and surfaces specific issues, then Claude 
     ```bash  theme={null}
     source ~/.zshrc
     ```
+
   </Step>
 
   <Step title="Authenticate CodeRabbit within Claude">
@@ -74,6 +75,7 @@ CodeRabbit analyzes your code changes and surfaces specific issues, then Claude 
     Ask Claude Code to start authentication:
 
     ```
+
     Run: coderabbit auth login
     ```
 
@@ -90,6 +92,7 @@ CodeRabbit analyzes your code changes and surfaces specific issues, then Claude 
     Test that Claude Code can run CodeRabbit commands:
 
     ```
+
     Run: coderabbit auth status
     ```
 
@@ -106,6 +109,7 @@ CodeRabbit analyzes your code changes and surfaces specific issues, then Claude 
     Ask Claude Code to implement a feature and run CodeRabbit analysis with issue fixes:
 
     ```
+
     Please implement phase 7.3 of the planning doc and then run coderabbit --prompt-only,
     let it run as long as it needs (run it in the background) and fix any issues.
     ```
@@ -128,8 +132,10 @@ CodeRabbit analyzes your code changes and surfaces specific issues, then Claude 
     Manually prompt Claude to check if CodeRabbit is done:
 
     ```
+
     Is CodeRabbit finished running?
     ```
+
   </Step>
 
   <Step title="CodeRabbit analysis and task creation">
@@ -154,15 +160,18 @@ This example shows the workflow implementing a webhook handler for payment proce
     # Working on payment webhook feature
     git checkout -b feature/payment-webhooks
     ```
+
   </Step>
 
   <Step title="Run integrated workflow">
     Tell Claude Code to implement and review:
 
     ```
+
     Implement the payment webhook handler from the spec document.
     Then run coderabbit --prompt-only in the background and fix any issues.
     ```
+
   </Step>
 
   <Step title="CodeRabbit analysis">
@@ -197,6 +206,7 @@ When running CodeRabbit manually before Claude Code, use `--prompt-only` for opt
 
 ```bash  theme={null}
 coderabbit --prompt-only
+
 ```
 
 This mode:

@@ -13,6 +13,7 @@ This directory contains practical, production-ready CodeRabbit configuration exa
 **Use Case:** Comprehensive Python project with multi-language support (Python, BASH, Shell scripts)
 
 **Key Features:**
+
 - Extensive review instructions for Python, BASH, and documentation
 - Multiple tool integrations (Ruff, ShellCheck, LanguageTool, markdownlint, yamllint)
 - Custom labeling instructions for different file types
@@ -22,6 +23,7 @@ This directory contains practical, production-ready CodeRabbit configuration exa
 - Copyright year checking
 
 **Best For:**
+
 - Large Python projects with multiple file types
 - Projects requiring strict documentation standards
 - Projects with BASH/shell script components
@@ -34,6 +36,7 @@ This directory contains practical, production-ready CodeRabbit configuration exa
 **Use Case:** Focused Python utilities library
 
 **Key Features:**
+
 - PEP 8 style guide enforcement
 - Performance optimization focus
 - Path filters for specific library directory (`wg_utilities/**/*.py`)
@@ -42,6 +45,7 @@ This directory contains practical, production-ready CodeRabbit configuration exa
 - Logical error detection
 
 **Best For:**
+
 - Python utility libraries
 - Performance-critical codebases
 - Projects requiring strict PEP 8 compliance
@@ -54,6 +58,7 @@ This directory contains practical, production-ready CodeRabbit configuration exa
 **Use Case:** Python project following Google style guide with Pytest testing
 
 **Key Features:**
+
 - Google Python style guide compliance
 - Pytest testing framework best practices
 - Docstring verification and updates
@@ -63,6 +68,7 @@ This directory contains practical, production-ready CodeRabbit configuration exa
 - Multiple base branch support (`develop`, `feat/*`)
 
 **Best For:**
+
 - Projects following Google Python style guide
 - Projects using Pytest for testing
 - Projects requiring comprehensive test coverage
@@ -75,6 +81,7 @@ This directory contains practical, production-ready CodeRabbit configuration exa
 **Use Case:** Minimal Python configuration focused on Ruff linter
 
 **Key Features:**
+
 - Japanese language reviews (`language: "ja"`)
 - Assertive review profile
 - Ruff linter focus
@@ -82,6 +89,7 @@ This directory contains practical, production-ready CodeRabbit configuration exa
 - WIP and "DO NOT MERGE" keyword filtering
 
 **Best For:**
+
 - Japanese-language projects
 - Projects primarily using Ruff for linting
 - Minimal configuration needs
@@ -94,6 +102,7 @@ This directory contains practical, production-ready CodeRabbit configuration exa
 ### 1. Choose an Example
 
 Select the example that best matches your project:
+
 - **Comprehensive projects**: `coderabbit-python-portal.yaml`
 - **Utility libraries**: `coderabbit-wg-utilities.yaml`
 - **Google style + Pytest**: `pytest-google-style-config.yaml`
@@ -109,6 +118,7 @@ cp docs/research/coderabbit/examples/python/coderabbit-python-portal.yaml .coder
 
 # Edit for your project
 vim .coderabbit.yaml
+
 ```
 
 ### 3. Adjust Key Settings
@@ -122,6 +132,7 @@ vim .coderabbit.yaml
 ### 4. Test Your Configuration
 
 Use CodeRabbit's YAML validator:
+
 - Online: https://docs.coderabbit.ai/configuration/yaml-validator
 - VS Code: Install YAML extension with schema validation
 
@@ -141,6 +152,7 @@ reviews:
       instructions: "Python-specific instructions"
     - path: "**/*.sh"
       instructions: "BASH-specific instructions"
+
 ```
 
 ### Pattern 2: Focused Library Configuration
@@ -153,6 +165,7 @@ reviews:
   path_instructions:
     - path: "library_name/**/*.py"
       instructions: "Library-specific review guidelines"
+
 ```
 
 ### Pattern 3: Style Guide + Testing Framework
@@ -165,6 +178,7 @@ reviews:
       instructions: "Google style guide compliance"
     - path: "tests/**/*"
       instructions: "Pytest best practices"
+
 ```
 
 ### Pattern 4: Minimal Configuration
@@ -176,6 +190,7 @@ reviews:
   tools:
     ruff:
       enabled: true
+
 ```
 
 ## Common Customizations
@@ -187,6 +202,7 @@ reviews:
   path_instructions:
     - path: "your/path/**/*.py"
       instructions: "Your custom review instructions here"
+
 ```
 
 ### Enabling Additional Tools
@@ -200,6 +216,7 @@ reviews:
       enabled: true
     checkov:
       enabled: true
+
 ```
 
 ### Custom Labeling
@@ -209,6 +226,7 @@ reviews:
   labeling_instructions:
     - label: "your-label"
       instructions: "When to apply this label"
+
 ```
 
 ## Related Resources

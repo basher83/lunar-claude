@@ -42,6 +42,7 @@ knowledge_base:
     filePatterns:
       - "**/.cursorrules"
       - "**/CODING_STANDARDS.md"
+
 ```
 
 ## Global Settings
@@ -52,6 +53,7 @@ Set the language for reviews using ISO language codes:
 
 ```yaml
 language: en-US  # Options: en-US, en-GB, de-DE, fr-FR, es-ES, ja-JP, etc.
+
 ```
 
 ### Tone Instructions
@@ -60,9 +62,11 @@ Customize the tone and style of CodeRabbit's reviews:
 
 ```yaml
 tone_instructions: "You are a principal engineer with natural teaching abilities. You detect issues and clearly explain why."
+
 ```
 
 **Example tones:**
+
 - `"Be concise and focus on critical issues only"`
 - `"Provide detailed explanations with code examples"`
 - `"Use a friendly, encouraging tone for junior developers"`
@@ -73,6 +77,7 @@ Enable early-access features:
 
 ```yaml
 early_access: false  # Set to true to enable beta features
+
 ```
 
 ## Reviews Configuration
@@ -84,6 +89,7 @@ Control review strictness:
 ```yaml
 reviews:
   profile: chill  # Options: "chill" or "assertive"
+
 ```
 
 - **chill**: Focuses on critical issues, reduces noise from minor style violations
@@ -98,6 +104,7 @@ reviews:
   high_level_summary: true
   high_level_summary_placeholder: "@coderabbitai summary"  # Placeholder in PR description
   high_level_summary_in_walkthrough: false  # Include summary in walkthrough comment
+
 ```
 
 ### Auto Review
@@ -125,9 +132,11 @@ reviews:
       - "dependabot[bot]"
       - "renovate[bot]"
       - "ci-bot"
+
 ```
 
 **Label matching examples:**
+
 - `['bug', 'feature']` - reviews PRs with 'bug' OR 'feature' label
 - `['!wip']` - reviews all PRs except those with 'wip' label
 - `['bug', '!wip']` - reviews PRs with 'bug' label but not if they have 'wip' label
@@ -144,9 +153,11 @@ reviews:
     - "!**/*.min.js"          # Exclude minified files
     - "src/**"                # Include only src directory
     - "**/*.test.js"          # Include test files
+
 ```
 
 **Pattern syntax:**
+
 - `!` prefix excludes files/directories
 - `**` matches any directory level
 - `*` matches any characters except `/`
@@ -164,6 +175,7 @@ reviews:
       instructions: "Follow PEP 8 style guide. Check for type hints, docstrings, and proper error handling."
     - path: "infrastructure/**/*.tf"
       instructions: "Verify Terraform best practices: use variables, avoid hardcoded values, include descriptions for all resources."
+
 ```
 
 **Important:** Path instructions are for HOW to review files, not for referencing guideline files. For coding standards from files, use `knowledge_base.code_guidelines` instead.
@@ -177,6 +189,7 @@ reviews:
   review_status: true        # Post review details on each review
   commit_status: true        # Set commit status to 'pending'/'success'
   fail_commit_status: false   # Set commit status to 'failure' on errors
+
 ```
 
 ### Walkthrough Options
@@ -198,6 +211,7 @@ reviews:
   auto_assign_reviewers: false          # Automatically assign reviewers
   poem: true                            # Generate poem in walkthrough
   in_progress_fortune: true             # Post fortune message while reviewing
+
 ```
 
 ### Labeling Instructions
@@ -213,6 +227,7 @@ reviews:
       instructions: "Apply when the PR contains changes to API endpoints, database schemas, or server-side logic."
     - label: "security"
       instructions: "Apply when the PR addresses security vulnerabilities or adds security features."
+
 ```
 
 ### Auto Title Generation
@@ -223,6 +238,7 @@ Automatically generate PR titles:
 reviews:
   auto_title_placeholder: "@coderabbitai"  # Placeholder in PR title
   auto_title_instructions: "use conventional commits structure: <type>[optional scope]: <description>"
+
 ```
 
 ### Request Changes Workflow
@@ -232,6 +248,7 @@ Approve reviews automatically when comments are resolved:
 ```yaml
 reviews:
   request_changes_workflow: false  # Auto-approve when comments resolved
+
 ```
 
 **Note:** In GitLab, all discussions must be resolved for this to work.
@@ -243,6 +260,7 @@ Stop reviews if PR is closed or merged:
 ```yaml
 reviews:
   abort_on_close: true  # Abort in-progress review if PR closed/merged
+
 ```
 
 ### Cache Control
@@ -252,6 +270,7 @@ Disable caching for fresh code downloads:
 ```yaml
 reviews:
   disable_cache: false  # Force fresh download each time
+
 ```
 
 ## Finishing Touches
@@ -265,6 +284,7 @@ reviews:
       enabled: true  # Generate docstrings for functions/classes
     unit_tests:
       enabled: true  # Generate unit tests
+
 ```
 
 **Note:** These features require Pro plan and can be triggered with `@coderabbitai generate docstrings` or `@coderabbitai generate unit tests`.
@@ -293,9 +313,11 @@ reviews:
       - name: "Test Coverage"
         mode: "warning"
         instructions: "New features must include unit tests with at least 80% coverage."
+
 ```
 
 **Mode options:**
+
 - `off`: Disabled
 - `warning`: Generates warning, doesn't block merge
 - `error`: Blocks merge until resolved (if `request_changes_workflow` enabled)
@@ -315,6 +337,7 @@ reviews:
       enabled: true
     gitleaks:
       enabled: true
+
 ```
 
 ### Tool-Specific Configuration
@@ -342,6 +365,7 @@ reviews:
     semgrep:
       enabled: true
       config_file: ".semgrep.yml"
+
 ```
 
 ### Advanced Tool Configuration
@@ -371,6 +395,7 @@ reviews:
     github-checks:
       enabled: true
       timeout_ms: 90000  # Wait up to 90 seconds for GitHub Checks
+
 ```
 
 ## Knowledge Base Configuration
@@ -382,6 +407,7 @@ Disable all knowledge base features:
 ```yaml
 knowledge_base:
   opt_out: false  # Set to true to disable all knowledge base features
+
 ```
 
 **Warning:** If you opt out after opting in, all existing knowledge base data will be removed.
@@ -394,6 +420,7 @@ Enable web search for additional context:
 knowledge_base:
   web_search:
     enabled: true  # Fetch up-to-date information about libraries/frameworks
+
 ```
 
 ### Code Guidelines
@@ -418,9 +445,11 @@ knowledge_base:
       - "**/.rules/**"
       - "**/AGENT.md"
       - "**/AGENTS.md"
+
 ```
 
 **Auto-detected files (included by default):**
+
 - `**/.cursorrules`
 - `.github/copilot-instructions.md`
 - `.github/instructions/*.instructions.md`
@@ -441,6 +470,7 @@ Configure scope of learnings (adaptive configuration from team interactions):
 knowledge_base:
   learnings:
     scope: "auto"  # Options: "local", "global", "auto"
+
 ```
 
 - **local**: Repository-specific learnings only
@@ -455,6 +485,7 @@ Configure issue tracking scope:
 knowledge_base:
   issues:
     scope: "auto"  # Options: "local", "global", "auto"
+
 ```
 
 ### Pull Requests
@@ -465,6 +496,7 @@ Configure PR history scope:
 knowledge_base:
   pull_requests:
     scope: "auto"  # Options: "local", "global", "auto"
+
 ```
 
 ### Jira Integration
@@ -478,6 +510,7 @@ knowledge_base:
     project_keys:
       - "PROJ"
       - "DEV"
+
 ```
 
 **Note:** `auto` disables integration for public repositories.
@@ -493,6 +526,7 @@ knowledge_base:
     team_keys:
       - "ENG"
       - "PROD"
+
 ```
 
 ### MCP Integration
@@ -505,6 +539,7 @@ knowledge_base:
     usage: "auto"  # Options: "auto", "enabled", "disabled"
     disabled_servers:
       - "server-name"  # Case-insensitive server labels to disable
+
 ```
 
 ## Chat Configuration
@@ -520,6 +555,7 @@ chat:
       usage: "auto"      # Options: "auto", "enabled", "disabled"
     linear:
       usage: "enabled"   # Options: "auto", "enabled", "disabled"
+
 ```
 
 ## Code Generation Configuration
@@ -541,6 +577,7 @@ code_generation:
         instructions: "Use pytest with fixtures. Aim for 90% coverage."
       - path: "**/*.ts"
         instructions: "Use Jest with TypeScript. Mock external dependencies."
+
 ```
 
 ## Configuration Examples
@@ -553,6 +590,7 @@ reviews:
   profile: chill
   auto_review:
     enabled: true
+
 ```
 
 ### Standard Configuration
@@ -579,6 +617,7 @@ reviews:
 knowledge_base:
   code_guidelines:
     enabled: true
+
 ```
 
 ### Advanced Configuration
@@ -665,6 +704,7 @@ code_generation:
     path_instructions:
       - path: "**/*.py"
         instructions: "Use Google-style docstrings with type hints."
+
 ```
 
 ### Team Collaboration Configuration
@@ -703,6 +743,7 @@ knowledge_base:
     scope: "global"
   issues:
     scope: "global"
+
 ```
 
 ## Central Configuration
@@ -723,6 +764,7 @@ reviews:
   tools:
     eslint:
       enabled: true
+
 ```
 
 ## Remote Configuration
@@ -732,6 +774,7 @@ For self-hosted CodeRabbit in air-gapped environments:
 ```yaml
 remote_config:
   url: "https://your-config-location/.coderabbit.yaml"
+
 ```
 
 ## Best Practices
@@ -746,6 +789,7 @@ remote_config:
 ## Validation
 
 Use CodeRabbit's YAML validator to check your configuration:
+
 - Online: https://docs.coderabbit.ai/configuration/yaml-validator
 - VS Code: Install YAML extension with schema validation
 

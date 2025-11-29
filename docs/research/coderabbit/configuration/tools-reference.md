@@ -25,6 +25,7 @@ reviews:
   tools:
     tool-name:
       enabled: true  # or false
+
 ```
 
 ### Tool-Specific Configuration
@@ -37,6 +38,7 @@ reviews:
     tool-name:
       enabled: true
       config_file: "path/to/config"  # Optional custom config file
+
 ```
 
 ### Tool Profiles
@@ -63,6 +65,7 @@ reviews:
   tools:
     eslint:
       enabled: true
+
 ```
 
 **Configuration:** Automatically uses `.eslintrc.js`, `.eslintrc.json`, `eslint.config.js`, or `package.json` eslintConfig field.
@@ -79,6 +82,7 @@ reviews:
   tools:
     biome:
       enabled: true
+
 ```
 
 **Configuration:** Automatically uses `biome.json` or `biome.jsonc`.
@@ -95,6 +99,7 @@ reviews:
   tools:
     oxc:
       enabled: true
+
 ```
 
 ### Python
@@ -111,6 +116,7 @@ reviews:
     ruff:
       enabled: true
       config_file: "pyproject.toml"  # Optional
+
 ```
 
 **Configuration:** Automatically uses `pyproject.toml`, `ruff.toml`, or `.ruff.toml`.
@@ -126,6 +132,7 @@ reviews:
   tools:
     pylint:
       enabled: true
+
 ```
 
 **Configuration:** Automatically uses `.pylintrc`, `pylintrc`, `setup.cfg`, or `pyproject.toml`.
@@ -141,6 +148,7 @@ reviews:
   tools:
     flake8:
       enabled: true
+
 ```
 
 **Configuration:** Automatically uses `.flake8`, `setup.cfg`, or `tox.ini`.
@@ -159,9 +167,11 @@ reviews:
     golangci-lint:
       enabled: true
       config_file: ".golangci.yml"  # Optional
+
 ```
 
 **Configuration files supported:**
+
 - `.golangci.yml`
 - `.golangci.yaml`
 - `.golangci.toml`
@@ -181,6 +191,7 @@ reviews:
   tools:
     clippy:
       enabled: true
+
 ```
 
 **Configuration:** Automatically uses `clippy.toml` or `Cargo.toml` clippy section.
@@ -198,6 +209,7 @@ reviews:
   tools:
     rubocop:
       enabled: true
+
 ```
 
 **Configuration:** Automatically uses `.rubocop.yml`, `.rubocop.yaml`, or `.rubocop.yml.rb`.
@@ -213,6 +225,7 @@ reviews:
   tools:
     brakeman:
       enabled: true
+
 ```
 
 **Configuration:** Automatically uses `config/brakeman.yml` or `config/brakeman.ignore`.
@@ -231,6 +244,7 @@ reviews:
     phpstan:
       enabled: true
       level: "max"  # Options: "default", "0"-"9", "max"
+
 ```
 
 **Configuration:** Requires `phpstan.neon` or `phpstan.neon.dist` with `paths:` parameter. Level setting ignored if config file specifies level.
@@ -246,6 +260,7 @@ reviews:
   tools:
     phpmd:
       enabled: true
+
 ```
 
 **Configuration:** Automatically uses `phpmd.xml` or `phpmd.xml.dist`.
@@ -261,6 +276,7 @@ reviews:
   tools:
     phpcs:
       enabled: true
+
 ```
 
 **Configuration:** Automatically uses `phpcs.xml`, `phpcs.xml.dist`, or `.phpcs.xml`.
@@ -279,6 +295,7 @@ reviews:
     pmd:
       enabled: true
       config_file: "/pmd-config/*.yml"  # Optional
+
 ```
 
 **Configuration:** Automatically uses `pmd.xml` or custom config file.
@@ -297,6 +314,7 @@ reviews:
     detekt:
       enabled: true
       config_file: "detekt.yml"  # Optional
+
 ```
 
 **Configuration:** Automatically uses `detekt.yml` or `detekt.yaml`.
@@ -315,6 +333,7 @@ reviews:
     swiftlint:
       enabled: true
       config_file: ".swiftlint.yml"  # Optional
+
 ```
 
 **Configuration:** Automatically uses `.swiftlint.yml` or `.swiftlint.yaml`.
@@ -332,6 +351,7 @@ reviews:
   tools:
     cppcheck:
       enabled: true
+
 ```
 
 **Configuration:** Automatically uses `cppcheck.xml` or command-line options.
@@ -347,6 +367,7 @@ reviews:
   tools:
     clang:
       enabled: true
+
 ```
 
 ### Markdown
@@ -362,6 +383,7 @@ reviews:
   tools:
     markdownlint:
       enabled: true
+
 ```
 
 **Configuration:** Automatically uses `.markdownlint.json`, `.markdownlint.yaml`, or `.markdownlint.yml`.
@@ -379,6 +401,7 @@ reviews:
   tools:
     yamllint:
       enabled: true
+
 ```
 
 **Configuration:** Automatically uses `.yamllint`, `.yamllint.yml`, or `.yamllint.yaml`.
@@ -397,6 +420,7 @@ reviews:
   tools:
     shellcheck:
       enabled: true
+
 ```
 
 **Configuration:** Automatically uses `.shellcheckrc` or command-line options.
@@ -414,6 +438,7 @@ reviews:
   tools:
     checkmake:
       enabled: true
+
 ```
 
 ### HTML
@@ -429,6 +454,7 @@ reviews:
   tools:
     htmlhint:
       enabled: true
+
 ```
 
 **Configuration:** Automatically uses `.htmlhintrc` or `.htmlhint.json`.
@@ -446,6 +472,7 @@ reviews:
   tools:
     sqlfluff:
       enabled: true
+
 ```
 
 **Configuration:** Automatically uses `.sqlfluff` or `pyproject.toml`.
@@ -463,6 +490,7 @@ reviews:
   tools:
     buf:
       enabled: true
+
 ```
 
 **Configuration:** Automatically uses `buf.yaml` or `buf.yml`.
@@ -480,6 +508,7 @@ reviews:
   tools:
     regal:
       enabled: true
+
 ```
 
 ### Lua
@@ -495,6 +524,7 @@ reviews:
   tools:
     luacheck:
       enabled: true
+
 ```
 
 **Configuration:** Automatically uses `.luacheckrc` or `.luacheckrc.lua`.
@@ -512,9 +542,11 @@ reviews:
   tools:
     prismaLint:
       enabled: true
+
 ```
 
 **Configuration files supported:**
+
 - `.prismalintrc.json`
 - `.prismalintrc`
 - `.prismalintrc.js`
@@ -538,6 +570,7 @@ reviews:
   tools:
     shopifyThemeCheck:
       enabled: true
+
 ```
 
 ### Pattern Matching
@@ -557,6 +590,7 @@ reviews:
       util_dirs: ["utils/"]           # List of utils directories
       essential_rules: true            # Use ast-grep essentials package
       packages: ["common-patterns"]   # Predefined packages
+
 ```
 
 ## Code Security Tools
@@ -572,6 +606,7 @@ reviews:
   tools:
     gitleaks:
       enabled: true
+
 ```
 
 **Configuration:** Automatically uses `.gitleaksignore` or `.gitleaks.toml`.
@@ -588,6 +623,7 @@ reviews:
     semgrep:
       enabled: true
       config_file: ".semgrep.yml"  # Optional
+
 ```
 
 **Configuration:** Automatically uses `.semgrep.yml` or custom config file.
@@ -603,6 +639,7 @@ reviews:
   tools:
     osvScanner:
       enabled: true
+
 ```
 
 ### Brakeman
@@ -616,6 +653,7 @@ reviews:
   tools:
     brakeman:
       enabled: true
+
 ```
 
 ## Infrastructure Tools
@@ -632,6 +670,7 @@ reviews:
   tools:
     checkov:
       enabled: true
+
 ```
 
 **Configuration:** Automatically uses `.checkov.yml` or `.checkov.yaml`.
@@ -647,6 +686,7 @@ reviews:
   tools:
     hadolint:
       enabled: true
+
 ```
 
 **Configuration:** Automatically uses `.hadolint.yaml` or `.hadolint.yml`.
@@ -666,6 +706,7 @@ reviews:
   tools:
     actionlint:
       enabled: true
+
 ```
 
 ### CircleCI
@@ -679,6 +720,7 @@ reviews:
   tools:
     circleci:
       enabled: true
+
 ```
 
 **Configuration:** Automatically uses `.circleci/config.yml`.
@@ -693,6 +735,7 @@ reviews:
 reviews:
   tools:
     # Automatically enabled for supported CI/CD platforms
+
 ```
 
 ## Grammar & Style Tools
@@ -715,6 +758,7 @@ reviews:
       disabled_categories: ["CASING"]        # IDs of categories to disable
       enabled_only: false                    # Only use enabled rules/categories
       level: "default"                      # Options: "default", "picky"
+
 ```
 
 **Note:** `EN_UNPAIRED_BRACKETS` and `EN_UNPAIRED_QUOTES` are always disabled. `TYPOS`, `TYPOGRAPHY`, and `CASING` categories are always disabled.
@@ -730,6 +774,7 @@ reviews:
   tools:
     dotenvLint:
       enabled: true
+
 ```
 
 **Files:** Runs on `**/.env` and `**/.env.*` patterns. Does not run on files that don't start with `.env` (e.g., `test.env`).
@@ -749,9 +794,11 @@ reviews:
     github-checks:
       enabled: true
       timeout_ms: 90000  # Wait time in milliseconds (default: 90s, max: 15min)
+
 ```
 
 **Configuration:**
+
 - `timeout_ms`: Time to wait for all GitHub Checks to conclude
 - Default: 90000ms (90 seconds)
 - Maximum: 900000ms (15 minutes)
@@ -823,6 +870,7 @@ reviews:
   tools:
     tool-name:
       enabled: false
+
 ```
 
 ## Tool Versions

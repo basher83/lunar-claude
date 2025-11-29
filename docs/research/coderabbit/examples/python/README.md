@@ -13,6 +13,7 @@
 - **Use Case**: Large projects with Python, BASH, and documentation
 
 **Highlights:**
+
 - Extensive review instructions for Python, BASH, and documentation
 - Multiple tool integrations (Ruff, ShellCheck, LanguageTool, markdownlint, yamllint)
 - Custom labeling system
@@ -29,6 +30,7 @@
 - **Use Case**: Python utility libraries
 
 **Highlights:**
+
 - PEP 8 style guide enforcement
 - Performance optimization focus
 - Directory-specific path filters
@@ -43,6 +45,7 @@
 - **Use Case**: Projects following Google Python style guide with Pytest
 
 **Highlights:**
+
 - Google Python style guide compliance
 - Pytest testing framework best practices
 - Docstring verification
@@ -58,6 +61,7 @@
 - **Use Case**: Quick setup with Ruff linter
 
 **Highlights:**
+
 - Japanese language reviews
 - Assertive review profile
 - Ruff linter focus
@@ -70,6 +74,7 @@
    ```bash
    cp python-ruff-config.yaml .coderabbit.yaml
    ```
+
 3. **Customize** for your project needs
 4. **Validate** using CodeRabbit's YAML validator
 
@@ -95,4 +100,5 @@
 ## Source
 
 All examples are from the [awesome-coderabbit](https://github.com/coderabbitai/awesome-coderabbit) repository:
+
 - [Python Configs Directory](https://github.com/coderabbitai/awesome-coderabbit/tree/main/configs/python)

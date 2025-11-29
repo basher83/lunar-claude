@@ -1,0 +1,3 @@
+# Ignore downloaded documentation files
+# These are fetched on-demand by sync_docs.py
+references/

@@ -56,6 +56,8 @@
 - *(meta-claude)* Add coderabbit skill with comprehensive documentation
 - *(meta-claude)* Add skill write command for AI-assisted skill authoring
 - *(skill-factory)* Integrate write command into skill creation workflow
+- *(meta-claude)* Add slash-command-creator skill
+- *(python-tools)* Add review-uv-script command
 
 ### 🐛 Bug Fixes
 
@@ -106,6 +108,8 @@
 - *(renovate)* Correct preset path syntax in configuration
 - *(docs)* Resolve markdown linting issues across documentation
 - *(claude-dev-sandbox)* Improve sync script error handling and validation
+- *(skill-factory)* Correct completion options for skills
+- *(claude-docs)* Improve error handling and file encoding
 
 ### 💼 Other
 
@@ -138,6 +142,7 @@
 - *(skill-creator)* Refactor skill creation workflow and structure
 - *(scripts)* Move format_skill_research.py to skill-factory
 - *(coderabbit)* Migrate skill from meta-claude to claude-dev-sandbox
+- *(claude-dev-sandbox)* Remove working-with-claude-code skill
 
 ### 📚 Documentation
 
@@ -187,6 +192,9 @@
 - Add skill generation research and methodology comparison
 - *(claude-dev-sandbox)* Add test results and hook documentation
 - *(coderabbit)* Fix markdown formatting in research docs
+- Update changelog
+- *(skill-factory)* Fix documentation inaccuracies
+- *(TODO)* Update skill-factory testing procedures and remove outdated references
 
 ### 🎨 Styling
 

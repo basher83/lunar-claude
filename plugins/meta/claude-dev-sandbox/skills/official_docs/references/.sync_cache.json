@@ -1,0 +1,888 @@
+{
+  "discovered_at": 1764381247.820443,
+  "discovery_method": "crawl+llms_txt",
+  "pages": {
+    "intro": {
+      "url": "https://docs.claude.com/en/docs/intro",
+      "tier": "full",
+      "etag": null,
+      "last_modified": null,
+      "content_hash": null,
+      "downloaded_at": 0.0,
+      "size_bytes": 0
+    },
+    "overview": {
+      "url": "https://docs.claude.com/en/docs/claude-code/overview",
+      "tier": "core",
+      "etag": null,
+      "last_modified": "Fri, 28 Nov 2025 23:47:08 GMT",
+      "content_hash": "f84d2f10aed2f41e70c74477de258a7a",
+      "downloaded_at": 1764381248.031405,
+      "size_bytes": 5053
+    },
+    "agent-skills-overview": {
+      "url": "https://docs.claude.com/en/docs/agents-and-tools/agent-skills/overview",
+      "tier": "core",
+      "etag": "W/\"45dd-19ac2876708\"",
+      "last_modified": "Wed, 26 Nov 2025 23:37:25 GMT",
+      "content_hash": "1a46cd89219da30a9ff4c15db2dd1d5c",
+      "downloaded_at": 1764381248.4114828,
+      "size_bytes": 17885
+    },
+    "agent-sdk-overview": {
+      "url": "https://docs.claude.com/en/docs/agent-sdk/overview",
+      "tier": "core",
+      "etag": "W/\"1c48-19ac2876708\"",
+      "last_modified": "Wed, 26 Nov 2025 23:37:25 GMT",
+      "content_hash": "d68384f52835da63c1b432fd3484d095",
+      "downloaded_at": 1764381248.822464,
+      "size_bytes": 7240
+    },
+    "glossary": {
+      "url": "https://docs.claude.com/en/docs/about-claude/glossary",
+      "tier": "full",
+      "etag": null,
+      "last_modified": null,
+      "content_hash": null,
+      "downloaded_at": 0.0,
+      "size_bytes": 0
+    },
+    "model-deprecations": {
+      "url": "https://docs.claude.com/en/docs/about-claude/model-deprecations",
+      "tier": "full",
+      "etag": null,
+      "last_modified": null,
+      "content_hash": null,
+      "downloaded_at": 0.0,
+      "size_bytes": 0
+    },
+    "models-choosing-a-model": {
+      "url": "https://docs.claude.com/en/docs/about-claude/models/choosing-a-model",
+      "tier": "full",
+      "etag": null,
+      "last_modified": null,
+      "content_hash": null,
+      "downloaded_at": 0.0,
+      "size_bytes": 0
+    },
+    "models-migrating-to-claude-4": {
+      "url": "https://docs.claude.com/en/docs/about-claude/models/migrating-to-claude-4",
+      "tier": "full",
+      "etag": null,
+      "last_modified": null,
+      "content_hash": null,
+      "downloaded_at": 0.0,
+      "size_bytes": 0
+    },
+    "models-overview": {
+      "url": "https://docs.claude.com/en/docs/about-claude/models/overview",
+      "tier": "core",
+      "etag": "W/\"2983-19ac2876708\"",
+      "last_modified": "Wed, 26 Nov 2025 23:37:25 GMT",
+      "content_hash": "1e739c8e1b651988f0edc94c484b3d3d",
+      "downloaded_at": 1764381249.214345,
+      "size_bytes": 10627
+    },
+    "models-whats-new-claude-4-5": {
+      "url": "https://docs.claude.com/en/docs/about-claude/models/whats-new-claude-4-5",
+      "tier": "full",
+      "etag": null,
+      "last_modified": null,
+      "content_hash": null,
+      "downloaded_at": 0.0,
+      "size_bytes": 0
+    },
+    "pricing": {
+      "url": "https://docs.claude.com/en/docs/about-claude/pricing",
+      "tier": "full",
+      "etag": null,
+      "last_modified": null,
+      "content_hash": null,
+      "downloaded_at": 0.0,
+      "size_bytes": 0
+    },
+    "use-case-guides-content-moderation": {
+      "url": "https://docs.claude.com/en/docs/about-claude/use-case-guides/content-moderation",
+      "tier": "full",
+      "etag": null,
+      "last_modified": null,
+      "content_hash": null,
+      "downloaded_at": 0.0,
+      "size_bytes": 0
+    },
+    "use-case-guides-customer-support-chat": {
+      "url": "https://docs.claude.com/en/docs/about-claude/use-case-guides/customer-support-chat",
+      "tier": "full",
+      "etag": null,
+      "last_modified": null,
+      "content_hash": null,
+      "downloaded_at": 0.0,
+      "size_bytes": 0
+    },
+    "use-case-guides-legal-summarization": {
+      "url": "https://docs.claude.com/en/docs/about-claude/use-case-guides/legal-summarization",
+      "tier": "full",
+      "etag": null,
+      "last_modified": null,
+      "content_hash": null,
+      "downloaded_at": 0.0,
+      "size_bytes": 0
+    },
+    "use-case-guides-overview": {
+      "url": "https://docs.claude.com/en/docs/about-claude/use-case-guides/overview",
+      "tier": "core",
+      "etag": "W/\"454-19ac2876708\"",
+      "last_modified": "Wed, 26 Nov 2025 23:37:25 GMT",
+      "content_hash": "55af15c198fed0264f1a2fc9350621ca",
+      "downloaded_at": 1764381249.583974,
+      "size_bytes": 1108
+    },
+    "use-case-guides-ticket-routing": {
+      "url": "https://docs.claude.com/en/docs/about-claude/use-case-guides/ticket-routing",
+      "tier": "full",
+      "etag": null,
+      "last_modified": null,
+      "content_hash": null,
+      "downloaded_at": 0.0,
+      "size_bytes": 0
+    },
+    "agent-sdk-cost-tracking": {
+      "url": "https://docs.claude.com/en/docs/agent-sdk/cost-tracking",
+      "tier": "core",
+      "etag": "W/\"2b2b-19ac2876708\"",
+      "last_modified": "Wed, 26 Nov 2025 23:37:25 GMT",
+      "content_hash": "8e59a8af213366c99a3d280a224c2888",
+      "downloaded_at": 1764381249.976616,
+      "size_bytes": 11051
+    },
+    "agent-sdk-custom-tools": {
+      "url": "https://docs.claude.com/en/docs/agent-sdk/custom-tools",
+      "tier": "core",
+      "etag": "W/\"547a-19ac2876708\"",
+      "last_modified": "Wed, 26 Nov 2025 23:37:25 GMT",
+      "content_hash": "0ea6f45868794b368e53df225613dd92",
+      "downloaded_at": 1764381250.364481,
+      "size_bytes": 21626
+    },
+    "agent-sdk-hosting": {
+      "url": "https://docs.claude.com/en/docs/agent-sdk/hosting",
+      "tier": "core",
+      "etag": "W/\"17d3-19ac2876708\"",
+      "last_modified": "Wed, 26 Nov 2025 23:37:25 GMT",
+      "content_hash": "62808c3bf09eacc6c29a66b4dca1cce3",
+      "downloaded_at": 1764381250.743295,
+      "size_bytes": 6099
+    },
+    "agent-sdk-mcp": {
+      "url": "https://docs.claude.com/en/docs/agent-sdk/mcp",
+      "tier": "core",
+      "etag": "W/\"1e2c-19ac2876708\"",
+      "last_modified": "Wed, 26 Nov 2025 23:37:25 GMT",
+      "content_hash": "6a743d7c946820ddbc9a33c9ff609c2e",
+      "downloaded_at": 1764381251.118208,
+      "size_bytes": 7724
+    },
+    "agent-sdk-modifying-system-prompts": {
+      "url": "https://docs.claude.com/en/docs/agent-sdk/modifying-system-prompts",
+      "tier": "core",
+      "etag": "W/\"3a5c-19ac2876708\"",
+      "last_modified": "Wed, 26 Nov 2025 23:37:25 GMT",
+      "content_hash": "6680d3e92e42039ed045bc690091e7ad",
+      "downloaded_at": 1764381251.58899,
+      "size_bytes": 14940
+    },
+    "agent-sdk-permissions": {
+      "url": "https://docs.claude.com/en/docs/agent-sdk/permissions",
+      "tier": "core",
+      "etag": "W/\"3072-19ac2876708\"",
+      "last_modified": "Wed, 26 Nov 2025 23:37:25 GMT",
+      "content_hash": "0113fba1bbb183b1f46761e88e98cf9a",
+      "downloaded_at": 1764381252.0196009,
+      "size_bytes": 12402
+    },
+    "agent-sdk-plugins": {
+      "url": "https://docs.claude.com/en/docs/agent-sdk/plugins",
+      "tier": "core",
+      "etag": "W/\"2891-19ac2876708\"",
+      "last_modified": "Wed, 26 Nov 2025 23:37:25 GMT",
+      "content_hash": "5c393e5c20e6f1b13c05ee23a70a368e",
+      "downloaded_at": 1764381252.4640691,
+      "size_bytes": 10385
+    },
+    "agent-sdk-python": {
+      "url": "https://docs.claude.com/en/docs/agent-sdk/python",
+      "tier": "core",
+      "etag": "W/\"e5c6-19ac2876708\"",
+      "last_modified": "Wed, 26 Nov 2025 23:37:25 GMT",
+      "content_hash": "d593ca321b3aa620f36ff2137ce73033",
+      "downloaded_at": 1764381252.8473651,
+      "size_bytes": 58822
+    },
+    "agent-sdk-sessions": {
+      "url": "https://docs.claude.com/en/docs/agent-sdk/sessions",
+      "tier": "core",
+      "etag": "W/\"1cfe-19ac2876708\"",
+      "last_modified": "Wed, 26 Nov 2025 23:37:25 GMT",
+      "content_hash": "a19f931f0fef456c58d50247a5fac86a",
+      "downloaded_at": 1764381253.244083,
+      "size_bytes": 7422
+    },
+    "agent-sdk-skills": {
+      "url": "https://docs.claude.com/en/docs/agent-sdk/skills",
+      "tier": "core",
+      "etag": "W/\"28bb-19ac2876708\"",
+      "last_modified": "Wed, 26 Nov 2025 23:37:25 GMT",
+      "content_hash": "aadc3c7128b11a4bcac6aadf05edd0bf",
+      "downloaded_at": 1764381253.6250958,
+      "size_bytes": 10427
+    },
+    "agent-sdk-slash-commands": {
+      "url": "https://docs.claude.com/en/docs/agent-sdk/slash-commands",
+      "tier": "core",
+      "etag": "W/\"3030-19ac2876708\"",
+      "last_modified": "Wed, 26 Nov 2025 23:37:25 GMT",
+      "content_hash": "5050a29bd3c934a38b151f3aabe7bdfc",
+      "downloaded_at": 1764381254.015139,
+      "size_bytes": 12336
+    },
+    "agent-sdk-streaming-vs-single-mode": {
+      "url": "https://docs.claude.com/en/docs/agent-sdk/streaming-vs-single-mode",
+      "tier": "core",
+      "etag": "W/\"2053-19ac2876708\"",
+      "last_modified": "Wed, 26 Nov 2025 23:37:25 GMT",
+      "content_hash": "1d62f465565a2ca722cd3d859025f649",
+      "downloaded_at": 1764381254.418992,
+      "size_bytes": 8275
+    },
+    "agent-sdk-structured-outputs": {
+      "url": "https://docs.claude.com/en/docs/agent-sdk/structured-outputs",
+      "tier": "core",
+      "etag": "W/\"28e2-19ac2876708\"",
+      "last_modified": "Wed, 26 Nov 2025 23:37:25 GMT",
+      "content_hash": "2417e26a77bd4dbd1cff5210064795c2",
+      "downloaded_at": 1764381254.7741141,
+      "size_bytes": 10466
+    },
+    "agent-sdk-subagents": {
+      "url": "https://docs.claude.com/en/docs/agent-sdk/subagents",
+      "tier": "core",
+      "etag": "W/\"2356-19ac2876708\"",
+      "last_modified": "Wed, 26 Nov 2025 23:37:25 GMT",
+      "content_hash": "ee917660946991d13371498784c2b811",
+      "downloaded_at": 1764381255.187176,
+      "size_bytes": 9046
+    },
+    "agent-sdk-todo-tracking": {
+      "url": "https://docs.claude.com/en/docs/agent-sdk/todo-tracking",
+      "tier": "core",
+      "etag": "W/\"16e4-19ac2876708\"",
+      "last_modified": "Wed, 26 Nov 2025 23:37:25 GMT",
+      "content_hash": "bd07c2ce174ee2d074b356e3c5e7fa3c",
+      "downloaded_at": 1764381255.5854158,
+      "size_bytes": 5860
+    },
+    "agent-sdk-typescript": {
+      "url": "https://docs.claude.com/en/docs/agent-sdk/typescript",
+      "tier": "core",
+      "etag": "W/\"8ee7-19ac2876708\"",
+      "last_modified": "Wed, 26 Nov 2025 23:37:25 GMT",
+      "content_hash": "1bce2b180cbeef0f1315e4f943cd1447",
+      "downloaded_at": 1764381255.9793978,
+      "size_bytes": 36583
+    },
+    "agent-skills-best-practices": {
+      "url": "https://docs.claude.com/en/docs/agents-and-tools/agent-skills/best-practices",
+      "tier": "core",
+      "etag": "W/\"a22c-19ac2876708\"",
+      "last_modified": "Wed, 26 Nov 2025 23:37:25 GMT",
+      "content_hash": "a03c353c47afeddf605eed95939344cd",
+      "downloaded_at": 1764381256.358506,
+      "size_bytes": 41516
+    },
+    "agent-skills-quickstart": {
+      "url": "https://docs.claude.com/en/docs/agents-and-tools/agent-skills/quickstart",
+      "tier": "core",
+      "etag": "W/\"39e5-19ac2876708\"",
+      "last_modified": "Wed, 26 Nov 2025 23:37:25 GMT",
+      "content_hash": "7e4e154d5f17cad7505ac1a61e26ec56",
+      "downloaded_at": 1764381256.7899148,
+      "size_bytes": 14821
+    },
+    "claude-for-sheets": {
+      "url": "https://docs.claude.com/en/docs/agents-and-tools/claude-for-sheets",
+      "tier": "extended",
+      "etag": null,
+      "last_modified": null,
+      "content_hash": null,
+      "downloaded_at": 0.0,
+      "size_bytes": 0
+    },
+    "mcp-connector": {
+      "url": "https://docs.claude.com/en/docs/agents-and-tools/mcp-connector",
+      "tier": "extended",
+      "etag": null,
+      "last_modified": null,
+      "content_hash": null,
+      "downloaded_at": 0.0,
+      "size_bytes": 0
+    },
+    "remote-mcp-servers": {
+      "url": "https://docs.claude.com/en/docs/agents-and-tools/remote-mcp-servers",
+      "tier": "extended",
+      "etag": null,
+      "last_modified": null,
+      "content_hash": null,
+      "downloaded_at": 0.0,
+      "size_bytes": 0
+    },
+    "tool-use-bash-tool": {
+      "url": "https://docs.claude.com/en/docs/agents-and-tools/tool-use/bash-tool",
+      "tier": "extended",
+      "etag": null,
+      "last_modified": null,
+      "content_hash": null,
+      "downloaded_at": 0.0,
+      "size_bytes": 0
+    },
+    "tool-use-code-execution-tool": {
+      "url": "https://docs.claude.com/en/docs/agents-and-tools/tool-use/code-execution-tool",
+      "tier": "extended",
+      "etag": null,
+      "last_modified": null,
+      "content_hash": null,
+      "downloaded_at": 0.0,
+      "size_bytes": 0
+    },
+    "tool-use-computer-use-tool": {
+      "url": "https://docs.claude.com/en/docs/agents-and-tools/tool-use/computer-use-tool",
+      "tier": "extended",
+      "etag": null,
+      "last_modified": null,
+      "content_hash": null,
+      "downloaded_at": 0.0,
+      "size_bytes": 0
+    },
+    "tool-use-fine-grained-tool-streaming": {
+      "url": "https://docs.claude.com/en/docs/agents-and-tools/tool-use/fine-grained-tool-streaming",
+      "tier": "extended",
+      "etag": null,
+      "last_modified": null,
+      "content_hash": null,
+      "downloaded_at": 0.0,
+      "size_bytes": 0
+    },
+    "tool-use-implement-tool-use": {
+      "url": "https://docs.claude.com/en/docs/agents-and-tools/tool-use/implement-tool-use",
+      "tier": "extended",
+      "etag": null,
+      "last_modified": null,
+      "content_hash": null,
+      "downloaded_at": 0.0,
+      "size_bytes": 0
+    },
+    "tool-use-memory-tool": {
+      "url": "https://docs.claude.com/en/docs/agents-and-tools/tool-use/memory-tool",
+      "tier": "extended",
+      "etag": null,
+      "last_modified": null,
+      "content_hash": null,
+      "downloaded_at": 0.0,
+      "size_bytes": 0
+    },
+    "tool-use-overview": {
+      "url": "https://docs.claude.com/en/docs/agents-and-tools/tool-use/overview",
+      "tier": "core",
+      "etag": "W/\"e03b-19ac2876708\"",
+      "last_modified": "Wed, 26 Nov 2025 23:37:25 GMT",
+      "content_hash": "a3897d7afa6114ed6f6edbca53df2348",
+      "downloaded_at": 1764381257.1847198,
+      "size_bytes": 57403
+    },
+    "tool-use-text-editor-tool": {
+      "url": "https://docs.claude.com/en/docs/agents-and-tools/tool-use/text-editor-tool",
+      "tier": "extended",
+      "etag": null,
+      "last_modified": null,
+      "content_hash": null,
+      "downloaded_at": 0.0,
+      "size_bytes": 0
+    },
+    "tool-use-token-efficient-tool-use": {
+      "url": "https://docs.claude.com/en/docs/agents-and-tools/tool-use/token-efficient-tool-use",
+      "tier": "extended",
+      "etag": null,
+      "last_modified": null,
+      "content_hash": null,
+      "downloaded_at": 0.0,
+      "size_bytes": 0
+    },
+    "tool-use-web-fetch-tool": {
+      "url": "https://docs.claude.com/en/docs/agents-and-tools/tool-use/web-fetch-tool",
+      "tier": "extended",
+      "etag": null,
+      "last_modified": null,
+      "content_hash": null,
+      "downloaded_at": 0.0,
+      "size_bytes": 0
+    },
+    "tool-use-web-search-tool": {
+      "url": "https://docs.claude.com/en/docs/agents-and-tools/tool-use/web-search-tool",
+      "tier": "extended",
+      "etag": null,
+      "last_modified": null,
+      "content_hash": null,
+      "downloaded_at": 0.0,
+      "size_bytes": 0
+    },
+    "administration-api": {
+      "url": "https://docs.claude.com/en/docs/build-with-claude/administration-api",
+      "tier": "full",
+      "etag": null,
+      "last_modified": null,
+      "content_hash": null,
+      "downloaded_at": 0.0,
+      "size_bytes": 0
+    },
+    "batch-processing": {
+      "url": "https://docs.claude.com/en/docs/build-with-claude/batch-processing",
+      "tier": "full",
+      "etag": null,
+      "last_modified": null,
+      "content_hash": null,
+      "downloaded_at": 0.0,
+      "size_bytes": 0
+    },
+    "citations": {
+      "url": "https://docs.claude.com/en/docs/build-with-claude/citations",
+      "tier": "full",
+      "etag": null,
+      "last_modified": null,
+      "content_hash": null,
+      "downloaded_at": 0.0,
+      "size_bytes": 0
+    },
+    "claude-code-analytics-api": {
+      "url": "https://docs.claude.com/en/docs/build-with-claude/claude-code-analytics-api",
+      "tier": "full",
+      "etag": null,
+      "last_modified": null,
+      "content_hash": null,
+      "downloaded_at": 0.0,
+      "size_bytes": 0
+    },
+    "claude-in-microsoft-foundry": {
+      "url": "https://docs.claude.com/en/docs/build-with-claude/claude-in-microsoft-foundry",
+      "tier": "full",
+      "etag": null,
+      "last_modified": null,
+      "content_hash": null,
+      "downloaded_at": 0.0,
+      "size_bytes": 0
+    },
+    "claude-on-amazon-bedrock": {
+      "url": "https://docs.claude.com/en/docs/build-with-claude/claude-on-amazon-bedrock",
+      "tier": "full",
+      "etag": null,
+      "last_modified": null,
+      "content_hash": null,
+      "downloaded_at": 0.0,
+      "size_bytes": 0
+    },
+    "claude-on-vertex-ai": {
+      "url": "https://docs.claude.com/en/docs/build-with-claude/claude-on-vertex-ai",
+      "tier": "full",
+      "etag": null,
+      "last_modified": null,
+      "content_hash": null,
+      "downloaded_at": 0.0,
+      "size_bytes": 0
+    },
+    "context-editing": {
+      "url": "https://docs.claude.com/en/docs/build-with-claude/context-editing",
+      "tier": "full",
+      "etag": null,
+      "last_modified": null,
+      "content_hash": null,
+      "downloaded_at": 0.0,
+      "size_bytes": 0
+    },
+    "context-windows": {
+      "url": "https://docs.claude.com/en/docs/build-with-claude/context-windows",
+      "tier": "full",
+      "etag": null,
+      "last_modified": null,
+      "content_hash": null,
+      "downloaded_at": 0.0,
+      "size_bytes": 0
+    },
+    "embeddings": {
+      "url": "https://docs.claude.com/en/docs/build-with-claude/embeddings",
+      "tier": "full",
+      "etag": null,
+      "last_modified": null,
+      "content_hash": null,
+      "downloaded_at": 0.0,
+      "size_bytes": 0
+    },
+    "extended-thinking": {
+      "url": "https://docs.claude.com/en/docs/build-with-claude/extended-thinking",
+      "tier": "full",
+      "etag": null,
+      "last_modified": null,
+      "content_hash": null,
+      "downloaded_at": 0.0,
+      "size_bytes": 0
+    },
+    "files": {
+      "url": "https://docs.claude.com/en/docs/build-with-claude/files",
+      "tier": "full",
+      "etag": null,
+      "last_modified": null,
+      "content_hash": null,
+      "downloaded_at": 0.0,
+      "size_bytes": 0
+    },
+    "multilingual-support": {
+      "url": "https://docs.claude.com/en/docs/build-with-claude/multilingual-support",
+      "tier": "full",
+      "etag": null,
+      "last_modified": null,
+      "content_hash": null,
+      "downloaded_at": 0.0,
+      "size_bytes": 0
+    },
+    "pdf-support": {
+      "url": "https://docs.claude.com/en/docs/build-with-claude/pdf-support",
+      "tier": "full",
+      "etag": null,
+      "last_modified": null,
+      "content_hash": null,
+      "downloaded_at": 0.0,
+      "size_bytes": 0
+    },
+    "prompt-caching": {
+      "url": "https://docs.claude.com/en/docs/build-with-claude/prompt-caching",
+      "tier": "full",
+      "etag": null,
+      "last_modified": null,
+      "content_hash": null,
+      "downloaded_at": 0.0,
+      "size_bytes": 0
+    },
+    "prompt-engineering-be-clear-and-direct": {
+      "url": "https://docs.claude.com/en/docs/build-with-claude/prompt-engineering/be-clear-and-direct",
+      "tier": "extended",
+      "etag": null,
+      "last_modified": null,
+      "content_hash": null,
+      "downloaded_at": 0.0,
+      "size_bytes": 0
+    },
+    "prompt-engineering-chain-of-thought": {
+      "url": "https://docs.claude.com/en/docs/build-with-claude/prompt-engineering/chain-of-thought",
+      "tier": "extended",
+      "etag": null,
+      "last_modified": null,
+      "content_hash": null,
+      "downloaded_at": 0.0,
+      "size_bytes": 0
+    },
+    "prompt-engineering-chain-prompts": {
+      "url": "https://docs.claude.com/en/docs/build-with-claude/prompt-engineering/chain-prompts",
+      "tier": "extended",
+      "etag": null,
+      "last_modified": null,
+      "content_hash": null,
+      "downloaded_at": 0.0,
+      "size_bytes": 0
+    },
+    "prompt-engineering-claude-4-best-practices": {
+      "url": "https://docs.claude.com/en/docs/build-with-claude/prompt-engineering/claude-4-best-practices",
+      "tier": "extended",
+      "etag": null,
+      "last_modified": null,
+      "content_hash": null,
+      "downloaded_at": 0.0,
+      "size_bytes": 0
+    },
+    "prompt-engineering-extended-thinking-tips": {
+      "url": "https://docs.claude.com/en/docs/build-with-claude/prompt-engineering/extended-thinking-tips",
+      "tier": "extended",
+      "etag": null,
+      "last_modified": null,
+      "content_hash": null,
+      "downloaded_at": 0.0,
+      "size_bytes": 0
+    },
+    "prompt-engineering-long-context-tips": {
+      "url": "https://docs.claude.com/en/docs/build-with-claude/prompt-engineering/long-context-tips",
+      "tier": "extended",
+      "etag": null,
+      "last_modified": null,
+      "content_hash": null,
+      "downloaded_at": 0.0,
+      "size_bytes": 0
+    },
+    "prompt-engineering-multishot-prompting": {
+      "url": "https://docs.claude.com/en/docs/build-with-claude/prompt-engineering/multishot-prompting",
+      "tier": "extended",
+      "etag": null,
+      "last_modified": null,
+      "content_hash": null,
+      "downloaded_at": 0.0,
+      "size_bytes": 0
+    },
+    "prompt-engineering-overview": {
+      "url": "https://docs.claude.com/en/docs/build-with-claude/prompt-engineering/overview",
+      "tier": "core",
+      "etag": "W/\"1371-19ac2876708\"",
+      "last_modified": "Wed, 26 Nov 2025 23:37:25 GMT",
+      "content_hash": "089fd20962b5ec21e5c78bcb3d6b7edc",
+      "downloaded_at": 1764381257.548023,
+      "size_bytes": 4977
+    },
+    "prompt-engineering-prefill-claudes-response": {
+      "url": "https://docs.claude.com/en/docs/build-with-claude/prompt-engineering/prefill-claudes-response",
+      "tier": "extended",
+      "etag": null,
+      "last_modified": null,
+      "content_hash": null,
+      "downloaded_at": 0.0,
+      "size_bytes": 0
+    },
+    "prompt-engineering-prompt-generator": {
+      "url": "https://docs.claude.com/en/docs/build-with-claude/prompt-engineering/prompt-generator",
+      "tier": "extended",
+      "etag": null,
+      "last_modified": null,
+      "content_hash": null,
+      "downloaded_at": 0.0,
+      "size_bytes": 0
+    },
+    "prompt-engineering-prompt-improver": {
+      "url": "https://docs.claude.com/en/docs/build-with-claude/prompt-engineering/prompt-improver",
+      "tier": "extended",
+      "etag": null,
+      "last_modified": null,
+      "content_hash": null,
+      "downloaded_at": 0.0,
+      "size_bytes": 0
+    },
+    "prompt-engineering-prompt-templates-and-variables": {
+      "url": "https://docs.claude.com/en/docs/build-with-claude/prompt-engineering/prompt-templates-and-variables",
+      "tier": "extended",
+      "etag": null,
+      "last_modified": null,
+      "content_hash": null,
+      "downloaded_at": 0.0,
+      "size_bytes": 0
+    },
+    "prompt-engineering-system-prompts": {
+      "url": "https://docs.claude.com/en/docs/build-with-claude/prompt-engineering/system-prompts",
+      "tier": "extended",
+      "etag": null,
+      "last_modified": null,
+      "content_hash": null,
+      "downloaded_at": 0.0,
+      "size_bytes": 0
+    },
+    "prompt-engineering-use-xml-tags": {
+      "url": "https://docs.claude.com/en/docs/build-with-claude/prompt-engineering/use-xml-tags",
+      "tier": "extended",
+      "etag": null,
+      "last_modified": null,
+      "content_hash": null,
+      "downloaded_at": 0.0,
+      "size_bytes": 0
+    },
+    "search-results": {
+      "url": "https://docs.claude.com/en/docs/build-with-claude/search-results",
+      "tier": "full",
+      "etag": null,
+      "last_modified": null,
+      "content_hash": null,
+      "downloaded_at": 0.0,
+      "size_bytes": 0
+    },
+    "skills-guide": {
+      "url": "https://docs.claude.com/en/docs/build-with-claude/skills-guide",
+      "tier": "full",
+      "etag": null,
+      "last_modified": null,
+      "content_hash": null,
+      "downloaded_at": 0.0,
+      "size_bytes": 0
+    },
+    "streaming": {
+      "url": "https://docs.claude.com/en/docs/build-with-claude/streaming",
+      "tier": "full",
+      "etag": null,
+      "last_modified": null,
+      "content_hash": null,
+      "downloaded_at": 0.0,
+      "size_bytes": 0
+    },
+    "structured-outputs": {
+      "url": "https://docs.claude.com/en/docs/build-with-claude/structured-outputs",
+      "tier": "full",
+      "etag": null,
+      "last_modified": null,
+      "content_hash": null,
+      "downloaded_at": 0.0,
+      "size_bytes": 0
+    },
+    "token-counting": {
+      "url": "https://docs.claude.com/en/docs/build-with-claude/token-counting",
+      "tier": "full",
+      "etag": null,
+      "last_modified": null,
+      "content_hash": null,
+      "downloaded_at": 0.0,
+      "size_bytes": 0
+    },
+    "usage-cost-api": {
+      "url": "https://docs.claude.com/en/docs/build-with-claude/usage-cost-api",
+      "tier": "full",
+      "etag": null,
+      "last_modified": null,
+      "content_hash": null,
+      "downloaded_at": 0.0,
+      "size_bytes": 0
+    },
+    "vision": {
+      "url": "https://docs.claude.com/en/docs/build-with-claude/vision",
+      "tier": "full",
+      "etag": null,
+      "last_modified": null,
+      "content_hash": null,
+      "downloaded_at": 0.0,
+      "size_bytes": 0
+    },
+    "working-with-messages": {
+      "url": "https://docs.claude.com/en/docs/build-with-claude/working-with-messages",
+      "tier": "full",
+      "etag": null,
+      "last_modified": null,
+      "content_hash": null,
+      "downloaded_at": 0.0,
+      "size_bytes": 0
+    },
+    "get-started": {
+      "url": "https://docs.claude.com/en/docs/get-started",
+      "tier": "full",
+      "etag": null,
+      "last_modified": null,
+      "content_hash": null,
+      "downloaded_at": 0.0,
+      "size_bytes": 0
+    },
+    "mcp": {
+      "url": "https://docs.claude.com/en/docs/mcp",
+      "tier": "core",
+      "etag": null,
+      "last_modified": null,
+      "content_hash": "69d82ed4c62b2aabd37b3f720f56107f",
+      "downloaded_at": 1764381258.30431,
+      "size_bytes": 248533
+    },
+    "define-success": {
+      "url": "https://docs.claude.com/en/docs/test-and-evaluate/define-success",
+      "tier": "full",
+      "etag": null,
+      "last_modified": null,
+      "content_hash": null,
+      "downloaded_at": 0.0,
+      "size_bytes": 0
+    },
+    "develop-tests": {
+      "url": "https://docs.claude.com/en/docs/test-and-evaluate/develop-tests",
+      "tier": "full",
+      "etag": null,
+      "last_modified": null,
+      "content_hash": null,
+      "downloaded_at": 0.0,
+      "size_bytes": 0
+    },
+    "eval-tool": {
+      "url": "https://docs.claude.com/en/docs/test-and-evaluate/eval-tool",
+      "tier": "full",
+      "etag": null,
+      "last_modified": null,
+      "content_hash": null,
+      "downloaded_at": 0.0,
+      "size_bytes": 0
+    },
+    "strengthen-guardrails-handle-streaming-refusals": {
+      "url": "https://docs.claude.com/en/docs/test-and-evaluate/strengthen-guardrails/handle-streaming-refusals",
+      "tier": "full",
+      "etag": null,
+      "last_modified": null,
+      "content_hash": null,
+      "downloaded_at": 0.0,
+      "size_bytes": 0
+    },
+    "strengthen-guardrails-increase-consistency": {
+      "url": "https://docs.claude.com/en/docs/test-and-evaluate/strengthen-guardrails/increase-consistency",
+      "tier": "full",
+      "etag": null,
+      "last_modified": null,
+      "content_hash": null,
+      "downloaded_at": 0.0,
+      "size_bytes": 0
+    },
+    "strengthen-guardrails-keep-claude-in-character": {
+      "url": "https://docs.claude.com/en/docs/test-and-evaluate/strengthen-guardrails/keep-claude-in-character",
+      "tier": "full",
+      "etag": null,
+      "last_modified": null,
+      "content_hash": null,
+      "downloaded_at": 0.0,
+      "size_bytes": 0
+    },
+    "strengthen-guardrails-mitigate-jailbreaks": {
+      "url": "https://docs.claude.com/en/docs/test-and-evaluate/strengthen-guardrails/mitigate-jailbreaks",
+      "tier": "full",
+      "etag": null,
+      "last_modified": null,
+      "content_hash": null,
+      "downloaded_at": 0.0,
+      "size_bytes": 0
+    },
+    "strengthen-guardrails-reduce-hallucinations": {
+      "url": "https://docs.claude.com/en/docs/test-and-evaluate/strengthen-guardrails/reduce-hallucinations",
+      "tier": "full",
+      "etag": null,
+      "last_modified": null,
+      "content_hash": null,
+      "downloaded_at": 0.0,
+      "size_bytes": 0
+    },
+    "strengthen-guardrails-reduce-latency": {
+      "url": "https://docs.claude.com/en/docs/test-and-evaluate/strengthen-guardrails/reduce-latency",
+      "tier": "full",
+      "etag": null,
+      "last_modified": null,
+      "content_hash": null,
+      "downloaded_at": 0.0,
+      "size_bytes": 0
+    },
+    "strengthen-guardrails-reduce-prompt-leak": {
+      "url": "https://docs.claude.com/en/docs/test-and-evaluate/strengthen-guardrails/reduce-prompt-leak",
+      "tier": "full",
+      "etag": null,
+      "last_modified": null,
+      "content_hash": null,
+      "downloaded_at": 0.0,
+      "size_bytes": 0
+    },
+    "system-prompts": {
+      "url": "https://docs.claude.com/en/release-notes/system-prompts",
+      "tier": "full",
+      "etag": null,
+      "last_modified": null,
+      "content_hash": null,
+      "downloaded_at": 0.0,
+      "size_bytes": 0
+    }
+  }
+}

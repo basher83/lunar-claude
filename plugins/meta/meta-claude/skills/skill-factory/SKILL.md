@@ -140,7 +140,7 @@ skill-factory proceeds through Path 2:
 ## When This Skill Is Invoked
 
 **Your role:** You are the skill-factory orchestrator. Your task is to guide the user through creating
-a high-quality, validated skill using 8 primitive slash commands.
+a high-quality, validated skill using 9 primitive slash commands.
 
 ### Step 1: Entry Point Detection
 
@@ -210,6 +210,8 @@ Update the corresponding TodoWrite item to `in_progress` status.
 
 Before running a command, verify prior phases completed:
 
+- Write requires create to complete (needs skill structure with references)
+- Review-content requires write to complete (needs actual content to review)
 - Review-compliance requires review-content to pass
 - Validate-runtime requires review-compliance to pass
 - Validate-integration requires validate-runtime to pass
@@ -395,22 +397,26 @@ Six core principles: (1) Primitives First (slash commands foundation), (2) KISS 
 
 ## Implementation Notes
 
-### Delegation Architecture
+### Command-Based Architecture
 
-skill-factory extends the proven skill-creator skill by adding:
+skill-factory orchestrates 9 primitive slash commands through a sequential workflow:
 
-- **Pre-creation phases:** Research gathering and formatting
-- **Post-creation phases:** Content review and validation
-- **Quality gates:** Compliance checking, runtime testing, integration validation
+**Creation Phase:**
 
-**Delegation to existing tools:**
+- `/meta-claude:skill:research` → Gather domain knowledge via firecrawl
+- `/meta-claude:skill:format` → Clean and structure research materials
+- `/meta-claude:skill:create` → Scaffold skill directory with references (runs init_skill.py)
+- `/meta-claude:skill:write` → Synthesize references into SKILL.md content
 
-- **skill-creator skill** → Core creation workflow (Understand → Plan → Initialize → Edit → Package)
-- **quick_validate.py** → Compliance validation (frontmatter, naming, structure)
-- **claude-skill-auditor agent** → Comprehensive audit
+**Validation Phase:**
 
-This separation maintains the stability of skill-creator while adding research-backed, validated skill creation
-with quality gates.
+- `/meta-claude:skill:review-content` → Quality gate for clarity and completeness
+- `/meta-claude:skill:review-compliance` → Technical validation via quick_validate.py
+- `/meta-claude:skill:validate-runtime` → Test actual skill loading
+- `/meta-claude:skill:validate-integration` → Check for naming conflicts
+- `/meta-claude:skill:validate-audit` → Comprehensive audit via claude-skill-auditor agent
+
+Each command is standalone and testable. skill-factory provides orchestration, not abstraction.
 
 ### Progressive Disclosure
 

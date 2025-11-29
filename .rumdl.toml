@@ -34,6 +34,7 @@ exclude = [
 
     # Downloaded reference documentation (from external sources)
     "**/reference/*.md",
+    "**/references/*.md",
 
     # Implementation plans (working documents)
     "docs/plans/**/*.md",

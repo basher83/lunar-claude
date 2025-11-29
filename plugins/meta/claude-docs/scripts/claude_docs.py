@@ -113,7 +113,7 @@ def load_cache(cache_file: Path) -> dict[str, FileMetadata]:
         return {}
 
     try:
-        with cache_file.open() as f:
+        with cache_file.open(encoding="utf-8") as f:
             data = json.load(f)
             return {
                 page: FileMetadata(**meta)
@@ -143,9 +143,9 @@ def save_cache(cache_file: Path, cache: dict[str, FileMetadata]) -> None:
             }
             for page, meta in cache.items()
         }
-        with cache_file.open("w") as f:
+        with cache_file.open("w", encoding="utf-8") as f:
             json.dump(data, f, indent=2)
-    except Exception as e:
+    except (OSError, TypeError, ValueError) as e:
         console.print(
             f"[yellow]Warning: Could not save cache: {e}[/yellow]", file=sys.stderr)
 
@@ -181,7 +181,7 @@ def discover_all_pages(client: httpx.Client) -> list[tuple[str, str]]:
         # Return as tuples with 'claude-code' section
         return [("claude-code", page) for page in matches]
 
-    except Exception as e:
+    except (httpx.RequestError, httpx.HTTPStatusError) as e:
         from rich.console import Console
         stderr_console = Console(stderr=True)
         stderr_console.print(
@@ -246,7 +246,7 @@ def needs_update(
         # If headers don't match or aren't available, assume update needed
         return True, etag, last_modified
 
-    except Exception:
+    except (httpx.RequestError, httpx.TimeoutException):
         # If HEAD request fails, assume we need to try downloading
         from rich.console import Console
         stderr_console = Console(stderr=True)
@@ -296,7 +296,7 @@ def download_page(
             response.raise_for_status()
 
             content = response.text
-            output_file.write_text(content)
+            output_file.write_text(content, encoding="utf-8")
 
             duration = time.time() - start_time
             size_bytes = len(content.encode('utf-8'))
@@ -345,7 +345,8 @@ def download_page(
                 empty_meta = FileMetadata()
                 return False, time.time() - start_time, 0, empty_meta
 
-        except Exception as e:
+        except OSError as e:
+            # Fallback for unexpected errors (e.g., file I/O)
             console.print(
                 f"[red]✗[/red] {page}: Unexpected error: {e}",
                 file=sys.stderr

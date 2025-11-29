@@ -53,7 +53,7 @@ Think of Claude as exploring a path: a narrow bridge with cliffs needs specific 
 
 Every skill consists of a required SKILL.md file and optional bundled resources:
 
-```
+```bash
 skill-name/
 ├── SKILL.md (required)
 │   ├── YAML frontmatter metadata (required)
@@ -153,7 +153,7 @@ Claude loads FORMS.md, REFERENCE.md, or EXAMPLES.md only when needed.
 
 For Skills with multiple domains, organize content by domain to avoid loading irrelevant context:
 
-```
+```text
 bigquery-skill/
 ├── SKILL.md (overview and navigation)
 └── reference/
@@ -167,7 +167,7 @@ When a user asks about sales metrics, Claude only reads sales.md.
 
 Similarly, for skills supporting multiple frameworks or variants, organize by variant:
 
-```
+```text
 cloud-deploy/
 ├── SKILL.md (workflow + provider selection)
 └── references/
@@ -269,15 +269,19 @@ When creating a new skill from scratch, always run the `init_skill.py` script. T
 Usage:
 
 ```bash
-scripts/init_skill.py <skill-name> --path <output-directory>
+# Basic skill with template
+./plugins/meta/meta-claude/skills/skill-creator/scripts/init_skill.py <skill-name> --path <output-directory>
+
+# With research materials (copies research to references/, generates links)
+./plugins/meta/meta-claude/skills/skill-creator/scripts/init_skill.py <skill-name> --path <output-directory> --research-dir <research-path>
 ```
 
 The script:
 
 - Creates the skill directory at the specified path
 - Generates a SKILL.md template with proper frontmatter and TODO placeholders
-- Creates example resource directories: `scripts/`, `references/`, and `assets/`
-- Adds example files in each directory that can be customized or deleted
+- Creates resource directories: `scripts/`, `references/`, and `assets/`
+- With `--research-dir`: Copies research files to `references/` and generates links in SKILL.md
 
 After initialization, customize or remove the generated SKILL.md and example files as needed.
 
@@ -297,6 +301,26 @@ These files contain established best practices for effective skill design.
 #### Start with Reusable Skill Contents
 
 To begin implementation, start with the reusable resources identified above: `scripts/`, `references/`, and `assets/` files. Note that this step may require user input. For example, when implementing a `brand-guidelines` skill, the user may need to provide brand assets or templates to store in `assets/`, or documentation to store in `references/`.
+
+##### Mapping Research to References
+
+When research materials exist (e.g., from firecrawl scraping or manual gathering), follow this process:
+
+1. **Review research files** - List all files in the research directory and assess their content
+2. **Select relevant files** - Choose files that provide reference value (API docs, configuration guides, command references)
+3. **Copy to references/** - Copy selected files to the skill's `references/` directory
+4. **Rename for clarity** - Use descriptive names (e.g., `yaml-configuration-guide.md`, `cli-commands.md`)
+5. **Add summary links in SKILL.md** - For each reference file, add a one-line description with a link:
+
+```markdown
+**Full configuration guide:** See [references/yaml-configuration-guide.md](references/yaml-configuration-guide.md)
+```
+
+**Selection criteria for references:**
+
+- Include: API documentation, configuration schemas, command references, detailed workflows
+- Exclude: Marketing content, installation guides (unless complex), changelog/release notes
+- Consolidate: If multiple files cover the same topic, merge or keep the most comprehensive one
 
 Added scripts must be tested by actually running them to ensure there are no bugs and that the output matches what is expected. If there are many similar scripts, only a representative sample needs to be tested to ensure confidence that they all work while balancing time to completion.
 
@@ -327,13 +351,13 @@ Write instructions for using the skill and its bundled resources.
 Once development of the skill is complete, it must be packaged into a distributable .skill file that gets shared with the user. The packaging process automatically validates the skill first to ensure it meets all requirements:
 
 ```bash
-scripts/package_skill.py <path/to/skill-folder>
+uv run python plugins/meta/meta-claude/skills/skill-creator/scripts/package_skill.py <path/to/skill-folder>
 ```
 
 Optional output directory specification:
 
 ```bash
-scripts/package_skill.py <path/to/skill-folder> ./dist
+uv run python plugins/meta/meta-claude/skills/skill-creator/scripts/package_skill.py <path/to/skill-folder> ./dist
 ```
 
 The packaging script will:

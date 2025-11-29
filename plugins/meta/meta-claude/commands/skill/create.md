@@ -1,101 +1,111 @@
 ---
-description: "Create a skill using the proven skill-creator workflow with research context"
+description: "Create a skill from research materials or from scratch"
 allowed-tools: Bash(command:*)
 argument-hint: [skill-name] [research-dir] [output-dir]
 ---
 
 # Skill Create
 
-Create a skill using the proven skill-creator workflow with research context.
+Create a new skill, optionally from research materials.
 
 ## Arguments
 
-- `$1` - Name of the skill to create (e.g., docker-master)
-- `$2` - Path to directory containing research materials
-- `$3` - (Optional) Custom output directory path (defaults to plugins/meta/meta-claude/skills/)
+- `$1` - Name of the skill to create (e.g., coderabbit)
+- `$2` - (Optional) Path to research materials directory
+- `$3` - (Optional) Output directory (defaults to plugins/meta/meta-claude/skills/)
 
 ## Usage
 
 ```bash
-/meta-claude:skill:create $1 $2 [$3]
+# Create skill from research
+/meta-claude:skill:create coderabbit docs/research/coderabbit/
+
+# Create skill with custom output location
+/meta-claude:skill:create coderabbit docs/research/coderabbit/ plugins/code-review/skills/
+
+# Create empty skill (no research)
+/meta-claude:skill:create my-skill
 ```
-
-## Your Task
-
-Your task is to invoke the skill-creator skill to guide through the complete creation workflow:
-
-1. Understanding (uses research as context)
-2. Planning skill contents
-3. Initializing structure (init_skill.py)
-4. Editing SKILL.md and resources
-5. Packaging (package_skill.py)
-6. Iteration
 
 ## Instructions
 
-Invoke the skill-creator skill using the Skill tool. Use the following syntax:
+Run the init_skill.py script to create the skill structure:
 
-```text
-Skill(skill: "example-skills:skill-creator")
+### With Research Materials
+
+```bash
+${CLAUDE_PLUGIN_ROOT}/skills/skill-creator/scripts/init_skill.py $1 \
+    --path ${3:-plugins/meta/meta-claude/skills/} \
+    --research-dir $2
 ```
 
-Then provide this instruction to the skill:
+### Without Research (Empty Skill)
 
-```text
-I need to create a new skill called $1.
-
-Research materials are available at: $2
-
-Please guide me through the skill creation process using this research as context for:
-- Understanding the skill's purpose and use cases
-- Planning reusable resources (scripts, references, assets)
-- Implementing SKILL.md with proper structure
-- Creating supporting files if needed
-
-Output location: plugins/meta/meta-claude/skills/$1/
+```bash
+${CLAUDE_PLUGIN_ROOT}/skills/skill-creator/scripts/init_skill.py $1 \
+    --path ${3:-plugins/meta/meta-claude/skills/}
 ```
 
-If `$3` is provided (custom output location), replace the output location in the
-instruction with `$3/$1/` instead of the default path.
+## What the Script Does
 
-## Expected Workflow
+**With research (`--research-dir`):**
 
-Your task is to guide through these phases using skill-creator:
+1. Creates skill directory at output path
+2. Copies all `.md` files from research to `references/`
+3. Generates SKILL.md with links to all references
+4. Flattens nested paths (e.g., `cli/commands.md` → `cli-commands.md`)
 
-1. **Understanding:** Review research to identify use cases
-2. **Planning:** Determine scripts, references, assets needed
-3. **Initializing:** Run init_skill.py to create structure
-4. **Editing:** Implement SKILL.md and bundled resources
-5. **Packaging:** Run package_skill.py for distribution
-6. **Iteration:** Refine based on testing
+**Without research:**
+
+1. Creates skill directory with basic template
+2. Creates empty `scripts/`, `references/`, `assets/` directories
+3. Generates SKILL.md with TODOs
+
+## After Creation
+
+Report the results and remind the user:
+
+```text
+✅ Skill created at <output-path>
+
+Next steps:
+1. Edit SKILL.md - complete description and add content
+2. Review references/ - remove unnecessary files
+3. Run /meta-claude:skill:review-content to validate
+```
 
 ## Error Handling
 
-**If research directory missing:**
+**If skill already exists:**
 
-- Report error: "Research directory not found at `$2`"
-- Suggest: Run `/meta-claude:skill:research` first or provide correct path
-- Exit with failure
+```text
+❌ Error: Skill directory already exists: <path>
+```
 
-**If skill-creator errors:**
+Suggest: Delete existing or choose different name
 
-- Report the specific error from skill-creator
-- Preserve research materials
-- Exit with failure
+**If research directory not found:**
+
+```text
+❌ Error: Research directory not found: <path>
+```
+
+Suggest: Check path or run `/meta-claude:skill:research` first
 
 ## Examples
 
 **Create skill from research:**
 
 ```bash
-/meta-claude:skill:create docker-master docs/research/skills/docker-master/
-# Output: Skill created at plugins/meta/meta-claude/skills/docker-master/
+/meta-claude:skill:create coderabbit docs/research/coderabbit/
+# Creates: plugins/meta/meta-claude/skills/coderabbit/
+# With references from research
 ```
 
-**With custom output location:**
+**Create empty skill:**
 
 ```bash
-/meta-claude:skill:create coderabbit plugins/meta/claude-dev-sandbox/skills/coderabbit/ plugins/code-review/claude-dev-sandbox/skills/
-# Note: When custom output path is provided as third argument ($3), use it instead of default
-# Output: Skill created at plugins/code-review/claude-dev-sandbox/skills/coderabbit/
+/meta-claude:skill:create my-helper
+# Creates: plugins/meta/meta-claude/skills/my-helper/
+# With template SKILL.md and empty directories
 ```

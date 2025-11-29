@@ -37,7 +37,7 @@ Your task is to format and clean markdown research files.
 1. Run the cleanup script with the provided directory path:
 
     ```bash
-    ${CLAUDE_PLUGIN_ROOT}/../../scripts/format_skill_research.py "$ARGUMENTS"
+    ${CLAUDE_PLUGIN_ROOT}/skills/skill-factory/scripts/format_skill_research.py "$ARGUMENTS"
     ```
 
 1. Display the script output showing which files were processed

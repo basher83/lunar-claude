@@ -283,18 +283,18 @@ Keep research materials? [Keep/Remove] (default: Keep)
 
 ```text
 Next steps - choose an option:
-[Test the skill now - Try invoking it in a new conversation]
+[Test in new session - Skills require session reload to be discoverable]
 [Create PR - Submit skill to repository]
-[Add to plugin.json - Integrate with plugin manifest]
 [Done - Exit workflow]
 ```
 
 **Execute user's choice:**
 
-- **Test** → Guide user to test skill invocation
+- **Test in new session** → Skills load at session start. User must restart Claude Code to test.
 - **Create PR** → Create git branch, commit, push, open PR
-- **Add to plugin.json** → Update manifest, validate structure
 - **Done** → Clean exit
+
+**Note:** Skills auto-discover based on directory structure - no plugin.json registration needed.
 
 ### Key Execution Principles
 
@@ -358,20 +358,20 @@ Present options to user:
 
 ```text
 Next steps - choose an option:
-  [1] Test the skill now - Try invoking it in a new conversation
+  [1] Test in new session - Skills require session reload to be discoverable
   [2] Create PR - Submit skill to repository
-  [3] Add to plugin.json - Integrate with plugin manifest (if applicable)
-  [4] Done - Exit workflow
+  [3] Done - Exit workflow
 
 What would you like to do?
 ```
 
 **User Actions:**
 
-1. **Test the skill now** → Guide user to test skill invocation
+1. **Test in new session** → Skills load at session start. User must restart Claude Code to test.
 2. **Create PR** → Create git branch, commit, push, open PR
-3. **Add to plugin.json** → Update manifest, validate structure (for plugin skills)
-4. **Done** → Clean exit
+3. **Done** → Clean exit
+
+**Note:** Skills auto-discover based on directory structure - no plugin.json registration needed.
 
 Execute the user's choice, then exit cleanly.
 

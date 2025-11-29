@@ -78,6 +78,8 @@ EXTENDED_PATTERNS = [
 
 # Pages to always include in core (by page name suffix after flattening)
 # These override the pattern-based classification
+# Note: "overview" pages are handled by CORE_PATTERNS (/agent-sdk/, /agent-skills/)
+# to avoid incorrectly classifying unrelated overview pages as core
 CORE_PAGES = {
     "plugins",
     "plugins-reference",
@@ -92,7 +94,6 @@ CORE_PAGES = {
     "memory",
     "output-styles",
     "statusline",
-    "overview",  # Agent SDK overview
     "permissions",
     "sessions",
     "custom-tools",
@@ -585,12 +586,23 @@ def check_for_changes(
 # -----------------------------------------------------------------------------
 
 
+def is_html_content(content: str) -> bool:
+    """Check if content appears to be HTML rather than markdown."""
+    stripped = content.lstrip()
+    return (
+        stripped.startswith("<!DOCTYPE")
+        or stripped.startswith("<html")
+        or stripped.startswith("<?xml")
+    )
+
+
 def fetch_markdown(client: httpx.Client, url: str, verbose: bool = False) -> str | None:
     """
     Fetch markdown content directly from .md endpoint.
 
     No HTML fallback - if .md fails, returns None.
     This ensures consistent, clean markdown output.
+    Validates that response is actually markdown, not HTML.
     """
     md_url = f"{url}.md" if not url.endswith(".md") else url
 
@@ -598,7 +610,21 @@ def fetch_markdown(client: httpx.Client, url: str, verbose: bool = False) -> str
         response = client.get(md_url, timeout=30.0)
 
         if response.status_code == 200:
-            return response.text
+            content = response.text
+
+            # Validate content is markdown, not HTML
+            if is_html_content(content):
+                console.print(
+                    f"  [yellow]Skipping {url}: received HTML instead of markdown[/yellow]"
+                )
+                if verbose:
+                    # Show where the redirect went
+                    final_url = str(response.url)
+                    if final_url != md_url:
+                        console.print(f"  [dim]Redirected to: {final_url}[/dim]")
+                return None
+
+            return content
         elif response.status_code == 404:
             if verbose:
                 console.print(f"  [dim]No .md endpoint: {url}[/dim]")
@@ -741,7 +767,15 @@ def main(
     if output_dir is None:
         output_dir = get_default_output_dir()
 
-    output_dir.mkdir(parents=True, exist_ok=True)
+    try:
+        output_dir.mkdir(parents=True, exist_ok=True)
+    except PermissionError:
+        console.print(f"[red]Cannot create output directory (permission denied): {output_dir}[/red]")
+        raise typer.Exit(code=1)
+    except OSError as e:
+        console.print(f"[red]Cannot create output directory: {output_dir}[/red]")
+        console.print(f"[red]Error: {e}[/red]")
+        raise typer.Exit(code=1)
 
     # Early validation: ensure we can write to the output directory
     test_file = output_dir / ".write_test"

@@ -23,11 +23,12 @@ Claude Code frequently encounters new tools, libraries, frameworks, and reposito
 
 A system where you can say:
 
-```sql
+```text
 "Research jina-ai/MCP and create a skill and dev onboarding guide"
 ```
 
 And the system:
+
 1. Orchestrates specialized research agents (DeepWiki, Firecrawl, GitHub, Web Search)
 2. Conducts comprehensive research across multiple dimensions
 3. Caches findings for reuse
@@ -100,6 +101,7 @@ SKILL.md   ONBOARDING.md  API_REF.md  TUTORIAL.md
 **Role:** Intelligent coordination and decision-making
 
 **Responsibilities:**
+
 - Parse user intent (what research target, what outputs)
 - Select which researchers to deploy based on target type and output needs
 - Evaluate researcher reports and decide if more research is needed
@@ -109,6 +111,7 @@ SKILL.md   ONBOARDING.md  API_REF.md  TUTORIAL.md
 **Intelligence Model:** LLM-driven (not hardcoded rules)
 
 **Why LLM-driven:**
+
 - Can adapt to unexpected situations
 - Can re-task researchers mid-flight based on findings
 - Can handle edge cases we didn't anticipate
@@ -116,6 +119,7 @@ SKILL.md   ONBOARDING.md  API_REF.md  TUTORIAL.md
 - If we wanted hardcoded rules, we'd just write a Python script
 
 **Example Decision Flow:**
+
 ```bash
 Orchestrator receives: "Research jina-ai/MCP, output: skill"
     ↓
@@ -134,6 +138,7 @@ Routes to: Skill Documenter
 ```
 
 **Alternative scenario with re-tasking:**
+
 ```text
 Orchestrator receives: "Research obscure-tool/cli, output: dev docs"
     ↓
@@ -156,21 +161,25 @@ Continues until sufficient information gathered
 **Core Researchers (MVP):**
 
 ##### DeepWiki Researcher
+
 - **Tool:** DeepWiki MCP
 - **Specialty:** Official documentation, wikis, structured knowledge
 - **Best for:** Architecture, API specs, official guides
 
 ##### Firecrawl Researcher
+
 - **Tool:** Firecrawl MCP
 - **Specialty:** Web scraping, blog posts, tutorials, community content
 - **Best for:** Usage patterns, real-world examples, community knowledge
 
 ##### GitHub Researcher
+
 - **Tool:** GitHub MCP + Read file tools
 - **Specialty:** Source code, examples, tests, issues, discussions
 - **Best for:** Code patterns, test strategies, implementation details
 
 ##### Web Search Researcher
+
 - **Tool:** Firecrawl MCP (search capability)
 - **Specialty:** Broad web search, finding scattered resources
 - **Best for:** Community articles, Stack Overflow, comparative analysis
@@ -198,6 +207,7 @@ Each researcher returns **hybrid format** (structured metadata + prose findings)
 ```
 
 **Critical Constraint:** Researchers report ONLY what they found and what's missing from their perspective. They do NOT:
+
 - Recommend which other researchers to deploy
 - Make orchestration decisions
 - Have knowledge of what other researchers found
@@ -209,6 +219,7 @@ Each researcher returns **hybrid format** (structured metadata + prose findings)
 **Purpose:** Store research findings for reuse across multiple documentation outputs
 
 **Storage:** Project-specific directory (MVP)
+
 - Location: `.claude/research-cache/<normalized-target-name>.json`
 - Format: JSON with metadata + findings from all researchers
 - Benefits:
@@ -217,6 +228,7 @@ Each researcher returns **hybrid format** (structured metadata + prose findings)
   - Easy to inspect/debug
 
 **Cache Structure:**
+
 ```json
 {
   "target": "jina-ai/MCP",
@@ -247,6 +259,7 @@ Each researcher returns **hybrid format** (structured metadata + prose findings)
 **Why Separate Agents (Not Variants):**
 
 From multi-agent-composition principles:
+
 - **Don't force context switching:** Each documenter has fundamentally different context needs
 - **Single purpose:** A Skill documenter writes SKILL.md files. A Dev Docs documenter writes onboarding guides. Period.
 - **Different prompts:** Each documenter needs unique instructions, examples, and success criteria
@@ -255,17 +268,20 @@ From multi-agent-composition principles:
 **Core Documenters (MVP):**
 
 ##### Skill Documenter
+
 - **Output:** Complete Skill structure (SKILL.md + supporting subdirectories)
 - **Context Needed:** SKILL.md spec, progressive disclosure patterns, trigger descriptions
 - **May leverage:** skill-creator skill for structure/validation
 - **Output Location:** TBD (see open questions)
 
 ##### Dev Onboarding Documenter
+
 - **Output:** Developer onboarding guide
 - **Context Needed:** Onboarding best practices, quickstart patterns, common pitfalls
 - **Focus:** Getting developers productive quickly
 
 **Future Documenters:**
+
 - API Reference Documenter
 - Tutorial Documenter
 - Architecture Diagram Documenter
@@ -314,6 +330,7 @@ The system aims for **expert-level understanding** across all critical dimension
 ### Decision 1: LLM-Driven Orchestrator (Not Hardcoded Rules)
 
 **Rationale:**
+
 - The value proposition is intelligent orchestration
 - Hardcoded rules = might as well write a Python script
 - LLM can adapt, re-task, handle edge cases
@@ -325,6 +342,7 @@ The system aims for **expert-level understanding** across all critical dimension
 ### Decision 2: Researchers Have No Cross-Agent Knowledge
 
 **Rationale:**
+
 - Researchers are purpose-built specialists
 - They have no orchestration authority
 - They report findings and gaps from their perspective only
@@ -335,6 +353,7 @@ The system aims for **expert-level understanding** across all critical dimension
 ### Decision 3: Hybrid Reporting Format (Structured + Prose)
 
 **Rationale:**
+
 - Structured metadata helps orchestrator make decisions (confidence, completeness, gaps)
 - Prose findings preserve nuance and context
 - Documenter agents need rich prose to create quality output
@@ -343,6 +362,7 @@ The system aims for **expert-level understanding** across all critical dimension
 ### Decision 4: Separate Documenter Sub-Agents
 
 **Rationale (from multi-agent-composition):**
+
 - Each documenter has fundamentally different context needs (SKILL.md spec vs onboarding best practices)
 - Different prompts = different agent capabilities
 - Don't force context switching in a single agent
@@ -351,6 +371,7 @@ The system aims for **expert-level understanding** across all critical dimension
 ### Decision 5: Two-Mode Operation (Full Pipeline + Research-Then-Generate)
 
 **Rationale:**
+
 - Flexibility: sometimes you know what you need now, sometimes you don't
 - Research caching enables one research run → multiple outputs
 - Can add new documenters later and regenerate from cached research
@@ -359,6 +380,7 @@ The system aims for **expert-level understanding** across all critical dimension
 **Example Scenarios:**
 
 **Scenario 1: Full Pipeline**
+
 ```bash
 Input: "Create skill and dev docs for jina-ai/MCP"
 Flow: Orchestrator → Research (cached) → [Skill + Dev Docs] parallel → Done
@@ -366,6 +388,7 @@ Output: SKILL.md + ONBOARDING.md
 ```
 
 **Scenario 2: Research Now, Docs Later**
+
 ```text
 Session 1:
 Input: "Research jina-ai/MCP"
@@ -381,6 +404,7 @@ Flow: Load cache → API Ref Documenter → API_REF.md
 ```
 
 **Scenario 3: New Documenter Type**
+
 ```text
 [6 months later, build Tutorial Documenter]
 Input: "Generate tutorial from jina-ai/MCP research"
@@ -390,6 +414,7 @@ Flow: Load cache → Tutorial Documenter → TUTORIAL.md
 ### Decision 6: Project-Specific Cache (MVP)
 
 **Rationale:**
+
 - Simple to implement and debug
 - Git-committable and shareable
 - No external dependencies
@@ -402,29 +427,34 @@ Flow: Load cache → Tutorial Documenter → TUTORIAL.md
 This design directly applies principles from the `multi-agent-composition` skill:
 
 ### Core 4 Framework
+
 - **Context:** Each agent (orchestrator, researchers, documenters) has precisely the context it needs
 - **Model:** LLM capabilities enable intelligent orchestration vs hardcoded logic
 - **Prompt:** Each agent has specialized prompts for its purpose
 - **Tools:** Researchers have MCP tools; documenters have file writing tools
 
 ### Orchestrator Pattern
+
 - Master orchestrator (Manager) coordinates specialized agents
 - Researchers report findings, orchestrator decides next steps
 - Matches "scout-builder" pattern: scouts research, orchestrator builds strategy
 
 ### Context Window Protection
+
 - "Don't force your agent to context switch"
 - Each researcher: single purpose (DeepWiki = docs, GitHub = code)
 - Each documenter: single purpose (Skill writer ≠ Dev docs writer)
 - Delete agents when done, treat as temporary resources
 
 ### Parallelization
+
 - "Parallel = Sub-Agents"
 - Multiple researchers can run simultaneously
 - Multiple documenters can run simultaneously
 - Nothing else in Claude Code supports parallel execution
 
 ### Single Purpose Agents
+
 - Researchers: domain experts, no orchestration authority
 - Documenters: output specialists, no research capability
 - Orchestrator: coordination only, no research or documentation
@@ -432,7 +462,9 @@ This design directly applies principles from the `multi-agent-composition` skill
 ## Critical Insights from Brainstorming
 
 ### Insight 1: Not Limited to GitHub Repos
+
 Initially framed as "research GitHub repos," but the architecture supports ANY research target:
+
 - GitHub repositories
 - Blog posts and tutorials
 - Documentation websites
@@ -442,7 +474,9 @@ Initially framed as "research GitHub repos," but the architecture supports ANY r
 The orchestrator selects appropriate researchers based on target type.
 
 ### Insight 2: Research Once, Infinite Outputs
+
 The caching layer decouples research from documentation:
+
 - Research is expensive and comprehensive
 - Documentation generation is cheap and specialized
 - One research run can generate unlimited output types
@@ -451,16 +485,20 @@ The caching layer decouples research from documentation:
 This dramatically changes the value proposition.
 
 ### Insight 3: Extensibility Without Code Changes
+
 Because the orchestrator is LLM-driven:
+
 - Add new researcher → orchestrator learns to use it
 - Add new documenter → orchestrator learns to route to it
 - No hardcoded rules to update
 - System grows organically
 
 ### Insight 4: Researchers Must Not Coordinate
+
 A critical architectural constraint: researchers have no knowledge of each other and no orchestration authority.
 
 **Wrong:**
+
 ```json
 {
   "researcher": "deepwiki",
@@ -469,6 +507,7 @@ A critical architectural constraint: researchers have no knowledge of each other
 ```
 
 **Right:**
+
 ```json
 {
   "researcher": "deepwiki",
@@ -483,6 +522,7 @@ The orchestrator reads the gaps and decides to deploy GitHub researcher.
 ### In Scope for MVP
 
 **Orchestrator:**
+
 - Parse user intent (target + output types)
 - Select researchers based on target type
 - Evaluate researcher reports
@@ -490,39 +530,46 @@ The orchestrator reads the gaps and decides to deploy GitHub researcher.
 - Route to appropriate documenters
 
 **Researchers:**
+
 - DeepWiki Researcher (MCP)
 - Firecrawl Researcher (MCP)
 - GitHub Researcher (MCP + file tools)
 - Web Search Researcher (Firecrawl search)
 
 **Documenters:**
+
 - Skill Documenter
 - Dev Onboarding Documenter
 
 **Cache:**
+
 - Project-specific JSON files
 - Store/retrieve research findings
 - Basic metadata (timestamp, target, researchers used)
 
 **Modes:**
+
 - Full pipeline (research + generate in one go)
 - Two-step (research now, generate later)
 
 ### Out of Scope for MVP
 
 **Advanced caching:**
+
 - Staleness detection
 - Version tracking
 - RAG database integration
 - Semantic search
 
 **Advanced researchers:**
+
 - Stack Overflow researcher
 - Reddit/community researcher
 - Video content researcher
 - Documentation diff researcher (version changes)
 
 **Advanced documenters:**
+
 - API Reference Documenter
 - Tutorial Documenter
 - Architecture Diagram Documenter
@@ -530,11 +577,13 @@ The orchestrator reads the gaps and decides to deploy GitHub researcher.
 - Migration Guide Documenter
 
 **Error handling:**
+
 - Researcher retry logic
 - Fallback strategies
 - Partial research recovery
 
 **Observability:**
+
 - Hooks for monitoring
 - Progress tracking
 - Cost estimation
@@ -542,24 +591,28 @@ The orchestrator reads the gaps and decides to deploy GitHub researcher.
 ## Future Roadmap
 
 ### v2: Advanced Caching & Intelligence
+
 - RAG database integration for semantic search
 - Staleness detection (re-research if cache >30 days old)
 - Version tracking (detect when researched tool has new version)
 - Cache analytics (most researched tools, cache hit rate)
 
 ### v3: Expanded Research Capabilities
+
 - Additional researchers (Stack Overflow, Reddit, Videos)
 - Comparative research (tool A vs tool B)
 - Trend analysis (tool popularity, adoption, issues)
 - Dependency graph research
 
 ### v4: Advanced Documentation Types
+
 - API Reference with interactive examples
 - Architecture diagrams (Mermaid, GraphViz)
 - Tutorial series with progressive difficulty
 - Troubleshooting decision trees
 
 ### v5: Collaborative Research
+
 - Multi-user cache sharing
 - Research marketplace (share findings with community)
 - Collaborative refinement (users improve cached research)

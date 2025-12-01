@@ -143,6 +143,7 @@
 - *(scripts)* Move format_skill_research.py to skill-factory
 - *(coderabbit)* Migrate skill from meta-claude to claude-dev-sandbox
 - *(claude-dev-sandbox)* Remove working-with-claude-code skill
+- *(skill-auditor)* Remove skill auditor scripts and related files
 
 ### 📚 Documentation
 
@@ -195,6 +196,10 @@
 - Update changelog
 - *(skill-factory)* Fix documentation inaccuracies
 - *(TODO)* Update skill-factory testing procedures and remove outdated references
+- Update changelog
+- Fix markdown linting in research pipeline design
+- Add research pipeline v2 design document
+- Add research pipeline v2 implementation plan
 
 ### 🎨 Styling
 

@@ -58,6 +58,7 @@
 - *(skill-factory)* Integrate write command into skill creation workflow
 - *(meta-claude)* Add slash-command-creator skill
 - *(python-tools)* Add review-uv-script command
+- *(commands)* Add design-validation slash command suite
 
 ### 🐛 Bug Fixes
 
@@ -110,6 +111,7 @@
 - *(claude-dev-sandbox)* Improve sync script error handling and validation
 - *(skill-factory)* Correct completion options for skills
 - *(claude-docs)* Improve error handling and file encoding
+- *(slash-command-creator)* Resolve skill loader syntax error
 
 ### 💼 Other
 
@@ -200,6 +202,10 @@
 - Fix markdown linting in research pipeline design
 - Add research pipeline v2 design document
 - Add research pipeline v2 implementation plan
+- Update changelog
+- Add detailed implementation plan for Research Pipeline v2
+- Add comprehensive design validation review for Research Pipeline v2
+- Add Phase 0 validation plan for Research Pipeline v2
 
 ### 🎨 Styling
 
@@ -230,6 +236,7 @@
 - *(renovate)* Use shared renovate config presets
 - Remove agent-auditor directory (moved to separate repo)
 - *(rumdl)* Exclude references/ directories from MD033 checks
+- *(settings)* Update command paths and add user prompt hook
 ## [0.3.0] - 2025-11-12
 
 ### 🚀 Features

@@ -1,7 +1,7 @@
 #!/usr/bin/env -S uv run --script
 # /// script
 # requires-python = ">=3.11"
-# dependencies = ["jsonschema>=4.20.0"]
+# dependencies = ["jsonschema[format]>=4.20.0"]
 # ///
 """
 Validate research report JSON against schema.
@@ -15,16 +15,21 @@ import json
 import sys
 from pathlib import Path
 
-from jsonschema import Draft7Validator
+from jsonschema import Draft7Validator, FormatChecker
+
+# Allowed research sources - centralized for easy extension with new agents
+ALLOWED_SOURCES = ["github", "tavily", "deepwiki", "exa"]
 
 # Research Report Schema (from design doc Task 1.1)
+# Note: Empty findings arrays are allowed for error/edge cases where an agent
+# returns no results. Successful queries should typically produce at least one finding.
 RESEARCH_REPORT_SCHEMA = {
     "$schema": "http://json-schema.org/draft-07/schema#",
     "type": "object",
     "required": ["query", "source", "findings", "confidence", "timestamp"],
     "properties": {
         "query": {"type": "string", "minLength": 1},
-        "source": {"type": "string", "enum": ["github", "tavily", "deepwiki", "exa"]},
+        "source": {"type": "string", "enum": ALLOWED_SOURCES},
         "findings": {
             "type": "array",
             "items": {
@@ -44,11 +49,22 @@ RESEARCH_REPORT_SCHEMA = {
     },
 }
 
+# Module-level validator with format checking enabled for uri and date-time
+VALIDATOR = Draft7Validator(RESEARCH_REPORT_SCHEMA, format_checker=FormatChecker())
+
 
 def validate_report(json_data: dict) -> tuple[bool, list[str]]:
-    """Validate JSON against research report schema."""
-    validator = Draft7Validator(RESEARCH_REPORT_SCHEMA)
-    errors = list(validator.iter_errors(json_data))
+    """Validate a research report object against the JSON schema.
+
+    Args:
+        json_data: Parsed JSON payload representing a single research report.
+
+    Returns:
+        A tuple of:
+        - bool: True if the report is valid.
+        - list[str]: Human-readable error messages if invalid (empty when valid).
+    """
+    errors = list(VALIDATOR.iter_errors(json_data))
 
     if errors:
         error_messages = [f"{e.json_path}: {e.message}" for e in errors]
@@ -57,7 +73,12 @@ def validate_report(json_data: dict) -> tuple[bool, list[str]]:
 
 
 def run_self_test() -> bool:
-    """Run self-test with valid and invalid examples."""
+    """Run built-in valid/invalid self-tests for the research schema.
+
+    Returns:
+        True if all self-tests behave as expected (valid report passes,
+        invalid variants fail); False otherwise.
+    """
     print("Running self-test...\n")
     all_passed = True
 
@@ -119,7 +140,11 @@ def run_self_test() -> bool:
     return all_passed
 
 
-def main():
+def main() -> None:
+    """CLI entrypoint for validating research report JSON files.
+
+    Exits with status code 0 on success and non-zero on validation or I/O errors.
+    """
     if len(sys.argv) < 2:
         print("Usage: uv run scripts/validate_research_schema.py <json_file>")
         print("       uv run scripts/validate_research_schema.py --test")
@@ -130,8 +155,8 @@ def main():
         sys.exit(0 if success else 1)
 
     json_path = Path(sys.argv[1])
-    if not json_path.exists():
-        print(f"Error: File not found: {json_path}")
+    if not json_path.is_file():
+        print(f"Error: Not a file or does not exist: {json_path}")
         sys.exit(1)
 
     try:
@@ -148,6 +173,9 @@ def main():
         print(f"Error: File encoding issue in {json_path}")
         print(f"  {e.reason} at position {e.start}")
         print("  Hint: Ensure the file is UTF-8 encoded")
+        sys.exit(1)
+    except OSError as e:
+        print(f"Error: Cannot read {json_path}: {e.strerror}")
         sys.exit(1)
 
     is_valid, errors = validate_report(data)

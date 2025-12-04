@@ -6,10 +6,26 @@ This script simulates cache lookups by:
 1. Extracting keywords from test queries
 2. Matching against cache entry tags
 3. Calculating precision, recall, and F1 metrics
+
+Usage:
+    python scripts/test_cache_precision.py          # Human-readable output
+    python scripts/test_cache_precision.py --json   # JSON output for automation
 """
 
+import argparse
+import json
 import re
 import sys
+from typing import Any, TypedDict
+
+
+class CacheEvaluationResult(TypedDict):
+    """Structured result from cache precision evaluation."""
+
+    results: list[dict[str, Any]]
+    metrics: dict[str, float | int]
+    decision: str
+
 
 # Cache entries with their tags
 CACHE_ENTRIES = {
@@ -91,12 +107,14 @@ TEST_QUERIES = [
 
 
 def extract_keywords(query: str) -> set[str]:
-    """
-    Extract keywords from query by:
-    1. Converting to lowercase
-    2. Splitting on whitespace and hyphens
-    3. Removing common stop words
-    4. Normalizing synonyms
+    """Extract normalized keywords from a natural-language query.
+
+    Args:
+        query: Free-form user query text to extract keywords from.
+
+    Returns:
+        A set of normalized keyword tokens after lowercasing, stop-word
+        removal, and synonym normalization.
     """
     # Stop words to ignore
     stop_words = {"for", "with", "in", "on", "and", "the", "a", "an", "to", "of"}
@@ -126,11 +144,16 @@ def extract_keywords(query: str) -> set[str]:
 
 
 def cache_lookup(query: str, threshold: float = 0.3) -> set[str]:
-    """
-    Perform cache lookup using tag-based matching with scoring.
+    """Perform a tag-based cache lookup for a query.
 
-    Returns entries ranked by match quality.
-    threshold: minimum ratio of matching tags (overlap / total_tags)
+    Args:
+        query: User query text to match against cache entry tags.
+        threshold: Minimum score required for an entry to be considered a match,
+            based on tag/keyword overlap.
+
+    Returns:
+        A set of cache entry IDs whose scores meet or exceed the threshold
+        (or which have sufficient tag overlap).
     """
     keywords = extract_keywords(query)
     scores = []
@@ -166,8 +189,13 @@ def cache_lookup(query: str, threshold: float = 0.3) -> set[str]:
     return matches
 
 
-def evaluate_results() -> dict:
-    """Run all test queries and calculate metrics."""
+def evaluate_results() -> CacheEvaluationResult:
+    """Run all test queries and calculate cache precision/recall metrics.
+
+    Returns:
+        A CacheEvaluationResult with per-query results, aggregate metrics,
+        and the final Go/No-Go decision.
+    """
     results = []
     total_tp = 0
     total_fp = 0
@@ -262,6 +290,37 @@ def evaluate_results() -> dict:
     }
 
 
+def _serialize_results(evaluation: CacheEvaluationResult) -> dict[str, Any]:
+    """Convert evaluation results to JSON-serializable format."""
+    serializable = {
+        "results": [
+            {
+                **result,
+                "expected": sorted(result["expected"]),
+                "found": sorted(result["found"]),
+            }
+            for result in evaluation["results"]
+        ],
+        "metrics": evaluation["metrics"],
+        "decision": evaluation["decision"],
+    }
+    return serializable
+
+
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(
+        description="Test cache lookup precision with tag-based matching."
+    )
+    parser.add_argument(
+        "--json",
+        action="store_true",
+        help="Emit evaluation results as JSON for automation.",
+    )
+    args = parser.parse_args()
+
     evaluation = evaluate_results()
+
+    if args.json:
+        print(json.dumps(_serialize_results(evaluation), indent=2))
+
     sys.exit(0 if evaluation["decision"] == "PASS" else 1)

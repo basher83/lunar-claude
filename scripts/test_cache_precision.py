@@ -9,6 +9,7 @@ This script simulates cache lookups by:
 """
 
 import re
+import sys
 
 # Cache entries with their tags
 CACHE_ENTRIES = {
@@ -145,7 +146,7 @@ def cache_lookup(query: str, threshold: float = 0.3) -> set[str]:
             # 1. Number of matching tags
             # 2. Ratio of matched tags to total tags
             # 3. Ratio of matched keywords to total keywords
-            tag_ratio = len(overlap) / len(tags)
+            tag_ratio = len(overlap) / len(tags) if tags else 0
             keyword_ratio = len(overlap) / len(keywords) if keywords else 0
 
             # Combined score favors entries with more specific matches
@@ -263,3 +264,4 @@ def evaluate_results() -> dict:
 
 if __name__ == "__main__":
     evaluation = evaluate_results()
+    sys.exit(0 if evaluation["decision"] == "PASS" else 1)

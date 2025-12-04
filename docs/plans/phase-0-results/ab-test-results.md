@@ -48,6 +48,7 @@
 | Relevance | 3 | 4 | Multi |
 
 **Analysis:** Single-agent provided basic workflow from general tutorials. Multi-agent synthesized from official docs, command-line guides, best practices, and troubleshooting sources. Multi-agent caught critical details like:
+
 - Ubuntu 24 requires SCSI not IDE for cloud-init drive
 - SSH keys preferred over passwords for security
 - Need to run `cloud-init clean` before templating
@@ -65,6 +66,7 @@
 | Relevance | 4 | 5 | Multi |
 
 **Analysis:** Single-agent provided good high-level comparison. Multi-agent added depth:
+
 - Specific Terraform provider comparison (Telmate vs BPG)
 - BPG provider supports Proxmox 9.x, Telmate has limitations
 - Ansible module migration (community.general → community.proxmox)
@@ -82,6 +84,7 @@
 | Relevance | 4 | 5 | Multi |
 
 **Analysis:** Single-agent covered high-level architecture. Multi-agent provided production-critical details:
+
 - VM-based deployment strongly recommended over LXC/bare-metal
 - Minimum 6 servers for production (3 control plane + 3 workers)
 - Ceph storage layers: Proxmox manages Ceph, expose via CSI to K8s
@@ -102,6 +105,7 @@
 | Relevance | 4 | 5 | Multi |
 
 **Analysis:** Single-agent identified main integration options (netbox-powerdns-sync plugin). Multi-agent provided comprehensive integration strategy:
+
 - Multiple plugin options with trade-offs (ArnesSI plugin vs v0tti script vs netbox2dns)
 - NetBox plugin DNS vs external sync architectures
 - Webhook automation patterns

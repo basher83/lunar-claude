@@ -59,6 +59,7 @@ def validate_report(json_data: dict) -> tuple[bool, list[str]]:
 def run_self_test() -> bool:
     """Run self-test with valid and invalid examples."""
     print("Running self-test...\n")
+    all_passed = True
 
     # Valid example
     valid_report = {
@@ -78,8 +79,10 @@ def run_self_test() -> bool:
     }
 
     is_valid, errors = validate_report(valid_report)
-    print(f"Valid report test: {'PASS' if is_valid else 'FAIL'}")
-    if errors:
+    test_passed = is_valid
+    print(f"Valid report test: {'PASS' if test_passed else 'FAIL'}")
+    if not test_passed:
+        all_passed = False
         print(f"  Errors: {errors}")
 
     # Invalid example (missing required field)
@@ -90,8 +93,11 @@ def run_self_test() -> bool:
     }
 
     is_valid, errors = validate_report(invalid_report)
-    print(f"Invalid report test: {'PASS' if not is_valid else 'FAIL'}")
-    if not is_valid:
+    test_passed = not is_valid  # Should be invalid
+    print(f"Invalid report test: {'PASS' if test_passed else 'FAIL'}")
+    if not test_passed:
+        all_passed = False
+    else:
         print(f"  Caught errors: {len(errors)} validation errors (expected)")
 
     # Invalid enum
@@ -104,10 +110,13 @@ def run_self_test() -> bool:
     }
 
     is_valid, errors = validate_report(invalid_source)
-    print(f"Invalid source test: {'PASS' if not is_valid else 'FAIL'}")
+    test_passed = not is_valid  # Should be invalid
+    print(f"Invalid source test: {'PASS' if test_passed else 'FAIL'}")
+    if not test_passed:
+        all_passed = False
 
-    print("\nSelf-test complete.")
-    return True
+    print(f"\nSelf-test complete: {'ALL PASSED' if all_passed else 'FAILURES DETECTED'}")
+    return all_passed
 
 
 def main():
@@ -117,16 +126,29 @@ def main():
         sys.exit(1)
 
     if sys.argv[1] == "--test":
-        run_self_test()
-        sys.exit(0)
+        success = run_self_test()
+        sys.exit(0 if success else 1)
 
     json_path = Path(sys.argv[1])
     if not json_path.exists():
         print(f"Error: File not found: {json_path}")
         sys.exit(1)
 
-    with open(json_path) as f:
-        data = json.load(f)
+    try:
+        with open(json_path, encoding="utf-8") as f:
+            data = json.load(f)
+    except json.JSONDecodeError as e:
+        print(f"Error: Invalid JSON in {json_path}")
+        print(f"  Line {e.lineno}, Column {e.colno}: {e.msg}")
+        sys.exit(1)
+    except PermissionError:
+        print(f"Error: Permission denied reading {json_path}")
+        sys.exit(1)
+    except UnicodeDecodeError as e:
+        print(f"Error: File encoding issue in {json_path}")
+        print(f"  {e.reason} at position {e.start}")
+        print("  Hint: Ensure the file is UTF-8 encoded")
+        sys.exit(1)
 
     is_valid, errors = validate_report(data)
 

@@ -1,4 +1,8 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run --script
+# /// script
+# requires-python = ">=3.11"
+# dependencies = []
+# ///
 """
 Test cache lookup precision with tag-based matching.
 
@@ -8,9 +12,9 @@ This script simulates cache lookups by:
 3. Calculating precision, recall, and F1 metrics
 
 Usage:
-    python scripts/test_cache_precision.py              # Summary output only
-    python scripts/test_cache_precision.py --verbose    # Verbose with per-query details
-    python scripts/test_cache_precision.py --json       # JSON output for automation
+    uv run scripts/test_cache_precision.py              # Summary output only
+    uv run scripts/test_cache_precision.py --verbose    # Verbose with per-query details
+    uv run scripts/test_cache_precision.py --json       # JSON output for automation
 """
 
 import argparse

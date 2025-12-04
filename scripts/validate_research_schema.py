@@ -67,7 +67,10 @@ def validate_report(json_data: dict) -> tuple[bool, list[str]]:
     errors = list(VALIDATOR.iter_errors(json_data))
 
     if errors:
-        error_messages = [f"{e.json_path}: {e.message}" for e in errors]
+        error_messages = [
+            f"{' -> '.join(str(p) for p in e.path) if e.path else 'root'}: {e.message}"
+            for e in errors
+        ]
         return False, error_messages
     return True, []
 

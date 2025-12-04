@@ -2,14 +2,14 @@
 
 ## Summary
 
-| Query | Single-Agent Score | Multi-Agent Score | Winner | Time Delta |
-|-------|-------------------|-------------------|--------|-----------|
-| Q1: Proxmox port | 23/25 | 25/25 | Multi | +12s |
-| Q2: Cloud-init | 19/25 | 24/25 | Multi | +42s |
-| Q3: Ansible vs TF | 21/25 | 25/25 | Multi | +39s |
-| Q4: K8s on Proxmox | 20/25 | 25/25 | Multi | +38s |
-| Q5: NetBox + DNS | 18/25 | 24/25 | Multi | +49s |
-| **Average** | **20.2/25** | **24.6/25** | **Multi** | **+36s** |
+| Query | Single-Agent Score | Multi-Agent Score | Winner | Time Overhead |
+|-------|-------------------|-------------------|--------|---------------|
+| Q1: Proxmox port | 23/25 | 25/25 | Multi | -3s |
+| Q2: Cloud-init | 19/25 | 24/25 | Multi | -6s |
+| Q3: Ansible vs TF | 21/25 | 25/25 | Multi | +2s |
+| Q4: K8s on Proxmox | 20/25 | 25/25 | Multi | -14s |
+| Q5: NetBox + DNS | 18/25 | 24/25 | Multi | +18s |
+| **Average** | **20.2/25** | **24.6/25** | **Multi** | **-0.6s** |
 
 ## Time Comparison
 

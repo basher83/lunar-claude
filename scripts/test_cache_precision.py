@@ -8,15 +8,24 @@ This script simulates cache lookups by:
 3. Calculating precision, recall, and F1 metrics
 
 Usage:
-    python scripts/test_cache_precision.py          # Human-readable output
-    python scripts/test_cache_precision.py --json   # JSON output for automation
+    python scripts/test_cache_precision.py              # Summary output only
+    python scripts/test_cache_precision.py --verbose    # Verbose with per-query details
+    python scripts/test_cache_precision.py --json       # JSON output for automation
 """
 
 import argparse
 import json
+import logging
 import re
 import sys
 from typing import Any, TypedDict
+
+# Configure logging with timestamp
+logging.basicConfig(
+    format="%(asctime)s - %(levelname)s - %(message)s",
+    level=logging.INFO,
+)
+logger = logging.getLogger(__name__)
 
 
 class CacheEvaluationResult(TypedDict):
@@ -201,10 +210,9 @@ def evaluate_results() -> CacheEvaluationResult:
     total_fp = 0
     total_fn = 0
 
-    print("=" * 80)
-    print("CACHE LOOKUP PRECISION TEST")
-    print("=" * 80)
-    print()
+    logger.info("=" * 80)
+    logger.info("CACHE LOOKUP PRECISION TEST")
+    logger.info("=" * 80)
 
     for i, test in enumerate(TEST_QUERIES, 1):
         query = test["query"]
@@ -244,13 +252,12 @@ def evaluate_results() -> CacheEvaluationResult:
         }
         results.append(result)
 
-        # Print result
-        print(f"Q{i}: {query}")
-        print(f"    Type: {query_type}")
-        print(f"    Expected: {sorted(expected)}")
-        print(f"    Found:    {sorted(found)}")
-        print(f"    Status:   {status} (TP={tp}, FP={fp}, FN={fn})")
-        print()
+        # Log result (verbose details at DEBUG level)
+        logger.debug("Q%d: %s", i, query)
+        logger.debug("    Type: %s", query_type)
+        logger.debug("    Expected: %s", sorted(expected))
+        logger.debug("    Found:    %s", sorted(found))
+        logger.debug("    Status:   %s (TP=%d, FP=%d, FN=%d)", status, tp, fp, fn)
 
     # Calculate overall metrics
     precision = total_tp / (total_tp + total_fp) if (total_tp + total_fp) > 0 else 0
@@ -258,23 +265,21 @@ def evaluate_results() -> CacheEvaluationResult:
     f1 = 2 * (precision * recall) / (precision + recall) if (precision + recall) > 0 else 0
 
     # Summary
-    print("=" * 80)
-    print("METRICS SUMMARY")
-    print("=" * 80)
-    print(f"True Positives:  {total_tp}")
-    print(f"False Positives: {total_fp}")
-    print(f"False Negatives: {total_fn}")
-    print()
-    print(f"Precision: {precision:.1%} (TP / (TP + FP))")
-    print(f"Recall:    {recall:.1%} (TP / (TP + FN))")
-    print(f"F1 Score:  {f1:.1%}")
-    print()
+    logger.info("=" * 80)
+    logger.info("METRICS SUMMARY")
+    logger.info("=" * 80)
+    logger.info("True Positives:  %d", total_tp)
+    logger.info("False Positives: %d", total_fp)
+    logger.info("False Negatives: %d", total_fn)
+    logger.info("Precision: %.1f%% (TP / (TP + FP))", precision * 100)
+    logger.info("Recall:    %.1f%% (TP / (TP + FN))", recall * 100)
+    logger.info("F1 Score:  %.1f%%", f1 * 100)
 
     # Go/No-Go decision
     threshold = 0.70
     decision = "PASS" if precision >= threshold else "FAIL"
-    print(f"Go/No-Go Decision: {decision} (threshold: {threshold:.0%})")
-    print("=" * 80)
+    logger.info("Go/No-Go Decision: %s (threshold: %.0f%%)", decision, threshold * 100)
+    logger.info("=" * 80)
 
     return {
         "results": results,
@@ -316,7 +321,18 @@ if __name__ == "__main__":
         action="store_true",
         help="Emit evaluation results as JSON for automation.",
     )
+    parser.add_argument(
+        "--verbose",
+        "-v",
+        action="store_true",
+        help="Enable verbose output with per-query details.",
+    )
     args = parser.parse_args()
+
+    # Set logging level based on --verbose flag
+    if args.verbose:
+        logging.getLogger().setLevel(logging.DEBUG)
+        logger.setLevel(logging.DEBUG)
 
     evaluation = evaluate_results()
 

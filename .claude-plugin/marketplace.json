@@ -97,6 +97,17 @@
         "name": "Daisy Hollman",
         "email": "daisy@anthropic.com"
       }
+    },
+    {
+      "name": "plugin-dev",
+      "source": "./plugins/meta/plugin-dev",
+      "description": "Comprehensive plugin development toolkit for creating Claude Code plugins with AI-powered guidance for skills, agents, commands, and hooks",
+      "version": "1.0.0",
+      "category": "meta",
+      "keywords": ["plugin", "development", "skills", "agents", "commands", "hooks", "validation"],
+      "author": {
+        "name": "basher83"
+      }
     }
   ]
 }

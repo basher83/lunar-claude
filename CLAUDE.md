@@ -3,15 +3,15 @@
 This file provides guidance to Claude Code (claude.ai/code) when working with
 code in this repository.
 
-## ⚠️ CRITICAL: Audit Agent Protocol
+## Audit Agent Protocol
 
 **When invoking ANY audit agent (skill-auditor, command-audit, pr-review, etc.):**
 
-1. **ONLY provide the file path** - Nothing else
-2. **DO NOT mention what you just fixed** - No context about recent changes
-3. **DO NOT hint at what to look for** - No expectations or guidance
-4. **DO NOT use words like "test", "verify", "check"** - Taints the agent's objectivity
-5. **DO NOT explain why you're auditing** - Let the agent form independent conclusions
+1. Provide the file path - Nothing else
+2. Do not mention what you just fixed - No context about recent changes
+3. Do not hint at what to look for - No expectations or guidance
+4. Do not use words like "test", "verify", "check" - Taints the agent's objectivity
+5. Do not explain why you're auditing - Let the agent form independent conclusions
 
 **Correct audit invocation:**
 
@@ -19,7 +19,7 @@ code in this repository.
 plugins/meta/meta-claude/skills/skill-factory
 ```
 
-**WRONG - Tainted audit invocation:**
+**BAD - Tainted audit invocation:**
 
 ```text
 We just fixed effectiveness issues. Can you audit plugins/meta/meta-claude/skills/skill-factory
@@ -30,6 +30,17 @@ to verify the triggers are now concrete?
 mentioned instead of finding issues independently. This creates false positives and missed violations.
 
 **Remember:** Trust but verify. Always audit with untainted context.
+
+## Encouraged Essential tools
+
+The `SlashCommand` tool allows Claude to execute custom slash commands programmatically
+during a conversation. This gives Claude the ability to invoke custom commands
+on the user's behalf when appropriate.
+
+The `Skill` tool allows Claude to execute skills programmatically during a conversation.
+Pre-built Agent Skills extend Claude's capabilities with specialized expertise.
+
+**HINT**: Claude can load multiple skills at once via the `Skill` tool.
 
 ---
 

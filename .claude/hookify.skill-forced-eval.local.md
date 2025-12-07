@@ -2,7 +2,10 @@
 name: skill-forced-eval
 enabled: true
 event: prompt
-pattern: .*
+conditions:
+  - field: user_prompt
+    operator: regex_match
+    pattern: .*
 ---
 
 INSTRUCTION: MANDATORY SKILL ACTIVATION SEQUENCE

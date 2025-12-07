@@ -78,6 +78,13 @@ class RuleEngine:
                     },
                     "systemMessage": combined_message
                 }
+            elif hook_event == 'UserPromptSubmit':
+                return {
+                    "hookSpecificOutput": {
+                        "hookEventName": hook_event,
+                        "additionalContext": combined_message
+                    }
+                }
             else:
                 # For other events, just show message
                 return {
@@ -87,8 +94,18 @@ class RuleEngine:
         # If only warnings, show them but allow operation
         if warning_rules:
             messages = [f"**[{r.name}]**\n{r.message}" for r in warning_rules]
+            combined = "\n\n".join(messages)
+
+            # UserPromptSubmit needs additionalContext, not systemMessage
+            if hook_event == 'UserPromptSubmit':
+                return {
+                    "hookSpecificOutput": {
+                        "hookEventName": hook_event,
+                        "additionalContext": combined
+                    }
+                }
             return {
-                "systemMessage": "\n\n".join(messages)
+                "systemMessage": combined
             }
 
         # No matches - allow operation

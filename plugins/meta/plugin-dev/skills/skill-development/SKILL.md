@@ -6,6 +6,8 @@ version: 0.1.0
 
 # Skill Development for Claude Code Plugins
 
+> **Reference:** See [agent-skills-spec.md](references/agent-skills-spec.md) for the official specification.
+
 This skill provides guidance for creating effective skills for Claude Code plugins.
 
 ## About Skills
@@ -656,6 +658,10 @@ Plugin-dev's skills demonstrate best practices:
 For complete skill-creator methodology:
 
 - **`references/skill-creator-original.md`** - Full original skill-creator content
+
+For complete Offical Anthropic skill specification:
+
+- **`references/agent-skills-spec.md`** - Full Offical Anthropic skill specification
 
 ## Implementation Workflow
 

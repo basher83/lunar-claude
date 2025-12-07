@@ -6,6 +6,8 @@ version: 0.2.0
 
 # Command Development for Claude Code
 
+> **Reference:** See [command-spec.md](references/command-spec.md) for the official specification.
+
 ## Overview
 
 Slash commands are frequently-used prompts defined as Markdown files that Claude executes during interactive sessions. Understanding command structure, frontmatter options, and dynamic features enables creating powerful, reusable workflows.

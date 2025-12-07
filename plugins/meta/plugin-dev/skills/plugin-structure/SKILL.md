@@ -6,6 +6,8 @@ version: 0.1.0
 
 # Plugin Structure for Claude Code
 
+> **Reference:** See [plugin-spec.md](references/plugin-spec.md) for the official specification.
+
 ## Overview
 
 Claude Code plugins follow a standardized directory structure with automatic component discovery. Understanding this structure enables creating well-organized, maintainable plugins that integrate seamlessly with Claude Code.

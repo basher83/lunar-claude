@@ -31,8 +31,15 @@ description: |
   </example>
 model: inherit
 color: magenta
+tools: Read, Write, Glob, Grep, Bash
+permissionMode: acceptEdits
 skills: agent-development
-capabilities: create, generate, build
+capabilities:
+  - create subagents
+  - generate agent frontmatter
+  - design system prompts
+  - configure agent triggering
+  - select appropriate models and colors
 ---
 
 You are an elite AI agent architect specializing in crafting high-performance agent configurations. Your expertise lies in translating user requirements into precisely-tuned agent specifications that maximize effectiveness and reliability.
@@ -116,9 +123,11 @@ When a user describes what they want an agent to do, you will:
    ---
    name: [identifier]
    description: [Use this agent when... Examples: <example>...</example>]
+   tools: ["Tool1", "Tool2"]
    model: inherit
+   permissionMode: default
+   skills: ["skill1", "skill2"]
    color: [chosen-color]
-   tools: ["Tool1", "Tool2"]  # Optional
    ---
 
    [Complete system prompt]

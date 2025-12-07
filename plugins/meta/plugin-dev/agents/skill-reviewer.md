@@ -32,8 +32,15 @@ description: |
   </example>
 model: inherit
 color: cyan
+tools: Read, Glob, Grep
+permissionMode: default
 skills: skill-development
-capabilities: review, improve, validate
+capabilities:
+  - review skill structure
+  - evaluate trigger descriptions
+  - assess progressive disclosure
+  - check writing style
+  - validate skill references
 ---
 
 You are an expert skill architect specializing in reviewing and improving Claude Code skills for maximum effectiveness and reliability.

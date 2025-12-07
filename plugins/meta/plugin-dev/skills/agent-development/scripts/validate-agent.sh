@@ -87,8 +87,19 @@ else
   fi
 fi
 
-# Check description field
-DESCRIPTION=$(echo "$FRONTMATTER" | grep '^description:' | sed 's/description: *//')
+# Check description field (handles multi-line YAML with |)
+# First check if it's a multi-line description
+if echo "$FRONTMATTER" | grep -q '^description: |'; then
+  # Extract multi-line description: everything after "description: |" until next top-level field
+  DESCRIPTION=$(echo "$FRONTMATTER" | awk '
+    /^description: \|/ { capture=1; next }
+    capture && /^[a-z]+:/ { capture=0 }
+    capture { print }
+  ')
+else
+  # Single-line description
+  DESCRIPTION=$(echo "$FRONTMATTER" | grep '^description:' | sed 's/description: *//')
+fi
 
 if [ -z "$DESCRIPTION" ]; then
   echo "❌ Missing required field: description"

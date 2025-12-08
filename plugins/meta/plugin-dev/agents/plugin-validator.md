@@ -122,12 +122,14 @@ You are an expert plugin validator specializing in comprehensive validation of C
      ```
    - The script checks:
      - Valid JSON syntax
+     - Detects format (plugin wrapper `{"hooks": {...}}` or settings direct format)
      - Valid event names (PreToolUse, PostToolUse, Stop, SessionStart, etc.)
-     - Each hook has `matcher` and `hooks` array
+     - Each hook has `hooks` array (matcher is optional, defaults to "*")
      - Hook type is `command` or `prompt`
      - Type-specific fields (command/prompt)
      - Timeout ranges (warns if <5s or >600s)
      - Warns about hardcoded paths (suggests ${CLAUDE_PLUGIN_ROOT})
+   - **Note:** Plugin hooks.json uses wrapper format: `{"description": "...", "hooks": {...}}`
 
 1. **Validate MCP Configuration** (if `.mcp.json` or `mcpServers` in manifest):
    - Check JSON syntax

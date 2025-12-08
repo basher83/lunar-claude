@@ -1,6 +1,6 @@
 ---
 name: skill-forced-eval
-enabled: true
+enabled: false
 event: prompt
 conditions:
   - field: user_prompt

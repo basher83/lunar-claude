@@ -170,6 +170,44 @@ tools: ["Read", "Write", "Grep", "Bash"]
 - Testing: `["Read", "Bash", "Grep"]`
 - Full access: Omit field or use `["*"]`
 
+### permissionMode (optional)
+
+Controls how permissions are handled for the agent.
+
+**Options:**
+
+- `default` - Normal permission prompts
+- `acceptEdits` - Auto-accept file edits
+- `bypassPermissions` - Skip all permission prompts
+- `plan` - Plan mode only
+- `ignore` - Ignore permission settings
+
+**Default:** `default`
+
+### skills (optional)
+
+Skills to auto-load when the agent starts.
+
+**Format:** Comma-separated list of skill names
+
+```yaml
+skills: debugging, code-review
+```
+
+**Use case:** When an agent needs specific domain knowledge from skills to do its job effectively.
+
+### capabilities (optional)
+
+Array of specific tasks or capabilities the agent excels at. **Plugin subagents only.**
+
+**Format:** Array of strings
+
+```yaml
+capabilities: ["code review", "security analysis", "refactoring"]
+```
+
+**Use case:** Describes agent specializations for plugin agents. Helps users understand what the agent can do.
+
 ## System Prompt Design
 
 The markdown body becomes the agent's system prompt. Write in second person, addressing the agent directly.
@@ -371,6 +409,9 @@ Output: [What to provide]
 | model | Yes | inherit/sonnet/opus/haiku | inherit |
 | color | Yes | Color name | blue |
 | tools | No | Array of tool names | ["Read", "Grep"] |
+| permissionMode | No | Mode string | default |
+| skills | No | Comma-separated names | debugging, code-review |
+| capabilities | No | Array of strings (plugin only) | ["code review"] |
 
 ### Best Practices
 

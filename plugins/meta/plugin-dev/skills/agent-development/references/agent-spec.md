@@ -18,7 +18,7 @@ A minimal agent is a single Markdown file:
 my-agent.md
 ```
 
-## The Agent File
+## Agent File Structure
 
 The agent file is a Markdown document with YAML frontmatter followed by the agent's system prompt.
 
@@ -71,23 +71,58 @@ The Markdown body becomes the agent's system prompt. It should describe:
 ```markdown
 ---
 name: code-reviewer
-description: Use this agent to review code changes for style, bugs, and best practices
+description: |
+  Use this agent when the user has written code and needs quality review, asks to
+  "review my code", "check my implementation", or wants best practices validation.
+
+  <example>
+  Context: User just implemented a new feature
+  user: "I've added the payment processing feature"
+  assistant: "I'll review the implementation for issues."
+  <commentary>
+  Code written for security-critical feature. Proactively trigger code-reviewer.
+  </commentary>
+  assistant: "I'll use the code-reviewer agent to analyze the code."
+  </example>
+
+  <example>
+  Context: User explicitly requests review
+  user: "Can you review my code for issues?"
+  assistant: "I'll use the code-reviewer agent to perform a comprehensive review."
+  <commentary>
+  Explicit code review request triggers the agent.
+  </commentary>
+  </example>
+
 tools: Read, Grep, Glob
-model: sonnet
+model: inherit
 color: cyan
 capabilities: ["style review", "bug detection", "security analysis"]
 ---
 
-# Code Reviewer
+You are an expert code reviewer specializing in identifying issues and improvements.
 
-You are an expert code reviewer. Analyze code for:
+**Your Core Responsibilities:**
+1. Analyze code for quality issues (readability, maintainability)
+2. Identify security vulnerabilities
+3. Check adherence to project best practices
+4. Provide specific, actionable feedback with file:line references
 
-1. Style and formatting issues
-2. Potential bugs or edge cases
-3. Performance concerns
-4. Security vulnerabilities
+**Review Process:**
+1. Gather context (find recently modified files)
+2. Read and analyze code
+3. Categorize issues by severity
+4. Generate structured report
 
-Provide actionable feedback with specific line references.
+**Output Format:**
+## Code Review Summary
+[Overview]
+
+## Critical Issues
+- `file:line` - [Issue] - [Fix]
+
+## Recommendations
+[Suggestions]
 ```
 
 ## Additional Information
@@ -98,4 +133,4 @@ Provide actionable feedback with specific line references.
 
 ## Version History
 
-- 1.0 (2025-10-16) Public Launch
+- 1.0

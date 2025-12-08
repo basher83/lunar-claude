@@ -174,7 +174,7 @@ This agent will trigger when [triggering scenarios].
 
 Test it by: [suggest test scenario]
 
-Validate with: `scripts/validate-agent.sh agents/[identifier].md`
+Validate with: `${CLAUDE_PLUGIN_ROOT}/skills/agent-development/scripts/validate-agent.sh agents/[identifier].md`
 
 ### Next Steps
 

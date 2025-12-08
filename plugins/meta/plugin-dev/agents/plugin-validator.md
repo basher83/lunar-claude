@@ -94,15 +94,17 @@ You are an expert plugin validator specializing in comprehensive validation of C
 
 1. **Validate Agents** (if `agents/` exists):
    - Use Glob to find `agents/**/*.md`
-   - For each agent file:
-     - Use the validate-agent.sh utility from agent-development skill
-     - Or manually check:
-       - Frontmatter with `name`, `description`, `model`, `color`
-       - Name format (lowercase, hyphens, 3-50 chars)
-       - Description includes `<example>` blocks
-       - Model is valid (inherit/sonnet/opus/haiku)
-       - Color is valid (blue/cyan/green/yellow/magenta/red)
-       - System prompt exists and is substantial (>20 chars)
+   - For each agent file, run the validation script:
+     ```bash
+     ${CLAUDE_PLUGIN_ROOT}/skills/agent-development/scripts/validate-agent.sh <agent-file>
+     ```
+   - The script checks:
+     - Frontmatter with `name`, `description`, `model`, `color`
+     - Name format (lowercase, hyphens, 3-50 chars)
+     - Description includes `<example>` blocks
+     - Model is valid (inherit/sonnet/opus/haiku)
+     - Color is valid (blue/cyan/green/yellow/magenta/red)
+     - System prompt exists and is substantial (>20 chars)
 
 1. **Validate Skills** (if `skills/` exists):
    - Use Glob to find `skills/*/SKILL.md`
@@ -114,13 +116,18 @@ You are an expert plugin validator specializing in comprehensive validation of C
      - Validate referenced files exist
 
 1. **Validate Hooks** (if `hooks/hooks.json` exists):
-   - Use the validate-hook-schema.sh utility from hook-development skill
-   - Or manually check:
+   - Run the validation script:
+     ```bash
+     ${CLAUDE_PLUGIN_ROOT}/skills/hook-development/scripts/validate-hook-schema.sh <hooks.json>
+     ```
+   - The script checks:
      - Valid JSON syntax
-     - Valid event names (PreToolUse, PostToolUse, Stop, etc.)
+     - Valid event names (PreToolUse, PostToolUse, Stop, SessionStart, etc.)
      - Each hook has `matcher` and `hooks` array
      - Hook type is `command` or `prompt`
-     - Commands reference existing scripts with ${CLAUDE_PLUGIN_ROOT}
+     - Type-specific fields (command/prompt)
+     - Timeout ranges (warns if <5s or >600s)
+     - Warns about hardcoded paths (suggests ${CLAUDE_PLUGIN_ROOT})
 
 1. **Validate MCP Configuration** (if `.mcp.json` or `mcpServers` in manifest):
    - Check JSON syntax

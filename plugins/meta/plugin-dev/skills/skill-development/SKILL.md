@@ -24,6 +24,33 @@ equipped with procedural knowledge that no model can fully possess.
 3. Domain expertise - Company-specific knowledge, schemas, business logic
 4. Bundled resources - Scripts, references, and assets for complex and repetitive tasks
 
+### Core Principles
+
+#### Concise is Key
+
+The context window is a public good. Skills share the context window with everything else Claude
+needs: system prompt, conversation history, other skills' metadata, and the actual user request.
+
+**Default assumption: Claude is already very smart.** Only add context Claude doesn't already have.
+Challenge each piece of information: "Does Claude really need this explanation?" and "Does this
+paragraph justify its token cost?"
+
+Prefer concise examples over verbose explanations.
+
+#### Set Appropriate Degrees of Freedom
+
+Match the level of specificity to the task's fragility and variability:
+
+- **High freedom (text-based instructions)**: Use when multiple approaches are valid, decisions
+  depend on context, or heuristics guide the approach.
+- **Medium freedom (pseudocode or scripts with parameters)**: Use when a preferred pattern exists,
+  some variation is acceptable, or configuration affects behavior.
+- **Low freedom (specific scripts, few parameters)**: Use when operations are fragile and
+  error-prone, consistency is critical, or a specific sequence must be followed.
+
+Think of Claude as exploring a path: a narrow bridge with cliffs needs specific guardrails (low
+freedom), while an open field allows many routes (high freedom).
+
 ### Anatomy of a Skill
 
 Every skill consists of a required SKILL.md file and optional bundled resources:
@@ -75,6 +102,21 @@ Files not intended to be loaded into context, but rather used within the output 
 - **Examples**: `assets/logo.png` for brand assets, `assets/slides.pptx` for PowerPoint templates, `assets/frontend-template/` for HTML/React boilerplate, `assets/font.ttf` for typography
 - **Use cases**: Templates, images, icons, boilerplate code, fonts, sample documents that get copied or modified
 - **Benefits**: Separates output resources from documentation, enables Claude to use files without loading them into context
+
+#### What to Not Include
+
+A skill should only contain essential files that directly support its functionality. Do NOT create
+extraneous documentation or auxiliary files, including:
+
+- README.md
+- INSTALLATION_GUIDE.md
+- QUICK_REFERENCE.md
+- CHANGELOG.md
+
+The skill should only contain the information needed for an AI agent to do the job at hand. It
+should not contain auxiliary context about the process that went into creating it, setup and
+testing procedures, user-facing documentation, etc. Creating additional documentation files just
+adds clutter and confusion.
 
 ### Progressive Disclosure Design Principle
 

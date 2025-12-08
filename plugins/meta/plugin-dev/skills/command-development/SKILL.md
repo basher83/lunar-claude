@@ -515,7 +515,7 @@ allowed-tools: Bash(gh:*), Read
 
 PR #$1 Workflow:
 
-1. Fetch PR: !`gh pr view $1`
+1. Fetch PR: Run `gh pr view $1`
 2. Review changes
 3. Run checks
 4. Approve or request changes

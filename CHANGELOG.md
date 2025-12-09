@@ -59,6 +59,19 @@
 - *(meta-claude)* Add slash-command-creator skill
 - *(python-tools)* Add review-uv-script command
 - *(commands)* Add design-validation slash command suite
+- *(phase-0)* Add parallel dispatch PoC with results
+- *(phase-0)* Add JSON schema validation script with self-test
+- *(phase-0)* Add multi-agent vs single-agent A/B test results
+- *(phase-0)* Add cache precision test with results
+- *(phase-0)* Add user validation interview results
+- *(phase-0)* Add final validation decision document
+- *(plugin-dev)* Add comprehensive plugin development toolkit
+- *(plugin-dev)* Add official specification reference files
+- *(plugin-dev)* Enhance agent definitions with comprehensive metadata
+- *(python-tools)* Enhance agent-sdk-verifier with skills metadata
+- *(plugin-dev)* Add permissionMode, skills, and capabilities fields to agent spec
+- *(agents)* Add capabilities field to agent frontmatter
+- *(verify-structure)* Add skip field support and info-only messages
 
 ### 🐛 Bug Fixes
 
@@ -112,12 +125,24 @@
 - *(skill-factory)* Correct completion options for skills
 - *(claude-docs)* Improve error handling and file encoding
 - *(slash-command-creator)* Resolve skill loader syntax error
+- Address PR review feedback for Phase 0 validation
+- Address remaining PR review feedback
+- *(hookify)* Update skill-forced-eval hook to new conditions format
+- *(plugin-dev)* Improve validate-agent.sh to handle multi-line descriptions
+- *(hookify)* Add prompt event field mapping support
+- *(hookify)* Add UserPromptSubmit hook support
+- *(plugin-dev)* Update validation script paths to use CLAUDE_PLUGIN_ROOT
+- *(plugin-dev)* Escape bash execution pattern in command-development skill
+- *(plugin-dev)* Support plugin hooks.json wrapper format in validator
+- *(hookify)* Correct Python import paths for plugin installation
 
 ### 💼 Other
 
 - Continue component checks when manifest missing or invalid
 - *(rumdl)* Exclude agent-creator skill from linting for dense knowledge base
 - *(audit-command)* Remove outdated slash command compliance auditor agent
+- *(deps)* Add dev dependencies for testing and linting
+- *(ci)* Remove link checking from PR workflow
 
 ### 🚜 Refactor
 
@@ -146,6 +171,12 @@
 - *(coderabbit)* Migrate skill from meta-claude to claude-dev-sandbox
 - *(claude-dev-sandbox)* Remove working-with-claude-code skill
 - *(skill-auditor)* Remove skill auditor scripts and related files
+- *(hooks)* Convert skill-forced-eval bash hook to hookify rule
+- Improve Python scripts based on PR review feedback
+- Replace print statements with structured logging
+- *(hookify)* Modernize config_loader.py with Python best practices
+- *(hookify)* Simplify skill-forced-eval hook configuration
+- *(plugin-dev)* Enhance skill-reviewer with compliance-first approach
 
 ### 📚 Documentation
 
@@ -206,6 +237,11 @@
 - Add detailed implementation plan for Research Pipeline v2
 - Add comprehensive design validation review for Research Pipeline v2
 - Add Phase 0 validation plan for Research Pipeline v2
+- Update changelog
+- *(plugin-dev)* Add specification reference links to skill files
+- *(plugin-dev)* Expand skill-creator-original.md with core principles
+- *(plugin-dev)* Expand skill-development with core principles and forbidden files
+- Add PR review report for multi-agent research pipeline
 
 ### 🎨 Styling
 
@@ -237,6 +273,11 @@
 - Remove agent-auditor directory (moved to separate repo)
 - *(rumdl)* Exclude references/ directories from MD033 checks
 - *(settings)* Update command paths and add user prompt hook
+- *(.gitignore)* Add backup entry for MCP JSON files
+- Remove obsolete skill-forced-eval bash hook
+- Add PR validation and release workflows
+- Update CLAUDE.md formatting and fix hookify agent
+- *(hookify)* Disable skill-forced-eval hook
 ## [0.3.0] - 2025-11-12
 
 ### 🚀 Features

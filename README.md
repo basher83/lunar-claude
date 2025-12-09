@@ -1,5 +1,8 @@
 # lunar-claude
 
+[![Run in Smithery](https://smithery.ai/badge/skills/basher83)](https://smithery.ai/skills?ns=basher83&utm_source=github&utm_medium=badge)
+
+
 Personal Claude Code plugin marketplace for homelab and infrastructure automation.
 
 ## Structure

@@ -7,7 +7,7 @@ from functools import lru_cache
 from typing import Any
 
 # Import from local module
-from hookify.core.config_loader import Condition, Rule
+from core.config_loader import Condition, Rule
 
 
 # Cache compiled regexes (max 128 patterns)
@@ -293,7 +293,7 @@ class RuleEngine:
 
 # For testing
 if __name__ == '__main__':
-    from hookify.core.config_loader import Condition, Rule
+    from core.config_loader import Condition, Rule
 
     # Test rule evaluation
     rule = Rule(

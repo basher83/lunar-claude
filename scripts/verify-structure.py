@@ -777,7 +777,7 @@ def check_custom_component_paths(plugin_dir: Path, plugin_data: dict) -> list[st
 
 def check_manifest_conflicts(
     plugin_name: str, marketplace_entry: dict, plugin_json_data: dict
-) -> list[str]:
+) -> tuple[list[str], list[str]]:
     """Detect conflicts between marketplace entry and plugin.json.
 
     Args:
@@ -786,9 +786,11 @@ def check_manifest_conflicts(
         plugin_json_data: Parsed plugin.json content
 
     Returns:
-        List of warning messages for conflicting values
+        Tuple of (warnings, info_only). Warnings are treated as errors in strict mode,
+        info_only are always informational (e.g., author field differences).
     """
     warnings = []
+    info_only = []  # Never fail, even in strict mode
 
     # Fields that can appear in both
     comparable_fields = [
@@ -800,6 +802,9 @@ def check_manifest_conflicts(
         "license",
         "keywords",
     ]
+
+    # Fields where differences are informational only (don't fail in strict mode)
+    info_only_fields = {"author"}
 
     for field in comparable_fields:
         market_value = marketplace_entry.get(field)
@@ -821,14 +826,18 @@ def check_manifest_conflicts(
                         f"(plugin.json takes precedence)"
                     )
             elif market_value != plugin_value:
-                warnings.append(
+                message = (
                     f"{plugin_name}: Conflict in '{field}' - "
                     f"marketplace: {market_value!r}, "
                     f"plugin.json: {plugin_value!r} "
                     f"(plugin.json takes precedence)"
                 )
+                if field in info_only_fields:
+                    info_only.append(message)
+                else:
+                    warnings.append(message)
 
-    return warnings
+    return warnings, info_only
 
 
 def check_plugin_manifest(
@@ -861,7 +870,8 @@ def check_plugin_manifest(
     """
     results = {
         "manifest": [],
-        "warnings": [],  # NEW: Conflict warnings
+        "warnings": [],  # Conflict warnings (fail in strict mode)
+        "info_only": [],  # Informational only (never fail)
         "placement": [],
         "skills": [],
         "commands": [],
@@ -945,8 +955,9 @@ def check_plugin_manifest(
 
     # Check for conflicts if both marketplace entry and plugin.json exist
     if marketplace_entry and plugin_json.exists():
-        conflict_warnings = check_manifest_conflicts(plugin_dir.name, marketplace_entry, data)
+        conflict_warnings, conflict_info = check_manifest_conflicts(plugin_dir.name, marketplace_entry, data)
         results["warnings"].extend(conflict_warnings)
+        results["info_only"].extend(conflict_info)
 
     # Check README.md exists
     if not (plugin_dir / "README.md").exists():
@@ -1072,6 +1083,22 @@ def check_marketplace_structure() -> dict[str, Any]:
             )
             continue
 
+        # Check if plugin should be skipped entirely (e.g., dev sandbox)
+        if plugin_entry.get("skip", False):
+            result["plugin_results"][plugin_name] = {
+                "manifest": [],
+                "warnings": [],
+                "info_only": [f"{plugin_name}: Skipped (skip: true in marketplace.json)"],
+                "placement": [],
+                "skills": [],
+                "commands": [],
+                "agents": [],
+                "hooks": [],
+                "mcp": [],
+                "paths": [],
+            }
+            continue
+
         # Get strict mode from marketplace entry (default: true)
         require_manifest = plugin_entry.get("strict", True)
 
@@ -1086,7 +1113,7 @@ def check_marketplace_structure() -> dict[str, Any]:
 
 def calculate_exit_code(
     result: dict[str, Any], *, strict: bool = False
-) -> tuple[int, int, int]:
+) -> tuple[int, int, int, int]:
     """Calculate exit code and totals based on errors and warnings.
 
     Args:
@@ -1094,30 +1121,33 @@ def calculate_exit_code(
         strict: If True, warnings cause failure
 
     Returns:
-        Tuple of (exit_code, total_errors, total_warnings)
+        Tuple of (exit_code, total_errors, total_warnings, total_info)
     """
     total_errors = 0
     total_warnings = 0
+    total_info = 0
 
     # Count marketplace-level errors
     total_errors += len(result.get("marketplace_errors", []))
 
-    # Count plugin-level errors and warnings
+    # Count plugin-level errors, warnings, and info
     for plugin_result in result.get("plugin_results", {}).values():
         for category, issues in plugin_result.items():
             if category == "warnings":
                 total_warnings += len(issues)
+            elif category == "info_only":
+                total_info += len(issues)
             else:
                 total_errors += len(issues)
 
     # Determine exit code
-    # Strict mode: warnings are failures
+    # Strict mode: warnings are failures (but info_only never fails)
     if strict and total_warnings > 0 or total_errors > 0:
         exit_code = 1
     else:
         exit_code = 0
 
-    return exit_code, total_errors, total_warnings
+    return exit_code, total_errors, total_warnings, total_info
 
 
 def main() -> int:
@@ -1149,19 +1179,23 @@ Examples:
     result = check_marketplace_structure()
 
     # Calculate exit code and totals (single source of truth)
-    exit_code, total_errors, total_warnings = calculate_exit_code(result, strict=args.strict)
+    exit_code, total_errors, total_warnings, total_info = calculate_exit_code(result, strict=args.strict)
 
-    # Collect plugin errors and warnings for display
+    # Collect plugin errors, warnings, and info for display
     all_plugin_errors = {}
     all_plugin_warnings = {}
+    all_plugin_info = {}
 
     for plugin_name, plugin_result in result["plugin_results"].items():
         plugin_errors = []
         plugin_warnings = []
+        plugin_info = []
         for category, issues in plugin_result.items():
             if issues:
                 if category == "warnings":
                     plugin_warnings.extend(issues)
+                elif category == "info_only":
+                    plugin_info.extend(issues)
                 else:
                     plugin_errors.extend(issues)
 
@@ -1169,6 +1203,8 @@ Examples:
             all_plugin_errors[plugin_name] = plugin_errors
         if plugin_warnings:
             all_plugin_warnings[plugin_name] = plugin_warnings
+        if plugin_info:
+            all_plugin_info[plugin_name] = plugin_info
 
     # Display marketplace errors
     if result["marketplace_errors"]:
@@ -1220,13 +1256,13 @@ Examples:
             has_errors = any(
                 errors
                 for category, errors in plugin_result.items()
-                if category != "warnings" and errors
+                if category not in ("warnings", "info_only") and errors
             )
             if has_errors:
                 console.print(f"\n[bold yellow]{plugin_name} - Detailed Errors:[/bold yellow]")
 
                 for category, errors in plugin_result.items():
-                    if category != "warnings" and errors:
+                    if category not in ("warnings", "info_only") and errors:
                         category_label = category.capitalize()
                         console.print(f"\n  [cyan]{category_label}:[/cyan]")
                         for error in errors:
@@ -1250,6 +1286,17 @@ Examples:
 
         if args.strict:
             console.print("\n  [red](--strict mode: warnings treated as errors)[/red]\n")
+        console.print()
+
+    # Display info-only messages (never fail)
+    if total_info > 0:
+        console.print(f"\n[bold dim]Info ({total_info}):[/bold dim]\n")
+
+        for plugin_name, info_msgs in all_plugin_info.items():
+            console.print(f"  [bold]{plugin_name}:[/bold]")
+            for info_msg in info_msgs:
+                console.print(f"    [dim]• {info_msg}[/dim]")
+
         console.print()
 
     # Final summary

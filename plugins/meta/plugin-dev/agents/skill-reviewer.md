@@ -32,6 +32,11 @@ description: |
   Agent helps diagnose skill problems through systematic review.
   </commentary>
   </example>
+capabilities:
+  - Validate skills against official Anthropic specifications
+  - Assess skill discoverability and auto-invocation effectiveness
+  - Review documentation quality and organization
+  - Provide actionable fixes with file references
 model: inherit
 color: cyan
 tools: Read, Glob, Grep, Bash

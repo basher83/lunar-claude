@@ -29,8 +29,7 @@
       "keywords": ["development", "testing", "sandbox", "prototype"],
       "author": {
         "name": "basher83"
-      },
-      "skip": true
+      }
     },
     {
       "name": "claude-docs",

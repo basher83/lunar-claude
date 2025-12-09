@@ -58,6 +58,11 @@
 - *(skill-factory)* Integrate write command into skill creation workflow
 - *(meta-claude)* Add slash-command-creator skill
 - *(python-tools)* Add review-uv-script command
+- *(research)* Initialize research pipeline directory structure
+- *(research)* Add report schema and 5 research agents
+- *(research)* Add lunar-research orchestrator command
+- *(research)* Add schema-based report validation
+- *(research)* Add memory solutions cache entry to index
 
 ### 🐛 Bug Fixes
 
@@ -110,6 +115,7 @@
 - *(claude-dev-sandbox)* Improve sync script error handling and validation
 - *(skill-factory)* Correct completion options for skills
 - *(claude-docs)* Improve error handling and file encoding
+- *(research)* Address PR #24 review feedback
 
 ### 💼 Other
 
@@ -200,6 +206,8 @@
 - Fix markdown linting in research pipeline design
 - Add research pipeline v2 design document
 - Add research pipeline v2 implementation plan
+- Update changelog
+- *(review)* Update PR #24 review with corrected findings
 
 ### 🎨 Styling
 
@@ -230,6 +238,7 @@
 - *(renovate)* Use shared renovate config presets
 - Remove agent-auditor directory (moved to separate repo)
 - *(rumdl)* Exclude references/ directories from MD033 checks
+- Update gitignore
 ## [0.3.0] - 2025-11-12
 
 ### 🚀 Features

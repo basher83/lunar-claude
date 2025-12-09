@@ -43,47 +43,51 @@ Output: `🚀 Dispatching 4 researcher agents...`
 
 3. **Dispatch ALL 4 researchers in a SINGLE message:**
 
-   Use the Task tool 4 times in ONE message with these prompts:
+   Use the Task tool 4 times in ONE message. For each researcher:
 
    **GitHub Researcher:**
+   - `subagent_type`: `github-researcher`
+   - `description`: `GitHub research for [query]`
+   - `prompt`:
 
-   ```text
-   Research: [query]
-   Cache directory: .claude/research-cache/[normalized-query]/
-   Output file: github-report.json
-   ```
-
-   Agent: `.claude/agents/research/github-agent.md`
+     ```text
+     Research: [query]
+     Cache directory: .claude/research-cache/[normalized-query]/
+     Output file: github-report.json
+     ```
 
    **Tavily Researcher:**
+   - `subagent_type`: `tavily-researcher`
+   - `description`: `Tavily research for [query]`
+   - `prompt`:
 
-   ```text
-   Research: [query]
-   Cache directory: .claude/research-cache/[normalized-query]/
-   Output file: tavily-report.json
-   ```
-
-   Agent: `.claude/agents/research/tavily-agent.md`
+     ```text
+     Research: [query]
+     Cache directory: .claude/research-cache/[normalized-query]/
+     Output file: tavily-report.json
+     ```
 
    **DeepWiki Researcher:**
+   - `subagent_type`: `deepwiki-researcher`
+   - `description`: `DeepWiki research for [query]`
+   - `prompt`:
 
-   ```text
-   Research: [query]
-   Cache directory: .claude/research-cache/[normalized-query]/
-   Output file: deepwiki-report.json
-   ```
-
-   Agent: `.claude/agents/research/deepwiki-agent.md`
+     ```text
+     Research: [query]
+     Cache directory: .claude/research-cache/[normalized-query]/
+     Output file: deepwiki-report.json
+     ```
 
    **Exa Researcher:**
+   - `subagent_type`: `exa-researcher`
+   - `description`: `Exa research for [query]`
+   - `prompt`:
 
-   ```text
-   Research: [query]
-   Cache directory: .claude/research-cache/[normalized-query]/
-   Output file: exa-report.json
-   ```
-
-   Agent: `.claude/agents/research/exa-agent.md`
+     ```text
+     Research: [query]
+     Cache directory: .claude/research-cache/[normalized-query]/
+     Output file: exa-report.json
+     ```
 
 4. **After each completes:** Output `✓ [agent name] complete`
 
@@ -91,14 +95,15 @@ Output: `🚀 Dispatching 4 researcher agents...`
 
 Output: `🔄 Synthesizing findings...`
 
-1. Dispatch the synthesizer agent with:
+1. Dispatch the synthesizer agent:
+   - `subagent_type`: `synthesizer-agent`
+   - `description`: `Synthesize research for [query]`
+   - `prompt`:
 
-   ```text
-   Query: [query]
-   Cache directory: .claude/research-cache/[normalized-query]/
-   ```
-
-   Agent: `.claude/agents/research/synthesizer-agent.md`
+     ```text
+     Query: [query]
+     Cache directory: .claude/research-cache/[normalized-query]/
+     ```
 
 2. Output: `✓ Synthesis complete`
 
@@ -152,6 +157,14 @@ Output: `🧠 Adding codebase context...`
 
 ## Error Handling
 
-- If a researcher fails, note it and continue with available reports
-- If fewer than 2 reports available, warn user about limited findings
-- If synthesis fails, provide raw reports to user
+If a researcher agent fails:
+  Tell the user which researcher failed and why
+  Continue with remaining researchers
+
+If fewer than 2 researchers succeed:
+  Stop and tell the user how many researchers returned valid reports
+  Ask if they want to continue with limited data or abort
+
+If synthesis fails:
+  Show the user the individual report summaries
+  Provide key findings from available reports yourself

@@ -1,14 +1,14 @@
 ---
 name: github-researcher
 description: Find repositories, implementations, and code patterns
-tools: Read, Write, Edit, Grep, Glob, Bash
+tools: mcp__github__search_repositories, mcp__github__search_code, mcp__github__get_file_contents, mcp__github__get_repository_tree, mcp__github__list_starred_repositories, mcp__github__get_me, Read, Write, Edit
 ---
 
 # GitHub Researcher
 
 ## Purpose
 
-Search GitHub for repositories, implementations, and code patterns related to the research query. Use the `gh` CLI to find relevant projects, analyze their structure, and assess their maturity and relevance.
+Search GitHub for repositories, implementations, and code patterns related to the research query. Use GitHub MCP tools to find relevant projects, analyze their structure, and assess their maturity and relevance.
 
 ## Input
 
@@ -20,15 +20,15 @@ You will receive:
 
 ## Research Process
 
-1. Search GitHub using `gh search repos` with relevant keywords
+1. Search GitHub using `mcp__github__search_repositories` with relevant keywords
 2. For promising results, examine:
-   - README content and documentation
-   - Code structure and architecture
-   - Issues and discussions for common problems
-   - Stars, forks, and recent activity for maturity assessment
-3. Evaluate results for relevance and quality
-4. Extract patterns, implementations, and gotchas
-5. Write JSON report to the specified file
+   - README content via `mcp__github__get_file_contents`
+   - Repository structure via `mcp__github__get_repository_tree`
+   - Code patterns via `mcp__github__search_code`
+3. Assess maturity based on stars, forks, and recent activity from search results
+4. Evaluate results for relevance and quality
+5. Extract patterns, implementations, and gotchas
+6. Write JSON report to the specified file
 
 ## Output Format
 

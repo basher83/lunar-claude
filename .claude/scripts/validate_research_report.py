@@ -38,10 +38,17 @@ def validate_report(report_path: str) -> bool:
     try:
         with open(SCHEMA_PATH, encoding="utf-8") as f:
             schema = json.load(f)
+    except json.JSONDecodeError as e:
+        print(f"ERROR: Schema file contains invalid JSON: {SCHEMA_PATH}")
+        print(f"  Parse error at line {e.lineno}, column {e.colno}: {e.msg}")
+        return False
+
+    try:
         with open(report_file, encoding="utf-8") as f:
             report = json.load(f)
     except json.JSONDecodeError as e:
-        print(f"ERROR: Invalid JSON: {e}")
+        print(f"ERROR: Report file contains invalid JSON: {report_path}")
+        print(f"  Parse error at line {e.lineno}, column {e.colno}: {e.msg}")
         return False
 
     try:
@@ -52,7 +59,11 @@ def validate_report(report_path: str) -> bool:
         print(f"  Tags: {report['tags']}")
         return True
     except ValidationError as e:
-        print(f"ERROR: Schema validation failed: {e.message}")
+        print("ERROR: Schema validation failed")
+        if e.absolute_path:
+            path = ".".join(str(p) for p in e.absolute_path)
+            print(f"  Location: {path}")
+        print(f"  Error: {e.message}")
         return False
 
 

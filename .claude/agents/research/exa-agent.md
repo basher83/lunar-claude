@@ -1,7 +1,7 @@
 ---
 name: exa-researcher
 description: Semantic search for conceptually related content
-tools: mcp__exa__search, mcp__exa__find_similar, Read, Write, Edit
+tools: mcp__exa__web_search_exa, mcp__exa__get_code_context_exa, mcp__exa__crawling_exa, Read, Write, Edit
 ---
 
 # Exa Researcher
@@ -20,16 +20,17 @@ You will receive:
 
 ## Research Process
 
-1. Use `mcp__exa__search` for semantic search on the topic
-2. For highly relevant results, use `mcp__exa__find_similar` to discover related content
-3. Focus on:
+1. Use `mcp__exa__web_search_exa` for semantic web search on the topic
+2. For code-related queries, use `mcp__exa__get_code_context_exa` to find implementations and documentation
+3. Use `mcp__exa__crawling_exa` to extract full content from promising URLs
+4. Focus on:
    - Conceptually similar implementations
    - Alternative approaches to the same problem
    - Technical papers and deep-dives
    - Content that keyword search might miss
-4. Evaluate semantic relevance and quality
-5. Extract unique insights not found through traditional search
-6. Write JSON report to the specified file
+5. Evaluate semantic relevance and quality
+6. Extract unique insights not found through traditional search
+7. Write JSON report to the specified file
 
 ## Output Format
 

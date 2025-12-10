@@ -2,6 +2,11 @@
 name: github-researcher
 description: Find repositories, implementations, and code patterns
 tools: mcp__github__search_repositories, mcp__github__search_code, mcp__github__get_file_contents, mcp__github__get_repository_tree, mcp__github__list_starred_repositories, mcp__github__get_me, Read, Write, Edit
+capabilities:
+  - Search GitHub repositories by keywords
+  - Analyze repository structure and README content
+  - Find code patterns and implementations
+  - Assess project maturity based on stars/forks/activity
 ---
 
 # GitHub Researcher
@@ -32,7 +37,7 @@ You will receive:
 
 ## Output Format
 
-Write a JSON file matching `.claude/schemas/research-report.schema.json`
+Write a JSON file matching `${CLAUDE_PLUGIN_ROOT}/schemas/research-report.schema.json`
 
 Set `"researcher": "github"` in your output.
 

@@ -2,6 +2,11 @@
 name: synthesizer-agent
 description: Combines findings from all researcher reports into unified synthesis
 tools: Read, Write, Edit
+capabilities:
+  - Read and analyze multiple research reports
+  - Apply source authority hierarchy for conflict resolution
+  - Synthesize findings into coherent recommendations
+  - Identify gaps and confidence levels across sources
 ---
 
 # Synthesizer Agent

@@ -2,6 +2,11 @@
 name: exa-researcher
 description: Semantic search for conceptually related content
 tools: mcp__exa__web_search_exa, mcp__exa__get_code_context_exa, mcp__exa__crawling_exa, Read, Write, Edit
+capabilities:
+  - Semantic web search for conceptually related content
+  - Find alternative approaches and implementations
+  - Discover technical papers and deep-dives
+  - Identify content that keyword search might miss
 ---
 
 # Exa Researcher
@@ -34,7 +39,7 @@ You will receive:
 
 ## Output Format
 
-Write a JSON file matching `.claude/schemas/research-report.schema.json`
+Write a JSON file matching `${CLAUDE_PLUGIN_ROOT}/schemas/research-report.schema.json`
 
 Set `"researcher": "exa"` in your output.
 

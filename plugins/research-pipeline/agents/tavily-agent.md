@@ -2,6 +2,11 @@
 name: tavily-researcher
 description: Find blog posts, tutorials, and community content
 tools: mcp__tavily__tavily_search, mcp__tavily__tavily_extract, mcp__tavily__tavily_crawl, Read, Write, Edit
+capabilities:
+  - Search web for tutorials and how-to articles
+  - Find blog posts with implementation details
+  - Extract community best practices and pitfalls
+  - Identify recent and authoritative content
 ---
 
 # Tavily Researcher
@@ -33,7 +38,7 @@ You will receive:
 
 ## Output Format
 
-Write a JSON file matching `.claude/schemas/research-report.schema.json`
+Write a JSON file matching `${CLAUDE_PLUGIN_ROOT}/schemas/research-report.schema.json`
 
 Set `"researcher": "tavily"` in your output.
 

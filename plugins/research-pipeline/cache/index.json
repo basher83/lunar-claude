@@ -6,7 +6,7 @@
       "query": "claude code memory solutions",
       "normalizedQuery": "claude-code-memory-solutions",
       "timestamp": "2025-12-09T15:45:00Z",
-      "path": ".claude/research-cache/claude-code-memory-solutions/",
+      "path": "${CLAUDE_PLUGIN_ROOT}/cache/claude-code-memory-solutions/",
       "tags": ["claude-code", "memory", "mcp", "sqlite", "context-management", "claude.md"],
       "confidence": 0.88
     }

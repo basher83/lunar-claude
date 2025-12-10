@@ -12,6 +12,7 @@ Usage:
 
 Examples:
     ./validate_research_report.py .claude/research-cache/my-query/github-report.json
+    uv run ${CLAUDE_PLUGIN_ROOT}/scripts/validate_research_report.py report.json
 """
 
 import json

@@ -110,7 +110,7 @@
       }
     },
     {
-      "name": "research-pipeline",
+      "name": "lunar-research",
       "source": {
         "source": "github",
         "repo": "basher83/lunar-research"

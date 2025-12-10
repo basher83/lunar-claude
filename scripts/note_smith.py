@@ -74,6 +74,7 @@ from claude_agent_sdk import (
 if os.getenv("LANGSMITH_TRACING", "").lower() == "true":
     try:
         from langsmith.integrations.claude_agent_sdk import configure_claude_agent_sdk
+
         configure_claude_agent_sdk()
         print("✓ LangSmith tracing enabled", file=sys.stderr)
     except ImportError:
@@ -106,6 +107,7 @@ def grep_notes(pattern: str) -> list[str]:
                 out.append(f"{p.name}:{i}: {line}")
     return out
 
+
 # ----------------------------
 # Custom MCP tools
 # ----------------------------
@@ -123,6 +125,7 @@ async def find_note(args: dict[str, Any]) -> dict[str, Any]:
     body = "\n".join(hits) if hits else "No matches."
     return {"content": [{"type": "text", "text": body}]}
 
+
 UTILS_SERVER = create_sdk_mcp_server(
     name="notes_util",
     version="1.0.0",
@@ -135,22 +138,20 @@ UTILS_SERVER = create_sdk_mcp_server(
 
 
 async def block_dangerous_bash(
-    input_data: dict[str, Any],
-    tool_use_id: str | None,
-    context: HookContext
+    input_data: dict[str, Any], tool_use_id: str | None, context: HookContext
 ):
     if input_data.get("tool_name") == "Bash":
-        cmd = str(input_data.get("tool_input", {}).get(
-            "command", "")).strip().lower()
+        cmd = str(input_data.get("tool_input", {}).get("command", "")).strip().lower()
         if "rm -rf /" in cmd or "format c:" in cmd:
             return {
                 "hookSpecificOutput": {
                     "hookEventName": "PreToolUse",
                     "permissionDecision": "deny",
-                    "permissionDecisionReason": "Dangerous command blocked"
+                    "permissionDecisionReason": "Dangerous command blocked",
                 }
             }
     return {}
+
 
 # ----------------------------
 # Prompts & UI
@@ -187,7 +188,11 @@ async def main():
         permission_mode="acceptEdits",
         allowed_tools=[
             # Built-ins (Claude may use these if relevant)
-            "WebFetch", "Read", "Write", "Grep", "Glob",
+            "WebFetch",
+            "Read",
+            "Write",
+            "Grep",
+            "Glob",
             # Our MCP tools (SDK prefixes mcp__<alias>__<toolname>)
             "mcp__utils__save_note",
             "mcp__utils__find_note",
@@ -241,12 +246,12 @@ async def main():
                             print(block.text, end="", flush=True)  # stdout
                         elif isinstance(block, ToolUseBlock):
                             print(
-                                f"\n🛠️  Using tool: {block.name} with input: {json.dumps(block.input)}")
+                                f"\n🛠️  Using tool: {block.name} with input: {json.dumps(block.input)}"
+                            )
                         elif isinstance(block, ToolResultBlock) and isinstance(block.content, list):
-                                for part in block.content:
-                                    if isinstance(part, dict) and part.get("type") == "text":
-                                        print(
-                                            f"\n🔎 Tool says: {part.get('text')}")
+                            for part in block.content:
+                                if isinstance(part, dict) and part.get("type") == "text":
+                                    print(f"\n🔎 Tool says: {part.get('text')}")
                 elif isinstance(message, ResultMessage):
                     usage = message.usage or {}
                     cost = message.total_cost_usd
@@ -270,6 +275,7 @@ async def main():
                 f"{_token_summary(usage or {})} cost={cost if cost is not None else '?'} —"
             )
             print(footer, file=sys.stderr)
+
 
 # Entry
 if __name__ == "__main__":

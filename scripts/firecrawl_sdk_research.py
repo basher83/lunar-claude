@@ -62,8 +62,10 @@ async def retry_with_backoff(func, max_retries: int = 3, base_delay: float = 1.0
         except Exception as e:
             if attempt == max_retries - 1:
                 raise
-            delay = base_delay * (2 ** attempt)
-            console.print(f"[yellow]Retry {attempt + 1}/{max_retries} after {delay:.1f}s: {e}[/yellow]")
+            delay = base_delay * (2**attempt)
+            console.print(
+                f"[yellow]Retry {attempt + 1}/{max_retries} after {delay:.1f}s: {e}[/yellow]"
+            )
             await asyncio.sleep(delay)
 
 
@@ -174,6 +176,7 @@ async def scrape_url(firecrawl: AsyncFirecrawl, url: str) -> dict | None:
 
     Returns dict with markdown, title, url, metadata or None on failure.
     """
+
     async def _scrape():
         return await firecrawl.scrape(url, formats=["markdown"])
 
@@ -420,10 +423,14 @@ async def research(
     # Step 3: Filter by quality
     console.print("[cyan]Filtering results by quality...[/cyan]")
     filtered_content = filter_quality(scraped_content)
-    console.print(f"[green]Kept {len(filtered_content)}/{len(scraped_content)} high-quality results[/green]")
+    console.print(
+        f"[green]Kept {len(filtered_content)}/{len(scraped_content)} high-quality results[/green]"
+    )
 
     if not filtered_content:
-        console.print("[yellow]Warning: All results filtered out. Saving unfiltered results.[/yellow]")
+        console.print(
+            "[yellow]Warning: All results filtered out. Saving unfiltered results.[/yellow]"
+        )
         filtered_content = scraped_content
 
     # Step 4: Combine into research document

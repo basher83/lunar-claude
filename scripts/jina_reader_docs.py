@@ -36,22 +36,28 @@ from rich.table import Table
 
 class OutputFormat(str, Enum):
     """Output format options."""
+
     RICH = "rich"
     JSON = "json"
 
+
 console = Console()
+
 
 @dataclass
 class FileMetadata:
     """Metadata for tracking file versions."""
+
     etag: str | None = None
     last_modified: str | None = None
     size: int = 0
     downloaded_at: float = 0.0
 
+
 @dataclass
 class DownloadResult:
     """Result of documentation download operation."""
+
     status: str
     downloaded: int = 0
     skipped: int = 0
@@ -59,15 +65,26 @@ class DownloadResult:
     duration_seconds: float = 0.0
     timestamp: str = ""
 
+
 # Same constants as claude_docs.py
 BASE_URL = "https://docs.claude.com/en/docs"
 CLAUDE_CODE_BASE = f"{BASE_URL}/claude-code"
 AGENTS_TOOLS_BASE = f"{BASE_URL}/agents-and-tools"
 
 CLAUDE_CODE_PAGES = [
-    "sub-agents", "plugins", "skills", "output-styles", "hooks-guide",
-    "plugin-marketplaces", "settings", "statusline", "slash-commands",
-    "hooks", "plugins-reference", "memory", "mcp"
+    "sub-agents",
+    "plugins",
+    "skills",
+    "output-styles",
+    "hooks-guide",
+    "plugin-marketplaces",
+    "settings",
+    "statusline",
+    "slash-commands",
+    "hooks",
+    "plugins-reference",
+    "memory",
+    "mcp",
 ]
 
 AGENT_SKILLS_PAGES = [
@@ -76,21 +93,22 @@ AGENT_SKILLS_PAGES = [
     "agent-skills/best-practices",
 ]
 
-DEFAULT_PAGES = [
-    ("claude-code", page) for page in CLAUDE_CODE_PAGES
-] + [
+DEFAULT_PAGES = [("claude-code", page) for page in CLAUDE_CODE_PAGES] + [
     ("agents-and-tools", page) for page in AGENT_SKILLS_PAGES
 ]
+
 
 def build_jina_reader_url(url: str) -> str:
     """Construct Jina Reader API URL by prefixing with r.jina.ai."""
     return f"https://r.jina.ai/{url}"
+
 
 def get_api_key(cli_key: str | None) -> str | None:
     """Get API key from CLI arg or environment, with CLI taking precedence."""
     if cli_key:
         return cli_key
     return os.environ.get("JINA_API_KEY")
+
 
 def get_base_url(section: str) -> str:
     """Get the base URL for a documentation section."""
@@ -100,6 +118,7 @@ def get_base_url(section: str) -> str:
         return AGENTS_TOOLS_BASE
     else:
         return f"{BASE_URL}/{section}"
+
 
 def download_page_jina(
     url: str,
@@ -133,7 +152,7 @@ def download_page_jina(
             metadata = {
                 "etag": response.headers.get("etag"),
                 "last_modified": response.headers.get("last-modified"),
-                "size": len(response.text.encode('utf-8')),
+                "size": len(response.text.encode("utf-8")),
                 "downloaded_at": time.time(),
             }
 
@@ -149,10 +168,7 @@ def download_page_jina(
                 time.sleep(wait_time)
                 continue
             else:
-                console.print(
-                    f"[red]ERROR:[/red] HTTP {e.response.status_code}",
-                    file=sys.stderr
-                )
+                console.print(f"[red]ERROR:[/red] HTTP {e.response.status_code}", file=sys.stderr)
                 return False, "", {}
 
         except requests.exceptions.RequestException as e:
@@ -170,10 +186,12 @@ def download_page_jina(
 
     return False, "", {}
 
+
 def main(
     output_dir: Path = typer.Option(  # noqa: B008
         Path(__file__).parent.parent / "ai_docs",
-        "--output-dir", "-o",
+        "--output-dir",
+        "-o",
         help="Directory to save downloaded files",
     ),
     api_key: str | None = typer.Option(  # noqa: B008
@@ -183,9 +201,11 @@ def main(
     ),  # noqa: B008
     retries: int = typer.Option(  # noqa: B008
         3,
-        "--retries", "-r",
+        "--retries",
+        "-r",
         help="Maximum retry attempts per page",
-        min=1, max=10,
+        min=1,
+        max=10,
     ),  # noqa: B008
     format: OutputFormat = typer.Option(  # noqa: B008
         OutputFormat.RICH,
@@ -206,9 +226,7 @@ def main(
 
     if format == OutputFormat.RICH:
         key_status = "with API key" if api_key else "free tier (20 RPM)"
-        console.print(
-            f"[cyan]Downloading using Jina Reader API ({key_status})[/cyan]"
-        )
+        console.print(f"[cyan]Downloading using Jina Reader API ({key_status})[/cyan]")
         console.print(f"[dim]Output: {output_dir.absolute()}/[/dim]\n")
 
     start_time = time.time()
@@ -265,9 +283,7 @@ def main(
             url = f"{base_url}/{page}.md"
 
             page_start = time.time()
-            success, content, metadata = download_page_jina(
-                url, api_key=api_key, retries=retries
-            )
+            success, content, metadata = download_page_jina(url, api_key=api_key, retries=retries)
             duration = time.time() - page_start
 
             if success:
@@ -290,7 +306,7 @@ def main(
             "downloaded": success_count,
             "failed": failed_count,
             "duration_seconds": round(total_time, 2),
-            "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
+            "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
         }
         print(json.dumps(result))
     else:
@@ -321,6 +337,7 @@ def main(
 
     if failed_count > 0:
         raise typer.Exit(code=1)
+
 
 if __name__ == "__main__":
     typer.run(main)

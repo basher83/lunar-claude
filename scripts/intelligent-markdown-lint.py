@@ -587,7 +587,9 @@ async def main() -> None:
             print("-" * 60)
 
             investigation_assignment = {
-                "assignment": [{"file": f["file"], "errors": f["errors"]} for f in triaged["ambiguous"]]
+                "assignment": [
+                    {"file": f["file"], "errors": f["errors"]} for f in triaged["ambiguous"]
+                ]
             }
 
             investigation_report = await spawn_investigator(investigation_assignment)

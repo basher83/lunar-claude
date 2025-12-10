@@ -207,9 +207,7 @@ class TestCombineResults:
 
     def test_combines_with_categories(self):
         """Should include categories in metadata when provided."""
-        doc = combine_results(
-            "test query", [], [], categories=["github", "research"]
-        )
+        doc = combine_results("test query", [], [], categories=["github", "research"])
         assert "- **Categories:** github, research" in doc
 
     def test_includes_sources_section(self):

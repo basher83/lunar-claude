@@ -650,7 +650,7 @@ def check_hooks_configuration(plugin_dir: Path, plugin_data: dict) -> list[str]:
                             if "${CLAUDE_PLUGIN_ROOT}" in cmd:
                                 # Extract path using regex to handle wrapper commands
                                 # Pattern: ${CLAUDE_PLUGIN_ROOT}/path (handles wrappers like bash -lc "...")
-                                match = re.search(r'\$\{CLAUDE_PLUGIN_ROOT\}/(\S+)', cmd)
+                                match = re.search(r"\$\{CLAUDE_PLUGIN_ROOT\}/(\S+)", cmd)
                                 if not match:
                                     errors.append(
                                         f"{plugin_name}: Hook command contains ${{CLAUDE_PLUGIN_ROOT}} "
@@ -658,7 +658,9 @@ def check_hooks_configuration(plugin_dir: Path, plugin_data: dict) -> list[str]:
                                     )
                                     continue
 
-                                script_path = match.group(1).strip('"\'')  # Remove quotes if present
+                                script_path = match.group(1).strip(
+                                    "\"'"
+                                )  # Remove quotes if present
 
                                 # Validate path to prevent traversal
                                 full_path, error = validate_plugin_path(
@@ -896,7 +898,9 @@ def check_plugin_manifest(
                 with open(plugin_json, encoding="utf-8") as f:
                     data = json.load(f)
             except PermissionError:
-                results["manifest"].append(f"{plugin_dir.name}: Permission denied reading plugin.json")
+                results["manifest"].append(
+                    f"{plugin_dir.name}: Permission denied reading plugin.json"
+                )
                 data = {}  # Continue with component checks using empty dict
             except json.JSONDecodeError as e:
                 results["manifest"].append(
@@ -955,7 +959,9 @@ def check_plugin_manifest(
 
     # Check for conflicts if both marketplace entry and plugin.json exist
     if marketplace_entry and plugin_json.exists():
-        conflict_warnings, conflict_info = check_manifest_conflicts(plugin_dir.name, marketplace_entry, data)
+        conflict_warnings, conflict_info = check_manifest_conflicts(
+            plugin_dir.name, marketplace_entry, data
+        )
         results["warnings"].extend(conflict_warnings)
         results["info_only"].extend(conflict_info)
 
@@ -1176,7 +1182,9 @@ Examples:
     result = check_marketplace_structure()
 
     # Calculate exit code and totals (single source of truth)
-    exit_code, total_errors, total_warnings, total_info = calculate_exit_code(result, strict=args.strict)
+    exit_code, total_errors, total_warnings, total_info = calculate_exit_code(
+        result, strict=args.strict
+    )
 
     # Collect plugin errors, warnings, and info for display
     all_plugin_errors = {}

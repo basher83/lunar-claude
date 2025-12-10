@@ -2,6 +2,7 @@
 """
 Extract and structure documentation for AI consumption
 """
+
 import subprocess
 from datetime import datetime
 from pathlib import Path
@@ -18,19 +19,15 @@ class DocExtractor:
         project_dir.mkdir(parents=True, exist_ok=True)
 
         # Generate filename from URL
-        filename = url.split('/')[-1] or 'index'
-        if not filename.endswith('.md'):
-            filename += '.md'
+        filename = url.split("/")[-1] or "index"
+        if not filename.endswith(".md"):
+            filename += ".md"
 
         output_path = project_dir / filename
 
         # Use Jina Reader
         jina_url = f"https://r.jina.ai/{url}"
-        result = subprocess.run(
-            ['curl', '-s', jina_url],
-            capture_output=True,
-            text=True
-        )
+        result = subprocess.run(["curl", "-s", jina_url], capture_output=True, text=True)
 
         if result.returncode == 0:
             # Add metadata header
@@ -58,14 +55,9 @@ section: {section}
         output_path = project_dir / "repo-full.md"
 
         result = subprocess.run(
-            [
-                'repomix',
-                '--style', 'markdown',
-                '--output', str(output_path),
-                repo_url
-            ],
+            ["repomix", "--style", "markdown", "--output", str(output_path), repo_url],
             capture_output=True,
-            text=True
+            text=True,
         )
 
         if result.returncode == 0:
@@ -82,13 +74,10 @@ if __name__ == "__main__":
 
     # Extract Proxmox documentation
     extractor.jina_extract(
-        "https://pve.proxmox.com/pve-docs/chapter-pveceph.html",
-        project="proxmox",
-        section="ceph"
+        "https://pve.proxmox.com/pve-docs/chapter-pveceph.html", project="proxmox", section="ceph"
     )
 
     # Extract Terraform provider docs
     extractor.extract_repo(
-        "https://github.com/bpg/terraform-provider-proxmox",
-        project="terraform-proxmox"
+        "https://github.com/bpg/terraform-provider-proxmox", project="terraform-proxmox"
     )

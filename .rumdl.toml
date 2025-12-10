@@ -54,6 +54,9 @@ exclude = [
     # Research documents (raw conversation transcripts and research notes)
     "docs/research/**/*.md",
 
+    # YouTube transcripts (raw transcripts, not meant to be reformatted)
+    "docs/yt_transcripts/**/*.md",
+
     # Plugin-specific exclusions (dense knowledge bases with intentionally long lines)
     "plugins/meta/meta-claude/skills/skill-creator/SKILL.md",
     "plugins/meta/meta-claude/skills/agent-creator/SKILL.md",

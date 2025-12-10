@@ -1,125 +1,23 @@
-# rumdl configuration file
+# rumdl configuration - INCLUSION-BASED approach
+# Only lint user-facing documentation
 
-# Global configuration options
 [global]
-# List of rules to disable (uncomment and modify as needed)
-# disable = ["MD013", "MD033"]
-
-# List of rules to enable exclusively (if provided, only these rules will run)
-# enable = ["MD001", "MD003", "MD004"]
-
-# List of file/directory patterns to include for linting (if provided, only these will be linted)
-# include = [
-#    "docs/*.md",
-#    "src/**/*.md",
-#    "README.md"
-# ]
-
-# List of file/directory patterns to exclude from linting
-exclude = [
-    # Common directories to exclude
-    ".git",
-    ".github",
-    "node_modules",
-    "vendor",
-    "dist",
-    "build",
-
-    # Specific files or patterns
-    "CHANGELOG.md",
-    "LICENSE.md",
-
-    # Claude Code configuration (slash commands may have long frontmatter lines)
-    ".claude/**/*.md",
-
-    # Downloaded reference documentation (from external sources)
-    "**/reference/*.md",
-    "**/references/*.md",
-
-    # Implementation plans (working documents)
-    "docs/plans/**/*.md",
-
-    # Cursor plans (have HTML comments before h1 heading)
-    ".cursor/plans/**/*.md",
-
-    # Test fixtures (intentionally contain errors for testing)
-    "tests/fixtures/**/*.md",
-
-    # Testing artifacts and verbose documentation notes
-    "docs/notes/**/*.md",
-
-    # Review documents (may contain quoted violations for documentation)
-    "docs/reviews/**/*.md",
-
-    # Research documents (raw conversation transcripts and research notes)
-    "docs/research/**/*.md",
-
-    # YouTube transcripts (raw transcripts, not meant to be reformatted)
-    "docs/yt_transcripts/**/*.md",
-
-    # Plugin-specific exclusions (dense knowledge bases with intentionally long lines)
-    "plugins/meta/meta-claude/skills/skill-creator/SKILL.md",
-    "plugins/meta/meta-claude/skills/agent-creator/SKILL.md",
-
-    # Template files (contain placeholders that look like invalid references)
-    "docs/templates/**/*.md",
-
-    # Agent files (may have YAML frontmatter before h1, example code blocks)
-    "plugins/meta/meta-claude/agents/**/*.md",
-    "plugins/meta/hookify/agents/**/*.md",
-    "plugins/meta/plugin-dev/agents/**/*.md",
-
-    # Plugin command files (may have long frontmatter lines like .claude commands)
-    "plugins/meta/plugin-dev/commands/**/*.md",
-    "plugins/meta/hookify/commands/**/*.md",
-    "plugins/meta/meta-claude/commands/**/*.md",
-
-    # Plugin skill files (dense knowledge bases with intentionally long lines)
-    "plugins/meta/plugin-dev/skills/**/*.md",
-
-    # Plugin README files (comprehensive documentation with intentionally verbose lines)
-    "plugins/meta/plugin-dev/README.md",
-
-    # Hook example files (have YAML frontmatter for rule configuration)
-    "plugins/meta/hookify/examples/**/*.md",
-]
-
-# Respect .gitignore files when scanning directories (default: true)
 respect_gitignore = true
 
-# Markdown flavor/dialect (uncomment to enable)
-# Options: mkdocs, gfm, commonmark
-# flavor = "mkdocs"
-
-# Rule-specific configurations (uncomment and modify as needed)
-
-# [MD003]
-# style = "atx"  # Heading style (atx, atx_closed, setext)
-
-# [MD004]
-# style = "asterisk"  # Unordered list style (asterisk, plus, dash, consistent)
-
-# [MD007]
-# indent = 4  # Unordered list indentation
+# ONLY lint these paths (everything else ignored)
+include = [
+    "./README.md",
+    "plugins/*/README.md",
+    "plugins/*/*/README.md",
+    "docs/architecture/*.md",
+    "docs/checklists/*.md",
+]
 
 [MD013]
-line-length = 120   # Line length (more lenient for technical documentation)
-code-blocks = false # Exclude code blocks from line length check
-tables = false      # Exclude tables from line length check
-headings = true     # Include headings in line length check
-
-# [MD044]
-# names = ["rumdl", "Markdown", "GitHub"]  # Proper names that should be capitalized correctly
-# code-blocks = false  # Check code blocks for proper names (default: false, skips code blocks)
+line_length = 120
+code_blocks = false
+tables = false
+headings = true
 
 [MD033]
-# Allow specific HTML elements that are intentionally used in documentation
-# example/commentary tags are required for Claude Code agent descriptions
-allowed-elements = ["span", "div", "Tip", "example", "commentary"]
-
-# Per-file rule ignores for known false positives
-[per-file-ignores]
-# TOML section headers [name] look like markdown links to MD052
-"docs/developer/git-cliff-configuration.md" = ["MD052"]
-# Supplementary footnotes intentionally defined but not referenced inline
-"ai_docs/Python-uv-Script-Examples-and-References.md" = ["MD053"]
+allowed_elements = ["span", "div", "Tip", "example", "commentary"]

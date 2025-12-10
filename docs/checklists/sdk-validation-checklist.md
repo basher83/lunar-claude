@@ -1,6 +1,7 @@
 # Claude Agent SDK Validation Checklist
 
-This checklist helps validate SDK applications against official patterns and best practices from the claude-agent-sdk skill documentation.
+This checklist helps validate SDK applications against official patterns and best practices
+from the claude-agent-sdk skill documentation.
 
 ## Quick Validation
 
@@ -324,8 +325,8 @@ After reviewing, fill out this summary:
 
 ### 🔧 Fixes Required
 
-1. [Specific fix with line reference]
-2. [Specific fix with line reference]
+1. `[Specific fix with line reference]`
+2. `[Specific fix with line reference]`
 
 ### 📊 Overall Assessment
 

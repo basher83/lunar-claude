@@ -14,7 +14,7 @@ Multi-agent research pipeline orchestrator. You coordinate 4 specialized researc
 
 Output: `🔍 Checking knowledge base...`
 
-1. Read `.claude/research-cache/index.json`
+1. Read `${CLAUDE_PLUGIN_ROOT}/cache/index.json`
 2. Search for entries matching the query (fuzzy match on query and tags)
 3. Check if any matching entry is less than 30 days old
 
@@ -38,7 +38,7 @@ Output: `🚀 Dispatching 4 researcher agents...`
    - Example: "Python CLI best practices" → "python-cli-best-practices"
 
 2. **Create cache directory:**
-   - Path: `.claude/research-cache/[normalized-query]/`
+   - Path: `${CLAUDE_PLUGIN_ROOT}/cache/[normalized-query]/`
    - Create if it doesn't exist
 
 3. **Dispatch ALL 4 researchers in a SINGLE message:**
@@ -52,7 +52,7 @@ Output: `🚀 Dispatching 4 researcher agents...`
 
      ```text
      Research: [query]
-     Cache directory: .claude/research-cache/[normalized-query]/
+     Cache directory: ${CLAUDE_PLUGIN_ROOT}/cache/[normalized-query]/
      Output file: github-report.json
      ```
 
@@ -63,7 +63,7 @@ Output: `🚀 Dispatching 4 researcher agents...`
 
      ```text
      Research: [query]
-     Cache directory: .claude/research-cache/[normalized-query]/
+     Cache directory: ${CLAUDE_PLUGIN_ROOT}/cache/[normalized-query]/
      Output file: tavily-report.json
      ```
 
@@ -74,7 +74,7 @@ Output: `🚀 Dispatching 4 researcher agents...`
 
      ```text
      Research: [query]
-     Cache directory: .claude/research-cache/[normalized-query]/
+     Cache directory: ${CLAUDE_PLUGIN_ROOT}/cache/[normalized-query]/
      Output file: deepwiki-report.json
      ```
 
@@ -85,11 +85,15 @@ Output: `🚀 Dispatching 4 researcher agents...`
 
      ```text
      Research: [query]
-     Cache directory: .claude/research-cache/[normalized-query]/
+     Cache directory: ${CLAUDE_PLUGIN_ROOT}/cache/[normalized-query]/
      Output file: exa-report.json
      ```
 
-4. **After each completes:** Output `✓ [agent name] complete`
+4. **After each completes:**
+   - Check that the report file exists in the cache directory
+   - Validate it: `uv run ${CLAUDE_PLUGIN_ROOT}/scripts/validate_research_report.py [report-path]`
+   - If valid: Output `✓ [agent name] report valid`
+   - If invalid: Mark researcher as failed, show validation errors, exclude from synthesis
 
 ## Phase 2: Dispatch Synthesizer
 
@@ -102,7 +106,7 @@ Output: `🔄 Synthesizing findings...`
 
      ```text
      Query: [query]
-     Cache directory: .claude/research-cache/[normalized-query]/
+     Cache directory: ${CLAUDE_PLUGIN_ROOT}/cache/[normalized-query]/
      ```
 
 2. Output: `✓ Synthesis complete`
@@ -111,7 +115,7 @@ Output: `🔄 Synthesizing findings...`
 
 Output: `🧠 Adding codebase context...`
 
-1. **Read synthesis:** Load `.claude/research-cache/[normalized-query]/synthesis.md`
+1. **Read synthesis:** Load `${CLAUDE_PLUGIN_ROOT}/cache/[normalized-query]/synthesis.md`
 
 2. **Check for related patterns in codebase:**
    - Search `plugins/` for related implementations
@@ -119,14 +123,14 @@ Output: `🧠 Adding codebase context...`
    - Note any relevant existing infrastructure
 
 3. **Update knowledge base index:**
-   - Add entry to `.claude/research-cache/index.json`:
+   - Add entry to `${CLAUDE_PLUGIN_ROOT}/cache/index.json`:
 
    ```json
    {
      "query": "[original query]",
      "normalizedQuery": "[normalized-query]",
      "timestamp": "[ISO timestamp]",
-     "path": ".claude/research-cache/[normalized-query]/",
+     "path": "${CLAUDE_PLUGIN_ROOT}/cache/[normalized-query]/",
      "tags": ["extracted", "from", "synthesis"],
      "confidence": [from synthesis]
    }
@@ -136,6 +140,16 @@ Output: `🧠 Adding codebase context...`
    - The synthesis content
    - Codebase integration suggestions based on what you found in `plugins/`
    - Recommendations for next steps
+
+## Prerequisites
+
+The following subagent types are provided by this plugin in `${CLAUDE_PLUGIN_ROOT}/agents/`:
+
+- `github-researcher` → `github-agent.md`
+- `tavily-researcher` → `tavily-agent.md`
+- `deepwiki-researcher` → `deepwiki-agent.md`
+- `exa-researcher` → `exa-agent.md`
+- `synthesizer-agent` → `synthesizer-agent.md`
 
 ## Orchestration Rules
 
@@ -161,10 +175,20 @@ If a researcher agent fails:
   Tell the user which researcher failed and why
   Continue with remaining researchers
 
-If fewer than 2 researchers succeed:
+If 3-4 researchers succeed:
+  Proceed normally with synthesis
+  If fewer than 4, briefly note which source is missing
+
+If 2 researchers succeed:
+  Warn: "Limited coverage - only 2 of 4 sources returned valid reports"
+  List which researchers succeeded and which failed
+  Proceed with synthesis but flag reduced confidence
+
+If 0-1 researchers succeed:
   Stop and tell the user how many researchers returned valid reports
   Ask if they want to continue with limited data or abort
 
 If synthesis fails:
   Show the user the individual report summaries
-  Provide key findings from available reports yourself
+  Note: "Synthesis failed; here's a best-effort manual summary from available reports"
+  Provide key findings from validated reports yourself

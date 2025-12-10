@@ -310,21 +310,25 @@ The owner asked CodeRabbit to compare against `anthropics/claude-agent-sdk-demos
    - Update all paths to use `${CLAUDE_PLUGIN_ROOT}`
    - Add `plugin.json` manifest
 
-2. **Critical:** Fix GitHub agent to use GitHub MCP
-   - Replace `gh` CLI with `mcp__github__*` tools
-   - Update tools list and research process
+2. ~~**Critical:** Fix GitHub agent to use GitHub MCP~~ → ✅ **FIXED**
+   - Now uses `mcp__github__search_repositories`, `mcp__github__search_code`, etc.
 
-3. **Critical:** Fix Exa agent tool names
-   - Current tools `mcp__exa__search`, `mcp__exa__find_similar` don't exist
-   - Use `web_search_exa`, `get_code_context_exa` instead
-   - See https://docs.exa.ai/reference/exa-mcp
+3. ~~**Critical:** Fix Exa agent tool names~~ → ✅ **FIXED**
+   - Now uses `mcp__exa__web_search_exa`, `mcp__exa__get_code_context_exa`, `mcp__exa__crawling_exa`
 
-4. **Important:** Improve orchestrator error handling
-   - Replace vague "note it" with explicit user communication
-   - Use conditional prose pattern (see updated Critical Issues section)
+4. ~~**Important:** Improve orchestrator error handling~~ → ✅ **FIXED**
+   - Error handling now uses clear conditional prose
+   - Added tiered thresholds: 3-4 success (normal), 2 success (warn), 0-1 (stop)
 
-5. **Important:** Add validation path to error output
-   - Include `e.absolute_path` in ValidationError handling
+5. ~~**Important:** Add validation path to error output~~ → ✅ **FIXED**
+   - `ValidationError` now shows `e.absolute_path` for nested errors
+
+6. **New:** Integrate schema validation into orchestrator → ✅ **FIXED**
+   - Phase 1 now validates each report after completion
+   - Invalid reports marked as failed and excluded from synthesis
+
+7. **New:** Document subagent prerequisites → ✅ **FIXED**
+   - Added Prerequisites section listing required agent registrations
 
 ### After Merge (Follow-up)
 
@@ -420,26 +424,28 @@ Agent references use backtick-quoted paths (`` `.claude/agents/research/github-a
 
 **Verification Status:** All 14 claims verified correct ✅
 
-**Code Review:** Architecture needs restructuring
+**Code Review:** ~~Architecture needs restructuring~~ → All critical issues resolved
 
-**Documentation Review:** Several original concerns were invalid; real issues identified
+**Documentation Review:** Several original concerns were invalid; real issues identified and fixed
 
-**Merge Readiness:** Needs rework before merge
+**Merge Readiness:** Needs plugin restructuring
 
-The implementation matches the PR description and the multi-agent research pipeline concept is sound. However, there are structural issues that should be addressed:
+The implementation matches the PR description and the multi-agent research pipeline concept is sound.
 
-**Critical (before merge):**
-1. Should be a plugin, not direct `.claude/` integration - affects portability and path handling
-2. GitHub agent uses `gh` CLI instead of GitHub MCP - inconsistent with other researchers
-3. Exa agent uses non-existent MCP tool names - won't work at runtime
+**Resolved issues:**
+1. ~~GitHub agent uses `gh` CLI~~ → Now uses GitHub MCP tools
+2. ~~Exa agent uses non-existent tool names~~ → Fixed to correct MCP tool names
+3. ~~Orchestrator error handling vague~~ → Clear conditional prose with tiered thresholds
+4. ~~Validation script missing error path~~ → Shows `absolute_path` for nested errors
+5. ~~No schema validation in orchestrator~~ → Reports validated after each researcher completes
+6. ~~Subagent prerequisites undocumented~~ → Prerequisites section added
 
-**Important (before merge):**
-4. Orchestrator error handling needs clearer user communication
-5. Validation script should include JSON path in error output
+**Remaining before merge:**
+1. Restructure as a plugin under `plugins/meta/research-pipeline/`
 
 **Follow-up (after merge):**
-6. Authority hierarchy should be reframed as content-type authority
-7. DeepWiki agent underutilizes `ask_question` for architectural insights
-8. Minor schema fix (URL format validation)
+1. Authority hierarchy should be reframed as content-type authority
+2. DeepWiki agent underutilizes `ask_question` for architectural insights
+3. Minor schema fix (URL format validation)
 
 The original review overstated several issues (schema required fields, cache flow, agency confusion, various CodeRabbit nitpicks) that were actually non-issues when evaluated against slash command best practices.

@@ -10,7 +10,3 @@
 mise.local.toml
 .lychee-report.md
 .lycheecache
-
-# Research cache entries (but keep index)
-.claude/research-cache/*/
-!.claude/research-cache/index.json

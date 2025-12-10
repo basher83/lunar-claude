@@ -97,6 +97,17 @@
         "name": "Daisy Hollman",
         "email": "daisy@anthropic.com"
       }
+    },
+    {
+      "name": "research-pipeline",
+      "source": "./plugins/research-pipeline",
+      "description": "Multi-agent research pipeline with parallel researchers and synthesis",
+      "version": "0.1.0",
+      "category": "research",
+      "keywords": ["research", "multi-agent", "synthesis", "knowledge-base", "mcp"],
+      "author": {
+        "name": "basher83"
+      }
     }
   ]
 }

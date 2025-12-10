@@ -6,7 +6,7 @@
                 "hooks": [
                     {
                         "type": "command",
-                        "command": "uv run ${CLAUDE_PROJECT_DIR}/scripts/markdown_formatter.py"
+                        "command": "uv run scripts/markdown_formatter.py"
                     },
                     {
                         "type": "command",

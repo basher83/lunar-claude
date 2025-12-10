@@ -97,7 +97,7 @@ Usage: `/review-pr 456 high alice` → `$1`=`456`, `$2`=`high`, `$3`=`alice`
 
 ## Bash Execution
 
-Execute commands before prompt expansion using `!`backtick` syntax.
+Execute commands before prompt expansion using the `!` + backtick syntax (e.g., `!` followed by a command in backticks).
 **Requires** `allowed-tools: Bash(...)` in frontmatter.
 
 ```markdown

@@ -3,6 +3,10 @@ name: commit-craft
 description: Use PROACTIVELY after completing coding tasks with 3+ modified files
   to create clean, logical commits following conventional commit standards. Trigger
   when user says 'create commits', 'make commits', or 'commit my changes'.
+capabilities:
+  - Analyze git diff and status to identify logical change groupings
+  - Create atomic commits with conventional commit messages
+  - Organize changes by scope and type (feat, fix, refactor, etc.)
 tools: TodoWrite, Read, Write, Edit, Grep, Glob, LS, Bash
 model: sonnet
 ---

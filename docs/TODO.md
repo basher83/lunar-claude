@@ -42,3 +42,7 @@
 | With research | `skill-factory foo docs/research/foo/` | Skip research, start at format |
 | Without research | `skill-factory bar` | Ask about research sources |
 | Skip research | Select "Skip" option | Start at create with empty refs |
+
+## evaluate hook for upgrade
+
+Script does a fairly good job but sometimes adds wrong language in fenced code blocks `scripts/markdown_formatter.py`

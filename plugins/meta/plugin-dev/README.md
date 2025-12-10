@@ -1,6 +1,7 @@
 # Plugin Development Toolkit
 
-A comprehensive toolkit for developing Claude Code plugins with expert guidance on hooks, MCP integration, plugin structure, and marketplace publishing.
+A comprehensive toolkit for developing Claude Code plugins with expert guidance on hooks,
+MCP integration, plugin structure, and marketplace publishing.
 
 ## Overview
 
@@ -14,7 +15,8 @@ The plugin-dev toolkit provides seven specialized skills to help you build high-
 6. **Agent Development** - Creating autonomous agents with AI-assisted generation
 7. **Skill Development** - Creating skills with progressive disclosure and strong triggers
 
-Each skill follows best practices with progressive disclosure: lean core documentation, detailed references, working examples, and utility scripts.
+Each skill follows best practices with progressive disclosure: lean core documentation,
+detailed references, working examples, and utility scripts.
 
 ## Guided Workflow Command
 
@@ -58,13 +60,15 @@ Use this workflow for structured, high-quality plugin development from concept t
 
 ### 1. Hook Development
 
-**Trigger phrases:** "create a hook", "add a PreToolUse hook", "validate tool use", "implement prompt-based hooks", "${CLAUDE_PLUGIN_ROOT}", "block dangerous commands"
+**Trigger phrases:** "create a hook", "add a PreToolUse hook", "validate tool use",
+"implement prompt-based hooks", "${CLAUDE_PLUGIN_ROOT}", "block dangerous commands"
 
 **What it covers:**
 
 - Prompt-based hooks (recommended) with LLM decision-making
 - Command hooks for deterministic validation
-- All hook events: PreToolUse, PostToolUse, Stop, SubagentStop, SessionStart, SessionEnd, UserPromptSubmit, PreCompact, Notification
+- All hook events: PreToolUse, PostToolUse, Stop, SubagentStop, SessionStart, SessionEnd,
+  UserPromptSubmit, PreCompact, Notification
 - Hook output formats and JSON schemas
 - Security best practices and input validation
 - ${CLAUDE_PLUGIN_ROOT} for portable paths
@@ -80,7 +84,8 @@ Use this workflow for structured, high-quality plugin development from concept t
 
 ### 2. MCP Integration
 
-**Trigger phrases:** "add MCP server", "integrate MCP", "configure .mcp.json", "Model Context Protocol", "stdio/SSE/HTTP server", "connect external service"
+**Trigger phrases:** "add MCP server", "integrate MCP", "configure .mcp.json",
+"Model Context Protocol", "stdio/SSE/HTTP server", "connect external service"
 
 **What it covers:**
 
@@ -101,7 +106,8 @@ Use this workflow for structured, high-quality plugin development from concept t
 
 ### 3. Plugin Structure
 
-**Trigger phrases:** "plugin structure", "plugin.json manifest", "auto-discovery", "component organization", "plugin directory layout"
+**Trigger phrases:** "plugin structure", "plugin.json manifest", "auto-discovery",
+"component organization", "plugin directory layout"
 
 **What it covers:**
 
@@ -122,7 +128,8 @@ Use this workflow for structured, high-quality plugin development from concept t
 
 ### 4. Plugin Settings
 
-**Trigger phrases:** "plugin settings", "store plugin configuration", ".local.md files", "plugin state files", "read YAML frontmatter", "per-project plugin settings"
+**Trigger phrases:** "plugin settings", "store plugin configuration", ".local.md files",
+"plugin state files", "read YAML frontmatter", "per-project plugin settings"
 
 **What it covers:**
 
@@ -145,7 +152,8 @@ Use this workflow for structured, high-quality plugin development from concept t
 
 ### 5. Command Development
 
-**Trigger phrases:** "create a slash command", "add a command", "command frontmatter", "define command arguments", "organize commands"
+**Trigger phrases:** "create a slash command", "add a command", "command frontmatter",
+"define command arguments", "organize commands"
 
 **What it covers:**
 
@@ -166,7 +174,8 @@ Use this workflow for structured, high-quality plugin development from concept t
 
 ### 6. Agent Development
 
-**Trigger phrases:** "create an agent", "add an agent", "write a subagent", "agent frontmatter", "when to use description", "agent examples", "autonomous agent"
+**Trigger phrases:** "create an agent", "add an agent", "write a subagent", "agent frontmatter",
+"when to use description", "agent examples", "autonomous agent"
 
 **What it covers:**
 
@@ -181,15 +190,18 @@ Use this workflow for structured, high-quality plugin development from concept t
 **Resources:**
 
 - Core SKILL.md (1,438 words)
-- 2 examples: agent-creation-prompt (AI-assisted workflow), complete-agent-examples (4 full agents)
-- 3 reference docs: agent-creation-system-prompt (from Claude Code), system-prompt-design (~4,000w), triggering-examples (~2,500w)
+- 2 examples: agent-creation-prompt (AI-assisted workflow),
+  complete-agent-examples (4 full agents)
+- 3 reference docs: agent-creation-system-prompt (from Claude Code),
+  system-prompt-design (~4,000w), triggering-examples (~2,500w)
 - 1 utility script: validate-agent.sh
 
 **Use when:** Creating autonomous agents, defining agent behavior, or implementing AI-assisted agent generation.
 
 ### 7. Skill Development
 
-**Trigger phrases:** "create a skill", "add a skill to plugin", "write a new skill", "improve skill description", "organize skill content"
+**Trigger phrases:** "create a skill", "add a skill to plugin", "write a new skill",
+"improve skill description", "organize skill content"
 
 **What it covers:**
 
@@ -421,4 +433,5 @@ MIT License - See repository for details
 
 ---
 
-**Note:** This toolkit is designed to help you build high-quality plugins. The skills load automatically when you ask relevant questions, providing expert guidance exactly when you need it.
+**Note:** This toolkit is designed to help you build high-quality plugins. The skills load
+automatically when you ask relevant questions, providing expert guidance exactly when you need it.

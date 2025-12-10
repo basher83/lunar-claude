@@ -185,13 +185,13 @@ Given a research query, you will:
    - Repository search with relevant keywords
    - Code search for specific implementations
    - Issue/discussion search for gotchas and solutions
-   
+
 2. **Analyze findings** for:
    - Project maturity (stars, forks, last update, maintenance status)
    - Implementation quality (code structure, documentation, tests)
    - Real-world usage (companies using it, production evidence)
    - Common patterns across multiple repos
-   
+
 3. **Extract actionable insights**:
    - Proven implementation approaches
    - Reusable code patterns
@@ -337,7 +337,7 @@ You are the **orchestrator** for a multi-agent research system. Your role is to 
 
 1. **Parse the research query** from user input
 2. **Generate cache key**: Normalize query to lowercase, remove special chars, create slug
-3. **Check knowledge base**: 
+3. **Check knowledge base**:
    - Read `.claude/research-cache/index.json`
    - Search for matching queries by tags or similar text
    - If found and < 30 days old: offer to reuse or refresh
@@ -888,11 +888,11 @@ Add research entry to knowledge base index.
         path: Relative path to cache directory
     """
     index_path = ".claude/research-cache/index.json"
-    
+
     # Read current index
     with open(index_path, 'r') as f:
         index = json.load(f)
-    
+
     # Create new entry
     entry = {
         "id": cache_key,
@@ -902,10 +902,10 @@ Add research entry to knowledge base index.
         "confidence": confidence,
         "path": path
     }
-    
+
     # Add to entries
     index["entries"].append(entry)
-    
+
     # Write back
     with open(index_path, 'w') as f:
         json.dump(index, f, indent=2)
@@ -916,38 +916,38 @@ Search for similar cached research.
     Returns matching entries sorted by relevance.
     """
     index_path = ".claude/research-cache/index.json"
-    
+
     with open(index_path, 'r') as f:
         index = json.load(f)
-    
+
     matches = []
     for entry in index["entries"]:
         # Check age
         age_days = (datetime.now() - datetime.fromisoformat(entry["timestamp"])).days
         if age_days > max_age_days:
             continue
-        
+
         # Check tag overlap
         tag_overlap = len(set(tags) & set(entry["tags"]))
-        
+
         # Check query similarity (simple keyword matching)
         query_words = set(query.lower().split())
         entry_words = set(entry["query"].lower().split())
         query_overlap = len(query_words & entry_words)
-        
+
         # Calculate relevance score
         relevance = (tag_overlap * 2) + query_overlap
-        
+
         if relevance > 0:
             matches.append({
                 "entry": entry,
                 "relevance": relevance,
                 "age_days": age_days
             })
-    
+
     # Sort by relevance
     matches.sort(key=lambda x: x["relevance"], reverse=True)
-    
+
     return matches[:5]  # Top 5 matches
     ```
 
@@ -991,7 +991,7 @@ Options:
 ---
 
 ### Task 3.2: Implement Progress Tracking
-**Duration**: 3 hours  
+**Duration**: 3 hours
 **Reference**: Anthropic research-agent hooks pattern[^2]
 
 **Action Items**:
@@ -1377,24 +1377,24 @@ Response:
   - [ ] Synthesis combines findings without duplication
   - [ ] Cache lookup works accurately
   - [ ] Codebase contextualization references real files
-  
+
 - [ ] **Performance Tests**:
   - [ ] Parallel execution < 60 seconds
   - [ ] Cache hits < 5 seconds
   - [ ] Agent timeouts handled gracefully
-  
+
 - [ ] **Data Quality Tests**:
   - [ ] Reports validate against schema
   - [ ] URLs are valid and accessible
   - [ ] Confidence scores correlate with evidence
   - [ ] Tags enable semantic discovery
-  
+
 - [ ] **Edge Cases**:
   - [ ] Query with no results
   - [ ] Query with 1000+ GitHub repos
   - [ ] Query with conflicting information
   - [ ] Query in non-English language
-  
+
 - [ ] **User Experience**:
   - [ ] Progress indicators update correctly
   - [ ] Error messages are actionable

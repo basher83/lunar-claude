@@ -1,0 +1,57 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "research-report.schema.json",
+  "title": "Research Report",
+  "description": "Standardized format for researcher sub-agent reports",
+  "type": "object",
+  "required": ["researcher", "query", "timestamp", "confidence", "completeness", "sources", "findings", "gaps", "summary", "tags"],
+  "properties": {
+    "researcher": {
+      "type": "string",
+      "enum": ["github", "tavily", "deepwiki", "exa"]
+    },
+    "query": { "type": "string" },
+    "timestamp": { "type": "string", "format": "date-time" },
+    "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+    "completeness": { "type": "string", "enum": ["none", "partial", "comprehensive"] },
+    "sources": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["url", "title", "type", "relevance"],
+        "properties": {
+          "url": { "type": "string", "format": "uri" },
+          "title": { "type": "string" },
+          "type": { "type": "string", "enum": ["repository", "article", "documentation", "discussion", "paper"] },
+          "relevance": { "type": "string", "enum": ["high", "medium", "low"] },
+          "metadata": { "type": "object" }
+        }
+      }
+    },
+    "findings": {
+      "type": "object",
+      "properties": {
+        "implementations": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["name", "url", "approach"],
+            "properties": {
+              "name": { "type": "string" },
+              "url": { "type": "string" },
+              "approach": { "type": "string" },
+              "maturity": { "type": "string", "enum": ["experimental", "beta", "production"] },
+              "evidence": { "type": "string" }
+            }
+          }
+        },
+        "patterns": { "type": "array", "items": { "type": "string" } },
+        "gotchas": { "type": "array", "items": { "type": "string" } },
+        "alternatives": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "gaps": { "type": "array", "items": { "type": "string" } },
+    "summary": { "type": "string" },
+    "tags": { "type": "array", "items": { "type": "string" } }
+  }
+}

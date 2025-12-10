@@ -72,6 +72,11 @@
 - *(plugin-dev)* Add permissionMode, skills, and capabilities fields to agent spec
 - *(agents)* Add capabilities field to agent frontmatter
 - *(verify-structure)* Add skip field support and info-only messages
+- *(research)* Initialize research pipeline directory structure
+- *(research)* Add report schema and 5 research agents
+- *(research)* Add lunar-research orchestrator command
+- *(research)* Add schema-based report validation
+- *(research)* Add memory solutions cache entry to index
 
 ### 🐛 Bug Fixes
 
@@ -135,6 +140,7 @@
 - *(plugin-dev)* Escape bash execution pattern in command-development skill
 - *(plugin-dev)* Support plugin hooks.json wrapper format in validator
 - *(hookify)* Correct Python import paths for plugin installation
+- *(research)* Address PR #24 review feedback
 
 ### 💼 Other
 
@@ -242,6 +248,7 @@
 - *(plugin-dev)* Expand skill-creator-original.md with core principles
 - *(plugin-dev)* Expand skill-development with core principles and forbidden files
 - Add PR review report for multi-agent research pipeline
+- *(review)* Update PR #24 review with corrected findings
 
 ### 🎨 Styling
 
@@ -278,6 +285,8 @@
 - Add PR validation and release workflows
 - Update CLAUDE.md formatting and fix hookify agent
 - *(hookify)* Disable skill-forced-eval hook
+- Update gitignore
+
 ## [0.3.0] - 2025-11-12
 
 ### 🚀 Features

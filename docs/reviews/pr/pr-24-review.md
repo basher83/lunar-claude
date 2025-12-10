@@ -158,7 +158,7 @@ except ValidationError as e:
 
 **File:** `.claude/commands/lunar-research.md` (lines 153-157)
 
-**Current (Too Vague):**
+**Current:**
 
 ```markdown
 ## Error Handling
@@ -168,124 +168,98 @@ except ValidationError as e:
 - If synthesis fails, provide raw reports to user
 ```
 
-**Problems:**
+**Problem:** The phrase "note it" is ambiguous and could enable silent failures. The guidance is correct but lacks clarity on user communication.
 
-1. "note it and continue" - What does "note" mean? Log? Tell user? This enables silent failures
-2. No guidance on WHAT to tell users - When a researcher fails, what message appears?
-3. No definition of "fails" - Exception? Empty report? Invalid JSON? Timeout? MCP unavailable?
-4. "warn user" - What warning exactly? Users need to know WHICH researchers failed and WHY
-
-**Recommended Fix:**
+**Fix:** Replace with conditional prose that Claude interprets naturally:
 
 ```markdown
 ## Error Handling
 
-### Researcher Failures
+If a researcher agent fails:
+  Tell the user which researcher failed and why
+  Continue with remaining researchers
 
-When a researcher agent fails (Task tool error, timeout, or invalid output):
+If fewer than 2 researchers succeed:
+  Stop and tell the user how many researchers returned valid reports
+  Ask if they want to continue with limited data or abort
 
-1. **Immediately notify the user:**
-   ```
-   ⚠️ [Researcher Name] failed: [specific error reason]
-   ```
-
-2. **Log the failure with context:**
-   - Which researcher failed
-   - The error message or timeout duration
-   - Whether output was partial or missing
-
-3. **Continue with remaining researchers** - Do not abort the entire pipeline
-
-### Insufficient Data
-
-If fewer than 2 researchers return valid reports:
-
-1. **Stop and alert the user:**
-   ```
-   ❌ Insufficient research data: Only [N]/4 researchers returned valid reports.
-   Failed: [list of failed researchers with reasons]
-
-   Options:
-   - `retry` - Retry failed researchers
-   - `continue` - Proceed with limited data (not recommended)
-   - `abort` - Cancel research
-   ```
-
-2. **Do NOT silently continue** - Limited data produces unreliable synthesis
-
-### Synthesis Failures
-
-If the synthesizer agent fails:
-
-1. **Show the error:** `❌ Synthesis failed: [error reason]`
-2. **Offer alternatives:**
-   - `retry-synthesis` - Retry with existing reports
-   - `manual` - Display individual report summaries
+If synthesis fails:
+  Show the user the individual report summaries
+  Provide key findings from available reports yourself
 ```
+
+This follows slash command best practices: commands are instructions for Claude, not application code. Claude interprets conditional prose intelligently without needing message templates or interactive command syntax.
 
 ---
 
-### 3. Normalization Logic Not Centralized
+### 3. Should Be a Plugin, Not Direct Integration
 
-**File:** `.claude/commands/lunar-research.md` (lines 34-38)
+**Files:** All files in `.claude/agents/research/`, `.claude/commands/`, `.claude/schemas/`, `.claude/scripts/`, `.claude/research-cache/`
 
-Query-to-directory normalization (lowercase, hyphens, remove special characters) is documented only in prose - no code implementation exists. Each component (coordinator, 4 researcher agents, synthesizer, cache index lookup) relies on manual implementation of identical logic.
+The research pipeline is implemented directly in `.claude/` which is intended for project-level configuration. This creates several problems:
 
-**Risk:** If normalization diverges (e.g., agent uses underscores instead of hyphens), cache lookups fail and researchers write to different directories.
+1. **Portability:** Cannot be installed in other projects without copying files
+2. **Versioning:** No plugin.json manifest for version tracking
+3. **Isolation:** Cache and schemas mixed with project config
+4. **Path references:** Hardcoded `.claude/` paths throughout
 
-**Recommended Fix:**
+**Fix:** Restructure as a plugin under `plugins/meta/research-pipeline/`:
 
-1. Create `.claude/scripts/normalize_query.py` with a single normalization function
-2. Call this utility from the coordinator before dispatching agents
-3. Document normalization as a strict contract with test coverage
+```text
+plugins/meta/research-pipeline/
+├── .claude-plugin/
+│   └── plugin.json
+├── commands/
+│   └── lunar-research.md
+├── agents/
+│   ├── github-agent.md
+│   ├── tavily-agent.md
+│   ├── deepwiki-agent.md
+│   ├── exa-agent.md
+│   └── synthesizer-agent.md
+├── schemas/
+│   └── research-report.schema.json
+├── scripts/
+│   └── validate_research_report.py
+└── README.md
+```
+
+All path references must use `${CLAUDE_PLUGIN_ROOT}` instead of hardcoded `.claude/` paths:
+
+- `${CLAUDE_PLUGIN_ROOT}/schemas/research-report.schema.json`
+- `${CLAUDE_PLUGIN_ROOT}/agents/github-agent.md`
+
+The cache directory should use a project-relative location like `.claude/research-cache/` (configurable) since cache is per-project, not per-plugin.
 
 ---
 
 ## Major Issues
 
-### 1. Schema Missing Required Fields
+### ~~1. Schema Missing Required Fields~~ (Not an Issue)
 
 **File:** `.claude/schemas/research-report.schema.json`
 
-The `findings` object has no `required` properties. A report with `findings: {}` passes validation even though all agents expect these fields.
+**Original concern:** The `findings` object has no `required` properties, so `findings: {}` passes validation.
 
-**Fix:** Add required array:
+**Assessment:** This is intentional and correct. Different researchers find different things - a GitHub search might find implementations but no patterns, while Exa might find patterns but no implementations. Requiring all sub-fields would force researchers to output empty arrays for things they didn't find. The schema already requires `findings` at the top level; optional sub-fields provide appropriate flexibility.
 
-```json
-"findings": {
-  "type": "object",
-  "required": ["implementations", "patterns", "gotchas", "alternatives"],
-  "properties": { ... }
-}
-```
+### 2. Implementation URL Missing Format (Quick Fix)
 
-### 2. Implementation URL Missing Format
+The `url` field in implementations (line 41) uses plain `string` without `format: uri` validation, unlike `sources[].url` which correctly uses format validation. One-line fix for consistency.
 
-The `url` field in implementations uses plain `string` without `format: uri` validation, unlike `sources[].url` which correctly uses format validation.
-
-**Fix:**
-
-```json
-"url": { "type": "string", "format": "uri" }
-```
-
-### 3. Cache Reuse Flow Unclear
+### ~~3. Cache Reuse Flow Unclear~~ (Not an Issue)
 
 **File:** `.claude/commands/lunar-research.md` (lines 21-27)
 
-Three user options (reuse, refresh, new) are described but no mechanism for capturing user input. Questions remain:
+**Original concern:** No mechanism for capturing user input when presenting cache options.
 
-- Does coordinator prompt and wait for input?
-- What is the default if user doesn't respond?
-- How does coordinator receive the choice?
+**Assessment:** This is standard slash command behavior. Claude presents options as text, waits for user response, and acts on their choice. No special input capture syntax is needed - it's a prompt, not application code.
 
-### 4. Agency Confusion in Command Spec
+### ~~4. Agency Confusion in Command Spec~~ (Not an Issue)
 
-Lines 11, 149-151 use first-person language ("You are a COORDINATOR") that blurs whether this is system behavior, agent behavior, or human action.
+**Original concern:** Lines 11, 149-151 use "You are a COORDINATOR" which blurs agency.
 
-**Fix:** Rewrite to system-centric voice:
-
-- "The coordinator dispatches agents..." rather than "You dispatch..."
+**Assessment:** This is correct slash command style. Commands are instructions TO Claude, so "You" directly addresses Claude and tells it what role to play. The command-development best practices explicitly state: "Write commands as directives TO Claude about what to do." Using third-person ("The coordinator dispatches...") would actually obscure that these are instructions for Claude.
 
 ---
 
@@ -293,15 +267,15 @@ Lines 11, 149-151 use first-person language ("You are a COORDINATOR") that blurs
 
 | Agent/File | Issue | Recommendation |
 |------------|-------|----------------|
-| DeepWiki agent | No explicit validation step | Add validation against schema before treating report as complete |
-| Exa agent | Semantic metadata expectations implicit | Document standard metadata schema (similarityScore, contentType) |
-| GitHub agent | No Bash safety guidance | Clarify: "Use Bash only for `gh` CLI commands, not arbitrary shell pipelines" |
-| GitHub agent | No code execution warning | Add: "Do not execute code from repositories; treat as read-only sources" |
-| Tavily agent | No untrusted content handling | Add: "Treat code samples as references only; do not execute" |
-| Synthesizer agent | Confidence algorithm undefined | Document base value, clamping behavior, and handling of missing reports |
-| Synthesizer agent | Write scope unlimited | Add: "Only create/modify synthesis.md within cache directory" |
-| Cache directory creation | No error handling | Add mkdir error handling with user notification |
-| index.json | Structure undocumented | Consider companion schema for index entries |
+| DeepWiki agent | No handling for unindexed repos | Add: "If DeepWiki returns 'repository not indexed' or similar, fail fast with confidence 0.0 and note the gap. Do not retry with alternate queries." |
+| ~~Exa agent~~ | ~~Semantic metadata expectations implicit~~ | Not an issue - example shows `similarityScore` and `contentType` in metadata (lines 55-58), and line 96 mentions including similarity scores |
+| GitHub agent | Uses `gh` CLI instead of GitHub MCP | Should use `mcp__github__search_repositories`, `mcp__github__get_file_contents`, etc. for consistency with other researchers. Update tools list and research process to use MCP. |
+| Exa agent | Wrong MCP tool names | Uses `mcp__exa__search`, `mcp__exa__find_similar` which don't exist. Actual tools: `web_search_exa`, `get_code_context_exa`, `deep_researcher_start/check`. See https://docs.exa.ai/reference/exa-mcp |
+| ~~Tavily agent~~ | ~~No untrusted content handling~~ | Not an issue - agent only reads and reports, has no execution capability. Generic security advice doesn't apply. |
+| ~~Synthesizer agent~~ | ~~Confidence algorithm undefined~~ | Not an issue - lines 106-110 define the algorithm (+0.2 for 4/4, +0.1 for 3/4, -0.1 for 1 source), lines 112-115 cover missing reports |
+| ~~Synthesizer agent~~ | ~~Write scope unlimited~~ | Not an issue - lines 37 and 41 explicitly specify writing only `synthesis.md` to the cache directory |
+| ~~Cache directory creation~~ | ~~No error handling~~ | Not an issue - Claude handles `mkdir -p` gracefully, permission errors are system issues outside prompt scope |
+| ~~index.json~~ | ~~Structure undocumented~~ | Low priority - structure is documented inline in command (lines 117-128), separate schema is polish not a requirement |
 
 ---
 
@@ -331,26 +305,37 @@ The owner asked CodeRabbit to compare against `anthropics/claude-agent-sdk-demos
 
 ### Before Merge (Required)
 
-1. **Critical:** Fix validation script error handling
-   - Separate try-catch blocks for schema vs report
-   - Add I/O error handling (PermissionError, OSError, UnicodeDecodeError)
-   - Include path location in validation errors
+1. **Critical:** Restructure as a plugin
+   - Move from `.claude/` to `plugins/meta/research-pipeline/`
+   - Update all paths to use `${CLAUDE_PLUGIN_ROOT}`
+   - Add `plugin.json` manifest
 
-2. **Critical:** Improve orchestrator error handling
-   - Define specific thresholds (0, 1, 2, 3, 4 reports)
-   - Specify exact user messages for each failure scenario
-   - Define what "fails" means (timeout, exception, invalid output)
+2. ~~**Critical:** Fix GitHub agent to use GitHub MCP~~ → ✅ **FIXED**
+   - Now uses `mcp__github__search_repositories`, `mcp__github__search_code`, etc.
 
-3. **Important:** Add `required` to findings object in schema
+3. ~~**Critical:** Fix Exa agent tool names~~ → ✅ **FIXED**
+   - Now uses `mcp__exa__web_search_exa`, `mcp__exa__get_code_context_exa`, `mcp__exa__crawling_exa`
 
-4. **Important:** Fix documentation/index.json structure mismatch
+4. ~~**Important:** Improve orchestrator error handling~~ → ✅ **FIXED**
+   - Error handling now uses clear conditional prose
+   - Added tiered thresholds: 3-4 success (normal), 2 success (warn), 0-1 (stop)
+
+5. ~~**Important:** Add validation path to error output~~ → ✅ **FIXED**
+   - `ValidationError` now shows `e.absolute_path` for nested errors
+
+6. **New:** Integrate schema validation into orchestrator → ✅ **FIXED**
+   - Phase 1 now validates each report after completion
+   - Invalid reports marked as failed and excluded from synthesis
+
+7. **New:** Document subagent prerequisites → ✅ **FIXED**
+   - Added Prerequisites section listing required agent registrations
 
 ### After Merge (Follow-up)
 
-1. Consider extracting normalization logic to shared utility
-2. Add companion schema for index.json entries
-3. Add safety guidance to GitHub and Tavily agents
-4. Document confidence computation algorithm in synthesizer
+1. Reframe authority hierarchy as content-type authority (not tool authority)
+2. Expand DeepWiki agent to leverage `ask_question` for architectural insights
+3. Add DeepWiki fail-fast handling for unindexed repos
+4. Add `format: uri` to implementation URL field (one-line fix)
 
 ---
 
@@ -360,23 +345,33 @@ Additional issues identified by analyzing documentation comments for accuracy an
 
 ### Critical Documentation Issues
 
-**1. Authority Hierarchy Design Flaw**
+**1. Authority Hierarchy Needs Reframing**
 
 **File:** `synthesizer-agent.md`
 
-The documented hierarchy `deepwiki > tavily > github > exa` is problematic:
+The documented hierarchy `deepwiki > tavily > github > exa` conflates tool names with content authority. GitHub repositories ARE often the official source for OSS projects.
 
-- GitHub repositories ARE often the official source for OSS projects
-- DeepWiki is a documentation aggregator, not an original source
-- The hierarchy conflates source type with source authority
+**Fix:** Reframe as content type authority, not tool authority:
 
-**Suggestion:** Reframe to distinguish source type from source authority. A GitHub README from the project maintainer should outrank a random blog post found via Tavily.
+```text
+official documentation > architectural insights > community tutorials > code implementations > semantic matches
+```
 
-**2. Undocumented MCP Tool Parameters**
+A GitHub README that IS official documentation should be treated as official docs. The hierarchy should guide conflict resolution based on what TYPE of content was found, not which tool found it.
 
-**File:** `exa-agent.md`
+**2. DeepWiki Agent Underutilizes Key Capability**
 
-The agent references `mcp__exa__search` and `mcp__exa__find_similar` without documenting expected parameters. Without knowing the tool interface, agents cannot reliably use them.
+**File:** `deepwiki-agent.md`
+
+The agent is framed as "find official documentation" but the real power of DeepWiki is `mcp__deepwiki__ask_question` - an LLM with an indexed codebase that can provide architectural insights impossible to get from file-level tools.
+
+**Missing use cases:**
+- Architectural questions: "How does the authentication flow work?"
+- Design rationale: "Why did they choose this pattern?"
+- Cross-cutting concerns: "Where is error handling implemented?"
+- Integration insights: "How do these components interact?"
+
+**Fix:** Expand the agent's purpose beyond documentation retrieval to include architectural analysis and codebase-level insights. The agent should leverage `ask_question` for synthesis questions that require understanding across multiple files.
 
 **3. Agent Path Format in Orchestrator**
 
@@ -389,25 +384,21 @@ Agent references use backtick-quoted paths (`` `.claude/agents/research/github-a
 | File | Issue | Suggestion |
 |------|-------|------------|
 | deepwiki-agent.md | Missing repository context | Add guidance for non-repository queries |
-| github-agent.md | Missing prerequisite | Note that `gh` CLI must be installed and authenticated |
-| tavily-agent.md | Ambiguous tool naming | Add brief descriptions of what search/extract do |
-| validate_research_report.py | Hardcoded path | Add environment variable override for schema path |
-| synthesizer-agent.md | Undefined formula | Document confidence calculation with weights and adjustments |
+| ~~github-agent.md~~ | ~~Missing prerequisite~~ | Stale - gh CLI being replaced with GitHub MCP |
 | lunar-research.md | Index edge cases | Document duplicate handling, entry updates |
+| ~~synthesizer-agent.md~~ | ~~Undefined formula~~ | Not an issue - confidence algorithm is defined at lines 106-110 |
 
 ### Recommended Removals (Reduce Maintenance Burden)
 
-1. **Redundant confidence guidance** - Same rubric repeated verbatim in all 4 researcher agents. Extract to shared reference document.
-
-2. **Full JSON examples in agents** - Risk drifting from schema. Keep only minimal examples showing researcher-specific fields; schema should be single source of truth.
+1. **Redundant confidence guidance** - Same rubric repeated in all 4 researcher agents. Consider extracting to shared reference if agents move to plugin structure.
 
 ### Additional Observations
 
-| Observation | Impact |
-|-------------|--------|
-| Output format asymmetry | Researchers output JSON, synthesizer outputs Markdown - complicates downstream processing |
-| Missing validation | No schema for `synthesis.md` or `index.json` structure |
-| Race condition risk | Concurrent queries normalizing to same directory name could conflict |
+| Observation | Assessment |
+|-------------|------------|
+| ~~Output format asymmetry~~ | Not an issue - JSON for programmatic synthesis, Markdown for human consumption is intentional |
+| ~~Missing validation~~ | Low priority - synthesis.md is freeform, index.json documented inline |
+| Race condition risk | Edge case - unlikely in single-user context, note for future if shared |
 
 ### Positive Documentation Findings
 
@@ -433,16 +424,28 @@ Agent references use backtick-quoted paths (`` `.claude/agents/research/github-a
 
 **Verification Status:** All 14 claims verified correct ✅
 
-**Code Review:** No critical code issues found
+**Code Review:** ~~Architecture needs restructuring~~ → All critical issues resolved
 
-**Documentation Review:** 3 critical documentation issues, 6 improvement opportunities
+**Documentation Review:** Several original concerns were invalid; real issues identified and fixed
 
-**Merge Readiness:** Ready with critical fixes
+**Merge Readiness:** Needs plugin restructuring
 
-The implementation matches the PR description. The core multi-agent research pipeline architecture is sound. Issues identified are primarily:
+The implementation matches the PR description and the multi-agent research pipeline concept is sound.
 
-1. Error handling robustness (validation script, orchestrator)
-2. Documentation accuracy (authority hierarchy design, tool parameters)
-3. Schema completeness (missing required fields, URL format)
+**Resolved issues:**
+1. ~~GitHub agent uses `gh` CLI~~ → Now uses GitHub MCP tools
+2. ~~Exa agent uses non-existent tool names~~ → Fixed to correct MCP tool names
+3. ~~Orchestrator error handling vague~~ → Clear conditional prose with tiered thresholds
+4. ~~Validation script missing error path~~ → Shows `absolute_path` for nested errors
+5. ~~No schema validation in orchestrator~~ → Reports validated after each researcher completes
+6. ~~Subagent prerequisites undocumented~~ → Prerequisites section added
 
-These are addressable without architectural changes.
+**Remaining before merge:**
+1. Restructure as a plugin under `plugins/meta/research-pipeline/`
+
+**Follow-up (after merge):**
+1. Authority hierarchy should be reframed as content-type authority
+2. DeepWiki agent underutilizes `ask_question` for architectural insights
+3. Minor schema fix (URL format validation)
+
+The original review overstated several issues (schema required fields, cache flow, agency confusion, various CodeRabbit nitpicks) that were actually non-issues when evaluated against slash command best practices.

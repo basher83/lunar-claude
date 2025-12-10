@@ -3,47 +3,6 @@
 This file provides guidance to Claude Code (claude.ai/code) when working with
 code in this repository.
 
-## Audit Agent Protocol
-
-**When invoking ANY audit agent (skill-auditor, command-audit, pr-review, etc.):**
-
-1. Provide the file path - Nothing else
-2. Do not mention what you just fixed - No context about recent changes
-3. Do not hint at what to look for - No expectations or guidance
-4. Do not use words like "test", "verify", "check" - Taints the agent's objectivity
-5. Do not explain why you're auditing - Let the agent form independent conclusions
-
-**Correct audit invocation:**
-
-```text
-plugins/meta/meta-claude/skills/skill-factory
-```
-
-**BAD - Tainted audit invocation:**
-
-```text
-We just fixed effectiveness issues. Can you audit plugins/meta/meta-claude/skills/skill-factory
-to verify the triggers are now concrete?
-```
-
-**Why this matters:** Tainted context skews audit results. The agent will look for what you
-mentioned instead of finding issues independently. This creates false positives and missed violations.
-
-**Remember:** Trust but verify. Always audit with untainted context.
-
-## Encouraged Essential tools
-
-The `SlashCommand` tool allows Claude to execute custom slash commands programmatically
-during a conversation. This gives Claude the ability to invoke custom commands
-on the user's behalf when appropriate.
-
-The `Skill` tool allows Claude to execute skills programmatically during a conversation.
-Pre-built Agent Skills extend Claude's capabilities with specialized expertise.
-
-**HINT**: Claude can load multiple skills at once via the `Skill` tool.
-
----
-
 ## Project Overview
 
 **lunar-claude** is a personal Claude Code plugin marketplace for homelab and
@@ -57,111 +16,32 @@ a structured plugin ecosystem.
 - `devops/` - Container orchestration and DevOps tools (Kubernetes, Docker)
 - `homelab/` - Homelab-specific utilities (NetBox, PowerDNS)
 
-## Development Commands
+## Essential Tools
 
-### Environment Setup
+The `SlashCommand` tool allows Claude to execute custom slash commands
+programmatically during a conversation.
 
-- See `mise.toml` for developer tools and tasks.
+The `Skill` tool allows Claude to execute skills programmatically during a
+conversation. Pre-built Agent Skills extend Claude's capabilities with
+specialized expertise.
 
-### Common Tasks
-
-**Note**: See [docs/git-cliff-configuration.md](docs/git-cliff-configuration.md)
-for detailed information about changelog configuration, commit message
-conventions, and release workflow.
-
-### Structure Verification
-
-```bash
-# Verify marketplace and plugin structure (validates plugin.json schema)
-./scripts/verify-structure.py
-
-# Strict mode for CI/CD (warnings fail)
-./scripts/verify-structure.py --strict
-```
-
-## Architecture
-
-### Plugin Marketplace System
-
-The marketplace uses a **central registry pattern**:
-
-1. **Registry:** `.claude-plugin/marketplace.json` defines all plugins and
-   maps them to source directories
-2. **Plugin Manifests:** Each plugin has `.claude-plugin/plugin.json` with
-   metadata
-3. **Plugin Components:** Skills, commands, agents, and hooks reside in
-   standard directories within each plugin
-
-### Plugin Structure
-
-Every plugin follows this structure:
-
-```text
-plugins/<category>/<plugin-name>/
-├── .claude-plugin/
-│   └── plugin.json          # Plugin metadata (required)
-├── skills/                  # AI-powered guidance (optional)
-│   └── <skill-name>/
-│       └── SKILL.md
-├── commands/                # Slash commands (optional)
-│   └── <command>.md
-├── agents/                  # Subagent definitions (optional)
-│   └── <agent>.md
-├── hooks/                   # Automation hooks (optional)
-│   └── <hook>.json
-└── README.md                # User documentation (required)
-```
-
-### Component Interaction Flow
-
-```text
-User Request → Claude Code CLI → marketplace.json → Plugin Components
-                                                    ↓
-                                    Skills/Commands/Agents/Hooks
-                                                    ↓
-                                        Claude Execution Context
-```
-
-## Creating New Plugins
-
-### Manual Creation
-
-```bash
-# 1. Copy template
-cp -r templates/plugin-template/ plugins/<category>/<plugin-name>/
-
-# 2. Customize plugin metadata
-# Edit: plugins/<category>/<plugin-name>/.claude-plugin/plugin.json
-
-# 3. Add to marketplace registry
-# Edit: .claude-plugin/marketplace.json
-# Add entry to "plugins" array
-
-# 4. Verify structure
-./scripts/verify-structure.py
-```
+**HINT**: Claude can load multiple skills at once via the `Skill` tool.
 
 ## Key Files
 
-### Marketplace Registry
+| File | Purpose |
+|------|---------|
+| `.claude-plugin/marketplace.json` | Central plugin registry |
+| `plugins/<cat>/<name>/.claude-plugin/plugin.json` | Plugin manifests |
+| `mise.toml` | Developer tools and task automation |
+| `./scripts/verify-structure.py` | Validate marketplace structure |
 
-- **Location:** `.claude-plugin/marketplace.json`
-- **Purpose:** Central registry of all plugins with metadata
-- **Update when:** Adding/removing plugins or changing plugin metadata
+## Modular Rules
 
-### Plugin Manifests
+Path-specific rules are in `.claude/rules/`:
 
-- **Location:** `plugins/<category>/<plugin-name>/.claude-plugin/plugin.json`
-- **Purpose:** Individual plugin metadata
-- **Update when:** Changing plugin version, description, or keywords
-
-### Tool Configuration
-
-- **Location:** `mise.toml`
-- **Purpose:** Development tool versions and task automation
-- **Tools:** See `mise.toml` for complete list of development tools and versions
-
-## Design Philosophy
-
-- **Modularity:** Each plugin is independent and self-contained
-- **Reusability:** Skills provide context for solving similar problems repeatedly
+- `audit-protocol.md` - Audit agent invocation standards
+- `python-scripts.md` - Python/uv script conventions
+- `skill-development.md` - SKILL.md authoring standards
+- `plugin-structure.md` - Plugin directory conventions
+- `documentation.md` - Markdown and docs standards

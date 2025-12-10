@@ -20,7 +20,7 @@ git-cliff = "2.10.1"
 shellcheck = "0.11.0"
 uv = "0.9.13"
 ruff = "0.14.7"
-"npm:pyright" = "1.1.407"
+# "npm:pyright" = "1.1.407"  # Commented out due to npm registry timeout
 lychee = "0.21.0"
 prek = "0.2.13"
 

@@ -1,4 +1,0 @@
-# Ignore cache entries but keep index
-*/
-!.gitignore
-!index.json

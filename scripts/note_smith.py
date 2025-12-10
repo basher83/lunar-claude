@@ -242,8 +242,7 @@ async def main():
                         elif isinstance(block, ToolUseBlock):
                             print(
                                 f"\n🛠️  Using tool: {block.name} with input: {json.dumps(block.input)}")
-                        elif isinstance(block, ToolResultBlock):
-                            if isinstance(block.content, list):
+                        elif isinstance(block, ToolResultBlock) and isinstance(block.content, list):
                                 for part in block.content:
                                     if isinstance(part, dict) and part.get("type") == "text":
                                         print(

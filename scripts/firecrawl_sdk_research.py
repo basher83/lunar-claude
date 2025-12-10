@@ -28,7 +28,6 @@ import os
 import sys
 from datetime import datetime
 from pathlib import Path
-from typing import Optional
 from urllib.parse import urlparse
 
 import typer
@@ -71,8 +70,8 @@ async def retry_with_backoff(func, max_retries: int = 3, base_delay: float = 1.0
 async def search_and_scrape(
     query: str,
     limit: int,
-    categories: Optional[list[str]] = None,
-    scrape_options: Optional[dict] = None,
+    categories: list[str] | None = None,
+    scrape_options: dict | None = None,
 ) -> list[dict]:
     """
     Search the web using Firecrawl's search API with optional scraping.
@@ -296,7 +295,7 @@ def combine_results(
     query: str,
     search_results: list[dict],
     scraped_content: list[dict],
-    categories: Optional[list[str]] = None,
+    categories: list[str] | None = None,
 ) -> str:
     """
     Combine search results and scraped content into a research document.
@@ -379,7 +378,7 @@ async def research(
     query: str,
     limit: int,
     output_path: Path,
-    categories: Optional[list[str]] = None,
+    categories: list[str] | None = None,
 ) -> None:
     """
     Main research workflow: search → scrape → filter → combine.
@@ -444,13 +443,13 @@ def main(
     output: str = typer.Option(
         "ai_docs/research.md", "--output", "-o", help="Output markdown file path"
     ),
-    category: Optional[str] = typer.Option(
+    category: str | None = typer.Option(
         None,
         "--category",
         "-c",
         help="Search category: github, research, or pdf",
     ),
-    categories: Optional[str] = typer.Option(
+    categories: str | None = typer.Option(
         None,
         "--categories",
         help="Comma-separated list of categories: github,research,pdf",

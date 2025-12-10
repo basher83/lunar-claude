@@ -297,7 +297,7 @@ def fix_code_blocks(text):
 def cleanup_document(file_path):
     """Main cleanup function."""
     print(f"Reading {file_path}...")
-    with open(file_path, 'r', encoding='utf-8') as f:
+    with open(file_path, encoding='utf-8') as f:
         content = f.read()
 
     original_length = len(content)

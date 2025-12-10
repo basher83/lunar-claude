@@ -44,6 +44,8 @@ from claude_agent_sdk import (
     ClaudeAgentOptions,
     ClaudeSDKClient,
     TextBlock,
+    CLINotFoundError,
+    ProcessError,
 )
 
 # Agent name constants (prevent typos between registration and usage)

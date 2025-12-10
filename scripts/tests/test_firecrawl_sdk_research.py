@@ -18,7 +18,7 @@ sys.modules["rich"] = MagicMock()
 sys.modules["rich.console"] = MagicMock()
 
 # Now import the module
-from firecrawl_sdk_research import (
+from firecrawl_sdk_research import (  # noqa: E402
     combine_results,
     filter_quality,
     get_api_key,

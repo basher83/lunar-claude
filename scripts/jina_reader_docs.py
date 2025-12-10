@@ -171,27 +171,27 @@ def download_page_jina(
     return False, "", {}
 
 def main(
-    output_dir: Path = typer.Option(
+    output_dir: Path = typer.Option(  # noqa: B008
         Path(__file__).parent.parent / "ai_docs",
         "--output-dir", "-o",
         help="Directory to save downloaded files",
     ),
-    api_key: str | None = typer.Option(
+    api_key: str | None = typer.Option(  # noqa: B008
         None,
         "--api-key",
         help="Jina API key (defaults to JINA_API_KEY env var)",
-    ),
-    retries: int = typer.Option(
+    ),  # noqa: B008
+    retries: int = typer.Option(  # noqa: B008
         3,
         "--retries", "-r",
         help="Maximum retry attempts per page",
         min=1, max=10,
-    ),
-    format: OutputFormat = typer.Option(
+    ),  # noqa: B008
+    format: OutputFormat = typer.Option(  # noqa: B008
         OutputFormat.RICH,
         "--format",
         help="Output format: 'rich' or 'json'",
-    ),
+    ),  # noqa: B008
 ) -> None:
     """
     Download Claude Code docs using Jina Reader API (direct HTTP calls).

@@ -1142,10 +1142,7 @@ def calculate_exit_code(
 
     # Determine exit code
     # Strict mode: warnings are failures (but info_only never fails)
-    if strict and total_warnings > 0 or total_errors > 0:
-        exit_code = 1
-    else:
-        exit_code = 0
+    exit_code = 1 if strict and total_warnings > 0 or total_errors > 0 else 0
 
     return exit_code, total_errors, total_warnings, total_info
 

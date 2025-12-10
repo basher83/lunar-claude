@@ -6,7 +6,8 @@ argument-hint: [query]
 
 # Lunar Research
 
-Multi-agent research pipeline orchestrator. You coordinate 4 specialized researcher agents and a synthesizer to provide comprehensive research findings.
+Multi-agent research pipeline orchestrator. You coordinate 4 specialized
+researcher agents and a synthesizer to provide comprehensive research findings.
 
 **IMPORTANT:** You are a COORDINATOR. Dispatch agents to do research - do not research yourself.
 

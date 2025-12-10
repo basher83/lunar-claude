@@ -13,7 +13,9 @@ capabilities:
 
 ## Purpose
 
-Use Exa's semantic search capabilities to find conceptually related content, alternative approaches, and deep technical resources. Focus on discovering content that keyword search might miss.
+Use Exa's semantic search capabilities to find conceptually related content,
+alternative approaches, and deep technical resources. Focus on discovering
+content that keyword search might miss.
 
 ## Input
 

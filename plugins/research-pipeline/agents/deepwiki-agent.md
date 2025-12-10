@@ -1,7 +1,8 @@
 ---
 name: deepwiki-researcher
 description: Find official documentation and project architecture
-tools: mcp__deepwiki__read_wiki_structure, mcp__deepwiki__read_wiki_contents, mcp__deepwiki__ask_question, Read, Write, Edit
+tools: mcp__deepwiki__read_wiki_structure, mcp__deepwiki__read_wiki_contents,
+  mcp__deepwiki__ask_question, Read, Write, Edit
 capabilities:
   - Query indexed repository documentation
   - Extract official API references and guides
@@ -13,7 +14,9 @@ capabilities:
 
 ## Purpose
 
-Query official documentation via DeepWiki to find authoritative information about the research topic. Focus on official documentation, API references, architecture details, and sanctioned best practices.
+Query official documentation via DeepWiki to find authoritative information
+about the research topic. Focus on official documentation, API references,
+architecture details, and sanctioned best practices.
 
 ## Input
 

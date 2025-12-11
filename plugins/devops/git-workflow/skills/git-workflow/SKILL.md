@@ -1,11 +1,35 @@
 ---
 name: git-workflow
-description: This skill should be used when the user asks to "make commits", "commit all changes", "create a branch", "name a branch", "organize commits", "conventional commits", or needs guidance on git workflow best practices including commit organization, branch naming, and conventional commit format.
+description: This skill should be used when the user asks to "make commits", "commit all changes", "create a branch", "name a branch", "organize commits", "conventional commits", "generate changelog", "release version", "bump version", or needs guidance on git workflow best practices including commit organization, branch naming, and conventional commit format.
 ---
 
 # Git Workflow Best Practices
 
 Guidance for creating clean, atomic commits and organizing git workflows effectively.
+
+## Available Commands
+
+This plugin provides commands to automate git workflows:
+
+| Command | Purpose |
+|---------|---------|
+| `/git-status` | Quick repository status summary |
+| `/git-commit` | Create commits with pre-commit hooks |
+| `/branch-cleanup` | Clean up merged/stale branches |
+| `/generate-changelog` | Generate CHANGELOG.md using git-cliff |
+
+### Changelog Generation
+
+Use `/generate-changelog` after creating commits to update CHANGELOG.md:
+
+```bash
+/generate-changelog              # Generate and prompt to commit
+/generate-changelog --preview    # Preview without writing
+/generate-changelog --commit     # Generate and auto-commit
+/generate-changelog --release patch  # Changelog + patch version tag
+/generate-changelog --release minor  # Changelog + minor version tag
+/generate-changelog --release major  # Changelog + major version tag
+```
 
 ## Conventional Commit Format
 

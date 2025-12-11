@@ -9,6 +9,7 @@ Git workflow automation plugin for Claude Code.
 - **branch-cleanup command**: Comprehensive branch cleanup with multiple modes (dry-run, force, remote-only, local-only)
 - **git-commit command**: Orchestrates pre-commit hooks and invokes commit-craft
 - **git-status command**: Quick git repository status summary
+- **generate-changelog command**: Generate CHANGELOG.md using git-cliff with optional version tagging
 
 ## Installation
 
@@ -35,6 +36,12 @@ claude plugin install git-workflow@lunar-claude
 /branch-cleanup --force        # Delete merged branches without confirmation
 /branch-cleanup --remote-only  # Only clean remote-tracking branches
 /branch-cleanup --local-only   # Only clean local branches
+
+# Generate changelog
+/generate-changelog              # Generate and prompt to commit
+/generate-changelog --preview    # Preview without writing
+/generate-changelog --commit     # Generate and auto-commit
+/generate-changelog --release patch  # Changelog + patch version tag
 ```
 
 ### Agent
@@ -51,6 +58,7 @@ The `commit-craft` agent can be invoked directly or via `/git-commit`:
 - `git` - Git version control
 - `gh` - GitHub CLI (optional, for PR status checks)
 - `pre-commit` - Pre-commit hooks (optional)
+- `git-cliff` - Changelog generator (for /generate-changelog)
 
 ## License
 

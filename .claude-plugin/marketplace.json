@@ -76,6 +76,17 @@
       }
     },
     {
+      "name": "git-workflow",
+      "source": "./plugins/devops/git-workflow",
+      "description": "Git workflow automation including atomic commits, branch cleanup, and conventional commit standards",
+      "version": "1.0.0",
+      "category": "devops",
+      "keywords": ["git", "commits", "branches", "workflow", "automation", "conventional-commits"],
+      "author": {
+        "name": "basher83"
+      }
+    },
+    {
       "name": "netbox-powerdns-integration",
       "source": "./plugins/homelab/netbox-powerdns-integration",
       "description": "NetBox IPAM and PowerDNS integration for automated DNS record management and infrastructure documentation",

@@ -113,7 +113,7 @@
       "name": "plugin-dev",
       "source": "./plugins/meta/plugin-dev",
       "description": "Comprehensive plugin development toolkit for creating Claude Code plugins with AI-powered guidance for skills, agents, commands, and hooks",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "category": "meta",
       "keywords": ["plugin", "development", "skills", "agents", "commands", "hooks", "validation"],
       "author": {

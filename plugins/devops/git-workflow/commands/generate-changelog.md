@@ -1,7 +1,8 @@
 ---
-allowed-tools: Bash(git-cliff:*), Bash(git diff:*), Bash(git add:*), Bash(git commit:*), Bash(git log:*), Bash(git tag:*), Bash(git describe:*), Read
 description: Generate changelog using git-cliff, optionally bump version tag
-argument-hint: [--preview] | [--commit] | [--release patch|minor|major]
+argument-hint: "[--preview] | [--commit] | [--release patch|minor|major]"
+allowed-tools: Bash(git-cliff:*), Bash(git diff:*), Bash(git add:*), Bash(git commit:*), Bash(git log:*), Bash(git tag:*), Bash(git describe:*), Read
+model: sonnet
 ---
 
 # Generate Changelog

@@ -1,6 +1,7 @@
 ---
 description: Summarize the current state of the git repository
 allowed-tools: Bash(git:*)
+model: haiku
 ---
 
 # Git Status

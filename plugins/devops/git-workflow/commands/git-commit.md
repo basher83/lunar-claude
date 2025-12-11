@@ -1,6 +1,7 @@
 ---
 description: Run pre-commit hooks and create clean, logical commits
 allowed-tools: TodoWrite, Read, Write, Edit, Grep, Glob, Bash
+model: sonnet
 ---
 
 # Git Commit Workflow

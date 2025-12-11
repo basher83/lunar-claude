@@ -1047,9 +1047,12 @@ def check_marketplace_structure() -> dict[str, Any]:
             # External sources require 'repo' or 'url' key
             if "repo" in plugin_source or "url" in plugin_source:
                 # Record external source (not validated locally)
+                # Use info_only instead of warnings - external sources aren't problems,
+                # they just can't be validated locally by design
                 result["plugin_results"][plugin_name] = {
                     "manifest": [],
-                    "warnings": ["External source; not validated locally"],
+                    "warnings": [],
+                    "info_only": ["External source; not validated locally"],
                     "placement": [],
                     "skills": [],
                     "commands": [],

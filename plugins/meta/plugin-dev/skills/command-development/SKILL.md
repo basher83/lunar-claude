@@ -463,7 +463,7 @@ description: Review code changes
 allowed-tools: Read, Bash(git:*)
 ---
 
-Files changed: !`git diff --name-only`
+Files changed: $ git diff --name-only
 
 Review each file for:
 1. Code quality and style
@@ -483,7 +483,7 @@ argument-hint: [test-file]
 allowed-tools: Bash(npm:*)
 ---
 
-Run tests: !`npm test $1`
+Run tests: $ npm test $1
 
 Analyze results and suggest fixes for failures.
 ```
@@ -794,7 +794,7 @@ description: Deploy with validation
 argument-hint: [environment]
 ---
 
-Validate environment: !`echo "$1" | grep -E "^(dev|staging|prod)$" || echo "INVALID"`
+Validate environment: $ echo "$1" | grep -E "^(dev|staging|prod)$" || echo "INVALID"
 
 If $1 is valid environment:
   Deploy to $1
@@ -811,7 +811,7 @@ description: Process configuration
 argument-hint: [config-file]
 ---
 
-Check file exists: !`test -f $1 && echo "EXISTS" || echo "MISSING"`
+Check file exists: $ test -f $1 && echo "EXISTS" || echo "MISSING"
 
 If file exists:
   Process configuration: @$1

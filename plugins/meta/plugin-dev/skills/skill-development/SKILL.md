@@ -617,6 +617,40 @@ Use the grep tool to search for patterns.
 
 **Why good:** Claude knows where to find additional information
 
+### Mistake 5: Dynamic Bash Patterns in Code Blocks
+
+The skill parser scans the entire SKILL.md for dynamic bash patterns without respecting fenced code block boundaries (GitHub #12781). This causes unintended execution during skill load.
+
+❌ **Bad:**
+
+````markdown
+```bash
+# Example of dynamic execution
+!`git status`
+```
+````
+
+**Why bad:** Parser executes the pattern during skill load, even inside code blocks. The `\!` escape does NOT work.
+
+✅ **Good:**
+
+````markdown
+```bash
+# Example of dynamic execution (use ! prefix with backticks)
+$ git status
+```
+````
+
+**Why good:** Uses `$` shell notation which doesn't trigger the parser.
+
+**Workarounds:**
+
+1. Use `$ command` notation in code block examples
+2. Describe syntax in prose: "Use exclamation mark prefix with backticks"
+3. Move examples to separate reference files (not parsed as skill content)
+
+**Note:** This applies to both `!` backtick patterns and `@` file references in code blocks.
+
 ## Quick Reference
 
 ### Minimal Skill

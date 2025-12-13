@@ -1,7 +1,7 @@
 ---
 description: Scaffold a new Ansible role with standard directory structure
 argument-hint: <role-name>
-allowed-tools: Write, Bash, Read
+allowed-tools: ["Write", "Bash", "Read"]
 model: sonnet
 ---
 
@@ -32,6 +32,67 @@ ansible/roles/$ARGUMENTS/
 **meta/main.yml:** Galaxy metadata with platform support
 **README.md:** Usage documentation
 
-After scaffolding, hand off to `ansible-generator` agent with the role path to implement tasks.
+**After scaffolding, initialize the pipeline:**
 
-Report: role path, files created, variable prefix, next steps.
+1. Create `$CLAUDE_PROJECT_DIR/.claude/` directory if it doesn't exist
+
+2. Ensure `.gitignore` contains ansible-workflows patterns (append if missing):
+```text
+# Ansible Workflows plugin state (auto-added)
+.claude/ansible-workflows.local.md
+.claude/ansible-workflows.*.bundle.md
+```
+
+3. Write state file `$CLAUDE_PROJECT_DIR/.claude/ansible-workflows.local.md`:
+```yaml
+---
+active: true
+pipeline_phase: generating
+target_path: ansible/roles/$ARGUMENTS/
+current_agent: ansible-generator
+started_at: "[ISO timestamp]"
+validation_attempts: 0
+last_validation_passed: true
+---
+
+# Ansible Workflows Pipeline
+
+Target: ansible/roles/$ARGUMENTS/
+Type: role
+```
+
+4. Write scaffolding bundle `$CLAUDE_PROJECT_DIR/.claude/ansible-workflows.scaffolding.bundle.md`:
+```yaml
+---
+source_agent: create-role
+target_agent: ansible-generator
+timestamp: "[ISO timestamp]"
+target_path: ansible/roles/$ARGUMENTS/
+target_type: role
+---
+
+# Scaffolding Bundle
+
+## Target Path
+ansible/roles/$ARGUMENTS/
+
+## User Requirements
+[Capture any user-specified requirements or context]
+
+## Files Created
+- ansible/roles/$ARGUMENTS/defaults/main.yml
+- ansible/roles/$ARGUMENTS/tasks/main.yml
+- ansible/roles/$ARGUMENTS/handlers/main.yml
+- ansible/roles/$ARGUMENTS/meta/main.yml
+- ansible/roles/$ARGUMENTS/README.md
+
+## Variable Prefix
+[snake_case version of role name]
+
+## Next Steps
+Implement the role tasks based on user requirements.
+```
+
+5. Hand off to `ansible-generator` agent with the role path
+
+Report: role path, files created, variable prefix, pipeline initialized.

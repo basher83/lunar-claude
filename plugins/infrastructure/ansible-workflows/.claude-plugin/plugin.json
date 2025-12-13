@@ -1,0 +1,22 @@
+{
+  "name": "ansible-workflows",
+  "version": "1.0.0",
+  "description": "End-to-end Ansible workflow automation: design, create, validate, and review playbooks and roles with orchestrated multi-agent pipelines",
+  "author": {
+    "name": "basher83",
+    "url": "https://github.com/basher83"
+  },
+  "repository": "https://github.com/basher83/lunar-claude",
+  "license": "MIT",
+  "keywords": [
+    "ansible",
+    "automation",
+    "playbooks",
+    "roles",
+    "proxmox",
+    "infrastructure",
+    "devops",
+    "testing",
+    "linting"
+  ]
+}

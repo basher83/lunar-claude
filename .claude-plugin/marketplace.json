@@ -61,18 +61,20 @@
       }
     },
     {
-      "name": "ansible-best-practices",
-      "source": "./plugins/infrastructure/ansible-best-practices",
-      "description": "Ansible playbook refactoring, role development, testing, and best practices with Infisical secrets management",
+      "name": "ansible-workflows",
+      "source": "./plugins/infrastructure/ansible-workflows",
+      "description": "End-to-end Ansible workflow automation with orchestrated multi-agent pipelines for playbook and role development",
       "version": "1.0.0",
       "category": "infrastructure",
       "keywords": [
         "ansible",
-        "iac",
         "automation",
-        "infisical",
-        "testing",
-        "playbooks"
+        "playbooks",
+        "roles",
+        "proxmox",
+        "agents",
+        "validation",
+        "review"
       ],
       "author": {
         "name": "basher83"

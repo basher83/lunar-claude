@@ -32,6 +32,7 @@ description: |
 model: sonnet
 color: green
 tools: ["TodoWrite", "Read", "Write", "Edit", "Grep", "Glob", "Bash"]
+skills: ["git-workflow"]
 capabilities:
   - Analyze workspace changes and identify logical groupings
   - Create atomic commits following conventional commit format
@@ -114,6 +115,7 @@ EOF
 **Output Format:**
 
 Provide a summary including:
+
 1. Total files modified and types of changes
 2. Commit plan with files and messages
 3. Execution results with commit hashes

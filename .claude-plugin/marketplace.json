@@ -15,7 +15,14 @@
       "description": "Meta tools for creating and composing Claude Code components including skills, agents, hooks, commands, and multi-component system architecture",
       "version": "0.3.0",
       "category": "meta",
-      "keywords": ["meta", "tooling", "development", "creator", "composition", "architecture"],
+      "keywords": [
+        "meta",
+        "tooling",
+        "development",
+        "creator",
+        "composition",
+        "architecture"
+      ],
       "author": {
         "name": "basher83"
       }
@@ -26,7 +33,12 @@
       "description": "Development sandbox for testing and prototyping Claude Code components (hooks, skills, commands, agents) before promoting to production plugins",
       "version": "0.1.0",
       "category": "meta",
-      "keywords": ["development", "testing", "sandbox", "prototype"],
+      "keywords": [
+        "development",
+        "testing",
+        "sandbox",
+        "prototype"
+      ],
       "author": {
         "name": "basher83"
       }
@@ -37,7 +49,13 @@
       "description": "Auto-sync official Claude Code docs as a skill with fresh reference material",
       "version": "1.0.0",
       "category": "meta",
-      "keywords": ["documentation", "sync", "meta", "automation", "skills"],
+      "keywords": [
+        "documentation",
+        "sync",
+        "meta",
+        "automation",
+        "skills"
+      ],
       "author": {
         "name": "basher83"
       }
@@ -48,7 +66,14 @@
       "description": "Ansible playbook refactoring, role development, testing, and best practices with Infisical secrets management",
       "version": "1.0.0",
       "category": "infrastructure",
-      "keywords": ["ansible", "iac", "automation", "infisical", "testing", "playbooks"],
+      "keywords": [
+        "ansible",
+        "iac",
+        "automation",
+        "infisical",
+        "testing",
+        "playbooks"
+      ],
       "author": {
         "name": "basher83"
       }
@@ -59,7 +84,14 @@
       "description": "Proxmox VE cluster management including VM provisioning, templates, VLAN networking, and CEPH storage",
       "version": "1.0.0",
       "category": "infrastructure",
-      "keywords": ["proxmox", "virtualization", "cloud-init", "ceph", "networking", "vlan"],
+      "keywords": [
+        "proxmox",
+        "virtualization",
+        "cloud-init",
+        "ceph",
+        "networking",
+        "vlan"
+      ],
       "author": {
         "name": "basher83"
       }
@@ -70,7 +102,17 @@
       "description": "Comprehensive Python development toolkit covering scripting (uv), code quality (ruff/pyright), and common patterns (JSON parsing)",
       "version": "1.0.0",
       "category": "devops",
-      "keywords": ["python", "uv", "scripting", "ruff", "pyright", "code-quality", "json", "patterns", "best-practices"],
+      "keywords": [
+        "python",
+        "uv",
+        "scripting",
+        "ruff",
+        "pyright",
+        "code-quality",
+        "json",
+        "patterns",
+        "best-practices"
+      ],
       "author": {
         "name": "basher83"
       }
@@ -81,7 +123,14 @@
       "description": "Git workflow automation including atomic commits, branch cleanup, and conventional commit standards",
       "version": "1.0.0",
       "category": "devops",
-      "keywords": ["git", "commits", "branches", "workflow", "automation", "conventional-commits"],
+      "keywords": [
+        "git",
+        "commits",
+        "branches",
+        "workflow",
+        "automation",
+        "conventional-commits"
+      ],
       "author": {
         "name": "basher83"
       }
@@ -92,7 +141,15 @@
       "description": "NetBox IPAM and PowerDNS integration for automated DNS record management and infrastructure documentation",
       "version": "1.0.0",
       "category": "homelab",
-      "keywords": ["netbox", "powerdns", "ipam", "dns", "automation", "terraform", "ansible"],
+      "keywords": [
+        "netbox",
+        "powerdns",
+        "ipam",
+        "dns",
+        "automation",
+        "terraform",
+        "ansible"
+      ],
       "author": {
         "name": "basher83"
       }
@@ -103,7 +160,13 @@
       "description": "Easily create hooks to prevent unwanted behaviors by analyzing conversation patterns",
       "version": "0.1.2",
       "category": "meta",
-      "keywords": ["hooks", "automation", "rules", "validation", "behavior"],
+      "keywords": [
+        "hooks",
+        "automation",
+        "rules",
+        "validation",
+        "behavior"
+      ],
       "author": {
         "name": "Daisy Hollman",
         "email": "daisy@anthropic.com"
@@ -115,7 +178,15 @@
       "description": "Comprehensive plugin development toolkit for creating Claude Code plugins with AI-powered guidance for skills, agents, commands, and hooks",
       "version": "1.0.1",
       "category": "meta",
-      "keywords": ["plugin", "development", "skills", "agents", "commands", "hooks", "validation"],
+      "keywords": [
+        "plugin",
+        "development",
+        "skills",
+        "agents",
+        "commands",
+        "hooks",
+        "validation"
+      ],
       "author": {
         "name": "basher83"
       }
@@ -127,9 +198,15 @@
         "repo": "basher83/lunar-research"
       },
       "description": "Multi-agent research pipeline with parallel researchers and synthesis",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "category": "research",
-      "keywords": ["research", "multi-agent", "synthesis", "knowledge-base", "mcp"],
+      "keywords": [
+        "research",
+        "multi-agent",
+        "synthesis",
+        "knowledge-base",
+        "mcp"
+      ],
       "author": {
         "name": "basher83"
       }

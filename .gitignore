@@ -11,3 +11,4 @@ mise.local.toml
 *.local.md
 .lychee-report.md
 .lycheecache
+.claude/research-cache

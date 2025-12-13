@@ -200,7 +200,7 @@
         "repo": "basher83/lunar-research"
       },
       "description": "Multi-agent research pipeline with parallel researchers and synthesis",
-      "version": "1.1.0",
+      "version": "1.1.1",
       "category": "research",
       "keywords": [
         "research",

@@ -1,5 +1,6 @@
-# Local state files (per-project, not committed)
-*.local.md
+# Python cache
+__pycache__/
+*.pyc
 
-# Review reports (generated, not committed)
+# Review reports (if generated locally)
 reports/

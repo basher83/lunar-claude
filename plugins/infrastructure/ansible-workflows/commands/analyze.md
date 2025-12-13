@@ -1,7 +1,7 @@
 ---
 description: Analyze Ansible code for improvements or suggest enhancements
 argument-hint: <path> [--mode review|enhance]
-allowed-tools: Read, Grep, Glob, Bash, WebSearch
+allowed-tools: ["Read", "Grep", "Glob", "Bash", "WebSearch"]
 model: sonnet
 ---
 

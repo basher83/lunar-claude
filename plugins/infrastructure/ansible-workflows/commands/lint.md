@@ -1,7 +1,7 @@
 ---
 description: Run ansible-lint with guidance on fixing issues
 argument-hint: [path]
-allowed-tools: Bash, Read
+allowed-tools: ["Bash", "Read"]
 model: haiku
 ---
 

@@ -186,7 +186,7 @@ lines: 45-52
 
 ### Next Step
 Handing off to ansible-validator for re-validation.
-```
+```bash
 
 **Debug Commands Reference:**
 
@@ -215,29 +215,65 @@ uv run ansible-playbook playbook.yml --list-tasks
 uv run ansible-lint path/to/playbook.yml
 ```
 
-**Handoff Rules:**
+## Pipeline Integration
+
+### Reading Context Bundle
+
+If this is a pipeline handoff, read the validating or reviewing bundle:
+
+1. Check for `$CLAUDE_PROJECT_DIR/.claude/ansible-workflows.validating.bundle.md` or `$CLAUDE_PROJECT_DIR/.claude/ansible-workflows.reviewing.bundle.md`
+2. Read the "Error List" or "Required Fixes" section for issues to address
+3. Read the state file for `validation_attempts` count
+
+### Retry Limit
+
+Check `$CLAUDE_PROJECT_DIR/.claude/ansible-workflows.local.md` for `validation_attempts`. If >= 3:
+- Report that maximum retries exceeded
+- Present issues to user for manual intervention
+- Suggest setting `active: false` to abort pipeline
+
+### Handoff Rules
 
 After fixing issues:
 
-1. **Minor fixes applied successfully:**
-   - Apply the fix directly using Edit or Write tools
-   - Hand off to `ansible-validator` agent for re-validation
-   - Include: path to fixed code, summary of changes, what to verify
+1. Write the debugging bundle `$CLAUDE_PROJECT_DIR/.claude/ansible-workflows.debugging.bundle.md`:
 
-2. **Major rework required:**
-   - Present proposed changes to user for approval first
-   - Wait for confirmation before applying
-   - After applying, hand off to `ansible-validator`
+```yaml
+---
+source_agent: ansible-debugger
+target_agent: ansible-validator
+timestamp: "[ISO timestamp]"
+target_path: [path to fixed code]
+fixes_applied: [count]
+---
 
-3. **Cannot fix (needs more information):**
-   - Explain what additional information is needed
-   - Provide specific questions or diagnostic commands to run
-   - Do NOT guess or make assumptions about missing information
+# Debugger Output Bundle
 
-4. **User explicitly asks to debug (not a handoff):**
-   - Complete the debug cycle
-   - Report findings directly to user
-   - Offer to hand off to ansible-validator if fixes were applied
+## Fixes Applied
+- file: [path]
+  line: [N]
+  issue: [what was wrong]
+  fix: [what was changed]
+
+## Summary
+[brief description of all fixes]
+
+## Re-validation Command
+cd ansible && uv run ansible-lint [path]
+```
+
+2. Update state file `$CLAUDE_PROJECT_DIR/.claude/ansible-workflows.local.md`:
+   - Set `pipeline_phase: validating`
+   - Set `current_agent: ansible-validator`
+   - Increment `validation_attempts`
+
+3. Hand off to `ansible-validator` for re-validation
+
+**Other Scenarios:**
+
+- **Major rework required**: Present proposed changes to user for approval first
+- **Cannot fix**: Explain what additional information is needed
+- **User explicitly asks to debug**: Report findings directly to user
 
 **Common Quick Fixes:**
 

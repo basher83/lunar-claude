@@ -119,7 +119,7 @@ Use Grep to scan for these patterns that may not be caught by lint:
 
 Produce a structured validation report in this format:
 
-```
+```bash
 ## Validation Result: PASS | FAIL
 
 ### Files Validated
@@ -155,27 +155,87 @@ Critical issues: <count>
 Warnings: <count>
 ```
 
-**Handoff Rules:**
+## Pipeline Integration
+
+### Reading Context Bundle
+
+If this is a pipeline handoff, read the generating or debugging bundle:
+
+1. Check for `$CLAUDE_PROJECT_DIR/.claude/ansible-workflows.generating.bundle.md` or `$CLAUDE_PROJECT_DIR/.claude/ansible-workflows.debugging.bundle.md`
+2. Read the YAML frontmatter for `target_path` and context
+3. Review "Specific Concerns" section for focus areas
+
+### Handoff Rules
 
 **On PASS:**
 
-Hand off to `ansible-reviewer` agent with:
+1. Write the validating bundle `$CLAUDE_PROJECT_DIR/.claude/ansible-workflows.validating.bundle.md`:
 
-- Path to validated code
-- Validation summary showing all checks passed
-- Any warnings that reviewer should be aware of (for context, not blockers)
+```yaml
+---
+source_agent: ansible-validator
+target_agent: ansible-reviewer
+timestamp: "[ISO timestamp]"
+target_path: [path validated]
+validation_passed: true
+---
 
-Format: "Validation PASS for [path]. Handing off to ansible-reviewer for code quality review. [Optional: Note about warnings]"
+# Validator Output Bundle
+
+## Validation Summary
+- Syntax: PASS
+- Lint errors: 0
+- Lint warnings: [count]
+
+## Files Validated
+- [list of files]
+
+## Warnings (non-blocking)
+[any warnings for reviewer context]
+```
+
+2. Update state file `$CLAUDE_PROJECT_DIR/.claude/ansible-workflows.local.md`:
+   - Set `pipeline_phase: reviewing`
+   - Set `current_agent: ansible-reviewer`
+
+3. Hand off to `ansible-reviewer`
 
 **On FAIL:**
 
-Hand off to `ansible-debugger` agent with:
+1. Write the validating bundle `$CLAUDE_PROJECT_DIR/.claude/ansible-workflows.validating.bundle.md`:
 
-- Path to code that failed validation
-- Complete list of errors with file locations and line numbers
-- Specific failure categories (syntax, lint, pattern compliance)
+```yaml
+---
+source_agent: ansible-validator
+target_agent: ansible-debugger
+timestamp: "[ISO timestamp]"
+target_path: [path validated]
+validation_passed: false
+error_count: [N]
+---
 
-Format: "Validation FAIL for [path]. [N] critical issues found: [brief summary]. Handing off to ansible-debugger for resolution."
+# Validator Output Bundle
+
+## Validation Summary
+- Syntax: PASS/FAIL
+- Lint errors: [count]
+
+## Error List
+- file: [path]
+  line: [N]
+  rule: [rule-id]
+  message: [description]
+
+## Failed Categories
+[syntax, lint, idempotency, etc.]
+```
+
+2. Update state file `$CLAUDE_PROJECT_DIR/.claude/ansible-workflows.local.md`:
+   - Set `pipeline_phase: debugging`
+   - Set `current_agent: ansible-debugger`
+   - Set `last_validation_passed: false`
+
+3. Hand off to `ansible-debugger`
 
 Also provide the user with:
 

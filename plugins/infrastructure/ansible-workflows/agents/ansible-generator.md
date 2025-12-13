@@ -198,32 +198,50 @@ Before completing generation, verify all of these requirements are met:
 - Validation tasks at playbook/role start
 - Proxmox operations use native modules where available
 
-## Handoff to Validator
+## Pipeline Integration
 
-After generating code, you MUST hand off to `ansible-validator`. Provide:
+### Reading Context Bundle
 
-1. Path to the main playbook or role
-2. List of all files created or modified
-3. Command to run the automation
-4. Any specific validation concerns
+If this is a pipeline handoff, read the scaffolding bundle for context:
 
-Example handoff format:
+1. Check for `$CLAUDE_PROJECT_DIR/.claude/ansible-workflows.scaffolding.bundle.md`
+2. If present, read the YAML frontmatter for `target_path` and `target_type`
+3. Review "User Requirements" section for specifications
 
-```text
-## Generated Files
+### Handoff to Validator
 
-- ansible/playbooks/setup-docker.yml
-- ansible/roles/docker_setup/tasks/main.yml
-- ansible/roles/docker_setup/defaults/main.yml
-- ansible/roles/docker_setup/handlers/main.yml
+After generating code, you MUST:
 
-## Validation Handoff
+1. Write the generating bundle `$CLAUDE_PROJECT_DIR/.claude/ansible-workflows.generating.bundle.md`:
 
-Path: ansible/playbooks/setup-docker.yml
-Command: uv run ansible-playbook ansible/playbooks/setup-docker.yml --check
+```yaml
+---
+source_agent: ansible-generator
+target_agent: ansible-validator
+timestamp: "[ISO timestamp]"
+target_path: [path to main playbook or role]
+---
 
-Handing off to ansible-validator for lint and syntax verification.
+# Generator Output Bundle
+
+## Files Created
+- [list all files created]
+
+## Patterns Applied
+- [list key patterns used: FQCN, idempotency, secrets, etc.]
+
+## Validation Command
+uv run ansible-playbook [path] --check
+
+## Specific Concerns
+[any areas that need extra validation attention]
 ```
+
+2. Update state file `$CLAUDE_PROJECT_DIR/.claude/ansible-workflows.local.md`:
+   - Set `pipeline_phase: validating`
+   - Set `current_agent: ansible-validator`
+
+3. Hand off to `ansible-validator` with the path and validation concerns
 
 ## Repository Context
 

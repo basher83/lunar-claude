@@ -279,15 +279,66 @@ Apply these thresholds consistently:
 - Overall rating < 3.0/5
 - Issues require significant refactoring or redesign
 
-## Handoff Behavior
+## Pipeline Integration
+
+### Reading Context Bundle
+
+If this is a pipeline handoff, read the validating bundle:
+
+1. Check for `$CLAUDE_PROJECT_DIR/.claude/ansible-workflows.validating.bundle.md`
+2. Read the YAML frontmatter for `target_path` and `validation_passed`
+3. Review "Warnings" section for context
+
+### Handoff Behavior
 
 After completing your review:
 
 1. **Present the full structured report** to the user
-2. **Based on recommendation**:
-   - **APPROVED**: Congratulate the user, suggest committing the code
-   - **APPROVED_WITH_CHANGES**: List the required fixes clearly, offer to help implement them
-   - **NEEDS_REWORK**: Explain fundamental issues, suggest handing off to ansible-debugger for major fixes
+
+2. **Based on recommendation, update pipeline state:**
+
+**APPROVED:**
+- Update state file `$CLAUDE_PROJECT_DIR/.claude/ansible-workflows.local.md`:
+  - Set `active: false`
+  - Set `pipeline_phase: complete`
+  - Add `completed_at: [ISO timestamp]`
+- Congratulate the user, suggest committing the code
+- Pipeline complete - no further handoffs needed
+
+**APPROVED_WITH_CHANGES:**
+- Write reviewing bundle `$CLAUDE_PROJECT_DIR/.claude/ansible-workflows.reviewing.bundle.md`:
+
+```yaml
+---
+source_agent: ansible-reviewer
+target_agent: ansible-debugger
+timestamp: "[ISO timestamp]"
+target_path: [path reviewed]
+recommendation: APPROVED_WITH_CHANGES
+---
+
+# Reviewer Output Bundle
+
+## Required Fixes (must complete before deployment)
+- file: [path]
+  line: [N]
+  severity: HIGH
+  issue: [description]
+  fix: [how to fix]
+
+## Optional Improvements
+[any MEDIUM/LOW items]
+```
+
+- Update state file:
+  - Set `pipeline_phase: debugging`
+  - Set `current_agent: ansible-debugger`
+- Hand off to `ansible-debugger`
+
+**NEEDS_REWORK:**
+- Write reviewing bundle with all HIGH severity issues
+- Update state file for debugging phase
+- Hand off to `ansible-debugger` for major fixes
 
 ## Quality Standards
 

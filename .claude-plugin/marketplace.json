@@ -64,7 +64,7 @@
       "name": "ansible-workflows",
       "source": "./plugins/infrastructure/ansible-workflows",
       "description": "End-to-end Ansible workflow automation with orchestrated multi-agent pipelines for playbook and role development",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "category": "infrastructure",
       "keywords": [
         "ansible",

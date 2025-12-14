@@ -1,6 +1,6 @@
 {
   "name": "ansible-workflows",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "End-to-end Ansible workflow automation: design, create, validate, and review playbooks and roles with orchestrated multi-agent pipelines",
   "author": {
     "name": "basher83",

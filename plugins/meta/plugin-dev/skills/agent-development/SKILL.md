@@ -6,8 +6,6 @@ version: 0.1.0
 
 # Agent Development for Claude Code Plugins
 
-> **Reference:** See [agent-spec.md](references/agent-spec.md) for the official specification.
-
 ## Overview
 
 Agents are autonomous subprocesses that handle complex, multi-step tasks independently. Understanding agent structure, triggering conditions, and system prompt design enables creating powerful autonomous capabilities.
@@ -439,6 +437,7 @@ Output: [What to provide]
 
 For detailed guidance, consult:
 
+- **`references/agent-spec.md`** - The official specification
 - **`references/system-prompt-design.md`** - Complete system prompt patterns
 - **`references/triggering-examples.md`** - Example formats and best practices
 - **`references/agent-creation-system-prompt.md`** - The exact prompt from Claude Code

@@ -1,7 +1,7 @@
 ---
 description: Scaffold a state-based Ansible playbook with present/absent pattern
 argument-hint: <playbook-name> [--hosts <target>]
-allowed-tools: ["Write", "Read"]
+allowed-tools: ["Write", "Read", "Bash"]
 model: sonnet
 ---
 
@@ -43,7 +43,10 @@ If no playbook name provided, ask for one.
 
 **After scaffolding, initialize the pipeline:**
 
-1. Create `$CLAUDE_PROJECT_DIR/.claude/` directory if it doesn't exist
+1. Create the `.claude/` directory if it doesn't exist:
+   ```bash
+   mkdir -p "$CLAUDE_PROJECT_DIR/.claude"
+   ```
 
 2. Ensure `.gitignore` contains ansible-workflows patterns (append if missing):
 ```text

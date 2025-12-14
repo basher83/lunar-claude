@@ -1,17 +1,6 @@
 {
-  "description": "Ansible workflows pipeline state management - validates agent completion and blocks session stop when pipeline is active",
+  "description": "Ansible workflows pipeline state management - blocks session stop when pipeline is active",
   "hooks": {
-    "SubagentStop": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "uv run ${CLAUDE_PLUGIN_ROOT}/hooks/subagent-complete.py",
-            "timeout": 10
-          }
-        ]
-      }
-    ],
     "Stop": [
       {
         "hooks": [

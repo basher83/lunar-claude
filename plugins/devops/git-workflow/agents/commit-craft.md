@@ -29,7 +29,7 @@ description: |
   Brief request to commit. Agent provides value by intelligently grouping changes.
   </commentary>
   </example>
-model: sonnet
+model: haiku
 color: green
 tools: ["TodoWrite", "Read", "Write", "Edit", "Grep", "Glob", "Bash"]
 skills: ["git-workflow"]

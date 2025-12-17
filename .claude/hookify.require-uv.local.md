@@ -9,14 +9,16 @@ conditions:
     pattern: (^|;\s*|&&\s*|\|\|\s*)(python3?(?:\.\d+)?(?:\s+-m\s+\w+)?|pip3?|pytest)\b
   - field: command
     operator: not_contains
-    pattern: uv run
+    pattern: uv run|uv pip
 ---
 
-⛔ **Use `uv run` instead of direct python/pip/pytest commands.**
+**Use `uv` instead of direct python/pip/pytest commands.**
 
-Examples:
-
-- `uv run python` instead of `python`
-- `uv run python -m py_compile` instead of `python3 -m py_compile`
-- `uv run pytest` instead of `pytest`
-- `uv pip install` instead of `pip install`
+| Instead of | Use |
+|------------|-----|
+| `python script.py` | `uv run script.py` |
+| `python3.11 script.py` | `uv run script.py` |
+| `python -m pytest` | `uv run pytest` |
+| `pytest` | `uv run pytest` |
+| `pip install package` | `uv add package` |
+| `pip install -r requirements.txt` | `uv sync` |

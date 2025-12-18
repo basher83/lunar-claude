@@ -1,6 +1,6 @@
 {
   "name": "git-workflow",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Git workflow automation including atomic commits, branch cleanup, and conventional commit standards",
   "author": {
     "name": "basher83",

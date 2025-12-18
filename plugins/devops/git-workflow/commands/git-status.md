@@ -6,22 +6,23 @@ model: haiku
 
 # Git Status
 
-Analyze and summarize the current state of the git repository.
+Summarize the current state of the git repository.
 
 ## Repository State
 
-- Current Status: !`git status`
-- Current branch: !`git branch --show-current`
-- Unstaged files: !`git diff --name-status`
-- Staged files: !`git diff --cached --name-status`
-- Unpushed commits: !`git log --oneline origin/$(git branch --show-current)..HEAD 2>/dev/null || echo "No upstream branch or no unpushed commits"`
-- Untracked files: !`git ls-files --others --exclude-standard`
+Branch and sync status: !`git status -sb`
+
+Working directory: !`git status --short`
+
+Recent commits: !`git log --oneline -5`
+
+Stashes: !`git stash list`
 
 ## Task
 
-Provide a concise summary of the repository state including:
+Provide a concise summary including:
 
-1. **Branch status**: Current branch and tracking information
-2. **Working directory**: Summary of staged, unstaged, and untracked changes
-3. **Sync status**: Commits ahead/behind remote
+1. **Branch status**: Current branch and ahead/behind remote
+2. **Working directory**: Count of staged, unstaged, and untracked changes
+3. **Recent activity**: Brief summary of recent commits
 4. **Action items**: Suggested next steps based on current state

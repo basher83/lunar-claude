@@ -1,7 +1,6 @@
 ---
 description: Run pre-commit hooks and create clean, logical commits
-allowed-tools: TodoWrite, Read, Write, Edit, Grep, Glob, Bash
-model: sonnet
+allowed-tools: Bash(git:*), Bash(prek:*), Bash(test:*), Task, AskUserQuestion
 ---
 
 # Git Commit Workflow
@@ -10,11 +9,11 @@ Orchestrate pre-commit hooks and invoke commit-craft agent for clean, logical co
 
 ## Current State
 
-- Current Status: !`git status`
-- Current branch: !`git branch --show-current`
-- Check for merge/rebase: !`test -f .git/MERGE_HEAD && echo "MERGE IN PROGRESS" || test -d .git/rebase-merge && echo "REBASE IN PROGRESS" || echo "Clean"`
+- Branch and status: !`git status -sb`
+- Working directory: !`git status --short`
+- Merge/rebase state: !`test -f .git/MERGE_HEAD && echo "MERGE IN PROGRESS" || test -d .git/rebase-merge && echo "REBASE IN PROGRESS" || echo "Clean"`
 - Staged files: !`git diff --cached --name-only`
-- Check for sensitive files: !`git diff --cached --name-only | grep -iE '\.(env|mcp\.json)$|secret|token|key|password' || echo "No sensitive files detected"`
+- Sensitive files check: !`git diff --cached --name-only | grep -iE '\.(env|mcp\.json)$|secret|token|key|password' || echo "None detected"`
 
 ## Workflow
 
@@ -22,29 +21,40 @@ Orchestrate pre-commit hooks and invoke commit-craft agent for clean, logical co
 
 Verify repository state:
 
-- Ensure no merge or rebase in progress
-- Check for sensitive files in staged changes
-- If sensitive files detected, warn and ask for confirmation
+1. If merge or rebase in progress, stop and inform user
+2. If sensitive files detected, use AskUserQuestion:
+   - header: "Sensitive"
+   - question: "Sensitive files detected in staged changes. Proceed with commit?"
+   - options:
+     - Continue (I understand the risk, proceed)
+     - Unstage (Remove sensitive files from staging)
+     - Abort (Cancel commit workflow)
 
 ### Step 2: Run Pre-commit Hooks
 
-Execute pre-commit hooks to format and lint code:
+Execute pre-commit hooks:
 
-!`pre-commit run --all-files 2>&1 || echo "Pre-commit completed (check output above)"`
+!`prek -a`
 
-If hooks modify files:
+Analyze the output:
 
-1. Review the changes made
-2. Re-stage modified files
-3. Continue to commit creation
+- If hooks pass: Continue to Step 3
+- If hooks fail with errors: Report errors and stop
+- If hooks modify files (formatting, etc.):
+  1. Show which files were modified
+  2. Re-stage modified files: `git add -u`
+  3. Continue to Step 3
 
 ### Step 3: Create Commits
 
-Invoke the commit-craft agent to:
+Use the Task tool to invoke the commit-craft agent:
+
+- subagent_type: "commit-craft"
+- prompt: "Create clean, atomic commits for the current workspace changes"
+
+The commit-craft agent will:
 
 1. Analyze all workspace changes
 2. Group related changes into atomic commits
 3. Create conventional commit messages
 4. Execute commits handling any additional hook runs
-
-The commit-craft agent will organize changes intelligently and create well-structured commits following conventional commit format.

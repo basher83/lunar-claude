@@ -1,8 +1,6 @@
 ---
 description: Generate changelog using git-cliff, optionally bump version tag
-argument-hint: "[--preview] | [--commit] | [--release patch|minor|major]"
-allowed-tools: Bash(git-cliff:*), Bash(git diff:*), Bash(git add:*), Bash(git commit:*), Bash(git log:*), Bash(git tag:*), Bash(git describe:*), Read
-model: sonnet
+allowed-tools: Bash(git:*), Bash(git-cliff:*), AskUserQuestion, Read
 ---
 
 # Generate Changelog
@@ -13,116 +11,90 @@ Generate or update CHANGELOG.md using git-cliff based on conventional commits.
 
 ## Current State
 
+- Branch and status: !`git status -sb`
 - Recent commits: !`git log --oneline -10`
-- Current branch: !`git branch --show-current`
 - Latest tag: !`git describe --tags --abbrev=0 2>/dev/null || echo "No tags yet"`
 - Unpushed commits: !`git log --oneline @{u}..HEAD 2>/dev/null || echo "No upstream or no unpushed commits"`
+- Working directory: !`git status --porcelain | head -5 || echo "Clean"`
+- Unreleased changes preview: !`git-cliff --unreleased 2>/dev/null | head -20 || echo "No unreleased changes or git-cliff not configured"`
 
-## Arguments
+## Workflow
 
-| Argument | Description |
-|----------|-------------|
-| `--preview` | Show what would be generated without writing |
-| `--commit` | Generate changelog and commit it |
-| `--release patch` | Changelog + commit + patch tag (0.1.0 → 0.1.1) |
-| `--release minor` | Changelog + commit + minor tag (0.1.0 → 0.2.0) |
-| `--release major` | Changelog + commit + major tag (0.1.0 → 1.0.0) |
-| (no args) | Generate changelog, show diff, prompt before committing |
+### Phase 1: Pre-flight Check
 
-## Task
+1. If working directory has uncommitted changes (other than CHANGELOG.md), use AskUserQuestion:
+   - header: "Uncommitted"
+   - question: "You have uncommitted changes. Continue with changelog generation?"
+   - options:
+     - Continue (Proceed anyway)
+     - Abort (Stop and commit changes first)
 
-Based on `$ARGUMENTS`:
+2. If no conventional commits since last tag, inform user and stop
 
-### If `--preview`
+### Phase 2: Choose Action
 
-Show unreleased changes without writing to file:
+Use AskUserQuestion to determine workflow:
 
-```bash
-git-cliff --unreleased
-```
+- header: "Action"
+- question: "What would you like to do with the changelog?"
+- options:
+  - Preview (Show what would be generated without writing)
+  - Generate (Create/update CHANGELOG.md)
+  - Release (Generate changelog and create version tag)
 
-### If `--commit`
+### Phase 3: Execute Action
 
-1. Generate the full changelog:
+#### If Preview
 
-   ```bash
-   git-cliff -o CHANGELOG.md
-   ```
+Show unreleased changes: `git-cliff --unreleased`
 
-2. Show what changed:
+Report summary and stop.
 
-   ```bash
-   git diff CHANGELOG.md
-   ```
+#### If Generate
 
-3. Commit the changelog:
+1. Generate changelog: `git-cliff -o CHANGELOG.md`
 
-   ```bash
-   git add CHANGELOG.md && git commit -m "docs: update changelog"
-   ```
+2. Show diff: `git diff CHANGELOG.md`
 
-### If `--release <level>`
+3. Commit: `git add CHANGELOG.md && git commit -m "docs: update changelog"`
 
-1. Determine new version using git-cliff's native bump:
+#### If Release
 
-   ```bash
-   # For explicit level (patch/minor/major):
-   git-cliff --bump <level> --bumped-version
+1. Analyze unreleased commits to provide a recommendation:
+   - Review the commits shown in Current State
+   - Identify the types of changes (breaking, features, fixes, docs, etc.)
+   - Check git-cliff's detection: `git-cliff --bump --bumped-version`
 
-   # Example outputs:
-   # --bump patch → 0.1.1
-   # --bump minor → 0.2.0
-   # --bump major → 1.0.0
-   ```
+2. Provide a recommendation with reasoning:
+   - Summarize what's being released (e.g., "3 features, 5 bug fixes, 2 docs updates")
+   - Explain the recommended bump level based on semantic versioning:
+     - Major: if breaking changes or `BREAKING CHANGE:` commits present
+     - Minor: if new features (`feat:`) without breaking changes
+     - Patch: if only fixes, docs, refactors, etc.
+   - Show the proposed version: "[CURRENT] → [RECOMMENDED]"
 
-2. Generate changelog with bumped version:
+3. Use AskUserQuestion to confirm:
+   - header: "Release"
+   - question: "Proceed with [RECOMMENDED_LEVEL] release to v[VERSION]?"
+   - options:
+     - Yes (Create release with recommended version)
+     - Patch (Override: bump patch instead)
+     - Minor (Override: bump minor instead)
+     - Major (Override: bump major instead)
 
-   ```bash
-   git-cliff --bump <level> -o CHANGELOG.md
-   ```
+4. Generate changelog with confirmed version: `git-cliff --bump [level] -o CHANGELOG.md`
 
-3. Show what changed:
+5. Show diff: `git diff CHANGELOG.md`
 
-   ```bash
-   git diff CHANGELOG.md
-   ```
+6. Commit: `git add CHANGELOG.md && git commit -m "docs: update changelog for v[VERSION]"`
 
-4. Commit the changelog:
+7. Create annotated tag: `git tag -a v[VERSION] -m "Release v[VERSION]"`
 
-   ```bash
-   git add CHANGELOG.md && git commit -m "docs: update changelog for v<VERSION>"
-   ```
+8. Report: Previous version → New version
 
-5. Create the annotated tag:
+### Phase 4: Summary
 
-   ```bash
-   git tag -a v<VERSION> -m "Release v<VERSION>"
-   ```
-
-6. Report:
-   - Previous version → New version
-   - Changelog entries added
-   - Remind: `git push && git push --tags`
-
-### Default (no args)
-
-1. Generate the changelog:
-
-   ```bash
-   git-cliff -o CHANGELOG.md
-   ```
-
-2. Show the diff:
-
-   ```bash
-   git diff CHANGELOG.md
-   ```
-
-3. Report what was added and ask if user wants to commit or release
-
-## Output
-
-After completion, provide:
+Provide completion summary:
 
 - Changelog diff summary (categories and entry count)
 - Version change (if releasing): `v0.1.0 → v0.2.0`

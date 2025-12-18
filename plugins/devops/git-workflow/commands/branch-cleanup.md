@@ -1,96 +1,140 @@
 ---
-description: Clean up merged branches, stale remotes, and organize branch structure
-argument-hint: "[--dry-run] | [--force] | [--remote-only] | [--local-only]"
-allowed-tools: Bash(git:*), Bash(gh:*), Read, Grep
-model: sonnet
+description: Comprehensive git branch cleanup and organization
+allowed-tools: Bash(git:*), Bash(gh:*), AskUserQuestion
 ---
 
-# Git Branch Cleanup & Organization
+# Comprehensive Git Branch Cleanup
 
-Clean up merged branches and organize repository structure: $ARGUMENTS
+Perform a complete cleanup of local and remote branches after working on multiple PRs.
 
-## Current Repository State
+## Current State
 
-- All branches: !`git branch -a`
-- Recent branches: !`git for-each-ref --count=10 --sort=-committerdate refs/heads/ --format='%(refname:short) - %(committerdate:relative)'`
-- Remote branches: !`git branch -r`
-- Merged branches: !`git branch --merged main 2>/dev/null || git branch --merged master 2>/dev/null || echo "No main/master branch found"`
+- Default branch: !`git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's@^refs/remotes/origin/@@' || echo "main"`
 - Current branch: !`git branch --show-current`
+- Fetch latest: !`git fetch --all --prune 2>&1`
 
-## Task
+## Branch Inventory
 
-Perform comprehensive branch cleanup and organization based on the repository state and provided arguments.
+### All Branches
 
-## Cleanup Operations
+Local branches with tracking status:
 
-### 1. Identify Branches for Cleanup
+!`git branch --format='%(refname:short) %(upstream:track)' | sort`
 
-- **Merged branches**: Find local branches already merged into main/master
-- **Stale remote branches**: Identify remote-tracking branches that no longer exist
-- **Old branches**: Detect branches with no recent activity (>30 days)
+Recent branches by activity:
 
-### 2. Safety Checks Before Deletion
+!`git for-each-ref --count=15 --sort=-committerdate refs/heads/ --format='%(refname:short) - %(committerdate:relative)'`
 
-- Verify branches are actually merged using `git merge-base`
-- Check if branches have unpushed commits
-- Confirm branches aren't the current working branch
-- Validate against protected branch patterns
+Remote branches:
 
-### 3. Protected Branches
+!`git branch -r --format='%(refname:short)' | grep -v HEAD | sort`
+
+### Cleanup Candidates
+
+Merged into default branch:
+
+!`git branch --merged $(git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's@^refs/remotes/origin/@@' || echo "main") --format='%(refname:short)' | grep -v -E "^(main|master|develop|staging|production)$" | grep -v -E "^(release|renovate)/" | sort`
+
+Branches with gone remotes:
+
+!`git branch -vv | grep ': gone]' | awk '{print $1}' | sort`
+
+Stale remote-tracking refs (would be pruned):
+
+!`git remote prune origin --dry-run 2>&1 | grep '\[would prune\]' | awk '{print $NF}' || echo "None"`
+
+## Protected Branches
 
 Never delete branches matching these patterns:
 
 - `main`, `master`, `develop`, `staging`, `production`
-- `release/*` (unless explicitly confirmed)
+- `release/*` branches (unless explicitly confirmed via AskUserQuestion)
+- `renovate/*` branches (managed by Renovate bot)
 - Current working branch
-- Branches with unpushed commits (unless forced)
+- Branches with unpushed commits (use AskUserQuestion to confirm)
 
-## Command Modes
+## Cleanup Workflow
 
-### Default Mode (Interactive)
+### Phase 1: Analyze
 
-1. Show branch analysis with recommendations
-2. Ask for confirmation before each deletion
-3. Provide summary of actions taken
+1. Review the branch inventory above
+2. Identify the default branch (protect from deletion)
+3. Categorize branches:
+   - **Safe to delete**: Merged branches and branches with gone remotes (excluding protected)
+   - **Needs confirmation**: `release/*` branches, branches with unpushed commits
+   - **Protected**: All protected branch patterns and current branch
 
-### Dry Run Mode (`--dry-run`)
+### Phase 2: Confirm Cleanup Plan
 
-1. Show what would be deleted without making changes
-2. Display branch analysis and recommendations
-3. Exit without modifying repository
+Before deleting anything, present the cleanup plan and use AskUserQuestion:
 
-### Force Mode (`--force`)
+**Question: Cleanup scope**
+- header: "Cleanup"
+- question: "Which branches should be deleted?"
+- multiSelect: false
+- options:
+  - All safe (Delete all merged and gone-remote branches)
+  - Merged only (Delete only branches merged into default)
+  - Gone only (Delete only branches with deleted remotes)
+  - Review each (Confirm each branch individually)
 
-1. Delete merged branches without confirmation
-2. Clean up stale remotes automatically
-3. Provide summary of all actions taken
+If user selects "Review each", iterate through each candidate branch with:
 
-### Remote Only (`--remote-only`)
+**Question: Per-branch confirmation**
+- header: "Delete?"
+- question: "Delete branch '[branch-name]'? ([merged/gone], last commit: [date])"
+- options:
+  - Yes (Delete this branch)
+  - No (Keep this branch)
+  - Stop (Abort remaining cleanup)
 
-1. Only clean up remote-tracking branches
-2. Synchronize with actual remote state using `git remote prune origin`
-3. Keep all local branches intact
+### Phase 3: Execute Cleanup
 
-### Local Only (`--local-only`)
+After user confirmation, execute in order:
 
-1. Only clean up local branches
-2. Don't affect remote-tracking branches
-3. Focus on local workspace organization
+1. **Prune stale remote-tracking refs**: `git remote prune origin`
+2. **Delete merged local branches**: `git branch -d [branch-name]`
+3. **Delete gone-remote branches**: `git branch -D [branch-name]`
 
-## Output
+For each deletion, record the branch name and SHA before deleting:
+`git rev-parse [branch-name]`
+
+**If deletion fails**, use AskUserQuestion:
+
+- header: "Failed"
+- question: "Failed to delete '[branch-name]': [error]. What should we do?"
+- options:
+  - Force (Use git branch -D to force delete)
+  - Skip (Leave this branch, continue with others)
+  - Abort (Stop cleanup, keep remaining branches)
+
+### Phase 4: Remote Cleanup (Optional)
+
+After local cleanup, use AskUserQuestion:
+
+- header: "Remotes"
+- question: "Delete corresponding remote branches on origin?"
+- options:
+  - Yes (Run git push origin --delete for each deleted local branch)
+  - No (Keep remote branches, only cleaned up locally)
+
+### Phase 5: Summary
 
 Provide cleanup summary:
 
 ```text
 Branch Cleanup Summary:
-✅ Deleted N merged feature branches
-✅ Removed N stale remote references
-⚠️  Found N unmerged branches requiring attention
-📊 Repository now has N active branches (was M)
+- Deleted N merged feature branches
+- Removed N branches with gone remotes
+- Pruned N stale remote references
+- Repository now has N active branches (was M)
+
+Recovery Commands:
 ```
 
-Include recovery commands for any deleted branches:
+For each deleted branch, output:
+`git checkout -b [branch-name] [sha]`
 
-```text
-git checkout -b branch-name SHA  # Recover branch
-```
+Final branch state:
+
+!`git branch --format='%(refname:short)'`

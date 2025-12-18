@@ -18,7 +18,7 @@ The plugin-dev toolkit provides seven specialized skills to help you build high-
 Each skill follows best practices with progressive disclosure: lean core documentation,
 detailed references, working examples, and utility scripts.
 
-## Guided Workflow Command
+## Guided Workflow Commands
 
 ### /plugin-dev:create-plugin
 
@@ -55,6 +55,36 @@ A comprehensive, end-to-end workflow command for creating plugins from scratch, 
 ```
 
 Use this workflow for structured, high-quality plugin development from concept to completion.
+
+### /plugin-dev:plugin-review
+
+A comprehensive plugin review workflow that validates existing plugins against plugin-dev best practices.
+
+**6-Phase Process:**
+
+1. **Setup** - Validate plugin path, discover components, create state file
+2. **Commands Review** - Validate against command-development skill
+3. **Agents Review** - Validate against agent-development skill (examples, triggers, edge cases)
+4. **Skills Review** - Validate against skill-development skill (triggers, progressive disclosure)
+5. **Metadata Review** - Check plugin.json and README against standards
+6. **Advanced Patterns** - Analyze if plugin-settings or other patterns apply
+
+**Features:**
+
+- Creates `.claude/<plugin-name>-review.local.md` state file for tracking
+- Resumable - can continue from where you left off
+- Proof-based - cites specific skill guidance for recommendations
+- Incremental commits with SHA tracking
+- Validates README against plugin-dev template pattern
+
+**Usage:**
+
+```bash
+/plugin-dev:plugin-review plugins/devops/git-workflow
+/plugin-dev:plugin-review ./my-plugin
+```
+
+Use this workflow to ensure existing plugins meet quality standards.
 
 ## Skills
 

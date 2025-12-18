@@ -20,20 +20,15 @@ This plugin provides commands to automate git workflows:
 
 ### Changelog Generation
 
-Use `/generate-changelog` after creating commits to update CHANGELOG.md:
+Use `/generate-changelog` after creating commits to update CHANGELOG.md. The command uses a workflow-driven approach:
 
-```bash
-/generate-changelog              # Generate and prompt to commit
-/generate-changelog --preview    # Preview without writing
-/generate-changelog --commit     # Generate and auto-commit
-/generate-changelog --release patch  # Changelog + patch version tag
-/generate-changelog --release minor  # Changelog + minor version tag
-/generate-changelog --release major  # Changelog + major version tag
-```
+1. Shows current state (branch, recent commits, latest tag, unreleased changes)
+2. Prompts to select action: Preview, Generate, or Release
+3. For releases, analyzes commits and recommends version bump level
 
 ## Conventional Commit Format
 
-Structure commit messages following the conventional commit specification:
+Structure commit messages following the conventional commit specification. Project-specific CLAUDE.md conventions take precedence over these defaults.
 
 ```text
 type(scope): subject

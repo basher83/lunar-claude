@@ -31,9 +31,9 @@ Remote branches:
 
 ### Cleanup Candidates
 
-Merged into default branch:
+Default branch: !`git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's@^refs/remotes/origin/@@' || echo "main"`
 
-!`git branch --merged $(git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's@^refs/remotes/origin/@@' || echo "main") --format='%(refname:short)' | grep -v -E "^(main|master|develop|staging|production)$" | grep -v -E "^(release|renovate)/" | sort`
+Merged into default branch: !`git branch --merged`
 
 Branches with gone remotes:
 

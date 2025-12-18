@@ -382,6 +382,128 @@ When recommending to NOT make a change:
 
 ---
 
+## Examples of Proper Proof-Based Analysis
+
+### Example 1: Validation with Tabular Evidence
+
+**Question:** Are naming conventions followed?
+
+**From skill (plugin-structure):**
+> "Commands: Use kebab-case .md files"
+> "Agents: Use kebab-case .md files describing role"
+> "Skills: Use kebab-case directory names"
+
+| Component | Name | Convention | Status |
+|-----------|------|------------|--------|
+| Commands | git-status.md | kebab-case ✅ | PASS |
+| Commands | git-commit.md | kebab-case ✅ | PASS |
+| Commands | generate-changelog.md | kebab-case ✅ | PASS |
+| Commands | branch-cleanup.md | kebab-case ✅ | PASS |
+| Agents | commit-craft.md | kebab-case, describes role ✅ | PASS |
+| Skills | git-workflow/ | kebab-case ✅ | PASS |
+
+**Result:** PASS - All naming conventions followed.
+
+---
+
+### Example 2: Skip Decision with Justification
+
+**Question:** Could plugin benefit from a scripts/ directory?
+
+**From skill (plugin-structure):**
+> "Scripts: Use descriptive kebab-case names with appropriate extensions"
+> Example: `validate-input.sh`, `generate-report.py`
+
+**Analysis:**
+
+| Potential Script | Purpose | Justified? |
+|------------------|---------|------------|
+| validate-commit-msg.sh | Validate conventional commit format | No - git hooks handle this |
+| check-branch-name.sh | Validate branch naming | No - simple pattern matching |
+| parse-changelog.py | Parse git-cliff output | No - git-cliff handles this |
+
+**Assessment:** All functionality is either:
+1. Delegated to external tools (git, git-cliff, prek)
+2. Simple enough to inline in commands
+3. Handled by the commit-craft agent
+
+**From skill - Best Practice:**
+> "Minimal manifest: Keep plugin.json lean"
+> "Only create directories for components the plugin actually uses"
+
+**Result:** NO BENEFIT - Adding scripts/ would add complexity without value. Plugin appropriately delegates to external tools.
+
+---
+
+### Example 3: Issue Found with Fix Proposal
+
+**Issue:** Agent examples don't show proactive triggering
+
+**Criterion:** Description has proactive triggering example (if applicable)
+
+**Skill:** agent-development
+
+**Proof from skill:**
+> "Include 2-4 concrete examples"
+> "Show proactive and reactive triggering"
+> "Cover different phrasings of same intent"
+
+**Current state:**
+```markdown
+<example>
+Context: User explicitly requests commit creation.
+user: "create commits for these changes"
+assistant: "I'll use the commit-craft agent..."
+</example>
+```
+All 3 examples are reactive (explicit user requests).
+
+**Proposed fix:**
+Add proactive example as first example:
+```markdown
+<example>
+Context: User just finished implementing a feature across multiple files.
+user: "I've finished adding the authentication module"
+assistant: "Great! You have changes across several files."
+<commentary>
+User completed coding task with multiple modified files. Proactively trigger commit-craft.
+</commentary>
+assistant: "I'll use the commit-craft agent to organize these changes into logical, atomic commits."
+</example>
+```
+
+**Rationale:** The skill explicitly requires showing "proactive and reactive triggering." Current examples only show reactive patterns, missing the proactive case where agent triggers after user completes work.
+
+---
+
+### Example 4: Advanced Pattern Analysis
+
+**Question:** Does plugin benefit from plugin-settings pattern?
+
+**From skill (plugin-settings):**
+> "Plugins can store user-configurable settings... for Per-project plugin configuration"
+> "Use case: Enable/disable hooks without editing hooks.json"
+> "Focus on keeping settings simple and providing good defaults when settings file doesn't exist"
+
+**Analysis:**
+
+| Pattern | Applicable? | Reasoning |
+|---------|-------------|-----------|
+| Configuration-driven behavior | No | CLAUDE.md handles project conventions |
+| Temporarily active hooks | No | Plugin has no hooks |
+| Agent state management | No | commit-craft is stateless by design |
+
+**One potential use case:** Protected branch patterns for branch-cleanup.
+
+**However, from skill:**
+> "Focus on keeping settings simple and providing good defaults when settings file doesn't exist"
+
+Plugin already provides good defaults. Adding settings would add complexity for minor benefit.
+
+**Result:** NO - Limited benefit, skip implementation. CLAUDE.md handles configuration needs.
+
+---
+
 ## Begin Review
 
 1. Validate plugin path: $ARGUMENTS

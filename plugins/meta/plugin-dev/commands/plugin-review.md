@@ -332,6 +332,56 @@ Every recommendation must:
 
 ---
 
+## MANDATORY: Change Proposal Format
+
+**CRITICAL**: Before proposing ANY change, you MUST use this exact format. Do NOT make changes without following this structure.
+
+### For Issues Found
+
+```markdown
+**Issue:** [Brief description of the problem]
+
+**Criterion:** [Which checklist item failed]
+
+**Skill:** [skill-name] (e.g., agent-development, skill-development)
+
+**Proof from skill:**
+> "[Exact quote from the skill that defines this requirement]"
+
+**Current state:**
+[Show what the plugin currently has]
+
+**Proposed fix:**
+[Show what it should be changed to]
+
+**Rationale:** [Why this change improves the plugin based on the proof]
+```
+
+### For Skip Decisions
+
+When recommending to NOT make a change:
+
+```markdown
+**Considered:** [What was evaluated]
+
+**Skill:** [skill-name]
+
+**Proof from skill:**
+> "[Exact quote that justifies skipping]"
+
+**Decision:** Skip - [brief explanation]
+```
+
+### Enforcement
+
+- If you cannot find proof from a skill, do NOT propose the change
+- If the skill doesn't address a potential issue, note it as "No guidance found - skipping"
+- Always quote the skill directly, do not paraphrase
+- Present all proposals to user before applying ANY changes
+- Record all proposals (applied and skipped) in state file
+
+---
+
 ## Begin Review
 
 1. Validate plugin path: $ARGUMENTS

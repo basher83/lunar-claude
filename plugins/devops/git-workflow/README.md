@@ -21,27 +21,13 @@ claude plugin install git-workflow@lunar-claude
 
 ### Commands
 
+All commands use workflow-driven patterns with interactive prompts.
+
 ```bash
-# Get repository status summary
-/git-status
-
-# Create clean commits (runs pre-commit hooks + commit-craft)
-/git-commit
-
-# Branch cleanup (interactive)
-/branch-cleanup
-
-# Branch cleanup modes
-/branch-cleanup --dry-run      # Preview without changes
-/branch-cleanup --force        # Delete merged branches without confirmation
-/branch-cleanup --remote-only  # Only clean remote-tracking branches
-/branch-cleanup --local-only   # Only clean local branches
-
-# Generate changelog
-/generate-changelog              # Generate and prompt to commit
-/generate-changelog --preview    # Preview without writing
-/generate-changelog --commit     # Generate and auto-commit
-/generate-changelog --release patch  # Changelog + patch version tag
+/git-status          # Repository status summary
+/git-commit          # Pre-commit hooks + commit-craft agent
+/branch-cleanup      # Interactive branch cleanup workflow
+/generate-changelog  # Changelog generation with Preview/Generate/Release options
 ```
 
 ### Agent

@@ -2,7 +2,7 @@
 workflow: plugin-dev-bug-tracking
 status: active
 started: 2025-12-18
-last_updated: 2025-12-18
+last_updated: 2025-12-28
 ---
 
 # Plugin-Dev Bug Tracking
@@ -11,47 +11,40 @@ Tracking bugs discovered in the plugin-dev plugin during development.
 
 ## Open Bugs
 
-### BUG-001: skill-development skill fails to load
-
-**Discovered:** 2025-12-18
-**Severity:** High
-**Component:** `plugins/meta/plugin-dev/skills/skill-development/SKILL.md`
-
-**Symptoms:**
-```bash
-Bash command failed for pattern "!` escape does NOT work.
-zsh: command not found: escape
-(eval):3: no matches found: **Good:**
-```
-
-**Root Cause:**
-The skill-development SKILL.md contains examples of the `!` backtick dynamic bash pattern inside fenced code blocks. Due to GitHub issue #12781, the skill parser executes these patterns even inside code blocks.
-
-**Affected Content:**
-The skill documents the bug and shows "bad" examples that themselves trigger the bug:
-```markdown
-❌ **Bad:**
-` ` `markdown
-` ` `bash
-# Example of dynamic execution
-!`git status`
-` ` `
-` ` `
-```
-
-**Irony:** The skill that documents how to avoid this bug is itself broken by it.
-
-**Workaround:**
-- Read skill files directly with Read tool instead of using Skill tool
-- Grep for specific content
-
-**Fix Required:**
-Replace `!` backtick examples in the skill with `$` shell notation or move to reference files.
-
-**Related:** GitHub #12781 (dynamic bash pattern bug)
+(none currently)
 
 ---
 
 ## Resolved Bugs
 
-(none yet)
+### BUG-001: skill-development skill fails to load
+
+**Discovered:** 2025-12-18
+**Resolved:** 2025-12-28
+**Severity:** High
+**Component:** `plugins/meta/plugin-dev/skills/skill-development/SKILL.md`
+
+**Symptoms:**
+```bash
+# Original (2025-12-18):
+Bash command failed for pattern "!` escape does NOT work.
+zsh: command not found: escape
+
+# Recurrence (2025-12-28):
+Bash command failed for pattern "!` backtick patterns and `"
+zsh: command not found: backtick
+```
+
+**Root Cause:**
+The skill-development SKILL.md contained references to the exclamation-backtick dynamic bash pattern that triggered the parser. Due to GitHub issue #12781, the skill parser executes these patterns even inside fenced code blocks or inline code.
+
+**Affected Content:**
+Two locations triggered the bug:
+1. Code block examples showing "bad" patterns (fixed 2025-12-18)
+2. Line 650: `` `!` backtick patterns `` in prose text (fixed 2025-12-28)
+
+**Resolution:**
+1. Replaced code block examples with `$` shell notation
+2. Changed `` `!` backtick patterns `` to `exclamation-backtick patterns` in prose
+
+**Related:** GitHub #12781 (dynamic bash pattern bug)

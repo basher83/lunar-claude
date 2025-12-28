@@ -647,7 +647,7 @@ $ git status
 2. Describe syntax in prose: "Use exclamation mark prefix with backticks"
 3. Move examples to separate reference files (not parsed as skill content)
 
-**Note:** This applies to both `!` backtick patterns and `@` file references in code blocks.
+**Note:** This applies to both exclamation-backtick patterns and `@` file references in code blocks.
 
 ## Quick Reference
 

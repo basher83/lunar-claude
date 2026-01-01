@@ -1,6 +1,6 @@
 ---
 description: Run pre-commit hooks and create clean, logical commits
-allowed-tools: Bash(git:*), Bash(prek:*), Bash(test:*), Task, AskUserQuestion
+allowed-tools: Bash(git:*), Bash(pre-commit:*), Bash(test:*), Task, AskUserQuestion
 ---
 
 # Git Commit Workflow
@@ -34,7 +34,7 @@ Verify repository state:
 
 Execute pre-commit hooks:
 
-!`prek -a`
+!`pre-commit run -a`
 
 Analyze the output:
 

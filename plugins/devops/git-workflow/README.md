@@ -34,7 +34,7 @@ Orchestrates pre-commit hooks and commit creation.
 
 1. Shows branch status and pre-flight checks
 2. Detects sensitive files (.env, credentials)
-3. Runs pre-commit hooks (prek)
+3. Runs pre-commit hooks
 4. Invokes commit-craft agent for atomic commits
 
 ### /branch-cleanup
@@ -106,7 +106,7 @@ cc --plugin-dir /path/to/git-workflow
 ## Dependencies
 
 - `git` - Git version control (required)
-- `prek` or `pre-commit` - Pre-commit hooks (optional, for /git-commit)
+- `pre-commit` - Pre-commit hooks (optional, for /git-commit)
 - `git-cliff` - Changelog generator (required for /generate-changelog)
 - `gh` - GitHub CLI (optional, for PR status)
 

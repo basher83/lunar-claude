@@ -1,6 +1,6 @@
 {
   "name": "git-workflow",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Git workflow automation including atomic commits, branch cleanup, and conventional commit standards",
   "author": {
     "name": "basher83",
@@ -8,5 +8,12 @@
   },
   "repository": "https://github.com/basher83/lunar-claude",
   "license": "MIT",
-  "keywords": ["git", "commits", "branches", "workflow", "automation", "conventional-commits"]
+  "keywords": [
+    "git",
+    "commits",
+    "branches",
+    "workflow",
+    "automation",
+    "conventional-commits"
+  ]
 }

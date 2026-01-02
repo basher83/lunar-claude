@@ -84,7 +84,7 @@
       "name": "proxmox-infrastructure",
       "source": "./plugins/infrastructure/proxmox-infrastructure",
       "description": "Proxmox VE cluster management including VM provisioning, templates, VLAN networking, and CEPH storage",
-      "version": "1.0.0",
+      "version": "1.0.3",
       "category": "infrastructure",
       "keywords": [
         "proxmox",

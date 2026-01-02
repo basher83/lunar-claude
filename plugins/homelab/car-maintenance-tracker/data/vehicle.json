@@ -1,0 +1,16 @@
+{
+  "vehicle": {
+    "year": 2013,
+    "make": "Lexus",
+    "model": "RX450h",
+    "vin": "",
+    "current_mileage": 0,
+    "last_updated": ""
+  },
+  "nhtsa_cache": {
+    "recalls": [],
+    "complaints": [],
+    "tsbs": [],
+    "last_fetched": null
+  }
+}

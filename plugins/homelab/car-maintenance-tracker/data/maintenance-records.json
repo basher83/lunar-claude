@@ -1,0 +1,87 @@
+{
+  "work_orders": [],
+  "upcoming_maintenance": [
+    {
+      "id": "oil-change",
+      "name": "Oil and Filter Change",
+      "interval_miles": 5000,
+      "interval_months": 6,
+      "last_completed_mileage": null,
+      "last_completed_date": null,
+      "notes": "Use 0W-20 synthetic oil for hybrid engine"
+    },
+    {
+      "id": "tire-rotation",
+      "name": "Tire Rotation",
+      "interval_miles": 5000,
+      "interval_months": 6,
+      "last_completed_mileage": null,
+      "last_completed_date": null,
+      "notes": ""
+    },
+    {
+      "id": "cabin-air-filter",
+      "name": "Cabin Air Filter Replacement",
+      "interval_miles": 15000,
+      "interval_months": 12,
+      "last_completed_mileage": null,
+      "last_completed_date": null,
+      "notes": ""
+    },
+    {
+      "id": "engine-air-filter",
+      "name": "Engine Air Filter Replacement",
+      "interval_miles": 30000,
+      "interval_months": null,
+      "last_completed_mileage": null,
+      "last_completed_date": null,
+      "notes": ""
+    },
+    {
+      "id": "brake-fluid",
+      "name": "Brake Fluid Replacement",
+      "interval_miles": null,
+      "interval_months": 24,
+      "last_completed_mileage": null,
+      "last_completed_date": null,
+      "notes": ""
+    },
+    {
+      "id": "coolant-replacement",
+      "name": "Engine Coolant Replacement",
+      "interval_miles": 100000,
+      "interval_months": null,
+      "last_completed_mileage": null,
+      "last_completed_date": null,
+      "notes": "First replacement at 100k miles, then every 50k"
+    },
+    {
+      "id": "transmission-fluid",
+      "name": "Transmission Fluid Replacement",
+      "interval_miles": 60000,
+      "interval_months": null,
+      "last_completed_mileage": null,
+      "last_completed_date": null,
+      "notes": "CVT fluid for hybrid transmission"
+    },
+    {
+      "id": "spark-plugs",
+      "name": "Spark Plug Replacement",
+      "interval_miles": 120000,
+      "interval_months": null,
+      "last_completed_mileage": null,
+      "last_completed_date": null,
+      "notes": "Iridium spark plugs"
+    },
+    {
+      "id": "hybrid-battery-inspection",
+      "name": "Hybrid Battery System Inspection",
+      "interval_miles": null,
+      "interval_months": 12,
+      "last_completed_mileage": null,
+      "last_completed_date": null,
+      "notes": "Check hybrid battery cooling system and connections"
+    }
+  ],
+  "service_providers": []
+}

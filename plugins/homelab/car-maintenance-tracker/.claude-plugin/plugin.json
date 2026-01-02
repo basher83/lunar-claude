@@ -1,0 +1,15 @@
+{
+  "name": "car-maintenance-tracker",
+  "version": "0.1.0",
+  "description": "AI-powered maintenance assistant for 2013 Lexus RX450h with NHTSA API integration for recalls, TSBs, and common issues tracking",
+  "keywords": [
+    "automotive",
+    "maintenance",
+    "lexus",
+    "nhtsa",
+    "recalls",
+    "tsb",
+    "vehicle",
+    "tracking"
+  ]
+}

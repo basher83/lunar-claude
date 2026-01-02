@@ -157,6 +157,26 @@
       }
     },
     {
+      "name": "car-maintenance-tracker",
+      "source": "./plugins/homelab/car-maintenance-tracker",
+      "description": "AI-powered maintenance assistant for 2013 Lexus RX450h with NHTSA API integration for recalls, TSBs, and common issues tracking",
+      "version": "0.1.0",
+      "category": "homelab",
+      "keywords": [
+        "automotive",
+        "maintenance",
+        "lexus",
+        "nhtsa",
+        "recalls",
+        "tsb",
+        "vehicle",
+        "tracking"
+      ],
+      "author": {
+        "name": "basher83"
+      }
+    },
+    {
       "name": "hookify",
       "source": "./plugins/meta/hookify",
       "description": "Easily create hooks to prevent unwanted behaviors by analyzing conversation patterns",

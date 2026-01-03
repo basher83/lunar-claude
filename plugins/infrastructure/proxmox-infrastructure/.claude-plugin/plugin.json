@@ -1,6 +1,6 @@
 {
   "name": "proxmox-infrastructure",
-  "version": "1.0.0",
+  "version": "1.0.3",
   "description": "Proxmox VE cluster management including VM provisioning, templates, VLAN networking, and CEPH storage",
   "author": {
     "name": "basher83",

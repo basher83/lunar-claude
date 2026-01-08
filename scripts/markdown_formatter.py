@@ -21,11 +21,12 @@ Features:
     - Dual mode: Works with Claude Code hooks (stdin) or command-line arguments
     - Blocking mode option for immediate Claude feedback
     - Detects programming languages in unlabeled code fences
-    - Adds appropriate language identifiers (python, json, bash, etc.)
-    - Normalizes excessive blank lines
+    - Adds appropriate language identifiers (python, yaml, json, bash, etc.)
+    - Normalizes excessive blank lines (outside code fences only)
     - Preserves code content integrity
 """
 
+import argparse
 import json
 import os
 import re
@@ -33,11 +34,31 @@ import sys
 
 
 def detect_language(code: str) -> str:
-    """Best-effort language detection from code content."""
+    """
+    Detect programming language from code content.
+
+    Checks for language-specific patterns in order of specificity.
+    Returns the detected language identifier or 'text' if unknown.
+
+    Detected languages: yaml, toml, json, python, typescript, javascript,
+    bash, sql, go, rust, diff, html, xml, css.
+    """
     s = code.strip()
 
-    # JSON detection
-    if re.search(r"^\s*[{\[]", s):
+    # YAML detection (must come before others - very common in this codebase)
+    # Look for key: value patterns, leading dashes for lists, or document markers
+    if re.search(r"^---\s*$", s, re.M) or re.search(r"^\w[\w\-]*:\s*[^\{]", s, re.M):
+        # Exclude if it looks like JSON (has { or [ at start after stripping)
+        if not re.match(r"^\s*[\{\[]", s):
+            return "yaml"
+
+    # TOML detection (common for config files)
+    # Section headers [section] or [section.subsection], key = value patterns
+    if re.search(r"^\[[\w\.\-]+\]\s*$", s, re.M) or re.search(r'^\w+\s*=\s*["\'\[\{]', s, re.M):
+        return "toml"
+
+    # JSON detection - must start with { or [ and be valid JSON
+    if re.match(r"^\s*[\{\[]", s):
         try:
             json.loads(s)
             return "json"
@@ -47,69 +68,173 @@ def detect_language(code: str) -> str:
     # Python detection
     if re.search(r"^\s*def\s+\w+\s*\(", s, re.M) or re.search(r"^\s*(import|from)\s+\w+", s, re.M):
         return "python"
+    if re.search(r"^\s*class\s+\w+", s, re.M) or re.search(
+        r'if\s+__name__\s*==\s*["\']__main__["\']', s
+    ):
+        return "python"
+
+    # TypeScript detection (before JavaScript - more specific)
+    if re.search(r":\s*(string|number|boolean|any|void)\b", s) or re.search(
+        r"\binterface\s+\w+", s
+    ):
+        return "typescript"
 
     # JavaScript detection
-    if re.search(r"\b(function\s+\w+\s*\(|const\s+\w+\s*=)", s) or re.search(
-        r"=>|console\.(log|error)", s
-    ):
+    if re.search(r"\b(function\s+\w+\s*\(|const\s+\w+\s*=|let\s+\w+\s*=)", s):
+        return "javascript"
+    if re.search(r"=>\s*[\{\(]|console\.(log|error|warn)\(", s):
         return "javascript"
 
-    # Bash detection
-    if re.search(r"^#!.*\b(bash|sh)\b", s, re.M) or re.search(
-        r"\b(if|then|fi|for|in|do|done)\b", s
+    # Go detection
+    if re.search(r"^package\s+\w+", s, re.M) or re.search(r"^func\s+\w+\s*\(", s, re.M):
+        return "go"
+    if re.search(r":=\s*\w+|fmt\.(Print|Sprintf)", s):
+        return "go"
+
+    # Rust detection
+    if re.search(r"^(pub\s+)?fn\s+\w+", s, re.M) or re.search(r"\blet\s+mut\s+\w+", s):
+        return "rust"
+    if re.search(r"^use\s+\w+::", s, re.M) or re.search(r"impl\s+\w+\s+for", s):
+        return "rust"
+
+    # Diff detection
+    if re.search(r"^(---|\+\+\+)\s+\S+", s, re.M) and re.search(
+        r"^@@\s+-\d+,\d+\s+\+\d+,\d+\s+@@", s, re.M
     ):
+        return "diff"
+
+    # Bash detection - be more specific to avoid false positives
+    # Require shebang OR multiple shell-specific constructs
+    if re.search(r"^#!.*\b(bash|sh|zsh)\b", s, re.M):
+        return "bash"
+    shell_constructs = [
+        r"\$\{?\w+\}?",  # Variable expansion
+        r"\becho\s+",  # echo command
+        r"\|\s*\w+",  # Pipe to command
+        r"&&\s*\w+|;\s*\w+",  # Command chaining
+    ]
+    if sum(1 for p in shell_constructs if re.search(p, s)) >= 2:
         return "bash"
 
     # SQL detection
-    if re.search(r"\b(SELECT|INSERT|UPDATE|DELETE|CREATE)\s+", s, re.I):
+    if re.search(r"\b(SELECT|INSERT|UPDATE|DELETE|CREATE|ALTER|DROP)\s+", s, re.I):
         return "sql"
+
+    # HTML detection
+    if re.search(r"<(!DOCTYPE|html|head|body|div|span|p|a|script)\b", s, re.I):
+        return "html"
+
+    # XML detection (after HTML)
+    if re.search(r"<\?xml\s+version=", s) or re.search(r"<\w+[^>]*xmlns[^>]*>", s):
+        return "xml"
+
+    # CSS detection
+    if re.search(r"^\s*[\.\#]?\w+\s*\{[^}]*\}", s, re.M):
+        return "css"
 
     return "text"
 
 
 def format_markdown(content: str) -> str:
-    """Format markdown content with language detection."""
+    """
+    Format markdown content with language detection and spacing fixes.
 
-    # Fix unlabeled code fences
-    def add_lang_to_fence(match: re.Match[str]) -> str:
+    Adds language identifiers to unlabeled code fences and normalizes
+    excessive blank lines (outside code fences only).
+    """
+    # Split content into code fence and non-code-fence segments
+    fence_pattern = r"(?ms)^([ \t]{0,3})```([^\n]*)\n(.*?)(\n\1```)\s*$"
+
+    segments: list[tuple[str, bool]] = []  # (content, is_code_fence)
+    last_end = 0
+
+    for match in re.finditer(fence_pattern, content):
+        # Add text before this fence
+        if match.start() > last_end:
+            segments.append((content[last_end : match.start()], False))
+
+        # Process the fence - add language if missing
         indent, info, body, closing = match.groups()
         if not info.strip():
             lang = detect_language(body)
-            return f"{indent}```{lang}\n{body}{closing}\n"
-        return match.group(0)
+            fence_content = f"{indent}```{lang}\n{body}{closing}\n"
+        else:
+            fence_content = match.group(0)
 
-    fence_pattern = r"(?ms)^([ \t]{0,3})```([^\n]*)\n(.*?)(\n\1```)\s*$"
-    content = re.sub(fence_pattern, add_lang_to_fence, content)
+        segments.append((fence_content, True))
+        last_end = match.end()
 
-    # Fix excessive blank lines (only outside code fences)
-    content = re.sub(r"\n{3,}", "\n\n", content)
+    # Add remaining content after last fence
+    if last_end < len(content):
+        segments.append((content[last_end:], False))
 
-    return content.rstrip() + "\n"
+    # Rebuild content, fixing blank lines only in non-fence segments
+    result_parts = []
+    for segment, is_fence in segments:
+        if is_fence:
+            result_parts.append(segment)
+        else:
+            # Fix excessive blank lines only outside code fences
+            fixed = re.sub(r"\n{3,}", "\n\n", segment)
+            result_parts.append(fixed)
+
+    return "".join(result_parts).rstrip() + "\n"
 
 
-# Main execution
-try:
-    # Parse arguments
-    blocking = False
-    file_paths = []
+def parse_args() -> tuple[bool, list[str]]:
+    """
+    Parse command line arguments or read from stdin for hook mode.
 
-    if len(sys.argv) > 1:
-        # CLI mode: parse arguments
-        args = sys.argv[1:]
-        if "--blocking" in args:
-            blocking = True
-            args.remove("--blocking")
-        file_paths = args
-    else:
-        # Hook mode: Read from stdin
+    Returns:
+        Tuple of (blocking mode flag, list of file paths to process).
+    """
+    # Check for hook mode first (no args = read from stdin)
+    if len(sys.argv) == 1:
         try:
             input_data = json.load(sys.stdin)
             file_path = input_data.get("tool_input", {}).get("file_path", "")
-            if file_path:
-                file_paths = [file_path]
+            return False, [file_path] if file_path else []
         except json.JSONDecodeError as e:
             print(f"Error: Invalid JSON input from stdin: {e}", file=sys.stderr)
-            sys.exit(0)  # Non-blocking even on errors
+            return False, []
+
+    # CLI mode: use argparse
+    parser = argparse.ArgumentParser(
+        description="Fix missing language tags and spacing issues in markdown files.",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Examples:
+  %(prog)s README.md                    Format single file
+  %(prog)s docs/*.md                    Format multiple files
+  %(prog)s --blocking README.md         Block and report changes (for hooks)
+
+Hook mode:
+  echo '{"tool_input":{"file_path":"test.md"}}' | %(prog)s
+""",
+    )
+    parser.add_argument(
+        "files",
+        nargs="*",
+        metavar="FILE",
+        help="Markdown files to format (.md, .mdx)",
+    )
+    parser.add_argument(
+        "--blocking",
+        action="store_true",
+        help="Exit with code 2 when changes are made (for Claude Code hooks)",
+    )
+
+    args = parser.parse_args()
+    return args.blocking, args.files
+
+
+def main() -> int:
+    """
+    Main entry point for markdown formatter.
+
+    Returns exit code: 0 for success/no changes, 2 for blocking mode with changes.
+    """
+    blocking, file_paths = parse_args()
 
     # Track if any changes were made
     any_changes = False
@@ -142,16 +267,17 @@ try:
 
                 any_changes = True
 
-        except Exception as e:
-            print(f"Error formatting {file_path}: {e}", file=sys.stderr)
+        except OSError as e:
+            print(f"Error reading/writing {file_path}: {e}", file=sys.stderr)
+        except UnicodeDecodeError as e:
+            print(f"Error decoding {file_path}: {e}", file=sys.stderr)
 
     # In blocking mode, exit with code 2 if changes were made
     if blocking and any_changes:
-        sys.exit(2)
+        return 2
 
-    # Always exit 0 to be non-blocking (unless blocking mode with changes)
-    sys.exit(0)
+    return 0
 
-except Exception as e:
-    print(f"Error in markdown formatter: {e}", file=sys.stderr)
-    sys.exit(0)  # Non-blocking even on errors
+
+if __name__ == "__main__":
+    sys.exit(main())

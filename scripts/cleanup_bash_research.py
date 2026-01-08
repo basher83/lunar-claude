@@ -1,4 +1,8 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run --script
+# /// script
+# requires-python = ">=3.11"
+# dependencies = []
+# ///
 """
 Cleanup script for bash-best-practices-research.md
 Removes GitHub UI clutter, redundant metadata, and formatting issues
@@ -9,7 +13,7 @@ import re
 from pathlib import Path
 
 
-def remove_github_ui_elements(text):
+def remove_github_ui_elements(text: str) -> str:
     """Remove GitHub UI navigation elements."""
     # Remove "Skip to content" links
     text = re.sub(r"\[Skip to content\]\([^\)]+\)\n\n?", "", text)
@@ -56,7 +60,7 @@ def remove_github_ui_elements(text):
     return text
 
 
-def remove_redundant_metadata(text):
+def remove_redundant_metadata(text: str) -> str:
     """Remove redundant metadata sections."""
     # Remove Stars sections
     text = re.sub(r"### Stars\n\n\[?\*\*?\d+\*\*?\\\\\nstars\]\([^\)]+\)\n\n", "", text)
@@ -115,7 +119,7 @@ def remove_redundant_metadata(text):
     return text
 
 
-def remove_repository_navigation(text):
+def remove_repository_navigation(text: str) -> str:
     """Remove repository navigation elements."""
     # Remove "Folders and files" tables (multiline pattern with DOTALL)
     # Match the entire table including all rows
@@ -152,7 +156,7 @@ def remove_repository_navigation(text):
     return text
 
 
-def clean_permalinks(text):
+def clean_permalinks(text: str) -> str:
     """Remove or simplify permalink references."""
     # Remove standalone permalink lines (with blank lines before/after)
     text = re.sub(r"\n\n\[Permalink: [^\]]+\]\([^\)]+\)\n\n", "\n\n", text)
@@ -184,7 +188,7 @@ def clean_permalinks(text):
     return text
 
 
-def clean_html_artifacts(text):
+def clean_html_artifacts(text: str) -> str:
     """Remove HTML artifacts and broken formatting."""
     # Remove HTML-like tags that shouldn't be in markdown
     text = re.sub(r"<br>", "\n", text)
@@ -199,7 +203,7 @@ def clean_html_artifacts(text):
     return text
 
 
-def remove_duplicate_license_sections(text):
+def remove_duplicate_license_sections(text: str) -> str:
     """Remove duplicate license sections that appear multiple times."""
     # This is tricky - we want to keep license info in the main content
     # but remove it from redundant "About" sections
@@ -211,7 +215,7 @@ def remove_duplicate_license_sections(text):
     return text
 
 
-def fix_code_blocks(text):
+def fix_code_blocks(text: str) -> str:
     """Ensure code blocks are properly formatted."""
     # Fix code blocks that might be missing language tags
     # This is a conservative fix - we'll preserve existing formatting
@@ -222,7 +226,7 @@ def fix_code_blocks(text):
     return text
 
 
-def cleanup_document(file_path):
+def cleanup_document(file_path: Path) -> None:
     """Main cleanup function."""
     print(f"Reading {file_path}...")
     with open(file_path, encoding="utf-8") as f:

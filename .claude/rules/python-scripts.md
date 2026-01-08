@@ -26,7 +26,8 @@ All standalone Python scripts should use PEP 723 inline metadata for dependencie
 
 ## Conventions
 
-- Use `pathlib.Path` over `os.path`
+- Prefer `pathlib.Path` for path manipulation (joining, parent, suffix, read/write);
+  `os.path` is acceptable for simple one-off checks on string inputs
 - Use `rich` for CLI output when appropriate
 - Handle errors with specific exception types
 - Include docstrings for public functions

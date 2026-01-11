@@ -23,6 +23,28 @@ This plugin provides Claude with knowledge and tooling for managing:
 | `/omni-scale:bootstrap` | Guide through GitOps bootstrap procedure |
 | `/omni-scale:disaster-recovery` | Execute DR drill (destroy/recreate cluster) |
 
+### Scripts
+
+| Script | Description |
+|--------|-------------|
+| `provider-ctl.py` | Manage Omni Proxmox Provider container via SSH |
+
+**provider-ctl.py usage:**
+
+```bash
+# Restart provider container (idempotent, 30s timeout)
+./scripts/provider-ctl.py --restart
+
+# Show last 25 log lines (filtered, human-readable)
+./scripts/provider-ctl.py --logs
+
+# Show last N log lines
+./scripts/provider-ctl.py --logs 50
+
+# Raw JSON output (unfiltered)
+./scripts/provider-ctl.py --logs 10 --raw
+```
+
 ### Agents
 
 | Agent | Scope | Purpose |

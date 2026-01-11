@@ -33,29 +33,7 @@
       "description": "Development sandbox for testing and prototyping Claude Code components (hooks, skills, commands, agents) before promoting to production plugins",
       "version": "0.1.0",
       "category": "meta",
-      "keywords": [
-        "development",
-        "testing",
-        "sandbox",
-        "prototype"
-      ],
-      "author": {
-        "name": "basher83"
-      }
-    },
-    {
-      "name": "claude-docs",
-      "source": "./plugins/meta/claude-docs",
-      "description": "Auto-sync official Claude Code docs as a skill with fresh reference material",
-      "version": "1.0.0",
-      "category": "meta",
-      "keywords": [
-        "documentation",
-        "sync",
-        "meta",
-        "automation",
-        "skills"
-      ],
+      "keywords": ["development", "testing", "sandbox", "prototype"],
       "author": {
         "name": "basher83"
       }
@@ -63,18 +41,19 @@
     {
       "name": "ansible-workflows",
       "source": "./plugins/infrastructure/ansible-workflows",
-      "description": "End-to-end Ansible workflow automation with orchestrated multi-agent pipelines for playbook and role development",
+      "description": "End-to-end Ansible workflow automation: design, create, validate, and review playbooks and roles with orchestrated multi-agent pipelines",
       "version": "1.0.1",
       "category": "infrastructure",
       "keywords": [
         "ansible",
         "automation",
+        "devops",
+        "infrastructure",
+        "linting",
         "playbooks",
-        "roles",
         "proxmox",
-        "agents",
-        "validation",
-        "review"
+        "roles",
+        "testing"
       ],
       "author": {
         "name": "basher83"
@@ -123,7 +102,7 @@
       "name": "git-workflow",
       "source": "./plugins/devops/git-workflow",
       "description": "Git workflow automation including atomic commits, branch cleanup, and conventional commit standards",
-      "version": "1.0.0",
+      "version": "1.0.4",
       "category": "devops",
       "keywords": [
         "git",
@@ -157,18 +136,31 @@
       }
     },
     {
+      "name": "omni-scale",
+      "source": "./plugins/homelab/omni-scale",
+      "description": "Sidero Omni + Talos Kubernetes infrastructure management on Proxmox with GitOps deployment patterns",
+      "version": "0.1.0",
+      "category": "homelab",
+      "keywords": [
+        "omni",
+        "talos",
+        "kubernetes",
+        "proxmox",
+        "gitops",
+        "argocd",
+        "homelab"
+      ],
+      "author": {
+        "name": "basher83"
+      }
+    },
+    {
       "name": "hookify",
       "source": "./plugins/meta/hookify",
       "description": "Easily create hooks to prevent unwanted behaviors by analyzing conversation patterns",
       "version": "0.1.2",
       "category": "meta",
-      "keywords": [
-        "hooks",
-        "automation",
-        "rules",
-        "validation",
-        "behavior"
-      ],
+      "keywords": ["hooks", "automation", "rules", "validation", "behavior"],
       "author": {
         "name": "Daisy Hollman",
         "email": "daisy@anthropic.com"
@@ -178,7 +170,7 @@
       "name": "plugin-dev",
       "source": "./plugins/meta/plugin-dev",
       "description": "Comprehensive plugin development toolkit for creating Claude Code plugins with AI-powered guidance for skills, agents, commands, and hooks",
-      "version": "1.0.1",
+      "version": "1.0.3",
       "category": "meta",
       "keywords": [
         "plugin",

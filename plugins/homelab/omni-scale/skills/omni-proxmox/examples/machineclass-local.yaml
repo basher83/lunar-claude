@@ -1,0 +1,17 @@
+# MachineClass for local LVM-Thin storage
+# Suitable for development or single-node workloads
+
+metadata:
+  namespace: default
+  type: MachineClasses.omni.sidero.dev
+  id: worker-local
+spec:
+  autoprovision:
+    providerid: Proxmox
+    providerdata: |
+      cores: 2
+      sockets: 1
+      memory: 4096
+      disk_size: 20
+      network_bridge: vmbr0
+      storage_selector: name == "local-lvm"

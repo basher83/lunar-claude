@@ -1,0 +1,77 @@
+# Production cluster template for Talos Kubernetes on Matrix cluster
+# Includes: Cilium CNI prep, system extensions, Longhorn storage mounts
+# Target: Matrix cluster (Foxtrot/Golf/Hotel) with CEPH storage
+kind: Cluster
+name: talos-prod-01
+labels:
+  environment: production
+kubernetes:
+  version: v1.34.2
+talos:
+  version: v1.12.0
+patches:
+  - name: disable-default-cni
+    inline:
+      cluster:
+        network:
+          cni:
+            name: none # Required for Cilium
+        proxy:
+          disabled: true # Cilium replaces kube-proxy
+---
+kind: ControlPlane
+machineClass:
+  name: matrix-control-plane
+  size: 3
+systemExtensions:
+  - siderolabs/iscsi-tools
+  - siderolabs/nfsd
+  - siderolabs/util-linux-tools
+---
+kind: Workers
+name: workers
+machineClass:
+  name: matrix-worker
+  size: 2
+systemExtensions:
+  - siderolabs/iscsi-tools
+  - siderolabs/nfsd
+  - siderolabs/util-linux-tools
+patches:
+  - name: worker-labels
+    inline:
+      machine:
+        nodeLabels:
+          node-role.kubernetes.io/worker: ""
+  - name: longhorn-storage
+    inline:
+      machine:
+        kubelet:
+          extraMounts:
+            - destination: /var/lib/longhorn
+              type: bind
+              source: /var/local/longhorn
+              options:
+                - bind
+                - rshared
+                - rw
+---
+# Optional: GPU workers (uncomment if needed)
+# kind: Workers
+# name: gpu-workers
+# machineClass:
+#   name: matrix-gpu-worker
+#   size: 1
+# systemExtensions:
+#   - siderolabs/iscsi-tools
+#   - siderolabs/nfsd
+#   - siderolabs/util-linux-tools
+#   - siderolabs/nonfree-kmod-nvidia
+#   - siderolabs/nvidia-container-toolkit
+# patches:
+#   - name: worker-labels
+#     inline:
+#       machine:
+#         nodeLabels:
+#           node-role.kubernetes.io/worker: ""
+#           nvidia.com/gpu: "true"

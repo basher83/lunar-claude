@@ -1,0 +1,19 @@
+metadata:
+  id: proxmox-storage-node
+spec:
+  autoprovision:
+    providerid: proxmox
+    providerdata: |
+      cores: 16
+      memory: 64000
+      disk_size: 100
+      storage_selector: name == "fastpool"
+      additional_disks:
+        - disk_size: 500
+          storage_selector: name == "nvme-pool"
+          disk_ssd: true
+          disk_iothread: true
+          disk_aio: io_uring
+        - disk_size: 1000
+          storage_selector: name == "hdd-archive"
+          disk_cache: writeback

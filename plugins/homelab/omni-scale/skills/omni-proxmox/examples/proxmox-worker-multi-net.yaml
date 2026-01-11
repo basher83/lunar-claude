@@ -1,0 +1,17 @@
+metadata:
+  id: proxmox-worker-multi-net
+spec:
+  autoprovision:
+    providerid: proxmox
+    providerdata: |
+      cores: 8
+      memory: 32000
+      disk_size: 200
+      storage_selector: name == "ssdpool"
+      disk_discard: true
+      vlan: 10
+      additional_nics:
+        - bridge: vmbr1 # Storage LAN
+          firewall: false
+        - bridge: vmbr2 # Isolated App LAN
+          vlan: 20

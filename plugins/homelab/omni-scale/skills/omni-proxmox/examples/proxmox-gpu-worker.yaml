@@ -1,0 +1,19 @@
+metadata:
+  id: proxmox-gpu-worker
+spec:
+  autoprovision:
+    providerid: proxmox
+    providerdata: |
+      cores: 24
+      memory: 480000
+      storage_selector: name == "ssdpool"
+      cpu_type: host
+      machine_type: q35
+      numa: true
+      balloon: false
+      pci_devices:
+        - mapping: nvidia-rtx-4090
+          pcie: true
+      disk_ssd: true
+      disk_aio: io_uring
+      disk_cache: none

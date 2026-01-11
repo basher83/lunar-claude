@@ -1,0 +1,22 @@
+# MachineClass for CEPH/RBD storage (Matrix cluster)
+# Suitable for production workloads requiring distributed storage
+# Storage: vm_ssd (CEPH RBD pool, 12TB usable, replication factor 3)
+#
+# Create variants by copying and adjusting:
+#   - matrix-control-plane: 4 cores, 8GB RAM, 40GB disk
+#   - matrix-worker: 8 cores, 16GB RAM, 100GB disk
+
+metadata:
+  namespace: default
+  type: MachineClasses.omni.sidero.dev
+  id: matrix-worker
+spec:
+  autoprovision:
+    providerid: Proxmox
+    providerdata: |
+      cores: 8
+      sockets: 1
+      memory: 16384
+      disk_size: 100
+      network_bridge: vmbr0
+      storage_selector: name == "vm_ssd"

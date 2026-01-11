@@ -1,6 +1,6 @@
 ---
 description: Check Omni cluster and GitOps health status
-allowed-tools: Bash(omnictl:*), mcp__kubernetes__*
+allowed-tools: Bash(omnictl:*), mcp__plugin_omni-scale_kubernetes__*
 ---
 
 # Cluster Status
@@ -30,7 +30,7 @@ Report: Machine count, states (running/provisioning/failed).
 ### 3. Kubernetes Nodes
 
 ```text
-mcp__kubernetes__kubectl_get(resourceType: "nodes")
+mcp__plugin_omni-scale_kubernetes__kubectl_get(resourceType: "nodes")
 ```
 
 Report: Node Ready status, roles, versions.
@@ -38,7 +38,7 @@ Report: Node Ready status, roles, versions.
 ### 4. ArgoCD Application Health
 
 ```text
-mcp__kubernetes__kubectl_get(resourceType: "applications", namespace: "argocd")
+mcp__plugin_omni-scale_kubernetes__kubectl_get(resourceType: "applications", namespace: "argocd")
 ```
 
 Report: Any apps not Synced/Healthy.
@@ -46,8 +46,8 @@ Report: Any apps not Synced/Healthy.
 ### 5. External Secrets
 
 ```text
-mcp__kubernetes__kubectl_get(resourceType: "externalsecrets", allNamespaces: true)
-mcp__kubernetes__kubectl_get(resourceType: "clustersecretstore")
+mcp__plugin_omni-scale_kubernetes__kubectl_get(resourceType: "externalsecrets", allNamespaces: true)
+mcp__plugin_omni-scale_kubernetes__kubectl_get(resourceType: "clustersecretstore")
 ```
 
 Report: SecretStore health, any secrets not syncing.
@@ -55,7 +55,7 @@ Report: SecretStore health, any secrets not syncing.
 ### 6. Longhorn Status
 
 ```text
-mcp__kubernetes__kubectl_get(resourceType: "volumes.longhorn.io", allNamespaces: true)
+mcp__plugin_omni-scale_kubernetes__kubectl_get(resourceType: "volumes.longhorn.io", allNamespaces: true)
 ```
 
 Report: Volume health and robustness.

@@ -1,6 +1,6 @@
 ---
 description: Execute disaster recovery drill - destroy and recreate cluster from specs
-allowed-tools: Bash(omnictl:*), Bash(ssh:*), Bash(kubectl:*), Bash(sleep:*), Read, AskUserQuestion, mcp__kubernetes__*
+allowed-tools: Bash(omnictl:*), Bash(ssh:*), Bash(kubectl:*), Bash(sleep:*), Read, AskUserQuestion, mcp__plugin_omni-scale_kubernetes__*
 ---
 
 # Disaster Recovery
@@ -42,8 +42,8 @@ If user selects abort, stop immediately.
 ### Phase 2: Capture Current State (Optional)
 
 ```text
-mcp__kubernetes__kubectl_get(resourceType: "nodes")
-mcp__kubernetes__kubectl_get(resourceType: "pv")
+mcp__plugin_omni-scale_kubernetes__kubectl_get(resourceType: "nodes")
+mcp__plugin_omni-scale_kubernetes__kubectl_get(resourceType: "pv")
 ```
 
 ```bash
@@ -124,7 +124,7 @@ Use AskUserQuestion to confirm cluster is ready before GitOps bootstrap.
 ### Phase 5: Verify Cluster Health
 
 ```text
-mcp__kubernetes__kubectl_get(resourceType: "nodes")
+mcp__plugin_omni-scale_kubernetes__kubectl_get(resourceType: "nodes")
 ```
 
 All nodes should show `Ready`.
@@ -140,7 +140,7 @@ Follow `/omni-scale:bootstrap-gitops` procedure:
 **Poll loop:**
 
 ```text
-mcp__kubernetes__kubectl_get(resourceType: "applications", namespace: "argocd")
+mcp__plugin_omni-scale_kubernetes__kubectl_get(resourceType: "applications", namespace: "argocd")
 ```
 
 ```bash

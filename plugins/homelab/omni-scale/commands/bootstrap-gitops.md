@@ -1,6 +1,6 @@
 ---
 description: Bootstrap GitOps stack (ArgoCD, ESO, Longhorn) onto existing Talos cluster
-allowed-tools: Bash(kubectl:create), mcp__kubernetes__*
+allowed-tools: Bash(kubectl:create), mcp__plugin_omni-scale_kubernetes__*
 ---
 
 # GitOps Bootstrap
@@ -22,7 +22,7 @@ Before starting:
 ### Phase 1: Verify Cluster Ready
 
 ```text
-mcp__kubernetes__kubectl_get(resourceType: "nodes")
+mcp__plugin_omni-scale_kubernetes__kubectl_get(resourceType: "nodes")
 ```
 
 All nodes should show `Ready`. If not, stop and troubleshoot.
@@ -45,7 +45,7 @@ If command fails → Stop → Inform user env vars are not properly set.
 ### Phase 3: Apply Bootstrap
 
 ```text
-mcp__kubernetes__kubectl_apply(manifest: "https://raw.githubusercontent.com/basher83/mothership-gitops/main/bootstrap/bootstrap.yaml")
+mcp__plugin_omni-scale_kubernetes__kubectl_apply(manifest: "https://raw.githubusercontent.com/basher83/mothership-gitops/main/bootstrap/bootstrap.yaml")
 ```
 
 This deploys the App of Apps which manages everything else.
@@ -53,7 +53,7 @@ This deploys the App of Apps which manages everything else.
 ### Phase 4: Monitor Sync Waves
 
 ```text
-mcp__kubernetes__kubectl_get(resourceType: "applications", namespace: "argocd")
+mcp__plugin_omni-scale_kubernetes__kubectl_get(resourceType: "applications", namespace: "argocd")
 ```
 
 Expected wave order:
@@ -67,7 +67,7 @@ Expected wave order:
 ### Phase 5: Verify Completion
 
 ```text
-mcp__kubernetes__kubectl_get(resourceType: "applications", namespace: "argocd")
+mcp__plugin_omni-scale_kubernetes__kubectl_get(resourceType: "applications", namespace: "argocd")
 ```
 
 All apps should show `Synced` and `Healthy`.
@@ -104,7 +104,7 @@ This is intentionally manual as a safety gate.
 If bootstrap fails mid-way, delete and retry:
 
 ```text
-mcp__kubernetes__kubectl_delete(manifest: "https://raw.githubusercontent.com/basher83/mothership-gitops/main/bootstrap/bootstrap.yaml")
+mcp__plugin_omni-scale_kubernetes__kubectl_delete(manifest: "https://raw.githubusercontent.com/basher83/mothership-gitops/main/bootstrap/bootstrap.yaml")
 ```
 
 Fix the issue, then reapply Phase 3.

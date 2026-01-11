@@ -48,7 +48,7 @@ Triggers should be **concrete and actionable**, not vague:
 - Include working code examples
 - Document anti-patterns explicitly
 
-## CRITICAL: Dynamic Bash Pattern Bug (GitHub #12781)
+## CRITICAL: Dynamic Bash Pattern Bug (GitHub #12762)
 
 The skill parser executes `!` backtick patterns **even inside fenced code blocks**.
 

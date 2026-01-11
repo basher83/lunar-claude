@@ -54,11 +54,11 @@ After creating a plugin:
 ## Creating New Plugins
 
 ```bash
-# Copy template
-cp -r templates/plugin-template/ plugins/<category>/<plugin-name>/
+# Create structure
+mkdir -p plugins/<category>/<plugin-name>/{.claude-plugin,skills,commands,agents,hooks}
 
-# Customize plugin.json and README.md
-# Add to marketplace.json
+# Create plugin.json and README.md
+# Add entry to .claude-plugin/marketplace.json
 # Verify structure
 ./scripts/verify-structure.py
 ```

@@ -1,0 +1,435 @@
+# Omni Deployment Specification
+---
+# INITIATIVE METADATA
+initiative:
+  name: "omni-deployment"
+  started: "2025-12"
+  status: "production-cluster-operational"
+  repository: "Omni-Scale"
+  summary: |
+    Production Talos Kubernetes cluster (3 CP + 2 workers) operational on Matrix.
+    Cilium CNI installed and healthy. All 5 nodes Ready.
+    Tailscale Operator on backlog for post-cluster integration.
+
+---
+# DEFINITION OF DONE (Project-Specific)
+definition_of_done:
+  - "Omni console accessible via Tailscale with Auth0 OIDC"
+  - "Proxmox Provider can create/destroy VMs on Matrix cluster"
+  - "Talos VMs successfully register with Omni on boot"
+  - "At least one Talos cluster (3 CP + 2 worker) operational"
+  - "Cluster survives single node failure"
+  - "Tailscale Kubernetes Operator deployed for workload access"
+
+---
+# ARCHITECTURE DECISIONS (Locked)
+
+# These are deployed and operational - changes require teardown
+locked_decisions:
+  omni_location:
+    decision: "Omni control plane on Holly (Quantum cluster)"
+    rationale: "Separation of management plane from workload plane"
+    evidence: "docker/compose.yaml deployed and operational"
+    change_cost: "critical - full redeployment"
+    deployed:
+      cluster: "Doggos"
+      host: "Holly"
+      lan_ip: "192.168.10.20"
+      tailscale_ip: "100.125.253.75"
+      url: "https://omni.spaceships.work"
+
+  omni_access:
+    decision: "Dual-network access (Tailscale + LAN)"
+    rationale: "Tailscale for admin UI, LAN for SideroLink registration"
+    change_cost: "high - service config rewrites"
+    external:
+      domain: "omni.spaceships.work"
+      via: "Tailscale Serve"
+      ports: [443, 8090, 8100]
+      purpose: "Admin UI, API access"
+    internal:
+      domain: "omni-internal.spaceships.work"
+      ip: "192.168.10.20"
+      dns: "Unifi controller A record"
+      ports:
+        - "443 (HTTPS API)"
+        - "8090 (Machine API - Talos registration)"
+        - "8091 (Event Sink)"
+        - "8100 (K8s Proxy)"
+        - "50180/udp (SideroLink WireGuard)"
+      purpose: "Talos VM SideroLink registration from Matrix (192.168.3.x)"
+      routing: "Static route in Unifi: 192.168.3.0/24 → 192.168.10.0/24"
+
+  target_cluster:
+    decision: "Matrix cluster (Foxtrot, Golf, Hotel)"
+    rationale: "Production cluster with CEPH storage"
+    api_endpoint: "https://192.168.3.5:8006"
+    change_cost: "high - new credentials, storage validation"
+
+  storage:
+    decision: "CEPH RBD pool 'vm_ssd'"
+    rationale: "12TB usable, replication factor 3"
+    selector: "name == 'vm_ssd'" # CEL type filtering broken
+    change_cost: "medium - MachineClass rewrites"
+
+  network_mode:
+    decision: "Shared namespace via Tailscale sidecar (kernel mode)"
+    rationale: "Required for MagicDNS resolution in containers"
+    evidence: "compose.yaml network_mode: service:omni-tailscale"
+    change_cost: "high - compose restructure"
+
+  provider_host:
+    decision: "Foxtrot (192.168.3.5)"
+    rationale: "First node, already API endpoint, simplifies initial setup"
+    decided: "2025-12-29"
+    change_cost: "low - can redistribute later"
+
+  provider_deployment:
+    decision: "LXC on Proxmox"
+    rationale: "Native Proxmox citizen, cleaner networking, visible in UI"
+    decided: "2025-12-29"
+    change_cost: "medium - migration to different deployment pattern"
+
+  provider_lxc_spec:
+    decision: "LXC configuration for Proxmox Provider"
+    decided: "2025-12-29"
+    name: "omni-provider"
+    vmid: 200
+    node: "foxtrot"
+    ip: "192.168.3.10/24"
+    gateway: "192.168.3.1"
+    resources:
+      cores: 1
+      memory_mb: 1024
+      disk_gb: 4
+    networking:
+      nic0: "vmbr0" # LAN - same segment as Talos VMs
+      tailscale: true # Installed in LXC for Omni connectivity
+    change_cost: "low - can resize or recreate"
+    deployed:
+      tailscale_ip: "100.76.91.16"
+      tailscale_dns: "omni-provider.tailfb3ea.ts.net"
+      app_directory: "/opt/omni-provider"
+      image: "ghcr.io/siderolabs/omni-infra-provider-proxmox:latest"
+      provider_id: "Proxmox"
+      omni_endpoint: "https://omni.spaceships.work/"
+      proxmox_api: "https://192.168.3.5:8006"
+      proxmox_token: "terraform@pam!automation"
+      tls_verify: false
+      docker_version: "29.1.3"
+      container_name: "omni-provider-proxmox-provider-1"
+      status: "running"
+
+---
+# PIVOT DECISIONS (Changes from original plan)
+
+pivot_decisions:
+  auth_provider:
+    original: "TSIDP (Tailscale Identity Provider)"
+    new: "Auth0"
+    rationale:
+      - "Faster path to operational state"
+      - "Avoid tsnet complexity during initial deployment"
+      - "One less self-hosted component to maintain"
+      - "More reliable long-term (managed service)"
+    impact:
+      - "Omni OIDC config changes"
+      - "tsidp can be decommissioned after migration"
+      - "Tailscale ACL grants for tsidp can be removed"
+    status: "complete"
+    completed: "2026-01-01"
+
+  provider_location:
+    original: "Docker on Holly (Quantum)"
+    new: "LXC on Foxtrot (Matrix cluster)"
+    rationale: "Provider must be L2-adjacent to booting Talos VMs for SideroLink registration"
+    blocker_resolved: "Talos VMs on 192.168.3.x cannot reach Provider on 192.168.10.x"
+    impact:
+      - "New LXC/container on Matrix"
+      - "Dual-homed networking (Management VLAN + Tailscale)"
+      - "Provider config migration"
+    status: "complete"
+    completed: "2026-01-01"
+
+  omni_dual_network:
+    original: "Tailscale-only access (network_mode: service:omni-tailscale)"
+    new: "Dual-network with explicit LAN port bindings"
+    rationale: "Talos VMs on Matrix (192.168.3.x) cannot reach Tailscale IPs for SideroLink"
+    blocker_resolved: "SideroLink registration failing - VMs couldn't reach omni.spaceships.work"
+    impact:
+      - "compose.yaml: Removed network_mode host, added explicit port bindings on 192.168.10.20"
+      - "omni.env: Added OMNI_INTERNAL_DOMAIN for SideroLink advertised URLs"
+      - "DNS: Added omni-internal.spaceships.work → 192.168.10.20 in Unifi"
+      - "Routing: Static route 192.168.3.0/24 ↔ 192.168.10.0/24 in Unifi"
+    status: "complete"
+    completed: "2026-01-01"
+
+---
+# OPEN DECISIONS (To be resolved)
+
+open_decisions:
+  auth0_config:
+    question: "Auth0 application configuration"
+    needed:
+      - "Auth0 tenant/domain"
+      - "Application client ID"
+      - "Application client secret"
+      - "Callback URLs for Omni"
+    status: "complete"
+    note: "Deployed with Auth0 OIDC authentication"
+
+  talos_cluster_spec:
+    question: "Production cluster specification"
+    status: "ready-to-deploy"
+    artifacts:
+      cluster: "clusters/talos-prod-01.yaml"
+      control_plane_class: "machine-classes/matrix-control-plane.yaml"
+      worker_class: "machine-classes/matrix-worker.yaml"
+    spec:
+      name: "talos-prod-01"
+      kubernetes_version: "v1.35.0"
+      talos_version: "v1.12.0"
+      cni: "none (Cilium post-bootstrap)"
+      control_plane:
+        count: 3
+        cpu: 4
+        memory_gb: 8
+        disk_gb: 40
+        machine_class: "matrix-control-plane"
+      workers:
+        count: 2
+        cpu: 8
+        memory_gb: 16
+        disk_gb: 100
+        machine_class: "matrix-worker"
+    note: "Specs finalized. Deploy with: omnictl cluster template sync -f clusters/talos-prod-01.yaml"
+
+  tailscale_operator:
+    question: "Post-cluster Tailscale integration"
+    plan: "Deploy Tailscale Kubernetes Operator for workload access"
+    timing: "After production cluster operational"
+    status: "backlog"
+
+---
+# CONSTRAINTS (Learned from implementation)
+
+constraints:
+  # === CRITICAL: THE DNS LESSON ===
+  split_horizon_dns:
+    severity: "critical"
+    description: |
+      Split-Horizon DNS is MANDATORY for this architecture.
+      The same URL (omni.spaceships.work) must resolve to different IPs
+      depending on who is asking:
+        - Tailscale clients → 100.x.y.z (Tailscale IP)
+        - LAN clients (Talos VMs) → 192.168.10.20 (LAN IP)
+    implementation:
+      public_dns: "Cloudflare A record → Tailscale IP"
+      local_dns: "Unifi Local DNS → LAN IP of Omni VM"
+      proxmox_hosts: "MUST use Unifi Gateway as DNS server"
+    failure_mode: |
+      If Proxmox hosts use public DNS (1.1.1.1, 8.8.8.8), Talos VMs
+      inherit this and resolve to Tailscale IP, which they cannot reach
+      during boot (not on Tailnet yet). SideroLink fails silently.
+    war_story: |
+      Four days of debugging. Five layers of abstraction (Docker → LXC →
+      Proxmox → Talos → Ceph). The Proxmox host silently handed out
+      public DNS to VMs, bypassing correctly configured Unifi Split DNS.
+      First Commandment of IT: "It was DNS."
+
+  cel_type_filtering:
+    description: "Cannot filter storage by type in CEL selectors"
+    cause: "'type' is reserved CEL keyword"
+    workaround: "Filter by name only: name == 'vm_ssd'"
+
+  docker_compose_volumes:
+    description: "Never use 'docker compose down -v'"
+    cause: "Deletes Tailscale state, causes hostname collisions"
+
+  tailscale_kernel_mode:
+    description: "Sidecar must use kernel mode (TS_USERSPACE=false)"
+    cause: "Userspace breaks MagicDNS resolution"
+
+  gpg_passphrase:
+    description: "Omni GPG key must have NO passphrase"
+    cause: "Omni cannot unlock key at startup"
+
+  email_match:
+    description: "Initial user email must match OIDC exactly"
+    cause: "No normalization, case-sensitive"
+
+  provider_l2_adjacency:
+    description: "Provider must be L2-adjacent to booting Talos VMs"
+    cause: "SideroLink registration requires local network reachability"
+    resolution: "Move Provider to Matrix cluster"
+
+  siderolink_lan_reachability:
+    description: "Talos VMs must reach Omni's machine-api and WireGuard endpoints on LAN"
+    cause: "VMs aren't on Tailscale during boot; can't reach Tailscale IPs"
+    resolution: "Expose ports on LAN IP, advertise internal domain for SideroLink"
+    ports_required:
+      - "8090 (machine-api)"
+      - "8091 (event sink)"
+      - "50180/udp (WireGuard)"
+
+  docker_lan_port_binding:
+    description: "Docker containers using Tailscale sidecar don't listen on host LAN by default"
+    cause: "Tailscale sidecar only exposes ports on the Tailscale interface (100.x)"
+    symptom: "ERR_CONNECTION_REFUSED from LAN clients even though Tailscale access works"
+    resolution: |
+      Add explicit port mappings with host LAN IP in docker-compose.yml:
+        ports:
+          - "192.168.10.20:443:443"
+          - "192.168.10.20:8090:8090"
+          - "192.168.10.20:50180:50180/udp"
+    note: "Both paths (Tailscale tunnel and LAN front door) work simultaneously after fix"
+
+  proxmox_provider_hostname_bug:
+    description: "Upstream Proxmox provider injects hostname config conflicting with Omni"
+    cause: "configureHostname step in provision.go sets machine.network.hostname to request ID"
+    symptom: "Talos VMs fail to register or show hostname conflicts during provisioning"
+    resolution: |
+      Build patched provider with configureHostname step removed.
+      Use :local-fix tag instead of :latest.
+      See docs/TROUBLESHOOTING.md for build instructions.
+    status: "Local workaround. Consider upstreaming fix."
+
+  vm_migration_breaks_talos:
+    description: "Proxmox live migration breaks Talos node state"
+    cause: "Talos machine identity tied to original provisioning context"
+    symptom: "'Talos is not installed' or 'static hostname is already set' after migration"
+    blocker: "CD/DVD mount blocks migration - qm set <VMID> --ide2 none - but don't bother"
+    resolution: "Don't migrate Talos VMs. Accept initial distribution or destroy/recreate."
+    note: "CEPH storage makes migration technically possible but Talos state doesn't survive it"
+
+  service_account_key_expiration:
+    description: "Omni service account keys can expire during long provisioning cycles"
+    symptom: "Provider disconnects mid-deployment, new VMs fail to register"
+    resolution: "Regenerate key in Omni UI, update provider environment, restart provider"
+
+---
+# IMPLEMENTATION PHASES
+
+phases:
+  phase_1:
+    name: "Provider Relocation"
+    status: "complete"
+    completed: "2026-01-01"
+    tasks:
+      - "Create LXC on Foxtrot for Proxmox Provider"
+      - "Configure dual-homed networking (vmbr0 + Tailscale)"
+      - "Install Tailscale in LXC"
+      - "Deploy Provider container/binary"
+      - "Verify Provider connects to Omni"
+      - "Verify Provider can reach Proxmox API"
+    exit_criteria:
+      - "Provider shows connected in Omni UI"
+      - "Provider can list Matrix nodes and storage"
+
+  phase_2:
+    name: "Auth0 Migration"
+    status: "complete"
+    completed: "2026-01-01"
+    parallel_with: "phase_1"
+    tasks:
+      - "Create Auth0 application"
+      - "Configure Omni OIDC settings for Auth0"
+      - "Test login flow"
+      - "Decommission tsidp (optional, can keep as backup)"
+    exit_criteria:
+      - "Can login to Omni via Auth0"
+      - "User permissions work correctly"
+
+  phase_3a:
+    name: "Infrastructure Validation"
+    status: "complete"
+    completed: "2026-01-01"
+    depends_on: ["phase_1"]
+    tasks:
+      - "Create test MachineClass ✓"
+      - "Deploy test cluster (1 CP, 0 workers) ✓"
+      - "Validate SideroLink connectivity ✓"
+      - "Confirm VM provisioning workflow ✓"
+      - "Document Split-Horizon DNS solution ✓"
+    exit_criteria:
+      - "Test cluster boots and registers with Omni ✓"
+      - "SideroLink shows green checkmark ✓"
+      - "Infrastructure Provider shows Connected ✓"
+    artifacts:
+      - "machine-classes/test-worker.yaml"
+      - "clusters/test-cluster.yaml"
+    notes: "Validated with test-cluster. DNS was the four-day boss fight."
+
+  phase_3b:
+    name: "Production Cluster"
+    status: "complete"
+    completed: "2026-01-03"
+    depends_on: ["phase_3a"]
+    tasks:
+      - "Create production MachineClasses ✓"
+      - "Create production cluster template ✓"
+      - "Deploy cluster ✓"
+      - "Monitor VM provisioning ✓"
+      - "Verify cluster health ✓"
+      - "Install Cilium CNI ✓"
+    exit_criteria:
+      - "3 control plane nodes running ✓"
+      - "2 worker nodes running ✓"
+      - "kubectl access works ✓"
+      - "Cluster passes: kubectl get nodes shows Ready ✓"
+      - "Cilium installed and healthy ✓"
+    artifacts:
+      - "machine-classes/matrix-control-plane.yaml"
+      - "machine-classes/matrix-worker-foxtrot.yaml"
+      - "machine-classes/matrix-worker-golf.yaml"
+      - "machine-classes/matrix-worker-hotel.yaml"
+      - "clusters/talos-prod-01.yaml"
+    actual_distribution:
+      foxtrot: "1 Worker (+ provider LXC)"
+      golf: "3 CP + 1 Worker"
+      hotel: "1 Worker"
+    lessons_learned:
+      - "Node pinning in machine classes did not distribute as planned (PR #38 submitted upstream)"
+      - "VM migration breaks Talos state - don't migrate, destroy/recreate"
+      - "Service account keys can expire during long provisioning cycles"
+      - "Provider hostname bug required local patch (not yet upstreamed)"
+    notes: "Cluster operational. Distribution suboptimal but stable."
+
+  phase_4:
+    name: "Tailscale Integration"
+    status: "complete"
+    completed: "2026-01-08"
+    depends_on: ["phase_3b"]
+    tasks:
+      - "Deploy Tailscale Kubernetes Operator ✓"
+      - "Configure operator auth ✓"
+      - "Expose test workload via Tailscale ✓"
+    exit_criteria:
+      - "Operator running ✓"
+      - "Can access workload via Tailscale hostname ✓"
+    deployed:
+      namespace: "tailscale-operator"
+      deployment: "operator"
+      status: "Running"
+      managed_by: "mothership-gitops (ArgoCD)"
+      exposed_services:
+        - name: "argocd-server"
+          namespace: "argocd"
+          tailscale_hostname: "argocd.tailfb3ea.ts.net"
+    lessons_learned:
+      - key: "podsecurity-privileged"
+        issue: "Tailscale proxy pods require privileged mode"
+        symptom: "StatefulSet fails with PodSecurity violation"
+        fix: "Label namespace: pod-security.kubernetes.io/enforce=privileged"
+        action_needed: "Add namespace labels to GitOps config for persistence"
+
+---
+# REFERENCES
+
+references:
+  troubleshooting: "docs/TROUBLESHOOTING.md"
+  omni_compose: "omni/compose.yml"
+  provider_compose: "proxmox-provider/compose.yml"
+  sidero_docs: "https://omni.siderolabs.com/"
+  proxmox_provider: "https://github.com/siderolabs/omni-infra-provider-proxmox"
+  node_pinning_pr: "https://github.com/siderolabs/omni-infra-provider-proxmox/pull/38"

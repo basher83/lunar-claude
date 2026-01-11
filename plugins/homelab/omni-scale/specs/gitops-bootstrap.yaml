@@ -1,0 +1,225 @@
+# GitOps Bootstrap Specification
+---
+# INITIATIVE METADATA
+initiative:
+  name: "gitops-bootstrap"
+  started: "2026-01-04"
+  status: "phase-5-in-progress"
+  repository: "mothership-gitops"
+  depends_on: "omni-deployment (production-cluster-operational)"
+  summary: |
+    GitOps foundation for talos-prod-01 cluster.
+    Single kubectl apply bootstrap, everything else via ArgoCD.
+    App of Apps pattern with sync waves for ordered deployment.
+
+---
+# DEFINITION OF DONE
+definition_of_done:
+  - "Single bootstrap command deploys entire stack"
+  - "All components managed via ArgoCD Applications"
+  - "Secrets sourced from Infisical via ESO"
+  - "Services accessible via Tailscale (no public exposure)"
+  - "Persistent storage available via Longhorn"
+  - "Cluster monitoring operational via Netdata"
+  - "Homelab dashboard operational via Homarr"
+  - "ArgoCD running in HA mode with persistent storage"
+  - "Recovery procedure tested (destroy/recreate drill)"
+  - "Longhorn backups configured to S3-compatible storage"
+
+---
+# ARCHITECTURE DECISIONS (Locked)
+
+locked_decisions:
+  repository_structure:
+    decision: "Separate GitOps repo (mothership-gitops)"
+    rationale:
+      - "Omni-Scale = how cluster exists (infra provisioning)"
+      - "mothership-gitops = what runs on cluster (workloads)"
+      - "Different change cadences, clean git history"
+    change_cost: "low - repo is new"
+
+  bootstrap_pattern:
+    decision: "App of Apps with sync waves"
+    rationale:
+      - "Single entry point (bootstrap.yaml)"
+      - "Ordered deployment via sync waves"
+      - "Self-managing ArgoCD upgrades"
+    reference: "https://argo-cd.readthedocs.io/en/stable/operator-manual/cluster-bootstrapping/"
+
+  secrets_bootstrap:
+    decision: "One manual secret for Infisical auth, everything else via ESO"
+    rationale: "Breaks chicken-and-egg cleanly with single documented manual step"
+    manual_secret:
+      name: "universal-auth-credentials"
+      namespace: "external-secrets"
+
+  longhorn_replicas:
+    decision: "2 replicas (workers only)"
+    rationale: "Control planes tainted NoSchedule, originally 2 workers = max 2 replicas"
+    reconsider_after: "phase_6 (backups in place)"
+    note: "Now have 3 workers - can increase to 3 replicas for better redundancy"
+
+  argocd_ha_strategy:
+    decision: "Bootstrap non-HA, self-upgrade to HA after Longhorn"
+    rationale: "Non-HA needs no PVCs; HA requires Redis + persistent storage"
+    pattern: "sync-wave 99 + manual sync policy"
+
+  infisical_path_scoping:
+    decision: "Separate ClusterSecretStore per Infisical path"
+    rationale: "Single store with secretsPath only works for one path"
+    stores: ["infisical-tailscale", "infisical-netdata", "infisical-homarr"]
+
+  tailscale_exposure:
+    decision: "Use Ingress (ingressClassName: tailscale) for service exposure"
+    rationale:
+      - "More control than Service annotations (hostname, TLS, path routing)"
+      - "Consistent pattern across all exposed services"
+    note: "ArgoCD currently uses Service annotation - migrate to Ingress for consistency"
+    pattern: |
+      apiVersion: networking.k8s.io/v1
+      kind: Ingress
+      spec:
+        ingressClassName: tailscale
+
+---
+# CONSTRAINTS (Lessons Learned)
+
+constraints:
+  single_manual_secret:
+    description: "One kubectl create secret for Infisical auth"
+    impact: "Must recreate manually after cluster rebuild"
+
+  argocd_ha_manual_sync:
+    description: "HA upgrade requires manual trigger"
+    rationale: "Safety gate - ensure Longhorn healthy first"
+
+  talos_longhorn_disk_config:
+    description: "Longhorn disks must be manually configured on Talos nodes"
+    resolution: "Patch nodes.longhorn.io with default-disk config after install"
+
+  pod_security_privileged:
+    description: "Longhorn, Netdata, Tailscale namespaces require privileged PSA"
+    resolution: "Add label pod-security.kubernetes.io/enforce=privileged"
+
+  eso_default_fields:
+    description: "ESO adds default fields to ExternalSecrets causing ArgoCD drift"
+    resolution: "Use ignoreDifferences in parent Applications"
+
+  netdata_claiming_via_env:
+    description: "Netdata claiming requires envFrom, not inline Helm values"
+    resolution: "Use envFrom.secretRef to inject from ESO-managed secret"
+
+  netdata_k8sstate_config_structure:
+    description: "Netdata k8sState.configs entries require enabled/path/data structure"
+    symptom: "helm template error: cannot overwrite table with non table"
+    resolution: "Each config entry must be object with enabled, path, data fields"
+    discovered: "2026-01-10"
+
+  redis_ha_topology_mismatch:
+    description: "Redis HA 3rd replica stuck Pending with 2 workers"
+    cause: "Anti-affinity requires 3 schedulable nodes, only 2 workers available"
+    resolution: "Add 3rd worker via Omni"
+    status: "resolved"
+    resolved: "2026-01-08"
+
+  tailscale_ingress_for_https:
+    description: "Service annotations don't propagate backend port in some charts"
+    resolution: "Use Tailscale Ingress (ingressClassName: tailscale) for HTTPS on 443"
+
+  web_ui_exposure_required:
+    description: "Any application with a web UI MUST be exposed via Tailscale Ingress"
+    severity: "hard-requirement"
+    rationale: "No web UIs should be cluster-internal only - defeats purpose of homelab"
+    pattern: |
+      apiVersion: networking.k8s.io/v1
+      kind: Ingress
+      metadata:
+        name: <app>-tailscale
+        namespace: <app-namespace>
+      spec:
+        ingressClassName: tailscale
+        rules:
+          - http:
+              paths:
+                - path: /
+                  pathType: Prefix
+                  backend:
+                    service:
+                      name: <frontend-service>
+                      port:
+                        number: 80
+
+---
+# PHASES
+
+phases:
+  phase_1:
+    name: "Repository Setup"
+    status: "complete"
+    completed: "2026-01-04"
+
+  phase_2:
+    name: "Core Infrastructure Apps"
+    status: "complete"
+    completed: "2026-01-04"
+    components: ["ArgoCD", "External Secrets Operator", "ClusterSecretStores"]
+
+  phase_3:
+    name: "Platform Services"
+    status: "complete"
+    completed: "2026-01-04"
+    components: ["Tailscale Operator", "Longhorn", "Netdata"]
+
+  phase_4:
+    name: "ArgoCD HA Upgrade"
+    status: "complete"
+    completed: "2026-01-08"
+
+  phase_5:
+    name: "Validation & Documentation"
+    status: "in-progress"
+    tasks:
+      - "Run recovery drill: destroy cluster via Omni, recreate from spec"
+      - "Run bootstrap procedure, verify all services deploy correctly"
+      - "Migrate ArgoCD from Service annotation to Ingress pattern"
+      - "Add Longhorn UI exposure via Ingress"
+      - "Verify documentation accuracy (README, runbooks)"
+      - "Documentation polish pass"
+    exit_criteria:
+      - "Recovery procedure tested end-to-end"
+      - "All ArgoCD apps healthy post-recovery"
+      - "README and docs verified accurate"
+    completed_work:
+      - "Homarr dashboard added"
+      - "Netdata k8sState + CoreDNS collectors configured"
+      - "CLAUDE.md updated"
+
+  phase_6:
+    name: "Backup Infrastructure"
+    status: "not-started"
+    depends_on: ["phase_5"]
+    tasks:
+      - "Deploy MinIO on TrueNAS Scale"
+      - "Create Longhorn backup bucket and IAM policy"
+      - "Store MinIO credentials in Infisical"
+      - "Configure Longhorn BackupTarget via ESO"
+      - "Create backup schedules (critical/important/standard tiers)"
+      - "Test backup and restore procedure"
+    exit_criteria:
+      - "MinIO accessible from cluster"
+      - "Longhorn BackupTarget shows healthy"
+      - "Automated backups running on schedule"
+      - "Restore tested successfully"
+    reference: "https://github.com/mitchross/talos-argocd-proxmox#-minio-s3-backup-configuration"
+
+---
+# REFERENCES
+
+references:
+  repo: "https://github.com/basher83/mothership-gitops"
+  argocd_docs: "https://argo-cd.readthedocs.io/"
+  external_secrets_infisical: "https://external-secrets.io/latest/provider/infisical/"
+  tailscale_operator: "https://tailscale.com/kb/1236/kubernetes-operator"
+  longhorn_docs: "https://longhorn.io/docs/"
+  netdata_helm: "https://learn.netdata.cloud/docs/netdata-agent/installation/kubernetes"
+  infisical_project: "mothership-s0-ew"

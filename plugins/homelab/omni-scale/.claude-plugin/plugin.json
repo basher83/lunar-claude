@@ -1,0 +1,20 @@
+{
+  "name": "omni-scale",
+  "version": "0.1.0",
+  "description": "Sidero Omni + Talos Kubernetes infrastructure management on Proxmox with GitOps deployment patterns",
+  "author": {
+    "name": "basher83",
+    "email": "basher83@mail.spaceships.work"
+  },
+  "repository": "https://github.com/basher83/lunar-claude",
+  "license": "MIT",
+  "keywords": [
+    "omni",
+    "talos",
+    "kubernetes",
+    "proxmox",
+    "gitops",
+    "argocd",
+    "homelab"
+  ]
+}

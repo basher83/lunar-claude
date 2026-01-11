@@ -50,18 +50,9 @@ Triggers should be **concrete and actionable**, not vague:
 
 ## CRITICAL: Dynamic Bash Pattern Bug (GitHub #12762)
 
-The skill parser executes `!` backtick patterns **even inside fenced code blocks**.
+The skill parser executes dynamic bash patterns even inside fenced code blocks.
 
-**NEVER use these patterns in SKILL.md code examples:**
-
-```text
-# BAD - Will execute during skill load:
-!`git status`
-!`bash ${CLAUDE_PLUGIN_ROOT}/scripts/script.sh`
-
-# The \! escape does NOT work
-\!`command`  # Still executes!
-```
+**NEVER use exclamation-backtick patterns in SKILL.md code examples.** The parser executes them during skill load. Escaping with backslash does NOT work.
 
 **Use `$` shell notation instead:**
 
@@ -74,7 +65,7 @@ $ bash ${CLAUDE_PLUGIN_ROOT}/scripts/script.sh
 **Workarounds:**
 
 1. Use `$ command` notation in examples
-2. Describe syntax in prose: "Use exclamation mark prefix with backticks"
+2. Describe syntax in prose rather than showing literal patterns
 3. Move examples to reference files (not parsed as skill content)
 
 This also applies to `@` file reference patterns in code blocks.

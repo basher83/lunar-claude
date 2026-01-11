@@ -323,11 +323,24 @@ See `clusters/talos-prod-01.yaml` for the full production template.
 
 ## Troubleshooting
 
+Use `scripts/provider-ctl.py` for provider container management:
+
+```bash
+# Check provider logs (filtered, human-readable)
+$ scripts/provider-ctl.py --logs 50
+
+# Raw JSON logs for debugging
+$ scripts/provider-ctl.py --logs 100 --raw
+
+# Restart provider container
+$ scripts/provider-ctl.py --restart
+```
+
 ### Provider not registering
 
 ```bash
-# Check provider logs (on Foxtrot LXC)
-ssh omni-provider docker logs -f proxmox-provider
+# Check provider logs for registration errors
+$ scripts/provider-ctl.py --logs 50
 
 # Verify Tailscale connectivity
 ssh omni-provider docker exec worker-tailscale tailscale status
@@ -340,7 +353,7 @@ ssh omni-provider docker exec worker-tailscale tailscale status
 pvesh get /nodes/foxtrot/qemu --output-format json | jq '.[] | {vmid, name, status}'
 
 # Check provider logs for errors
-ssh omni-provider docker logs --tail=50 proxmox-provider | grep -i error
+$ scripts/provider-ctl.py --logs 50
 ```
 
 ### Storage selector not matching
@@ -401,3 +414,13 @@ For more diagnostics, see `references/debugging.md`. For recovery from stuck sta
 - `examples/proxmox-gpu-worker.yaml` — GPU worker MachineClass
 - `examples/proxmox-storage-node.yaml` — Storage node MachineClass
 - `examples/proxmox-worker-multi-net.yaml` — Multi-network worker MachineClass
+
+## Scripts
+
+- `scripts/provider-ctl.py` — Manage Omni Proxmox Provider container via SSH
+
+| Command | Description |
+|---------|-------------|
+| `--restart` | Restart provider container (idempotent, 30s timeout) |
+| `--logs [N]` | Show last N log lines, filtered (default: 25, max: 100) |
+| `--logs N --raw` | Show raw JSON logs without filtering |

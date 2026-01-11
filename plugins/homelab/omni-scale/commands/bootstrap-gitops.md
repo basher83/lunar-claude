@@ -1,12 +1,11 @@
 ---
-description: Guide through GitOps bootstrap procedure for talos-prod-01
-allowed-tools: Bash, Read, AskUserQuestion, mcp__kubernetes__*
-argument-hint: "[infisical-client-id] [infisical-client-secret]"
+description: Bootstrap GitOps stack (ArgoCD, ESO, Longhorn) onto existing Talos cluster
+allowed-tools: Bash(kubectl:create), mcp__kubernetes__*
 ---
 
-# Bootstrap Procedure
+# GitOps Bootstrap
 
-Step-by-step guide for bootstrapping the GitOps stack on talos-prod-01.
+Deploy the GitOps stack onto an existing talos-prod-01 cluster.
 
 **Note:** This is a WIP command that will be refined as bootstrap procedures evolve.
 
@@ -15,15 +14,15 @@ Step-by-step guide for bootstrapping the GitOps stack on talos-prod-01.
 Before starting:
 
 1. **Cluster operational** - Verify with `/omni-scale:status`
-2. **kubectl access** - `kubectl get nodes` works
-3. **Infisical credentials** - Client ID and secret for universal-auth
+2. **kubectl access** - Nodes showing Ready
+3. **Infisical credentials** - `$INFISICAL_CLIENT_ID` and `$INFISICAL_CLIENT_SECRET` set in environment
 
 ## Instructions
 
 ### Phase 1: Verify Cluster Ready
 
-```bash
-kubectl get nodes
+```text
+mcp__kubernetes__kubectl_get(resourceType: "nodes")
 ```
 
 All nodes should show `Ready`. If not, stop and troubleshoot.
@@ -37,29 +36,28 @@ kubectl create namespace external-secrets
 
 kubectl create secret generic universal-auth-credentials \
   --namespace external-secrets \
-  --from-literal=clientId='<INFISICAL_CLIENT_ID>' \
-  --from-literal=clientSecret='<INFISICAL_CLIENT_SECRET>'
+  --from-literal=clientId="$INFISICAL_CLIENT_ID" \
+  --from-literal=clientSecret="$INFISICAL_CLIENT_SECRET"
 ```
 
-Ask user for credentials if not provided.
+If command fails → Stop → Inform user env vars are not properly set.
 
 ### Phase 3: Apply Bootstrap
 
-```bash
-kubectl apply -f https://raw.githubusercontent.com/basher83/mothership-gitops/main/bootstrap/bootstrap.yaml
+```text
+mcp__kubernetes__kubectl_apply(manifest: "https://raw.githubusercontent.com/basher83/mothership-gitops/main/bootstrap/bootstrap.yaml")
 ```
 
 This deploys the App of Apps which manages everything else.
 
 ### Phase 4: Monitor Sync Waves
 
-Watch ArgoCD applications deploy in order:
-
-```bash
-watch -n 5 'kubectl get applications -n argocd -o custom-columns="NAME:.metadata.name,WAVE:.metadata.annotations.argocd\.argoproj\.io/sync-wave,SYNC:.status.sync.status,HEALTH:.status.health.status" | sort -k2 -n'
+```text
+mcp__kubernetes__kubectl_get(resourceType: "applications", namespace: "argocd")
 ```
 
 Expected wave order:
+
 - Wave 0-1: Networking (if managed)
 - Wave 2: Secrets (ESO + ClusterSecretStores)
 - Wave 3-4: Storage (Longhorn)
@@ -68,8 +66,8 @@ Expected wave order:
 
 ### Phase 5: Verify Completion
 
-```bash
-kubectl get applications -n argocd
+```text
+mcp__kubernetes__kubectl_get(resourceType: "applications", namespace: "argocd")
 ```
 
 All apps should show `Synced` and `Healthy`.
@@ -103,12 +101,10 @@ This is intentionally manual as a safety gate.
 
 ## Recovery
 
-If bootstrap fails mid-way:
+If bootstrap fails mid-way, delete and retry:
 
-```bash
-# Delete and retry
-kubectl delete -f https://raw.githubusercontent.com/basher83/mothership-gitops/main/bootstrap/bootstrap.yaml
-
-# Fix issue, then reapply
-kubectl apply -f https://raw.githubusercontent.com/basher83/mothership-gitops/main/bootstrap/bootstrap.yaml
+```text
+mcp__kubernetes__kubectl_delete(manifest: "https://raw.githubusercontent.com/basher83/mothership-gitops/main/bootstrap/bootstrap.yaml")
 ```
+
+Fix the issue, then reapply Phase 3.

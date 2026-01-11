@@ -6,10 +6,6 @@
                 "hooks": [
                     {
                         "type": "command",
-                        "command": "uv run scripts/markdown_formatter.py"
-                    },
-                    {
-                        "type": "command",
                         "command": "jq -r '.tool_input.file_path' | while read file_path; do if [[ \"$file_path\" =~ \\.py$ ]]; then ruff check --fix \"$file_path\" && ruff format \"$file_path\"; fi; done"
                     }
                 ]

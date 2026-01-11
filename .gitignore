@@ -5,6 +5,7 @@
 .venv
 .worktrees/
 .rumdl-cache
+.rumdl_cache
 .ruff_cache
 *.pyc
 mise.local.toml
@@ -12,3 +13,4 @@ mise.local.toml
 .lychee-report.md
 .lycheecache
 .claude/research-cache
+.specstory

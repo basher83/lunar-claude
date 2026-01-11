@@ -1,7 +1,6 @@
 ---
 description: Check Omni cluster and GitOps health status
-allowed-tools: Bash, mcp__kubernetes__*
-argument-hint: "(no arguments)"
+allowed-tools: Bash(omnictl:*), mcp__kubernetes__*
 ---
 
 # Cluster Status
@@ -30,26 +29,33 @@ Report: Machine count, states (running/provisioning/failed).
 
 ### 3. Kubernetes Nodes
 
-Use the kubernetes MCP server or:
-
-```bash
-kubectl get nodes -o wide
+```text
+mcp__kubernetes__kubectl_get(resourceType: "nodes")
 ```
 
 Report: Node Ready status, roles, versions.
 
 ### 4. ArgoCD Application Health
 
-```bash
-kubectl get applications -n argocd -o custom-columns='NAME:.metadata.name,SYNC:.status.sync.status,HEALTH:.status.health.status'
+```text
+mcp__kubernetes__kubectl_get(resourceType: "applications", namespace: "argocd")
 ```
 
 Report: Any apps not Synced/Healthy.
 
-### 5. Longhorn Status
+### 5. External Secrets
 
-```bash
-kubectl get volumes.longhorn.io -A -o custom-columns='NAME:.metadata.name,STATE:.status.state,ROBUSTNESS:.status.robustness'
+```text
+mcp__kubernetes__kubectl_get(resourceType: "externalsecrets", allNamespaces: true)
+mcp__kubernetes__kubectl_get(resourceType: "clustersecretstore")
+```
+
+Report: SecretStore health, any secrets not syncing.
+
+### 6. Longhorn Status
+
+```text
+mcp__kubernetes__kubectl_get(resourceType: "volumes.longhorn.io", allNamespaces: true)
 ```
 
 Report: Volume health and robustness.
@@ -73,6 +79,11 @@ Report: Volume health and robustness.
 - Healthy: [N]
 - Degraded: [list if any]
 
+### External Secrets
+- ClusterSecretStores: [N] healthy
+- ExternalSecrets: [N] synced, [N] failed
+- Issues: [list if any]
+
 ### Storage (Longhorn)
 - Volumes: [N]
 - Healthy: [N]
@@ -81,13 +92,3 @@ Report: Volume health and robustness.
 ### Issues Found
 [List any problems or "None"]
 ```
-
-## Tips
-
-If omnictl auth fails, re-authenticate:
-
-```bash
-omnictl --omni-url https://omni.spaceships.work get clusters
-```
-
-This triggers browser-based OIDC flow with Auth0.

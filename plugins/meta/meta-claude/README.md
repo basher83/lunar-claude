@@ -20,29 +20,13 @@ Install meta-claude:
 
 ### Skills
 
-Five skills guide component creation and system architecture:
-
-**Creator Skills:**
-
-- **skill-creator** - Creates Agent Skills with proper structure and official documentation
-- **agent-creator** - Generates formatted subagent definitions
-- **hook-creator** - Creates hook configurations following Claude Code patterns
-- **command-creator** - Scaffolds slash commands with frontmatter and examples
-
-**Architectural Guidance:**
-
+- **skill-factory** - Production-grade skill creation with validation
 - **multi-agent-composition** - Guides multi-component system design with decision
   frameworks for choosing skills, sub-agents, hooks, MCP servers, and slash
   commands; includes context management patterns, orchestrator workflows, and
   anti-patterns
 
-### Commands
-
-- `/new-plugin` - Interactive wizard creates plugins using the template structure
-
 ## Usage
-
-### Autonomous Mode (Skills)
 
 Ask Claude to create components or provide architectural guidance:
 
@@ -64,33 +48,3 @@ Ask Claude to create components or provide architectural guidance:
 ```
 
 Claude invokes the appropriate skill automatically.
-
-### Interactive Mode (Command)
-
-Create structured plugins with the wizard:
-
-```bash
-/new-plugin
-```
-
-The wizard walks you through:
-
-1. Plugin name and description
-2. Category selection (meta, infrastructure, devops, homelab)
-3. Component selection (skills, agents, hooks, commands)
-4. Template application
-5. Marketplace.json update
-
-## How It Works
-
-Creator skills reference official Claude Code documentation to generate
-components that follow current specifications. This extends Anthropic's base
-skill-creator with plugin-specific knowledge.
-
-## Version History
-
-- 0.3.0 - Added comprehensive test suite, .gitignore; improved README clarity;
-  fixed agent frontmatter compliance; clarified plugin vs user agent
-  distinction in agent-creator skill
-- 0.2.0 - Added multi-agent-composition skill for architectural guidance
-- 0.1.0 - Initial release with four creator skills and new-plugin command

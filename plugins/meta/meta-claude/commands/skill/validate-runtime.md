@@ -232,7 +232,7 @@ Runtime validation FAILS if:
 **Valid skill with good runtime characteristics:**
 
 ```bash
-/meta-claude:skill:validate-runtime plugins/meta/meta-claude/skills/skill-creator
+/meta-claude:skill:validate-runtime plugins/meta/meta-claude/skills/skill-factory
 # Output: Runtime Validation: PASS
 # - All syntax checks passed
 # - Frontmatter parsed successfully

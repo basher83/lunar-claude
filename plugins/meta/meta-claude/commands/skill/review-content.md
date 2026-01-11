@@ -223,7 +223,7 @@ Content FAILS if:
 **High-quality skill:**
 
 ```bash
-/meta-claude:skill:review-content @plugins/meta/meta-claude/skills/skill-creator
+/meta-claude:skill:review-content @plugins/meta/meta-claude/skills/skill-factory
 # Output: Content Quality Review: PASS
 # - All quality dimensions passed
 # - Clear structure with progressive disclosure

@@ -8,7 +8,7 @@ from pathlib import Path
 import pytest
 
 # Add scripts directory to path
-SCRIPTS_DIR = Path(__file__).parent.parent / "skills" / "skill-creator" / "scripts"
+SCRIPTS_DIR = Path(__file__).parent.parent / "skills" / "skill-factory" / "scripts"
 sys.path.insert(0, str(SCRIPTS_DIR))
 
 from quick_validate import validate_skill

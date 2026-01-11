@@ -9,7 +9,7 @@ from pathlib import Path
 import pytest
 
 # Add scripts directory to path
-SCRIPTS_DIR = Path(__file__).parent.parent / "skills" / "skill-creator" / "scripts"
+SCRIPTS_DIR = Path(__file__).parent.parent / "skills" / "skill-factory" / "scripts"
 sys.path.insert(0, str(SCRIPTS_DIR))
 
 from package_skill import package_skill
@@ -106,7 +106,7 @@ This is a test skill.
         """Should include all skill files in package."""
         result = package_skill(valid_skill, temp_dir)
 
-        with zipfile.ZipFile(result, 'r') as zf:
+        with zipfile.ZipFile(result, "r") as zf:
             names = zf.namelist()
 
             # Should contain SKILL.md and created files

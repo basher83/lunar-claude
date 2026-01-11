@@ -1,77 +1,65 @@
 ---
-description: "Create a skill from research materials or from scratch"
-allowed-tools: Bash(command:*)
-argument-hint: [skill-name] [research-dir] [output-dir]
+description: "Create a skill directory structure from scratch"
+allowed-tools: Bash(mkdir:*), Bash(cp:*), Bash(ls:*), Read, Write
+argument-hint: [skill-name] [output-dir]
 ---
 
 # Skill Create
 
-Create a new skill, optionally from research materials.
+Create a new skill directory with proper structure.
 
 ## Arguments
 
-- `$1` - Name of the skill to create (e.g., coderabbit)
-- `$2` - (Optional) Path to research materials directory
-- `$3` - (Optional) Output directory (defaults to plugins/meta/meta-claude/skills/)
-
-## Usage
-
-```bash
-# Create skill from research
-/meta-claude:skill:create coderabbit docs/research/coderabbit/
-
-# Create skill with custom output location
-/meta-claude:skill:create coderabbit docs/research/coderabbit/ plugins/code-review/skills/
-
-# Create empty skill (no research)
-/meta-claude:skill:create my-skill
-```
+- `$1` - Name of the skill (kebab-case, e.g., terraform-helper)
+- `$2` - (Optional) Output directory (defaults to current plugin's skills/)
 
 ## Instructions
 
-Run the init_skill.py script to create the skill structure:
-
-### With Research Materials
+Create the skill directory structure:
 
 ```bash
-${CLAUDE_PLUGIN_ROOT}/skills/skill-creator/scripts/init_skill.py $1 \
-    --path ${3:-plugins/meta/meta-claude/skills/} \
-    --research-dir $2
+mkdir -p "${2:-plugins/meta/meta-claude/skills}/$1"/{references,scripts}
 ```
 
-### Without Research (Empty Skill)
+Then create a SKILL.md template with proper frontmatter:
 
-```bash
-${CLAUDE_PLUGIN_ROOT}/skills/skill-creator/scripts/init_skill.py $1 \
-    --path ${3:-plugins/meta/meta-claude/skills/}
+```markdown
+---
+name: $1
+description: >
+  TODO: Add description. Include trigger phrases like "use when creating...",
+  "building...", "validating...", or explicit feature keywords users might mention.
+---
+
+# [Skill Title]
+
+TODO: Add skill content.
+
+## When to Use
+
+TODO: Describe when this skill should be invoked.
+
+## Instructions
+
+TODO: Add step-by-step instructions for Claude to follow.
 ```
-
-## What the Script Does
-
-**With research (`--research-dir`):**
-
-1. Creates skill directory at output path
-2. Copies all `.md` files from research to `references/`
-3. Generates SKILL.md with links to all references
-4. Flattens nested paths (e.g., `cli/commands.md` → `cli-commands.md`)
-
-**Without research:**
-
-1. Creates skill directory with basic template
-2. Creates empty `scripts/`, `references/`, `assets/` directories
-3. Generates SKILL.md with TODOs
 
 ## After Creation
 
-Report the results and remind the user:
+Report results:
 
 ```text
-✅ Skill created at <output-path>
+✅ Skill created at <output-path>/$1/
+
+Structure:
+  SKILL.md      - Main skill definition (needs content)
+  references/   - Supporting documentation
+  scripts/      - Helper scripts
 
 Next steps:
-1. Edit SKILL.md - complete description and add content
-2. Review references/ - remove unnecessary files
-3. Run /meta-claude:skill:review-content to validate
+1. Edit SKILL.md with actual content
+2. Add reference files if needed
+3. Run /meta-claude:skill:review-compliance to validate
 ```
 
 ## Error Handling
@@ -82,30 +70,10 @@ Next steps:
 ❌ Error: Skill directory already exists: <path>
 ```
 
-Suggest: Delete existing or choose different name
+Suggest: Delete existing or choose different name.
 
-**If research directory not found:**
+**If invalid name format:**
 
 ```text
-❌ Error: Research directory not found: <path>
-```
-
-Suggest: Check path or run `/meta-claude:skill:research` first
-
-## Examples
-
-**Create skill from research:**
-
-```bash
-/meta-claude:skill:create coderabbit docs/research/coderabbit/
-# Creates: plugins/meta/meta-claude/skills/coderabbit/
-# With references from research
-```
-
-**Create empty skill:**
-
-```bash
-/meta-claude:skill:create my-helper
-# Creates: plugins/meta/meta-claude/skills/my-helper/
-# With template SKILL.md and empty directories
+❌ Error: Invalid skill name. Use kebab-case (lowercase, hyphens only).
 ```

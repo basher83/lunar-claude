@@ -449,8 +449,7 @@ You know skill-factory succeeds when:
 
 ## Related Resources
 
-- **skill-creator skill** - Core skill creation workflow (delegated by skill-factory)
 - **multi-agent-composition skill** - Architectural patterns and composition rules
-- **Primitive commands** - Individual slash commands under `/skill-*` namespace
+- **Primitive commands** - Individual slash commands under `/meta-claude:skill:*` namespace
 - **quick_validate.py** - Compliance validation script
-- **claude-skill-auditor agent** - Comprehensive skill audit agent
+- **skill-audit-agent** - Comprehensive skill audit agent

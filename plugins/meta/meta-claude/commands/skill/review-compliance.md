@@ -26,10 +26,10 @@ Validates:
 
 ## Instructions
 
-Run the quick_validate.py script from skill-creator with the skill path provided by the user:
+Run the quick_validate.py script with the skill path provided by the user:
 
 ```bash
-${CLAUDE_PLUGIN_ROOT}/skills/skill-creator/scripts/quick_validate.py $ARGUMENTS
+${CLAUDE_PLUGIN_ROOT}/skills/skill-factory/scripts/quick_validate.py $ARGUMENTS
 ```
 
 Where `$ARGUMENTS` is the skill path provided by the user.
@@ -76,7 +76,7 @@ Skill is valid!
 **Valid skill:**
 
 ```bash
-/meta-claude:skill:review-compliance plugins/meta/meta-claude/skills/skill-creator
+/meta-claude:skill:review-compliance plugins/meta/meta-claude/skills/skill-factory
 # Output: Skill is valid!
 ```
 

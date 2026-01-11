@@ -311,7 +311,7 @@ Integration validation FAILS if:
 #
 # Conflicts Found:
 # Critical:
-# - Skill name 'skill-creator' already exists in plugins/meta/meta-claude/skills/skill-creator
+# - Skill name 'skill-factory' already exists in plugins/meta/meta-claude/skills/skill-factory
 # - Exact duplicate functionality: both create SKILL.md files
 # Recommendation: Choose different name or consolidate with existing skill
 ```

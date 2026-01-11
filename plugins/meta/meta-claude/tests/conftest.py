@@ -4,5 +4,5 @@ import sys
 from pathlib import Path
 
 # Add scripts directory to Python path for all tests
-SCRIPTS_DIR = Path(__file__).parent.parent / "skills" / "skill-creator" / "scripts"
+SCRIPTS_DIR = Path(__file__).parent.parent / "skills" / "skill-factory" / "scripts"
 sys.path.insert(0, str(SCRIPTS_DIR))

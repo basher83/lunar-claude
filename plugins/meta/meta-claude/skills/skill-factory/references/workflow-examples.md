@@ -29,8 +29,8 @@ Cleans UI artifacts and navigation elements
 
 [Phase 3: Create]
 Invokes: /meta-claude:skill:create terraform-best-practices docs/research/skills/terraform-best-practices
-Delegates to skill-creator skill
-Follows Understand → Plan → Initialize → Edit → Package workflow
+Creates skill directory structure
+Follows mkdir → SKILL.md template → references/ setup workflow
 ✓ Skill created at plugins/infrastructure/terraform-skills/skills/terraform-best-practices/
 
 [Phase 4: Review Content]

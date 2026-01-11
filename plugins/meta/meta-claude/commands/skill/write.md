@@ -180,7 +180,7 @@ Content quality may be limited. Consider adding more research materials.
 
 ## Notes
 
-- This command performs the "Edit the Skill" step from skill-creator workflow
+- This command performs the "write content" step in the skill-factory workflow
 - Focus on synthesizing references, not copying them verbatim
 - The goal is actionable guidance that helps Claude accomplish tasks
 - Reference files remain available for detailed lookups

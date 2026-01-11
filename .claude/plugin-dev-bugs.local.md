@@ -25,15 +25,8 @@ Tracking bugs discovered in the plugin-dev plugin during development.
 **Component:** `plugins/meta/plugin-dev/skills/skill-development/SKILL.md`
 
 **Symptoms:**
-```bash
-# Original (2025-12-18):
-Bash command failed for pattern "!` escape does NOT work.
-zsh: command not found: escape
-
-# Recurrence (2025-12-28):
-Bash command failed for pattern "!` backtick patterns and `"
-zsh: command not found: backtick
-```
+Parser attempted to execute dynamic bash patterns found in SKILL.md code blocks,
+resulting in "zsh: command not found" errors during skill load.
 
 **Root Cause:**
 The skill-development SKILL.md contained references to the exclamation-backtick dynamic bash pattern that triggered the parser. Due to GitHub issue #12781, the skill parser executes these patterns even inside fenced code blocks or inline code.

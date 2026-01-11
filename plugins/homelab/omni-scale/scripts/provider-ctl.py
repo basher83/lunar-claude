@@ -34,12 +34,6 @@ MAX_LOG_LINES = 100
 RESTART_TIMEOUT = 30
 LOG_TIMEOUT = 10
 
-# Fields to always exclude from output
-EXCLUDE_FIELDS = {"caller", "namespace", "type", "controller"}
-
-# Fields that require conditional inclusion
-CONDITIONAL_FIELDS = {"schematic"}
-
 
 def ssh_command(cmd: str, timeout: int) -> tuple[int, str, str]:
     """Execute command on remote host via SSH."""
@@ -128,12 +122,8 @@ def format_log_entry(entry: dict) -> str:
     job = entry.get("job", "")
     msg = entry.get("msg", "")
 
-    # Build main line
-    line = f"[{level:5}] {ts} | {machine_id} | {step} | {msg}"
-
-    # Add job if present
-    if job:
-        line = f"[{level:5}] {ts} | {machine_id} | {step} | {job} | {msg}"
+    job_segment = f"{job} | " if job else ""
+    line = f"[{level:5}] {ts} | {machine_id} | {step} | {job_segment}{msg}"
 
     # Conditionally add schematic on next line
     if should_include_schematic(entry) and "schematic" in entry:

@@ -137,7 +137,7 @@ description: Review pull request for code quality
 ### allowed-tools
 
 **Purpose:** Specify which tools command can use
-**Type:** String or Array
+**Type:** Comma-separated string
 **Default:** Inherits from conversation
 
 ```yaml
@@ -145,6 +145,8 @@ description: Review pull request for code quality
 allowed-tools: Read, Write, Edit, Bash(git:*)
 ---
 ```
+
+**Note:** Always use comma-separated format on a single line. Do not use YAML array syntax.
 
 **Patterns:**
 

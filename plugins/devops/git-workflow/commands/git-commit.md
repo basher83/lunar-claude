@@ -30,11 +30,11 @@ Verify repository state:
      - Unstage (Remove sensitive files from staging)
      - Abort (Cancel commit workflow)
 
-### Step 2: Run Pre-commit Hooks
+### Step 2: Run Pre-commit Hooks (if configured)
 
-Execute pre-commit hooks:
+Check if pre-commit is configured: `test -f .pre-commit-config.yaml`
 
-!`pre-commit run -a`
+If configured, execute pre-commit hooks: `pre-commit run -a`
 
 Analyze the output:
 

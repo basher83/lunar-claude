@@ -46,6 +46,12 @@ description: |
 model: sonnet
 color: red
 tools: ["Read", "Write", "Edit", "Grep", "Glob", "Bash"]
+capabilities:
+  - Diagnose Ansible execution failures and error messages
+  - Perform root cause analysis with evidence collection
+  - Fix idempotency issues (changed_when, failed_when patterns)
+  - Address validation failures and review findings
+  - Apply fixes and hand off for re-validation
 permissionMode: default
 skills: ["ansible-fundamentals", "ansible-idempotency", "ansible-error-handling"]
 ---

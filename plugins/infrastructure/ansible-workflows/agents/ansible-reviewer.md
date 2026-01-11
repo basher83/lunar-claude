@@ -41,6 +41,12 @@ description: |
 model: opus
 color: blue
 tools: ["Read", "Grep", "Glob", "Skill"]
+capabilities:
+  - Perform comprehensive best-practices code review
+  - Evaluate code across six quality dimensions with scoring
+  - Generate structured review reports with actionable findings
+  - Provide APPROVED/APPROVED_WITH_CHANGES/NEEDS_REWORK recommendations
+  - Assess production readiness for Ansible playbooks and roles
 skills: ["ansible-fundamentals", "ansible-playbook-design", "ansible-role-design", "ansible-idempotency", "ansible-secrets", "ansible-error-handling", "ansible-testing", "ansible-proxmox"]
 ---
 

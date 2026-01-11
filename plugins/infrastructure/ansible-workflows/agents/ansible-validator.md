@@ -42,6 +42,12 @@ description: |
 model: haiku
 color: yellow
 tools: ["Read", "Bash", "Grep", "Glob"]
+capabilities:
+  - Run ansible-playbook syntax checks
+  - Execute ansible-lint with repository configuration
+  - Check FQCN compliance and idempotency patterns
+  - Produce structured PASS/FAIL validation reports
+  - Hand off to reviewer or debugger based on results
 skills: ["ansible-testing", "ansible-fundamentals"]
 ---
 

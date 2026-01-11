@@ -41,6 +41,12 @@ description: |
 model: sonnet
 color: green
 tools: ["Read", "Write", "Grep", "Glob", "Bash", "Skill"]
+capabilities:
+  - Generate production-quality Ansible playbooks and roles
+  - Apply FQCN, idempotency, and secret handling patterns
+  - Create Proxmox-specific automation with community.proxmox modules
+  - Follow repository conventions and variable naming standards
+  - Hand off generated code to validator for quality checks
 permissionMode: default
 skills: ["ansible-fundamentals", "ansible-idempotency", "ansible-proxmox", "ansible-secrets", "ansible-playbook-design", "ansible-role-design"]
 ---

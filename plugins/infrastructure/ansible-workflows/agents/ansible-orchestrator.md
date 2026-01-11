@@ -41,6 +41,12 @@ description: |
 model: sonnet
 color: magenta
 tools: ["Task", "Read", "Write", "Edit", "Glob", "Grep", "Bash", "Skill"]
+capabilities:
+  - Orchestrate multi-agent Ansible development pipeline
+  - Manage pipeline state and phase transitions
+  - Dispatch specialized agents (generator, validator, reviewer, debugger)
+  - Enforce quality gates and retry limits
+  - Handle pipeline recovery and error escalation
 permissionMode: default
 skills: ansible-fundamentals
 ---

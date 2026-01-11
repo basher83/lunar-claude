@@ -19,8 +19,10 @@ This plugin provides Claude with knowledge and tooling for managing:
 
 | Command | Description |
 |---------|-------------|
+| `/omni-scale:omni-prime` | Load infrastructure context (kernel, codebase structure) |
 | `/omni-scale:status` | Check cluster and GitOps health |
-| `/omni-scale:bootstrap` | Guide through GitOps bootstrap procedure |
+| `/omni-scale:analyze-spec` | Analyze spec file and generate deployment plan |
+| `/omni-scale:bootstrap-gitops` | Bootstrap GitOps stack onto existing Talos cluster |
 | `/omni-scale:disaster-recovery` | Execute DR drill (destroy/recreate cluster) |
 
 ### Scripts

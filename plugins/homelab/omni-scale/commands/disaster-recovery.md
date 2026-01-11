@@ -1,7 +1,6 @@
 ---
 description: Execute disaster recovery drill - destroy and recreate cluster from specs
-allowed-tools: Bash, Read, AskUserQuestion, mcp__kubernetes__*
-argument-hint: "(no arguments - interactive confirmation required)"
+allowed-tools: Bash(omnictl:*), Bash(ssh:*), Bash(kubectl:*), Bash(sleep:*), Read, AskUserQuestion, mcp__kubernetes__*
 ---
 
 # Disaster Recovery
@@ -10,12 +9,19 @@ Full cluster destruction and recreation from declarative specs.
 
 **WARNING:** This destroys the entire cluster. Only run for DR drills or actual recovery.
 
+**NOTE:** Paths below reference user-specific locations. Consider setting `$OMNI_SCALE_ROOT` if needed.
+
 ## Prerequisites
 
-- Access to Omni console (https://omni.spaceships.work)
+- Access to Omni console (<https://omni.spaceships.work>)
 - omnictl authenticated
-- Infisical credentials available
+- Infisical credentials available (`$INFISICAL_CLIENT_ID`, `$INFISICAL_CLIENT_SECRET`)
 - Backup of any stateful data (if applicable)
+- Provider connectivity verified:
+
+```bash
+omnictl get infraproviders
+```
 
 ## Instructions
 
@@ -35,27 +41,40 @@ If user selects abort, stop immediately.
 
 ### Phase 2: Capture Current State (Optional)
 
+```text
+mcp__kubernetes__kubectl_get(resourceType: "nodes")
+mcp__kubernetes__kubectl_get(resourceType: "pv")
+```
+
 ```bash
-# Document current state for comparison after recovery
-kubectl get nodes -o wide > /tmp/pre-dr-nodes.txt
-kubectl get pv -o wide > /tmp/pre-dr-pvs.txt
-omnictl get machines --cluster talos-prod-01 > /tmp/pre-dr-machines.txt
+omnictl get machines --cluster talos-prod-01
 ```
 
 ### Phase 3: Destroy Cluster
 
-```bash
-omnictl cluster template delete -f ~/dev/infra-as-code/Omni-Scale/clusters/talos-prod-01.yaml
-```
-
-Watch Omni console for machine destruction.
-
-Wait for all VMs to be destroyed in Proxmox:
+**WARNING:** No rollback after this phase. Cluster will be destroyed.
 
 ```bash
-# Monitor until no talos VMs remain
-watch 'pvesh get /nodes/foxtrot/qemu --output-format json 2>/dev/null | jq -r ".[] | select(.name | startswith(\"talos\")) | .name"'
+omnictl cluster template delete -f ~/dev/infra-as-code/Omni-Scale/clusters/talos-prod-01.yaml --destroy-disconnected-machines
 ```
+
+**Poll loop:**
+
+```bash
+# Check status
+ssh foxtrot "pvesh get /cluster/resources --type vm --output-format json" | jq -r '.[] | select(.name | startswith("talos")) | .name'
+
+# REQUIRED - do not skip or reduce
+sleep 30
+```
+
+Repeat until no talos VMs remain. Max wait: 10 min.
+
+After 3 attempts at 30s intervals, INCREASE to 60s. Do not decrease below 30s.
+
+If timeout exceeded, check failure scenarios below.
+
+Use AskUserQuestion to confirm destruction complete before proceeding.
 
 ### Phase 4: Recreate Cluster
 
@@ -65,35 +84,77 @@ Apply cluster template:
 omnictl cluster template sync -f ~/dev/infra-as-code/Omni-Scale/clusters/talos-prod-01.yaml
 ```
 
-Monitor provisioning:
+**Poll loop:**
 
 ```bash
-watch 'omnictl get machines --cluster talos-prod-01'
+# Check status
+omnictl get machines --cluster talos-prod-01
+
+# REQUIRED - do not skip or reduce
+sleep 30
 ```
 
-Wait for all nodes to reach `running` state.
+Repeat until all nodes reach `running` state. Max wait: 20 min.
+
+After 3 attempts at 30s intervals, INCREASE to 60s. Do not decrease below 30s.
+
+If timeout exceeded, check failure scenarios below.
+
+### Phase 4.5: Wait for API Availability
+
+**Poll loop:**
+
+```bash
+# Check status
+omnictl kubeconfig talos-prod-01 --merge
+kubectl get nodes
+
+# REQUIRED - do not skip or reduce
+sleep 30
+```
+
+Repeat until API responds. Max wait: 10 min.
+
+After 3 attempts at 30s intervals, INCREASE to 60s. Do not decrease below 30s.
+
+If timeout exceeded, check failure scenarios below.
+
+Use AskUserQuestion to confirm cluster is ready before GitOps bootstrap.
 
 ### Phase 5: Verify Cluster Health
 
-```bash
-# Get kubeconfig
-omnictl kubeconfig talos-prod-01 > ~/.kube/config
-
-# Verify nodes
-kubectl get nodes
+```text
+mcp__kubernetes__kubectl_get(resourceType: "nodes")
 ```
 
-All nodes should show `Ready` within 5-10 minutes.
+All nodes should show `Ready`.
 
 ### Phase 6: Bootstrap GitOps
 
-Follow `/omni-scale:bootstrap` procedure:
+Follow `/omni-scale:bootstrap-gitops` procedure:
 
 1. Create external-secrets namespace
 2. Create universal-auth-credentials secret
 3. Apply bootstrap.yaml
-4. Monitor sync waves
-5. Manually sync ArgoCD HA
+
+**Poll loop:**
+
+```text
+mcp__kubernetes__kubectl_get(resourceType: "applications", namespace: "argocd")
+```
+
+```bash
+# REQUIRED - do not skip or reduce
+sleep 30
+```
+
+Repeat until all apps show Synced/Healthy. Max wait: 20 min.
+
+After 3 attempts at 30s intervals, INCREASE to 60s. Do not decrease below 30s.
+
+If timeout exceeded, check failure scenarios below.
+
+Manually sync ArgoCD HA after Longhorn is healthy.
 
 ### Phase 7: Verify Recovery
 
@@ -120,9 +181,15 @@ Compare against pre-DR state if captured.
 
 **VMs not provisioning:**
 
-- Check provider logs on Foxtrot LXC
+- Check provider logs: `scripts/provider-ctl.py --logs 50`
 - Verify service account key not expired
 - Check storage pool availability
+
+**Provider wrong image tag:**
+
+- Must use `:local-fix` tag, not `:latest`
+- Hostname conflict bug in upstream image
+- Check compose.yml in proxmox-provider/
 
 **Nodes not joining:**
 
@@ -134,6 +201,11 @@ Compare against pre-DR state if captured.
 - Check ESO ClusterSecretStore health
 - Verify Infisical credentials correct
 - Check namespace PSA labels
+
+**Longhorn volumes not attaching:**
+
+- May need to patch nodes.longhorn.io with disk paths
+- Check node disk configuration matches expectations
 
 ## Post-Recovery Checklist
 

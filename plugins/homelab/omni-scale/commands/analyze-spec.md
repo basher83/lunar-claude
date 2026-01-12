@@ -52,6 +52,7 @@ Plan template: @${CLAUDE_PLUGIN_ROOT}/templates/plan-template.md
 0. **Readiness Check** (output before proceeding):
    - What do I know from loaded context? (structure, patterns, constraints)
    - What's unclear or missing for this spec?
+   - **Planned vs Actual:** Compare any planned counts/values against actual_distribution, exit_criteria, or live cluster state. Flag discrepancies as "Spec needs reconciliation"
    - Key risks I can already identify
    - **Confidence: X/5** - If < 4, use AskUserQuestion to clarify before proceeding
 

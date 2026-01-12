@@ -7,9 +7,9 @@ initiative:
   status: "production-cluster-operational"
   repository: "Omni-Scale"
   summary: |
-    Production Talos Kubernetes cluster (3 CP + 2 workers) operational on Matrix.
-    Cilium CNI installed and healthy. All 5 nodes Ready.
-    Tailscale Operator on backlog for post-cluster integration.
+    Production Talos Kubernetes cluster (3 CP + 3 workers) operational on Matrix.
+    Cilium CNI installed and healthy. All 6 nodes Ready.
+    Tailscale Operator deployed via GitOps.
 
 ---
 # DEFINITION OF DONE (Project-Specific)
@@ -17,7 +17,7 @@ definition_of_done:
   - "Omni console accessible via Tailscale with Auth0 OIDC"
   - "Proxmox Provider can create/destroy VMs on Matrix cluster"
   - "Talos VMs successfully register with Omni on boot"
-  - "At least one Talos cluster (3 CP + 2 worker) operational"
+  - "At least one Talos cluster (3 CP + 3 worker) operational"
   - "Cluster survives single node failure"
   - "Tailscale Kubernetes Operator deployed for workload access"
 
@@ -180,11 +180,14 @@ open_decisions:
 
   talos_cluster_spec:
     question: "Production cluster specification"
-    status: "ready-to-deploy"
+    status: "deployed"
     artifacts:
       cluster: "clusters/talos-prod-01.yaml"
       control_plane_class: "machine-classes/matrix-control-plane.yaml"
-      worker_class: "machine-classes/matrix-worker.yaml"
+      worker_classes:
+        - "machine-classes/matrix-worker-foxtrot.yaml"
+        - "machine-classes/matrix-worker-golf.yaml"
+        - "machine-classes/matrix-worker-hotel.yaml"
     spec:
       name: "talos-prod-01"
       kubernetes_version: "v1.35.0"
@@ -197,18 +200,22 @@ open_decisions:
         disk_gb: 40
         machine_class: "matrix-control-plane"
       workers:
-        count: 2
+        count: 3
         cpu: 8
         memory_gb: 16
         disk_gb: 100
-        machine_class: "matrix-worker"
-    note: "Specs finalized. Deploy with: omnictl cluster template sync -f clusters/talos-prod-01.yaml"
+        machine_classes:
+          - "matrix-worker-foxtrot"
+          - "matrix-worker-golf"
+          - "matrix-worker-hotel"
+    note: "Deployed. One worker per Proxmox host for distribution."
 
   tailscale_operator:
     question: "Post-cluster Tailscale integration"
     plan: "Deploy Tailscale Kubernetes Operator for workload access"
     timing: "After production cluster operational"
-    status: "backlog"
+    status: "complete"
+    note: "Deployed via mothership-gitops ArgoCD"
 
 ---
 # CONSTRAINTS (Learned from implementation)
@@ -374,7 +381,7 @@ phases:
       - "Install Cilium CNI ✓"
     exit_criteria:
       - "3 control plane nodes running ✓"
-      - "2 worker nodes running ✓"
+      - "3 worker nodes running ✓"
       - "kubectl access works ✓"
       - "Cluster passes: kubectl get nodes shows Ready ✓"
       - "Cilium installed and healthy ✓"

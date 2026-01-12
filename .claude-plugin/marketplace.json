@@ -139,7 +139,7 @@
       "name": "omni-scale",
       "source": "./plugins/homelab/omni-scale",
       "description": "Sidero Omni + Talos Kubernetes infrastructure management on Proxmox with GitOps deployment patterns",
-      "version": "0.1.1",
+      "version": "0.1.2",
       "category": "homelab",
       "keywords": [
         "omni",

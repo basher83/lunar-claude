@@ -323,24 +323,24 @@ See `clusters/talos-prod-01.yaml` for the full production template.
 
 ## Troubleshooting
 
-Use `${CLAUDE_PLUGIN_ROOT}/scripts/provider-ctl.py` for provider container management:
+Use `${CLAUDE_PLUGIN_ROOT}/skills/omni-proxmox/scripts/provider-ctl.py` for provider container management:
 
 ```bash
 # Check provider logs (filtered, human-readable)
-$ ${CLAUDE_PLUGIN_ROOT}/scripts/provider-ctl.py --logs 50
+$ ${CLAUDE_PLUGIN_ROOT}/skills/omni-proxmox/scripts/provider-ctl.py --logs 50
 
 # Raw JSON logs for debugging
-$ ${CLAUDE_PLUGIN_ROOT}/scripts/provider-ctl.py --logs 100 --raw
+$ ${CLAUDE_PLUGIN_ROOT}/skills/omni-proxmox/scripts/provider-ctl.py --logs 100 --raw
 
 # Restart provider container
-$ ${CLAUDE_PLUGIN_ROOT}/scripts/provider-ctl.py --restart
+$ ${CLAUDE_PLUGIN_ROOT}/skills/omni-proxmox/scripts/provider-ctl.py --restart
 ```
 
 ### Provider not registering
 
 ```bash
 # Check provider logs for registration errors
-$ ${CLAUDE_PLUGIN_ROOT}/scripts/provider-ctl.py --logs 50
+$ ${CLAUDE_PLUGIN_ROOT}/skills/omni-proxmox/scripts/provider-ctl.py --logs 50
 
 # Verify Tailscale connectivity
 ssh omni-provider docker exec worker-tailscale tailscale status
@@ -353,7 +353,7 @@ ssh omni-provider docker exec worker-tailscale tailscale status
 pvesh get /nodes/foxtrot/qemu --output-format json | jq '.[] | {vmid, name, status}'
 
 # Check provider logs for errors
-$ ${CLAUDE_PLUGIN_ROOT}/scripts/provider-ctl.py --logs 50
+$ ${CLAUDE_PLUGIN_ROOT}/skills/omni-proxmox/scripts/provider-ctl.py --logs 50
 ```
 
 ### Storage selector not matching
@@ -417,7 +417,7 @@ For more diagnostics, see `references/debugging.md`. For recovery from stuck sta
 
 ## Scripts
 
-- `${CLAUDE_PLUGIN_ROOT}/scripts/provider-ctl.py` — Manage Omni Proxmox Provider container via SSH
+- `${CLAUDE_PLUGIN_ROOT}/skills/omni-proxmox/scripts/provider-ctl.py` — Manage Omni Proxmox Provider container via SSH
 
 | Command | Description |
 |---------|-------------|

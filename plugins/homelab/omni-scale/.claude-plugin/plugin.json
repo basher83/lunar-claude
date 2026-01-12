@@ -16,5 +16,6 @@
     "gitops",
     "argocd",
     "homelab"
-  ]
+  ],
+  "mcpServers": "./.mcp.json"
 }

@@ -38,6 +38,20 @@ Use MCP first. Fall back to kubectl CLI only if MCP output lacks required fields
 
 Limited to: install, upgrade, uninstall. ArgoCD handles Helm for this stack — MCP Helm rarely needed.
 
+### omnictl
+
+**Cluster status (includes machine health):**
+```bash
+omnictl cluster status <cluster-name>
+```
+
+**List machines (if needed separately):**
+```bash
+omnictl get machines -l omni.sidero.dev/cluster=<cluster-name>
+```
+
+Note: `--cluster` flag does not exist. Use label selector `-l` instead.
+
 ## Cross-Repo Gotchas
 
 | Issue | Cause | Resolution |

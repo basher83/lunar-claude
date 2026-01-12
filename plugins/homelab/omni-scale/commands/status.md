@@ -7,58 +7,41 @@ allowed-tools: Bash(omnictl:*), mcp__plugin_omni-scale_kubernetes__*
 
 Quick health check for Omni-managed Talos cluster and GitOps stack.
 
-## Instructions
+## Required Data
 
-Run these checks in sequence and report results:
+### Omni Cluster
 
-### 1. Omni Cluster Status
+- Cluster phase (Running/Provisioning/etc)
+- Node count (control plane vs workers)
+- Overall health status
 
-```bash
-omnictl cluster status talos-prod-01
-```
+### Kubernetes Nodes
 
-Report: Cluster phase, node count, health status.
+- Ready status for each node
+- Role (control-plane vs worker)
+- Kubernetes version
+- Talos version
+- Node IPs
 
-### 2. Node Health
+### ArgoCD Applications
 
-```bash
-omnictl get machines --cluster talos-prod-01
-```
+- Total application count
+- Sync status breakdown (Synced vs OutOfSync)
+- Health status breakdown (Healthy vs Degraded)
+- **List any apps NOT both Synced AND Healthy**
 
-Report: Machine count, states (running/provisioning/failed).
+### External Secrets
 
-### 3. Kubernetes Nodes
+- ClusterSecretStore count and health
+- ExternalSecret count, sync status
+- **List any secrets failing to sync**
 
-```text
-mcp__plugin_omni-scale_kubernetes__kubectl_get(resourceType: "nodes")
-```
+### Storage (Longhorn)
 
-Report: Node Ready status, roles, versions.
-
-### 4. ArgoCD Application Health
-
-```text
-mcp__plugin_omni-scale_kubernetes__kubectl_get(resourceType: "applications", namespace: "argocd")
-```
-
-Report: Any apps not Synced/Healthy.
-
-### 5. External Secrets
-
-```text
-mcp__plugin_omni-scale_kubernetes__kubectl_get(resourceType: "externalsecrets", allNamespaces: true)
-mcp__plugin_omni-scale_kubernetes__kubectl_get(resourceType: "clustersecretstore")
-```
-
-Report: SecretStore health, any secrets not syncing.
-
-### 6. Longhorn Status
-
-```text
-mcp__plugin_omni-scale_kubernetes__kubectl_get(resourceType: "volumes.longhorn.io", allNamespaces: true)
-```
-
-Report: Volume health and robustness.
+- Volume count
+- Volume state (attached/detached)
+- Robustness status
+- **List any volumes not healthy**
 
 ## Output Format
 
@@ -66,29 +49,37 @@ Report: Volume health and robustness.
 ## Omni-Scale Status Report
 
 ### Omni Cluster: talos-prod-01
-- Phase: [Running/Provisioning/etc]
+- Phase: [status]
 - Nodes: [X] control plane, [Y] workers
-- Health: [Healthy/Degraded/etc]
+- Health: [status]
 
 ### Kubernetes
 - Nodes Ready: [X/Y]
 - Version: [version]
+- Talos: [version]
+
+[Node table with roles and IPs]
 
 ### ArgoCD Applications
 - Total: [N]
-- Healthy: [N]
-- Degraded: [list if any]
+- Synced: [N], OutOfSync: [N]
+- Healthy: [N], Degraded: [N]
+
+[Table showing any non-healthy/non-synced apps]
 
 ### External Secrets
 - ClusterSecretStores: [N] healthy
 - ExternalSecrets: [N] synced, [N] failed
-- Issues: [list if any]
+
+[List any failing secrets]
 
 ### Storage (Longhorn)
 - Volumes: [N]
 - Healthy: [N]
-- Degraded: [list if any]
+- Degraded: [N]
+
+[List any unhealthy volumes]
 
 ### Issues Found
-[List any problems or "None"]
+[List problems or "None"]
 ```

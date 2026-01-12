@@ -25,10 +25,9 @@ Quick health check for Omni-managed Talos cluster and GitOps stack.
 
 ### ArgoCD Applications
 
-- Total application count
-- Sync status breakdown (Synced vs OutOfSync)
-- Health status breakdown (Healthy vs Degraded)
-- **List any apps NOT both Synced AND Healthy**
+- Sync status: Synced, OutOfSync, Unknown
+- Health status: Healthy, Progressing, Degraded, Suspended, Missing, Unknown
+- **List any apps NOT Synced+Healthy**
 
 ### External Secrets
 
@@ -38,10 +37,9 @@ Quick health check for Omni-managed Talos cluster and GitOps stack.
 
 ### Storage (Longhorn)
 
-- Volume count
-- Volume state (attached/detached)
-- Robustness status
-- **List any volumes not healthy**
+- State: attached, detached, attaching, detaching
+- Robustness: healthy, degraded, faulted, unknown
+- **List any volumes not attached+healthy**
 
 ## Output Format
 

@@ -52,6 +52,13 @@ omnictl get machines -l omni.sidero.dev/cluster=<cluster-name>
 
 Note: `--cluster` flag does not exist. Use label selector `-l` instead.
 
+## Operational Pattern
+
+When an infrastructure operation fails on first attempt:
+1. Check for skill coverage before retrying with variations
+2. Skills encode operational knowledge — "how do I access X" is exactly what they're for
+3. Don't guess hostnames, paths, or commands — if it's not documented, ask
+
 ## Cross-Repo Gotchas
 
 | Issue | Cause | Resolution |

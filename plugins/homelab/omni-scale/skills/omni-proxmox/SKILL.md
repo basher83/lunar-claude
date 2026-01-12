@@ -1,10 +1,11 @@
 ---
 name: omni-proxmox
-description: This skill should be used when the user asks to "create a machine class",
-  "configure Proxmox provider", "debug provider registration", "set up CEL storage
-  selectors", "troubleshoot Omni provider", "check provider status", "create a Talos
-  cluster", or needs guidance on Omni + Proxmox infrastructure integration for Talos
-  Kubernetes clusters.
+description: This skill provides operational tooling and guidance for Omni Proxmox
+  infrastructure. Use when the user asks to "check provider status", "restart provider",
+  "view provider logs", "debug provider registration", "create a machine class",
+  "configure Proxmox provider", "set up CEL storage selectors", "create a Talos cluster",
+  or needs guidance on Omni + Proxmox infrastructure integration for Talos Kubernetes
+  clusters.
 ---
 
 # Omni + Proxmox Infrastructure Provider

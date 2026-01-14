@@ -1,60 +1,45 @@
 ---
 description: Bootstrap GitOps stack (ArgoCD, ESO, Longhorn) onto existing Talos cluster
-allowed-tools: Bash(kubectl:create), mcp__plugin_omni-scale_kubernetes__*
+allowed-tools: Bash(kubectl:*), mcp__plugin_omni-scale_kubernetes__*
 ---
 
 # GitOps Bootstrap
 
 Deploy the GitOps stack onto an existing talos-prod-01 cluster.
 
-**Note:** This is a WIP command that will be refined as bootstrap procedures evolve.
+## Pre-flight Gate
 
-## Prerequisites
+**STOP** if omni-talos skill is not loaded.
 
-Before starting:
+Check: Do you have knowledge of `provider-ctl.py` and the provider operations table? If not, instruct user:
 
-1. **Cluster operational** - Verify with `/omni-scale:status`
-2. **kubectl access** - Nodes showing Ready
-3. **Infisical credentials** - `$INFISICAL_CLIENT_ID` and `$INFISICAL_CLIENT_SECRET` set in environment
+```text
+Required setup not complete. Run this chain first:
+  /omni-scale:omni-prime && /omni-scale:status && /omni-scale:omni-talos
+Then re-run /omni-scale:bootstrap-gitops
+```
 
 ## Instructions
 
-### Phase 1: Verify Cluster Ready
+### Phase 1: Create Bootstrap Secret
 
-```text
-mcp__plugin_omni-scale_kubernetes__kubectl_get(resourceType: "nodes")
-```
+**Outcome:** `external-secrets` namespace exists with `universal-auth-credentials` secret containing Infisical credentials.
 
-All nodes should show `Ready`. If not, stop and troubleshoot.
+Create namespace and secret using kubectl. Secret requires `$INFISICAL_CLIENT_ID` and `$INFISICAL_CLIENT_SECRET` env vars.
 
-### Phase 2: Create Bootstrap Secret
+If command fails, stop and inform user env vars are not set.
 
-The one manual secret for Infisical authentication:
+### Phase 2: Apply Bootstrap
 
-```bash
-kubectl create namespace external-secrets
+**Outcome:** App of Apps deployed from mothership-gitops bootstrap manifest.
 
-kubectl create secret generic universal-auth-credentials \
-  --namespace external-secrets \
-  --from-literal=clientId="$INFISICAL_CLIENT_ID" \
-  --from-literal=clientSecret="$INFISICAL_CLIENT_SECRET"
-```
+Apply bootstrap manifest: `https://raw.githubusercontent.com/basher83/mothership-gitops/main/bootstrap/bootstrap.yaml`
 
-If command fails → Stop → Inform user env vars are not properly set.
+### Phase 3: Monitor Sync Waves
 
-### Phase 3: Apply Bootstrap
+**Outcome:** All apps (except argocd-ha) show Synced/Healthy.
 
-```text
-mcp__plugin_omni-scale_kubernetes__kubectl_apply(manifest: "https://raw.githubusercontent.com/basher83/mothership-gitops/main/bootstrap/bootstrap.yaml")
-```
-
-This deploys the App of Apps which manages everything else.
-
-### Phase 4: Monitor Sync Waves
-
-```text
-mcp__plugin_omni-scale_kubernetes__kubectl_get(resourceType: "applications", namespace: "argocd")
-```
+**Poll:** Check ArgoCD applications in argocd namespace. <!-- REQUIRED: sleep 30s between attempts -->
 
 Expected wave order:
 
@@ -64,47 +49,13 @@ Expected wave order:
 - Wave 5: Platform services (Tailscale, Netdata)
 - Wave 99: ArgoCD HA (manual sync)
 
-### Phase 5: Verify Completion
+- Max wait: 20 min
+- After 3 attempts, increase interval to 60s
 
-```text
-mcp__plugin_omni-scale_kubernetes__kubectl_get(resourceType: "applications", namespace: "argocd")
-```
+### Phase 4: ArgoCD HA Upgrade (Manual)
 
-All apps should show `Synced` and `Healthy`.
+**Outcome:** ArgoCD HA running.
 
-### Phase 6: ArgoCD HA Upgrade (Manual)
+After Longhorn healthy, instruct user to manually sync `argocd-ha` via ArgoCD UI (Tailscale). This is intentionally manual as safety gate.
 
-After Longhorn is healthy:
-
-1. Access ArgoCD UI (via Tailscale)
-2. Find `argocd-ha` application
-3. Manually sync it
-
-This is intentionally manual as a safety gate.
-
-## Troubleshooting
-
-**ESO not creating secrets:**
-
-- Check ClusterSecretStore status
-- Verify Infisical path matches store configuration
-
-**Longhorn volumes pending:**
-
-- Check node disk configuration
-- Patch nodes.longhorn.io with disk paths
-
-**Apps stuck OutOfSync:**
-
-- Check for ignoreDifferences on ESO-managed resources
-- ESO adds default fields that cause drift
-
-## Recovery
-
-If bootstrap fails mid-way, delete and retry:
-
-```text
-mcp__plugin_omni-scale_kubernetes__kubectl_delete(manifest: "https://raw.githubusercontent.com/basher83/mothership-gitops/main/bootstrap/bootstrap.yaml")
-```
-
-Fix the issue, then reapply Phase 3.
+Bootstrap complete when all ArgoCD apps show Synced/Healthy.

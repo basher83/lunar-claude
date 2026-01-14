@@ -32,11 +32,13 @@ skills/<skill-name>/
 Triggers should be **concrete and actionable**, not vague:
 
 **Good triggers:**
+
 - "When creating a new Ansible role"
 - "When configuring Proxmox cloud-init templates"
 - "When writing PEP 723 inline script metadata"
 
 **Bad triggers:**
+
 - "When working with infrastructure"
 - "When needed"
 - "For Python tasks"

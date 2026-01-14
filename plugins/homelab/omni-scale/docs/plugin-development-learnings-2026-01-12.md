@@ -1,4 +1,5 @@
 # Session Learnings: Omni-Scale Plugin Development
+
 ## Iterative Prompt Engineering for Claude Code Plugins
 
 **Extracted:** 2026-01-12
@@ -10,6 +11,17 @@
 ## Executive Summary
 
 This session refined the omni-scale plugin from over-constrained, prescriptive commands to outcome-focused patterns that let Claude choose appropriate tools. The key breakthrough was discovering that skill auto-triggering fails on cold start but works reliably after context loading via `prime && status`. The session also restructured a bloated 500-line skill into a lean ~100-line operations-first document with progressive disclosure.
+
+**2026-01-14 Update:** Applied outcome-focused pattern to operational commands (disaster-recovery, bootstrap-gitops). Validated pre-flight gate pattern — Claude correctly fails fast when required skill isn't loaded. Added provider restart pre-step for reliability during destructive operations.
+
+**2026-01-14 DR Drill Results:**
+
+- **Duration:** 46m 52s (full DR cycle: destroy → recreate → GitOps bootstrap)
+- **Context usage:** 72% at completion
+- **User interventions:** 1 (env var name correction)
+- **Gates passed:** 3 (destruction confirm, recreation confirm, GitOps confirm)
+- **Issues auto-resolved:** 7 (CNI, ESO, NetworkPolicy, labels, ports, hooks, PodSecurity)
+- **Final state:** 10/13 ArgoCD apps Synced/Healthy (remaining 3 expected conflicts)
 
 ---
 
@@ -24,6 +36,7 @@ The status command went through four iterations, each teaching a distinct lesson
 **Problem observed:** Round 1 specified exact MCP tool calls. Claude followed instructions but `kubectl_get` lacked CRD fields for ArgoCD sync status.
 
 **Prompt change (conceptual shift):**
+
 ```markdown
 # Before (Round 1 - Prescriptive)
 Use mcp__plugin_omni-scale_kubernetes__kubectl_get for:
@@ -49,6 +62,7 @@ Use mcp__plugin_omni-scale_kubernetes__kubectl_get for:
 **Problem observed:** Output was correct but noisy. ArgoCD has many possible states—did Claude need to know all of them?
 
 **Prompt change:**
+
 ```markdown
 # Round 3 - Added value enumeration
 ### ArgoCD Applications
@@ -67,6 +81,7 @@ Use mcp__plugin_omni-scale_kubernetes__kubectl_get for:
 **Problem observed:** Value enumeration was unnecessary—Claude discovers valid values from API responses.
 
 **Prompt change:**
+
 ```markdown
 # Before (Round 3 - Value enumeration)
 ### ArgoCD Applications
@@ -108,7 +123,8 @@ Use mcp__plugin_omni-scale_kubernetes__kubectl_get for:
 > "omnictl cluster status talos-prod-01 already returned all machine states with their health, so the second call provided no additional value."
 
 **Prompt change:**
-```markdown
+
+````markdown
 ## Tool Usage Patterns
 
 ### omnictl
@@ -116,15 +132,17 @@ Use mcp__plugin_omni-scale_kubernetes__kubectl_get for:
 **Cluster status (includes machine health):**
 ```bash
 omnictl cluster status <cluster-name>
-```
+````
 
 **List machines (if needed separately):**
+
 ```bash
 omnictl get machines -l omni.sidero.dev/cluster=<cluster-name>
 ```
 
 Note: `--cluster` flag does not exist. Use label selector `-l` instead.
-```
+
+```text
 
 **Resulting behavior:** After adding to omni-prime, status checks stopped using incorrect `--cluster` flag.
 
@@ -156,6 +174,7 @@ Note: `--cluster` flag does not exist. Use label selector `-l` instead.
 **Problem observed:** User discovered spec said 2 workers but actual deployment had 3. Stale spec would have produced incorrect plan.
 
 **Prompt change:**
+
 ```markdown
 # Before
 0. **Readiness Check** (output before proceeding):
@@ -195,6 +214,7 @@ Note: `--cluster` flag does not exist. Use label selector `-l` instead.
 | Full | `mcp__plugin_omni-scale_kubernetes__*` | ✓ |
 
 **Fix applied:**
+
 ```markdown
 # BEFORE (incorrect)
 allowed-tools: Bash(omnictl:*), mcp__kubernetes__*
@@ -253,6 +273,7 @@ Raw provider logs are JSON with extensive metadata. The script filters at source
 | metadata fields | Drop | Provider-internal state, not relevant |
 
 **Pattern:** Extend Claude's capabilities with lightweight custom tooling when:
+
 - Target resource requires multi-hop access (SSH → Docker → logs)
 - Claude repeatedly fails the same discovery path
 - MCP server would be overkill for the use case
@@ -272,7 +293,8 @@ Raw provider logs are JSON with extensive metadata. The script filters at source
 #### Restructure Pattern
 
 **Before (bloated):**
-```
+
+```text
 SKILL.md (500+ lines)
 ├── Architecture Overview (ASCII diagram)
 ├── Provider Configuration (full schema)
@@ -284,7 +306,8 @@ SKILL.md (500+ lines)
 ```
 
 **After (operations-first):**
-```
+
+```text
 SKILL.md (~100 lines)
 ├── Provider Operations (provider-ctl.py usage)
 ├── Common Tasks (5-line quick reference)
@@ -297,6 +320,7 @@ references/
 ```
 
 **SKILL.md now opens with:**
+
 ```markdown
 ## Provider Operations
 
@@ -320,6 +344,7 @@ The provider runs on Foxtrot LXC (CT 200) — script handles SSH automatically.
 #### Cold Start Failure Analysis
 
 **Test sequence:**
+
 ```bash
 # Cold start — skill NOT triggered
 ❯ view provider logs
@@ -363,6 +388,7 @@ The provider runs on Foxtrot LXC (CT 200) — script handles SSH automatically.
 **Discovery:** Natural language in `&&` chains doesn't trigger skill matching. Explicit skill invocation (`/omni-scale:skill-name`) works in chains.
 
 **Reliable single-line workflow:**
+
 ```bash
 prime && status && /omni-scale:omni-talos view provider logs
 ```
@@ -371,7 +397,7 @@ prime && status && /omni-scale:omni-talos view provider logs
 
 ### Sleep Enforcement Pattern
 
-**Note:** Pattern validated through iteration; source command (disaster-recovery) not production-tested.
+**Note:** Pattern validated through iteration. Pre-flight gate tested 2026-01-14 — works correctly.
 
 #### Failure Observed
 
@@ -407,6 +433,376 @@ Claude removed `Bash(sleep:*)` from allowed-tools during a command revision, bre
 3. Document rationale (why the wait is needed)
 4. Specify adaptive backoff rules
 5. Set maximum wait time to prevent infinite loops
+
+---
+
+### Pre-flight Gate Pattern
+
+**Validated:** 2026-01-14
+
+#### Problem Observed
+
+Destructive commands (disaster-recovery) require skill knowledge to execute correctly. Running DR cold produces incorrect omnictl syntax, wrong tool choices, and wasted context on discovery loops.
+
+#### Solution: Skill Dependency Gate
+
+````markdown
+## Pre-flight Gate
+
+**STOP** if omni-talos skill is not loaded.
+
+Check: Do you have knowledge of `provider-ctl.py` and the provider operations table? If not, instruct user:
+
+```text
+Required setup not complete. Run this chain first:
+  /omni-scale:omni-prime && /omni-scale:status && /omni-scale:omni-talos
+Then re-run /omni-scale:disaster-recovery
+```
+````
+
+#### Test Result
+
+```bash
+❯ /omni-scale:disaster-recovery
+
+# Claude response (cold start):
+"Required setup not complete. Run this chain first:
+  /omni-scale:omni-prime && /omni-scale:status && /omni-scale:omni-talos
+Then re-run /omni-scale:disaster-recovery"
+```
+
+**Principle demonstrated:** Claude can self-check for loaded skill knowledge. Gate on specific artifacts (provider-ctl.py knowledge, operations table) rather than abstract "is skill loaded" questions.
+
+---
+
+### Outcome-Focused Operational Commands
+
+**Validated:** 2026-01-14
+
+#### Problem Observed
+
+disaster-recovery.md and bootstrap-gitops.md used prescriptive bash commands that went stale. Example: `omnictl get machines --cluster talos-prod-01` — the `--cluster` flag doesn't exist.
+
+#### Refactor Pattern
+
+**Before (prescriptive, 208 lines):**
+
+````markdown
+### Phase 2: Destroy Cluster
+
+1. Delete cluster:
+
+   ```bash
+   omnictl cluster template delete \
+     --cluster talos-prod-01 \
+     --destroy-disconnected-machines \
+     ~/dev/infra-as-code/Omni-Scale/clusters/talos-prod-01.yaml
+   ```
+
+2. Verify deletion:
+
+   ```bash
+   omnictl get machines --cluster talos-prod-01
+   ```
+````
+
+**After (outcome-focused, 94 lines):**
+
+```markdown
+### Phase 2: Destroy Cluster
+
+**Outcome:** Cluster deleted, no talos VMs remain on Proxmox.
+
+Delete cluster using `omnictl cluster template delete` with `--destroy-disconnected-machines` flag.
+
+**Poll:** Verify no machines remain via omnictl. <!-- REQUIRED: sleep 30s between attempts -->
+```
+
+#### Key Changes
+
+| Aspect | Before | After |
+|--------|--------|-------|
+| Command syntax | Explicit bash blocks | Describe intent, trust skill knowledge |
+| Tool selection | Hardcoded tools | Claude chooses based on loaded context |
+| Polling | Implicit | Outcome + HTML comment enforcement |
+| Line count | 208 (DR), 111 (bootstrap) | 94 (DR), 62 (bootstrap) |
+
+**Principle demonstrated:** If pre-flight confirms skill loaded, trust Claude to use correct commands from skill knowledge. Commands should define *what* outcome is needed, not *how* to achieve it.
+
+---
+
+### Provider Restart Pre-Step Pattern
+
+**Validated:** 2026-01-14
+
+#### Problem Observed
+
+Omni provider state can drift from actual Proxmox VM state. During DR, if provider isn't actively watching, cluster destruction may not properly trigger VM cleanup.
+
+#### Solution: Restart Before Destructive Operations
+
+```markdown
+### Phase 2: Destroy Cluster
+
+**Outcome:** Cluster deleted, no talos VMs remain on Proxmox.
+
+**Pre-step:** Restart provider via `${CLAUDE_PLUGIN_ROOT}/skills/omni-talos/scripts/provider-ctl.py --restart` to ensure it's listening before destruction.
+```
+
+**Rationale:** Provider restart is cheap (seconds) and guarantees fresh state. Better to restart proactively than debug state drift after failed destruction.
+
+**Pattern:** For multi-system operations where state synchronization matters, restart the coordination layer first.
+
+---
+
+### GitOps CNI Bootstrap Chicken-and-Egg
+
+**Discovered:** 2026-01-14 (DR drill)
+
+#### Problem Observed
+
+Bootstrap sequence failed with double chicken-and-egg:
+
+1. bootstrap.yaml contains ArgoCD Application CRs → requires ArgoCD CRDs
+2. ArgoCD pods need CNI to schedule → nodes NotReady without CNI
+3. CNI (Cilium) managed by ArgoCD → can't deploy without ArgoCD running
+4. Deadlock
+
+#### Current Workaround (Claude adapted on the fly)
+
+1. Install ArgoCD base manifests (creates CRDs)
+2. Observe pods Pending (no CNI)
+3. Manually install Cilium via Helm
+4. Wait for nodes Ready
+5. ArgoCD pods schedule
+6. Apply app-of-apps bootstrap
+
+#### Proper Fix (TODO for bootstrap-gitops)
+
+Encode correct sequence in command:
+
+```text
+Phase 1: Create bootstrap secret (Infisical creds)
+Phase 2: Install Cilium via Helm (breaks CNI deadlock)
+Phase 3: Wait for nodes Ready
+Phase 4: Install ArgoCD base manifests
+Phase 5: Wait for ArgoCD pods Running
+Phase 6: Apply app-of-apps bootstrap
+Phase 7: Poll for all apps Synced/Healthy
+```
+
+**Also fix:** Env var names are wrong in current command:
+
+```text
+Wrong:   INFISICAL_CLIENT_ID / INFISICAL_CLIENT_SECRET
+Correct: INFISICAL_UNIVERSAL_AUTH_CLIENT_ID / INFISICAL_UNIVERSAL_AUTH_CLIENT_SECRET
+```
+
+**Principle demonstrated:** GitOps-managed CNI requires manual bootstrap to break the scheduling deadlock. Commands should encode this sequence, not assume ArgoCD can self-bootstrap on a fresh cluster.
+
+---
+
+### ArgoCD Default Manifests Issues
+
+**Discovered:** 2026-01-14 (DR drill)
+
+The default ArgoCD manifests (`argoproj/argo-cd/stable/manifests/install.yaml`) have multiple issues on fresh cluster bootstrap:
+
+#### Issue 1: NetworkPolicy Blocking
+
+Default manifests include restrictive NetworkPolicies that block internal communication.
+
+**Symptom:** Apps stuck in Unknown/OutOfSync, logs show "connection error: operation not permitted"
+
+**Fix:** Delete NetworkPolicies after install:
+
+```bash
+kubectl delete networkpolicy --all -n argocd
+```
+
+**Better fix:** Use Helm with `--set networkPolicy.enabled=false` or strip policies from manifest.
+
+#### Issue 2: Label Mismatch (Endpoint Resolution)
+
+Service selectors expect labels that pods don't have.
+
+**Symptom:** `kubectl get endpoints argocd-repo-server` shows `<none>`
+
+**Root cause:** Service expects `app.kubernetes.io/instance: argocd`, pod missing it.
+
+**Fix:** Patch deployment:
+
+```bash
+kubectl patch deployment argocd-repo-server -n argocd --type='json' \
+  -p='[{"op": "add", "path": "/spec/template/metadata/labels/app.kubernetes.io~1instance", "value": "argocd"}]'
+```
+
+#### Issue 3: Port Naming Mismatch (EndpointSlice)
+
+Kubernetes 1.35+ EndpointSlices require named ports to match service port names.
+
+**Symptom:** EndpointSlice shows `ports: null`, connections fail.
+
+**Root cause:** Container port unnamed, service expects named port.
+
+**Fix:** Patch deployment to name the port:
+
+```bash
+kubectl patch deployment argocd-repo-server -n argocd --type='json' \
+  -p='[{"op": "replace", "path": "/spec/template/spec/containers/0/ports/0/name", "value": "tcp-repo-server"}]'
+```
+
+**Recommendation:** Use Helm chart instead of raw manifests — labels and ports are consistent.
+
+---
+
+### PodSecurity Labels for Privileged Workloads
+
+**Discovered:** 2026-01-14 (DR drill)
+
+Kubernetes 1.35 has stricter PodSecurity defaults. Workloads requiring privileged access fail silently.
+
+**Affected namespaces:**
+
+- `longhorn-system` — storage requires privileged
+- `netdata` — host metrics requires privileged
+- Any namespace running DaemonSets with host access
+
+**Symptom:** DaemonSet shows `DESIRED: 3, READY: 0`, pods don't schedule.
+
+**Fix:** Label namespace before deploying:
+
+```bash
+kubectl label namespace <namespace> \
+  pod-security.kubernetes.io/enforce=privileged \
+  pod-security.kubernetes.io/enforce-version=latest
+```
+
+**Bootstrap integration:** Add to namespace creation or use Helm values:
+
+```yaml
+namespaceOverride:
+  labels:
+    pod-security.kubernetes.io/enforce: privileged
+```
+
+---
+
+### Helm Pre-Install Hook Chicken-and-Egg
+
+**Discovered:** 2026-01-14 (DR drill, Longhorn)
+
+Helm charts with pre-install/pre-upgrade hooks that depend on chart-created resources deadlock on fresh install.
+
+**Example:** Longhorn pre-upgrade job requires ServiceAccount that the chart creates.
+
+**Symptom:** Job stuck in Pending, sync never completes.
+
+**Fix:** Install with `--no-hooks`:
+
+```bash
+helm install longhorn longhorn/longhorn \
+  --namespace longhorn-system \
+  --no-hooks
+```
+
+**Charts with this issue:**
+
+- Longhorn (pre-upgrade hook)
+- Potentially others with admission webhooks or pre-flight checks
+
+**Pattern:** Fresh install should skip hooks, subsequent upgrades can use them.
+
+---
+
+### Stale ArgoCD Error Cache
+
+**Discovered:** 2026-01-14 (DR drill)
+
+ArgoCD caches operation errors. After fixing underlying issues, apps still show old errors.
+
+**Symptom:** Network fixed, but apps show "connection error" from before the fix.
+
+**Fix:** Restart application controller:
+
+```bash
+kubectl rollout restart statefulset argocd-application-controller -n argocd
+```
+
+Or clear operation state:
+
+```bash
+kubectl patch application <app> -n argocd --type merge \
+  -p '{"status":{"operationState":null}}'
+```
+
+**Pattern:** After infrastructure fixes, restart ArgoCD components to clear cached errors.
+
+---
+
+### MCP Kubernetes Tools Have Separate Kubeconfig
+
+**Discovered:** 2026-01-14 (DR drill)
+
+MCP kubernetes server runs with its own kubeconfig, separate from `~/.kube/config`.
+
+**Symptom:** MCP tools work with context `omni-talos-prod-01-kubeconfig-mcp-sa`,
+but local kubectl fails with "context does not exist".
+
+**Root cause:** MCP server configured with dedicated service account kubeconfig
+(scoped permissions). Local kubectl has different contexts (`omni-talos-prod-01`).
+
+**Pattern:** When falling back from MCP to CLI:
+
+- MCP context: `omni-talos-prod-01-kubeconfig-mcp-sa`
+- Local kubectl context: `omni-talos-prod-01`
+
+Don't assume context names match between MCP and local kubectl.
+
+---
+
+### ArgoCD Selector Immutability (Manual → Helm Migration)
+
+**Discovered:** 2026-01-14 (DR drill)
+
+Transitioning from manual ArgoCD install to helm-managed fails due to
+immutable selectors.
+
+**Symptom:** ArgoCD app sync fails with "field is immutable" errors.
+
+**Root cause:** Manual install uses different label selectors than helm chart.
+Kubernetes forbids selector changes on existing Deployments/StatefulSets.
+
+**Fix:** Delete ArgoCD deployments before letting ArgoCD app sync:
+
+```bash
+kubectl delete deployment -n argocd --all
+kubectl delete statefulset -n argocd --all
+# Then sync argocd app
+```
+
+**Risk:** ArgoCD briefly unavailable during recreation.
+
+**Recommendation:** Start with helm from the beginning on fresh clusters to
+avoid migration pain.
+
+---
+
+### Post-DR: External Access Restoration (Manual)
+
+**Note:** Not part of automated DR — user-specific setup.
+
+**Before redeploying apps:**
+
+- **Tailscale dashboard** — Remove old devices (e.g., `talos-prod-operator`) before GitOps deploys Tailscale operator. Otherwise new operator registers as `talos-prod-operator-1` and old entry persists.
+
+**After DR completes:**
+
+- **Omni service accounts** — Freelens, kubectl MCP, CI/CD tooling (tokens have old cluster UUID)
+- **Scoped kubeconfigs** — regenerate from new SAs
+- **Update tool configs** — point to new contexts/creds
+
+These external resources aren't managed by cluster template sync — they persist across cluster destruction and need manual cleanup/recreation.
 
 ---
 
@@ -485,6 +881,7 @@ The meta-lesson: prompt engineering for Claude Code plugins is about removing ob
 ### Status Command: Dimension Framing
 
 **Terminal showing before/after:**
+
 ```diff
 - ### ArgoCD Applications
 - - Sync status: Synced, OutOfSync, Unknown
@@ -506,21 +903,24 @@ The meta-lesson: prompt engineering for Claude Code plugins is about removing ob
 ### omni-prime: omnictl Syntax Fix
 
 **Added after repeated `--cluster` failures:**
-```markdown
+
+````markdown
 ### omnictl
 
 **Cluster status (includes machine health):**
 ```bash
 omnictl cluster status <cluster-name>
-```
+````
 
 **List machines (if needed separately):**
+
 ```bash
 omnictl get machines -l omni.sidero.dev/cluster=<cluster-name>
 ```
 
 Note: `--cluster` flag does not exist. Use label selector `-l` instead.
-```
+
+```text
 
 ### omni-prime: Operational Pattern
 
@@ -537,6 +937,7 @@ When an infrastructure operation fails on first attempt:
 ### analyze-spec: Planned vs Actual Validation
 
 **Added to Readiness Check:**
+
 ```markdown
 - **Planned vs Actual:** Compare any planned counts/values against
   actual_distribution, exit_criteria, or live cluster state.
@@ -546,6 +947,7 @@ When an infrastructure operation fails on first attempt:
 ### Skill Restructure: Operations First
 
 **SKILL.md now opens with:**
+
 ```markdown
 ## Provider Operations
 
@@ -563,6 +965,7 @@ The provider runs on Foxtrot LXC (CT 200) — script handles SSH automatically.
 ### MCP Tool Naming Fix
 
 **Before/after in allowed-tools:**
+
 ```markdown
 # BEFORE (tools fail to resolve)
 allowed-tools: Bash(omnictl:*), mcp__kubernetes__*
@@ -574,11 +977,64 @@ allowed-tools: Bash(omnictl:*), mcp__plugin_omni-scale_kubernetes__*
 ### Sleep Enforcement Gate
 
 **Added to polling sections:**
+
 ```markdown
 1. Wait 30 seconds <!-- REQUIRED - do not skip this sleep -->
 2. Check status
 3. If not complete, wait 60 seconds <!-- REQUIRED - increases on retry -->
 ```
+
+### Disaster Recovery: Outcome-Focused Refactor (2026-01-14)
+
+**Before (prescriptive, explicit bash):**
+
+````markdown
+### Phase 2: Destroy Cluster
+
+1. Delete cluster:
+
+   ```bash
+   omnictl cluster template delete \
+     --cluster talos-prod-01 \
+     --destroy-disconnected-machines \
+     ~/dev/infra-as-code/Omni-Scale/clusters/talos-prod-01.yaml
+   ```
+
+2. Verify deletion:
+
+   ```bash
+   omnictl get machines --cluster talos-prod-01  # BUG: --cluster flag doesn't exist
+   ```
+
+3. If machines still present, wait 30 seconds and check again
+````
+
+**After (outcome-focused, trust skill knowledge):**
+
+````markdown
+### Phase 2: Destroy Cluster
+
+**Outcome:** Cluster deleted, no talos VMs remain on Proxmox.
+
+**Pre-step:** Restart provider via
+`${CLAUDE_PLUGIN_ROOT}/skills/omni-talos/scripts/provider-ctl.py --restart`
+to ensure it's listening before destruction.
+
+Delete cluster using `omnictl cluster template delete` with
+`--destroy-disconnected-machines` flag. Cluster spec at
+`~/dev/infra-as-code/Omni-Scale/clusters/talos-prod-01.yaml`.
+
+**Poll:** Verify no machines remain via omnictl.
+<!-- REQUIRED: sleep 30s between attempts -->
+
+- Max wait: 10 min
+- After 3 attempts, increase interval to 60s
+- On timeout: consult omni-talos `references/debugging.md`
+````
+
+**Key insight:** The `--cluster` bug proves prescriptive commands go stale.
+Outcome-focused commands survive because Claude uses current skill knowledge
+for correct syntax.
 
 ---
 
@@ -596,3 +1052,15 @@ allowed-tools: Bash(omnictl:*), mcp__plugin_omni-scale_kubernetes__*
 | MCP tool naming requires full format | MCP compliance audit | HIGH | `mcp__plugin_<plugin>_<server>__<tool>` pattern |
 | Filter logs at source for context preservation | provider-ctl.py | HIGH | Same principle as MCP—serve only what Claude needs |
 | Sleep requires explicit enforcement | DR iterations | HIGH | Inline comment gates + allowed-tools + backoff rules |
+| Pre-flight gate on skill knowledge | DR gate test | HIGH | Check for specific artifacts, not abstract "is loaded" |
+| Outcome-focused commands trust skill | DR/bootstrap refactor | HIGH | If gate passes, Claude has the knowledge — don't repeat it |
+| Restart coordination layer pre-step | DR provider issue | MEDIUM | Cheap restart beats debugging state drift |
+| CNI must install before ArgoCD | DR bootstrap | HIGH | GitOps-managed CNI creates scheduling deadlock |
+| ESO operator before ESO app | DR bootstrap | HIGH | CRs need CRDs from operator first |
+| ArgoCD raw manifests have issues | DR bootstrap | HIGH | Use Helm or patch labels/ports/policies |
+| PodSecurity labels for privileged | DR bootstrap | HIGH | K8s 1.35 blocks privileged pods by default |
+| Helm --no-hooks for fresh install | DR Longhorn | HIGH | Hook dependencies on chart resources deadlock |
+| Clear ArgoCD cache after fixes | DR debugging | MEDIUM | Restart controller to drop stale errors |
+| External state needs manual cleanup | DR post-steps | MEDIUM | Tailscale devices, Omni SAs persist across DR |
+| MCP/CLI kubeconfig contexts differ | DR fallback | MEDIUM | Don't assume context names match |
+| Selector immutability blocks migration | ArgoCD manual→helm | HIGH | Delete resources before helm takeover |

@@ -183,31 +183,6 @@ constraints:
     resolution: "helm install argocd argo/argo-cd --set global.networkPolicy.create=false"
     discovered: "2026-01-14"
 
-  tailscale_cleanup_before_bootstrap:
-    description: "Remove old Tailscale devices before deploying operator"
-    severity: "hard-requirement"
-    rationale: "Old devices persist in Tailscale admin - new operator registers as <name>-1"
-    resolution: "Pre-bootstrap gate: confirm cleanup in Tailscale dashboard"
-    discovered: "2026-01-14"
-
-  omni_sa_recreation_post_dr:
-    description: "Scoped Omni service accounts need recreation after DR"
-    severity: "documentation"
-    rationale: "SA tokens contain cluster UUID - invalid after cluster recreation"
-    affected: ["freelens-sa", "mcp-sa"]
-    resolution: "omnictl serviceaccount delete <name> && omnictl serviceaccount create <name> --role=<role> --use-user-role"
-    discovered: "2026-01-14"
-
-  mcp_cli_kubeconfig_contexts:
-    description: "MCP kubernetes tools use different context name than local kubectl"
-    severity: "documentation"
-    rationale: "MCP uses dedicated service account kubeconfig"
-    context_mapping:
-      mcp: "omni-talos-prod-01-kubeconfig-mcp-sa"
-      local: "omni-talos-prod-01"
-    resolution: "When falling back from MCP to CLI, use correct context name"
-    discovered: "2026-01-14"
-
 ---
 # PHASES
 

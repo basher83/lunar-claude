@@ -108,4 +108,22 @@ Execute `/omni-scale:bootstrap-gitops` procedure.
 
 Manually sync ArgoCD HA after Longhorn is healthy.
 
-DR complete when all ArgoCD apps show Synced/Healthy.
+### Phase 7: Recreate Scoped Service Accounts
+
+**Outcome:** Freelens and MCP service accounts functional with new cluster.
+
+Old SA tokens contain the previous cluster UUID and are now invalid. Recreate each:
+
+```bash
+# Freelens SA
+omnictl serviceaccount delete freelens-sa
+omnictl serviceaccount create freelens-sa --role=Reader --use-user-role
+
+# MCP SA (for kubernetes MCP server)
+omnictl serviceaccount delete mcp-sa
+omnictl serviceaccount create mcp-sa --role=Reader --use-user-role
+```
+
+Update kubeconfig files that reference these SAs.
+
+DR complete when all ArgoCD apps show Synced/Healthy and SAs are functional.

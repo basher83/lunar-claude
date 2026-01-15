@@ -149,6 +149,65 @@ constraints:
                       port:
                         number: 80
 
+  # DR Drill Round 1 (2026-01-14) - Bootstrap Sequence Constraints
+
+  cni_before_argocd:
+    description: "CNI must be installed via Helm BEFORE ArgoCD"
+    severity: "hard-requirement"
+    rationale: "GitOps-managed CNI creates scheduling deadlock - ArgoCD pods need CNI to schedule, CNI needs ArgoCD to deploy"
+    resolution: "Install Cilium via Helm directly, wait for nodes Ready, then install ArgoCD"
+    discovered: "2026-01-14"
+
+  eso_crd_ordering:
+    description: "ESO operator must be installed BEFORE ESO app syncs"
+    severity: "hard-requirement"
+    rationale: "ESO app contains ClusterSecretStore CRs - CRDs must exist first"
+    resolution: "Install ESO operator via Helm with installCRDs=true before app-of-apps"
+    discovered: "2026-01-14"
+
+  longhorn_no_hooks_fresh_install:
+    description: "Fresh Longhorn install requires --no-hooks flag"
+    severity: "hard-requirement"
+    rationale: "Helm pre-upgrade hooks require ServiceAccount that chart creates - chicken-and-egg on fresh install"
+    resolution: "helm install longhorn ... --no-hooks (subsequent upgrades can use hooks)"
+    discovered: "2026-01-14"
+
+  argocd_helm_not_raw_manifests:
+    description: "ArgoCD must be installed via Helm, not raw manifests"
+    severity: "hard-requirement"
+    rationale: |
+      Raw manifests have multiple issues:
+      - NetworkPolicies block internal traffic
+      - Label mismatches break endpoint resolution
+      - Port naming mismatches break EndpointSlice
+    resolution: "helm install argocd argo/argo-cd --set global.networkPolicy.create=false"
+    discovered: "2026-01-14"
+
+  tailscale_cleanup_before_bootstrap:
+    description: "Remove old Tailscale devices before deploying operator"
+    severity: "hard-requirement"
+    rationale: "Old devices persist in Tailscale admin - new operator registers as <name>-1"
+    resolution: "Pre-bootstrap gate: confirm cleanup in Tailscale dashboard"
+    discovered: "2026-01-14"
+
+  omni_sa_recreation_post_dr:
+    description: "Scoped Omni service accounts need recreation after DR"
+    severity: "documentation"
+    rationale: "SA tokens contain cluster UUID - invalid after cluster recreation"
+    affected: ["freelens-sa", "mcp-sa"]
+    resolution: "omnictl serviceaccount delete <name> && omnictl serviceaccount create <name> --role=<role> --use-user-role"
+    discovered: "2026-01-14"
+
+  mcp_cli_kubeconfig_contexts:
+    description: "MCP kubernetes tools use different context name than local kubectl"
+    severity: "documentation"
+    rationale: "MCP uses dedicated service account kubeconfig"
+    context_mapping:
+      mcp: "omni-talos-prod-01-kubeconfig-mcp-sa"
+      local: "omni-talos-prod-01"
+    resolution: "When falling back from MCP to CLI, use correct context name"
+    discovered: "2026-01-14"
+
 ---
 # PHASES
 
@@ -193,6 +252,10 @@ phases:
       - "Homarr dashboard added"
       - "Netdata k8sState + CoreDNS collectors configured"
       - "CLAUDE.md updated"
+      - "DR drill round 1 complete (2026-01-14)"
+      - "Bootstrap sequence constraints documented"
+      - "Plugin updated: bootstrap-gitops.md, disaster-recovery.md, debugging.md, omni-prime.md"
+      - "New reference: gitops-bootstrap-issues.md"
 
   phase_6:
     name: "Backup Infrastructure"

@@ -4,7 +4,7 @@
 initiative:
   name: "gitops-bootstrap"
   started: "2026-01-04"
-  status: "phase-5-in-progress"
+  status: "phase-5-complete"
   repository: "mothership-gitops"
   depends_on: "omni-deployment (production-cluster-operational)"
   summary: |
@@ -74,7 +74,12 @@ locked_decisions:
     rationale:
       - "More control than Service annotations (hostname, TLS, path routing)"
       - "Consistent pattern across all exposed services"
-    note: "ArgoCD currently uses Service annotation - migrate to Ingress for consistency"
+    status: "implemented"
+    services:
+      - "argocd.tailfb3ea.ts.net"
+      - "longhorn.tailfb3ea.ts.net"
+      - "homarr.tailfb3ea.ts.net"
+      - "netdata.tailfb3ea.ts.net"
     pattern: |
       apiVersion: networking.k8s.io/v1
       kind: Ingress
@@ -225,7 +230,8 @@ phases:
 
   phase_5:
     name: "Validation & Documentation"
-    status: "in-progress"
+    status: "complete"
+    completed: "2026-01-15"
     tasks:
       - "Run recovery drill: destroy cluster via Omni, recreate from spec"
       - "Run bootstrap procedure, verify all services deploy correctly"
@@ -247,12 +253,22 @@ phases:
       - "New reference: gitops-bootstrap-issues.md"
       - "DR drill round 2 complete (2026-01-15): 48m22s, 50% context, 0 interventions"
       - "Cilium/Talos configuration constraint added"
-      - "DR drill round 3 complete (2026-01-15): 43m38s, 53% context, 1 intervention (SSH vs skill)"
+      - "ArgoCD Ingress added (argocd-ingress app, wave 4)"
+      - "Longhorn Ingress added to apps/longhorn/"
+      - "ArgoCD HA synced with Redis HA (3 replicas)"
+      - "mothership-gitops README updated with full bootstrap procedure"
+    known_issues:
+      - issue: "ArgoCD duplicate pods after HA upgrade"
+        description: "Both argocd-* (non-HA) and argocd-ha-helm-* (HA) pods running"
+        cause: "HA Helm chart uses different release name, doesn't replace original"
+        resolution: "Delete original argocd app from bootstrap.yaml or consolidate"
+        severity: "low"
+        deferred_to: "phase_6"
 
   phase_6:
     name: "Backup Infrastructure"
-    status: "not-started"
-    depends_on: ["phase_5"]
+    status: "ready"
+    depends_on: ["phase_5 (complete)"]
     tasks:
       - "Deploy MinIO on TrueNAS Scale"
       - "Create Longhorn backup bucket and IAM policy"

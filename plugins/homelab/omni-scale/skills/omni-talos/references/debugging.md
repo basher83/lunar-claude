@@ -7,11 +7,13 @@ Common issues and diagnostics for the Omni + Proxmox provider.
 
 ## Current Architecture
 
-| Component | Location | IP |
-|-----------|----------|-----|
-| Omni | Holly (VMID 101, Quantum) | 192.168.10.20 |
+| Component | Host | IP |
+|-----------|------|-----|
+| Omni Hub | VM on Holly (Quantum cluster) | 192.168.10.20 |
 | Proxmox Provider | Foxtrot LXC (CT 200, Matrix) | 192.168.3.10 |
-| Proxmox API | Matrix cluster | 192.168.3.{5,6,7}:8006 |
+| Proxmox API | Matrix cluster nodes | 192.168.3.{5,6,7}:8006 |
+
+**Note:** Holly is a Proxmox node in Quantum cluster. Omni runs in a VM on Holly, not directly on the node.
 
 ## Provider Registration Issues
 
@@ -22,13 +24,10 @@ Common issues and diagnostics for the Omni + Proxmox provider.
 **Checks:**
 
 ```bash
-# Verify provider is running (on Foxtrot LXC)
-ssh omni-provider docker ps
+# Check provider status via script (handles SSH internally)
+${CLAUDE_PLUGIN_ROOT}/skills/omni-talos/scripts/provider-ctl.py --status
 
-# Check provider logs for registration attempts
-ssh omni-provider docker logs omni-provider-proxmox-provider-1 | grep -i register
-
-# Or from omnictl
+# Or via omnictl
 omnictl get infraproviders
 ```
 
@@ -43,8 +42,8 @@ omnictl get infraproviders
 **Checks:**
 
 ```bash
-# Check provider logs for errors (on Foxtrot LXC)
-ssh omni-provider docker logs --tail=50 omni-provider-proxmox-provider-1
+# Check provider logs via script
+${CLAUDE_PLUGIN_ROOT}/skills/omni-talos/scripts/provider-ctl.py --logs
 ```
 
 **Common causes:**
@@ -58,16 +57,6 @@ ssh omni-provider docker logs --tail=50 omni-provider-proxmox-provider-1
 ### CEL Selector Returns Empty
 
 **Symptoms:** Machine provisioning fails with storage-related error.
-
-**Checks:**
-
-```bash
-# On Proxmox node, list storage pools
-pvesh get /storage
-
-# Check storage types
-pvesh get /storage --output-format json | jq '.[] | {storage, type, enabled, active}'
-```
 
 **Common causes:**
 
@@ -112,8 +101,8 @@ storage_selector: name == "vm_ssd"
 **Checks:**
 
 ```bash
-# Check provider logs (on Foxtrot LXC)
-ssh omni-provider docker logs omni-provider-proxmox-provider-1 | grep -i error
+# Check provider logs
+${CLAUDE_PLUGIN_ROOT}/skills/omni-talos/scripts/provider-ctl.py --logs
 
 # Verify MachineClass is recognized
 omnictl get machineclasses
@@ -171,7 +160,7 @@ omnictl get machine <machine-id> -o yaml
 
 ```bash
 # Check cluster status
-omnictl get cluster <cluster-name> -o yaml
+omnictl cluster status <cluster-name>
 
 # Check cluster events
 omnictl get events --cluster <cluster-name>
@@ -191,7 +180,7 @@ omnictl get events --cluster <cluster-name>
 
 ```bash
 # Check machine allocations
-omnictl get machines --cluster <cluster-name>
+omnictl get machines -l omni.sidero.dev/cluster=<cluster-name>
 
 # Verify MachineClass capacity
 omnictl get machineclass <class-name> -o yaml
@@ -221,9 +210,9 @@ omnictl get machineclass <class-name> -o yaml
 
 **Fixes:**
 
-1. Check Omni is running on Holly
-2. Verify Tailscale connectivity
-3. Test URL directly: `curl https://omni.spaceships.work/healthz`
+1. Verify Tailscale connectivity to omni.spaceships.work
+2. Test URL directly: `curl https://omni.spaceships.work/healthz`
+3. If Omni is down, escalate to user (requires infrastructure access)
 
 ## ArgoCD Bootstrap Issues
 
@@ -255,27 +244,15 @@ Quick reference for common issues:
 
 **Fix:** Label namespace with `pod-security.kubernetes.io/enforce=privileged`
 
-## Log Locations
-
-| Component | Location | Command |
-|-----------|----------|---------|
-| Omni | Holly | `ssh holly 'cd /path/to/omni && docker compose logs omni'` |
-| Tailscale sidecar | Holly | `ssh holly 'cd /path/to/omni && docker compose logs omni-tailscale'` |
-| Provider | Foxtrot LXC | `ssh omni-provider docker logs omni-provider-proxmox-provider-1` |
-| Machine logs | Omni UI | Machines → [machine] → Logs |
-
 ## Health Checks
 
-Quick health verification:
+Quick health verification (all Claude-executable):
 
 ```bash
-# Omni services running (on Holly)
-ssh holly 'cd /path/to/omni && docker compose ps'
+# Provider status
+${CLAUDE_PLUGIN_ROOT}/skills/omni-talos/scripts/provider-ctl.py --status
 
-# Provider running (on Foxtrot LXC)
-ssh omni-provider docker ps
-
-# Provider registered
+# Provider registered in Omni
 omnictl get infraproviders
 
 # Machines available
@@ -283,4 +260,7 @@ omnictl get machines
 
 # Clusters healthy
 omnictl get clusters
+
+# Cluster details
+omnictl cluster status <cluster-name>
 ```

@@ -58,6 +58,10 @@ Apply cluster template using `omnictl cluster template sync`.
 - After 3 attempts, increase interval to 60s
 - On timeout: consult omni-talos `references/debugging.md`
 
+**IMPORTANT:** Machines showing `READY: false` is **normal** during bootstrap. This can persist
+for 10+ minutes while etcd forms quorum and Talos configures. Do NOT attempt to troubleshoot
+infrastructure (SSH, logs) — just wait. Only escalate if max wait exceeded.
+
 ### Phase 4: Wait for API
 
 **Outcome:** Kubernetes API available, kubeconfig merged.

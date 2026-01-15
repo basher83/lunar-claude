@@ -247,6 +247,7 @@ phases:
       - "New reference: gitops-bootstrap-issues.md"
       - "DR drill round 2 complete (2026-01-15): 48m22s, 50% context, 0 interventions"
       - "Cilium/Talos configuration constraint added"
+      - "DR drill round 3 complete (2026-01-15): 43m38s, 53% context, 1 intervention (SSH vs skill)"
 
   phase_6:
     name: "Backup Infrastructure"

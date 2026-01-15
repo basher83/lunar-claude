@@ -17,14 +17,22 @@ GitOps-managed CNI creates a scheduling deadlock:
 
 ### Solution
 
-Install Cilium via Helm BEFORE ArgoCD:
+Install Cilium via Helm BEFORE ArgoCD.
+
+**Talos-specific:** Talos disables kube-proxy and uses cgroupv2. Must set:
 
 ```bash
 helm install cilium cilium/cilium \
   --namespace kube-system \
   --set ipam.mode=kubernetes \
-  --set kubeProxyReplacement=false
+  --set kubeProxyReplacement=true \
+  --set k8sServiceHost=<CONTROL_PLANE_IP> \
+  --set k8sServicePort=6443 \
+  --set cgroup.autoMount.enabled=false \
+  --set cgroup.hostRoot=/sys/fs/cgroup
 ```
+
+Get control plane IP: `kubectl get nodes -l node-role.kubernetes.io/control-plane -o jsonpath='{.items[0].status.addresses[?(@.type=="InternalIP")].address}'`
 
 Wait for nodes to show Ready, then proceed with ArgoCD install.
 

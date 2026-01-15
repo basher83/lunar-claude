@@ -45,13 +45,31 @@ If env vars not set, stop and inform user with exact var names needed.
 without CNI, pods can't schedule, ArgoCD can't deploy CNI. Break cycle with manual
 Cilium install.
 
+**Talos requirements:**
+
+- `kubeProxyReplacement=true` — Talos disables kube-proxy
+- `k8sServiceHost` — Must be control plane IP (not ClusterIP)
+- `cgroup` settings — Talos uses cgroupv2 with specific mount paths
+
+Get control plane IP first:
+
+```bash
+kubectl get nodes -l node-role.kubernetes.io/control-plane -o jsonpath='{.items[0].status.addresses[?(@.type=="InternalIP")].address}'
+```
+
+Install with Talos-compatible settings:
+
 ```bash
 helm repo add cilium https://helm.cilium.io/
 helm repo update cilium
 helm install cilium cilium/cilium \
   --namespace kube-system \
   --set ipam.mode=kubernetes \
-  --set kubeProxyReplacement=false
+  --set kubeProxyReplacement=true \
+  --set k8sServiceHost=<CONTROL_PLANE_IP> \
+  --set k8sServicePort=6443 \
+  --set cgroup.autoMount.enabled=false \
+  --set cgroup.hostRoot=/sys/fs/cgroup
 ```
 
 **Poll:** `kubectl get nodes` — wait for all nodes Ready.

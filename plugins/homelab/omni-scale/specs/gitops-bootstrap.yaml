@@ -183,6 +183,20 @@ constraints:
     resolution: "helm install argocd argo/argo-cd --set global.networkPolicy.create=false"
     discovered: "2026-01-14"
 
+  cilium_talos_configuration:
+    description: "Cilium on Talos requires specific configuration"
+    severity: "hard-requirement"
+    rationale: "Talos disables kube-proxy and uses cgroupv2 with specific mount paths"
+    required_values:
+      kubeProxyReplacement: true # Talos has no kube-proxy
+      k8sServiceHost: "<control-plane-ip>" # Must be actual API IP, not ClusterIP
+      k8sServicePort: 6443
+      cgroup:
+        autoMount:
+          enabled: false
+        hostRoot: "/sys/fs/cgroup"
+    discovered: "2026-01-15"
+
 ---
 # PHASES
 
@@ -227,10 +241,12 @@ phases:
       - "Homarr dashboard added"
       - "Netdata k8sState + CoreDNS collectors configured"
       - "CLAUDE.md updated"
-      - "DR drill round 1 complete (2026-01-14)"
+      - "DR drill round 1 complete (2026-01-14): 46m52s, 72% context, 1 intervention"
       - "Bootstrap sequence constraints documented"
       - "Plugin updated: bootstrap-gitops.md, disaster-recovery.md, debugging.md, omni-prime.md"
       - "New reference: gitops-bootstrap-issues.md"
+      - "DR drill round 2 complete (2026-01-15): 48m22s, 50% context, 0 interventions"
+      - "Cilium/Talos configuration constraint added"
 
   phase_6:
     name: "Backup Infrastructure"

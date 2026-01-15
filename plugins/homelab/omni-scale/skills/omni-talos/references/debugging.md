@@ -225,6 +225,36 @@ omnictl get machineclass <class-name> -o yaml
 2. Verify Tailscale connectivity
 3. Test URL directly: `curl https://omni.spaceships.work/healthz`
 
+## ArgoCD Bootstrap Issues
+
+For comprehensive GitOps bootstrap troubleshooting, see `gitops-bootstrap-issues.md`.
+
+Quick reference for common issues:
+
+### NetworkPolicy Blocking
+
+**Symptom:** Apps stuck Unknown/OutOfSync, "connection error: operation not permitted"
+
+**Fix:** Delete NetworkPolicies or use Helm with `networkPolicy.enabled=false`
+
+### Label/Port Mismatches (Raw Manifests)
+
+**Symptom:** `kubectl get endpoints argocd-repo-server` shows `<none>`
+
+**Fix:** Use Helm chart instead of raw manifests, or patch deployments
+
+### Stale Error Cache
+
+**Symptom:** Errors persist after fixing underlying issue
+
+**Fix:** `kubectl rollout restart statefulset argocd-application-controller -n argocd`
+
+### PodSecurity Violations
+
+**Symptom:** DaemonSet `DESIRED: 3, READY: 0`, pods don't schedule
+
+**Fix:** Label namespace with `pod-security.kubernetes.io/enforce=privileged`
+
 ## Log Locations
 
 | Component | Location | Command |

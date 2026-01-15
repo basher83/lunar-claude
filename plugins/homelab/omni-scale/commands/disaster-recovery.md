@@ -78,6 +78,22 @@ Confirm cluster ready with user before GitOps bootstrap.
 
 Use MCP kubernetes tools to verify node status.
 
+**Note:** Nodes will show `NotReady` until CNI is deployed in Phase 6. This is
+expected — the bootstrap-gitops command installs Cilium first.
+
+### Phase 5.5: Pre-Bootstrap Cleanup Gate
+
+**STOP** and use AskUserQuestion to confirm external cleanup:
+
+Before GitOps bootstrap, external state from the old cluster must be cleaned up:
+
+- **Tailscale dashboard:** Remove old devices (e.g., `talos-prod-operator`)
+  Otherwise new operator registers as `talos-prod-operator-1` and old entry persists.
+- **Omni service accounts:** Note that scoped SAs (Freelens, MCP) need recreation
+  after bootstrap (tokens contain old cluster UUID).
+
+Confirm cleanup complete before proceeding to Phase 6.
+
 ### Phase 6: Bootstrap GitOps
 
 **Outcome:** All ArgoCD apps Synced/Healthy.

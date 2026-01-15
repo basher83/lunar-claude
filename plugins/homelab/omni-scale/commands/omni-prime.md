@@ -59,6 +59,22 @@ When an infrastructure operation fails on first attempt:
 2. Skills encode operational knowledge — "how do I access X" is exactly what they're for
 3. Don't guess hostnames, paths, or commands — if it's not documented, ask
 
+## Kubeconfig Context Note
+
+MCP kubernetes tools use a separate kubeconfig with dedicated service account.
+Context names don't match local kubectl:
+
+| Tool | Context Name |
+|------|--------------|
+| MCP kubernetes | `omni-talos-prod-01-kubeconfig-mcp-sa` |
+| Local kubectl | `omni-talos-prod-01` |
+
+When falling back from MCP to CLI, use the correct context:
+
+```bash
+kubectl --context omni-talos-prod-01 get pods
+```
+
 ## Cross-Repo Gotchas
 
 | Issue | Cause | Resolution |
@@ -66,3 +82,4 @@ When an infrastructure operation fails on first attempt:
 | ArgoCD drift on ESO resources | ESO adds default fields | Add `ignoreDifferences` in Application |
 | Pods Pending (privileged workload) | Missing PSA label | `pod-security.kubernetes.io/enforce: privileged` |
 | `mcp__plugin_omni-scale_kubernetes__kubectl_get` lacks CRD status | Basic output, not CRD fields | Use `mcp__plugin_omni-scale_kubernetes__kubectl_generic` with jsonpath or CLI fallback |
+| MCP context not found in CLI | Separate kubeconfigs | Use `omni-talos-prod-01` for local kubectl |

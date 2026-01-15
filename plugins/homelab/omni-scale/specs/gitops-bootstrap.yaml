@@ -241,7 +241,7 @@ phases:
       - "Homarr dashboard added"
       - "Netdata k8sState + CoreDNS collectors configured"
       - "CLAUDE.md updated"
-      - "DR drill round 1 complete (2026-01-14): 46m52s, 72% context, 1 intervention"
+      - "DR drill round 1 complete (2026-01-14): 1h17m23s, 72% context, 1 intervention"
       - "Bootstrap sequence constraints documented"
       - "Plugin updated: bootstrap-gitops.md, disaster-recovery.md, debugging.md, omni-prime.md"
       - "New reference: gitops-bootstrap-issues.md"

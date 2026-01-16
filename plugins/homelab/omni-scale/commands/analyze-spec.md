@@ -1,7 +1,9 @@
 ---
 description: Analyze a spec file and generate a deployment plan (flexible structure)
 allowed-tools: Bash(git:*), Bash(eza:*), Bash(test:*), Read, Write, Glob, Grep, AskUserQuestion
-argument-hint: [spec1.yaml] [spec2.yaml]
+argument-hint:
+  - spec1.yaml
+  - spec2.yaml
 ---
 
 # Analyze Spec

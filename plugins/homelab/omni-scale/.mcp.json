@@ -1,11 +1,13 @@
 {
-  "kubernetes": {
-    "command": "npx",
-    "args": [
-      "mcp-server-kubernetes"
-    ],
-    "env": {
-      "KUBECONFIG_PATH": "${HOME}/.config/kubectl-mcp/mcp.config"
+  "mcpServers": {
+    "kubernetes": {
+      "command": "npx",
+      "args": [
+        "mcp-server-kubernetes"
+      ],
+      "env": {
+        "KUBECONFIG_PATH": "${HOME}/.config/kubectl-mcp/mcp.config"
+      }
     }
   }
 }

@@ -12,18 +12,18 @@ show_env = false
 truncate = true
 
 [tools]
-python = "3.13"
+python = "3.14.2"
 eza = "0.23.0"
 fd = "10.2.0"
 rg = "14.1.1"
 git-cliff = "2.10.1"
 shellcheck = "0.11.0"
-uv = "0.9.13"
-ruff = "0.14.7"
+uv = "0.9.26"
+ruff = "0.14.13"
 # "npm:pyright" = "1.1.407"  # Commented out due to npm registry timeout
-lychee = "0.21.0"
+lychee = "0.22.0"
 prek = "0.2.13"
-"pipx:rumdl" = "0.0.191"
+"pipx:rumdl" = "0.0.218"
 
 [env]
 _.python.venv = { path = ".venv", create = true } # create the venv if it doesn't exist

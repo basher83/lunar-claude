@@ -188,6 +188,19 @@ constraints:
     resolution: "helm install argocd argo/argo-cd --set global.networkPolicy.create=false"
     discovered: "2026-01-14"
 
+  homarr_persistence_config_structure:
+    description: "Homarr Helm chart uses persistence.homarrDatabase, not persistence.database"
+    symptom: "No PVC created, SQLite stored in ephemeral container storage"
+    resolution: |
+      persistence:
+        homarrDatabase:
+          enabled: true
+          storageClassName: longhorn
+          accessMode: ReadWriteOnce
+          size: 1Gi
+    reference: "https://github.com/homarr-labs/charts/blob/dev/charts/homarr/values.yaml"
+    discovered: "2026-01-16"
+
   cilium_talos_configuration:
     description: "Cilium on Talos requires specific configuration"
     severity: "hard-requirement"

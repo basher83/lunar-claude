@@ -695,6 +695,7 @@ def check_mcp_servers(plugin_dir: Path, plugin_data: dict) -> list[str]:
 
     # Load MCP configuration
     mcp_config = None
+    is_external_file = False
 
     if isinstance(inline_mcp, dict):
         mcp_config = inline_mcp
@@ -703,6 +704,7 @@ def check_mcp_servers(plugin_dir: Path, plugin_data: dict) -> list[str]:
         mcp_config, load_errors = load_plugin_json_file(
             plugin_dir, inline_mcp, f"{plugin_name}/mcp"
         )
+        is_external_file = True
         if load_errors:
             errors.extend(load_errors)
             return errors
@@ -711,6 +713,7 @@ def check_mcp_servers(plugin_dir: Path, plugin_data: dict) -> list[str]:
         mcp_config, load_errors = load_plugin_json_file(
             plugin_dir, ".mcp.json", f"{plugin_name}/mcp"
         )
+        is_external_file = True
         if load_errors:
             errors.extend(load_errors)
             return errors
@@ -719,12 +722,19 @@ def check_mcp_servers(plugin_dir: Path, plugin_data: dict) -> list[str]:
         return errors
 
     # Validate MCP server structure
-    if "mcpServers" not in mcp_config:
-        errors.append(f"{plugin_name}: MCP configuration missing 'mcpServers' key")
-        return errors
+    # External files contain direct server definitions, inline configs need mcpServers wrapper
+    if is_external_file:
+        # External file: direct server definitions
+        servers = mcp_config
+    else:
+        # Inline config: must have mcpServers wrapper
+        if "mcpServers" not in mcp_config:
+            errors.append(f"{plugin_name}: MCP configuration missing 'mcpServers' key")
+            return errors
+        servers = mcp_config["mcpServers"]
 
     # Validate each server
-    for server_name, server_config in mcp_config["mcpServers"].items():
+    for server_name, server_config in servers.items():
         if "command" not in server_config:
             errors.append(f"{plugin_name}: MCP server '{server_name}' missing 'command' field")
 

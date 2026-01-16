@@ -156,8 +156,6 @@ Use this checklist when:
       npm run lint
       ```
 
-    ```
-
 - [ ] **Code style preferences documented**
   - Language-specific formatting rules
   - Naming conventions (files, variables, functions, classes)
@@ -165,6 +163,7 @@ Use this checklist when:
   - Line length limits
   - **Standard:** memory.md line 80 - "Document code style preferences and naming conventions"
   - **Example:**
+
     ```markdown
     ## Code Style
 

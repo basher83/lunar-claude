@@ -440,12 +440,29 @@ def validate_markdown_frontmatter(
 
     frontmatter_text = parts[1].strip()
 
-    # Parse YAML frontmatter
+    # Parse YAML frontmatter with lenient handling for argument-hint
     try:
         frontmatter = yaml.safe_load(frontmatter_text)
     except yaml.YAMLError as e:
-        errors.append(f"{plugin_name}/{rel_path}: Invalid YAML in frontmatter\n  {e}")
-        return errors
+        # Try to fix common issues with argument-hint field
+        # The argument-hint field may contain bracket notation that's not valid YAML
+        # e.g., "argument-hint: [spec1.yaml] [spec2.yaml]"
+        # We'll try to quote such values to make them valid YAML strings
+        import re
+        fixed_text = frontmatter_text
+        # Match lines like "argument-hint: [something] [something]" and quote the value
+        fixed_text = re.sub(
+            r'^(argument-hint:\s*)(\[.+\].*)$',
+            r'\1"\2"',
+            fixed_text,
+            flags=re.MULTILINE
+        )
+        try:
+            frontmatter = yaml.safe_load(fixed_text)
+        except yaml.YAMLError:
+            # If it still fails, report the original error
+            errors.append(f"{plugin_name}/{rel_path}: Invalid YAML in frontmatter\n  {e}")
+            return errors
 
     # Ensure frontmatter is a dictionary
     if not isinstance(frontmatter, dict):

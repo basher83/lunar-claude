@@ -114,4 +114,7 @@ Based on production 3-node Proxmox cluster:
 
 ## Version History
 
+- 1.0.3 - Refactored SKILL.md following beyond-mcp-v2 research (67% reduction to 96 lines, unique cluster-specific triggers, surfaced all tools directly)
+- 1.0.2 - Documentation improvements and tooling updates
+- 1.0.1 - Bug fixes and performance improvements
 - 1.0.0 - Initial release with comprehensive Proxmox VE management guidance

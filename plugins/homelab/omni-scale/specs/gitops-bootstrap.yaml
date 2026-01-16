@@ -191,27 +191,15 @@ constraints:
   homarr_persistence_config_structure:
     description: "Homarr Helm chart uses persistence.homarrDatabase, not persistence.database"
     symptom: "No PVC created, SQLite stored in ephemeral container storage"
-    resolution: |
-      persistence:
-        homarrDatabase:
-          enabled: true
-          storageClassName: longhorn
-          accessMode: ReadWriteOnce
-          size: 1Gi
-    reference: "https://github.com/homarr-labs/charts/blob/dev/charts/homarr/values.yaml"
+    cause: "Chart uses non-standard persistence key; incorrect values silently ignored"
+    resolution: "Use persistence.homarrDatabase.enabled - see mothership-gitops CLAUDE.md"
     discovered: "2026-01-16"
 
   argocd_redis_ha_persistence:
-    description: "ArgoCD redis-ha subchart requires explicit persistentVolume.enabled"
-    symptom: "Redis using emptyDir, data lost on pod restart"
-    resolution: |
-      redis-ha:
-        enabled: true
-        persistentVolume:
-          enabled: true
-          storageClass: longhorn
-          size: 1Gi
-    reference: "https://github.com/DandyDeveloper/charts/tree/master/charts/redis-ha"
+    description: "ArgoCD redis-ha subchart defaults to emptyDir, not persistent storage"
+    symptom: "Redis data lost on pod restart"
+    cause: "redis-ha.persistentVolume.enabled defaults to false"
+    resolution: "Enable redis-ha.persistentVolume - see mothership-gitops CLAUDE.md"
     discovered: "2026-01-16"
 
   cilium_talos_configuration:

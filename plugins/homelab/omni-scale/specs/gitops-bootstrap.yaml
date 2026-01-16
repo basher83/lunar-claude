@@ -201,6 +201,19 @@ constraints:
     reference: "https://github.com/homarr-labs/charts/blob/dev/charts/homarr/values.yaml"
     discovered: "2026-01-16"
 
+  argocd_redis_ha_persistence:
+    description: "ArgoCD redis-ha subchart requires explicit persistentVolume.enabled"
+    symptom: "Redis using emptyDir, data lost on pod restart"
+    resolution: |
+      redis-ha:
+        enabled: true
+        persistentVolume:
+          enabled: true
+          storageClass: longhorn
+          size: 1Gi
+    reference: "https://github.com/DandyDeveloper/charts/tree/master/charts/redis-ha"
+    discovered: "2026-01-16"
+
   cilium_talos_configuration:
     description: "Cilium on Talos requires specific configuration"
     severity: "hard-requirement"

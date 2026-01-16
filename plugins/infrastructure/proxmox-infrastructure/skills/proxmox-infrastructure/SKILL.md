@@ -1,6 +1,6 @@
 ---
 name: proxmox-infrastructure
-description: Manage the Matrix/Virgo-Core Proxmox VE cluster (nodes Foxtrot, Golf, Hotel - MINISFORUM MS-A2 with AMD Ryzen 9 9955HX). Covers VM template creation, cloud-init configuration, VLAN-aware bridging, CEPH storage management, Proxmox API automation via Python (proxmoxer) and Ansible (community.general.proxmox), cluster health monitoring, and QEMU guest agent integration. Use when working with THIS specific Proxmox cluster, deploying VMs with Terraform/Ansible, troubleshooting CEPH storage, or configuring multi-VLAN networking on vmbr0/vmbr1/vmbr2.
+description: Manage the Matrix/Virgo-Core Proxmox VE cluster (nodes Foxtrot, Golf, Hotel - MINISFORUM MS-A2 with AMD Ryzen 9 9955HX). Covers VM provisioning, VLAN networking, CEPH storage, and automation via Python (proxmoxer), Ansible (community.general.proxmox), and Terraform (Telmate/proxmox).
 ---
 
 # Proxmox Infrastructure: Matrix/Virgo-Core Cluster

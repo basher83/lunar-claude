@@ -230,29 +230,23 @@ kubectl delete statefulset -n argocd --all
 
 ---
 
-## MCP vs CLI Kubeconfig Contexts
+## CLI Fallback Context
 
 ### Problem
 
-MCP kubernetes tools use a separate kubeconfig with dedicated service account.
-Context names don't match local kubectl.
+MCP kubernetes tools fail and you need CLI fallback, but `kubectl` uses a different context.
 
-**Symptom:** MCP tools work, but CLI fallback fails with "context not found".
-
-### Context Mapping
-
-| Tool | Context Name |
-|------|--------------|
-| MCP kubernetes | `omni-talos-prod-01-kubeconfig-mcp-sa` |
-| Local kubectl | `omni-talos-prod-01` |
+**Symptom:** CLI fallback fails with "context not found".
 
 ### Solution
 
-When falling back from MCP to CLI, use the correct context:
+For CLI fallback, specify the context explicitly:
 
 ```bash
 kubectl --context omni-talos-prod-01 get pods
 ```
+
+**Note:** Do NOT pass context to MCP tools — they handle kubeconfig internally.
 
 ---
 

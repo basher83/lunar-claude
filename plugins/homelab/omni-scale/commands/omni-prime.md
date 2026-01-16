@@ -59,21 +59,15 @@ When an infrastructure operation fails on first attempt:
 2. Skills encode operational knowledge — "how do I access X" is exactly what they're for
 3. Don't guess hostnames, paths, or commands — if it's not documented, ask
 
-## Kubeconfig Context Note
+## CLI Fallback Context
 
-MCP kubernetes tools use a separate kubeconfig with dedicated service account.
-Context names don't match local kubectl:
-
-| Tool | Context Name |
-|------|--------------|
-| MCP kubernetes | `omni-talos-prod-01-kubeconfig-mcp-sa` |
-| Local kubectl | `omni-talos-prod-01` |
-
-When falling back from MCP to CLI, use the correct context:
+When MCP kubernetes tools fail and you need CLI fallback, specify the context:
 
 ```bash
 kubectl --context omni-talos-prod-01 get pods
 ```
+
+Do NOT pass context to MCP tools — they handle kubeconfig internally.
 
 ## Cross-Repo Gotchas
 

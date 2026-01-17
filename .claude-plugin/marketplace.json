@@ -155,6 +155,17 @@
       }
     },
     {
+      "name": "adr-assistant",
+      "source": "./plugins/homelab/adr-assistant",
+      "description": "Human-in-the-loop Architecture Decision Record workflow",
+      "version": "0.1.0",
+      "category": "homelab",
+      "keywords": ["adr", "architecture", "documentation", "decision-records"],
+      "author": {
+        "name": "basher83"
+      }
+    },
+    {
       "name": "hookify",
       "source": "./plugins/meta/hookify",
       "description": "Easily create hooks to prevent unwanted behaviors by analyzing conversation patterns",

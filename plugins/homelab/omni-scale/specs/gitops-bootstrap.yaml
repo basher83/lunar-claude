@@ -86,6 +86,22 @@ locked_decisions:
       spec:
         ingressClassName: tailscale
 
+  tailnet_first_class_citizen:
+    decision: "Cluster as first-class tailnet citizen via DNSConfig + CoreDNS SSA"
+    rationale:
+      - "Pods can initiate connections to tailnet services with valid TLS"
+      - "No per-app workarounds (sidecars, cert skipping, egress Services)"
+      - "Architectural consistency - cluster behaves like any tailnet client"
+    trade_offs:
+      - "2-5 min DNS gap for *.ts.net after Talos upgrades until ArgoCD reconciles"
+      - "Operational dependency on ArgoCD for CoreDNS config persistence"
+    implementation:
+      - "DNSConfig CR provides k8s-nameserver (already deployed)"
+      - "CoreDNS ConfigMap patch with ArgoCD SSA for persistence"
+      - "Forward ts.net and tailfb3ea.ts.net to nameserver"
+    status: "approved"
+    proposal: "proposals/Proposal-Kubernetes-Tailnet-First-Class-Citizen.md"
+
 ---
 # CONSTRAINTS (Lessons Learned)
 
@@ -237,6 +253,13 @@ constraints:
         hostRoot: "/sys/fs/cgroup"
     discovered: "2026-01-15"
 
+  tailscale_egress_sni_limitation:
+    description: "Tailscale egress Services send K8s service name as SNI, not tailnet FQDN"
+    symptom: "TLS errors connecting to Tailscale Serve endpoints via egress Service"
+    cause: "Operator proxies don't rewrite SNI to match target FQDN"
+    resolution: "Use DNSConfig + CoreDNS stub resolver instead of egress Services"
+    discovered: "2026-01-16"
+
 ---
 # PHASES
 
@@ -327,6 +350,12 @@ phases:
       - "ExternalSecret for MinIO credentials (AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_ENDPOINTS)"
       - "Longhorn BackupTarget configured and available"
       - "ArgoCD HA Redis StatefulSet fixed (was missing due to volumeClaimTemplates immutability)"
+    pending_work:
+      - "Implement tailnet first-class citizen (CoreDNS SSA patch)"
+      - "Remove egress Services (minio-truenas, etc.)"
+      - "Update Homarr to use native tailnet FQDN for Proxmox"
+      - "Create backup schedules (critical/important/standard tiers)"
+      - "Test backup and restore procedure"
     reference: "https://github.com/mitchross/talos-argocd-proxmox#-minio-s3-backup-configuration"
 
 ---

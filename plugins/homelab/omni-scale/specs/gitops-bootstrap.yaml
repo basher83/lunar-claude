@@ -90,16 +90,24 @@ locked_decisions:
     decision: "Cluster as first-class tailnet citizen via DNSConfig + CoreDNS SSA"
     rationale:
       - "Pods can initiate connections to tailnet services with valid TLS"
-      - "No per-app workarounds (sidecars, cert skipping, egress Services)"
+      - "Apps use native tailnet FQDNs (no K8s Service name indirection)"
       - "Architectural consistency - cluster behaves like any tailnet client"
     trade_offs:
       - "2-5 min DNS gap for *.ts.net after Talos upgrades until ArgoCD reconciles"
       - "Operational dependency on ArgoCD for CoreDNS config persistence"
     implementation:
-      - "DNSConfig CR provides k8s-nameserver (already deployed)"
+      - "DNSConfig CR provides k8s-nameserver (manages egress/ingress host records)"
       - "CoreDNS ConfigMap patch with ArgoCD SSA for persistence"
       - "Forward ts.net and tailfb3ea.ts.net to nameserver"
-    status: "approved"
+      - "Egress Services required for connectivity (transparent when apps use FQDN)"
+    status: "implemented"
+    discovered: "2026-01-17"
+    key_insight: |
+      Nameserver only resolves operator-managed hosts (egress/ingress), not full MagicDNS.
+      Egress Services remain required but are transparent: when pods connect via native FQDN,
+      DNS returns egress proxy IP, but TLS handshake uses correct SNI (the FQDN), so
+      Tailscale Serve accepts the connection. The issue was connecting via K8s Service name
+      (wrong SNI), not egress proxies themselves.
     proposal: "proposals/Proposal-Kubernetes-Tailnet-First-Class-Citizen.md"
 
 ---
@@ -254,11 +262,22 @@ constraints:
     discovered: "2026-01-15"
 
   tailscale_egress_sni_limitation:
-    description: "Tailscale egress Services send K8s service name as SNI, not tailnet FQDN"
-    symptom: "TLS errors connecting to Tailscale Serve endpoints via egress Service"
-    cause: "Operator proxies don't rewrite SNI to match target FQDN"
-    resolution: "Use DNSConfig + CoreDNS stub resolver instead of egress Services"
+    description: "Connecting to egress Services via K8s Service name causes SNI mismatch"
+    symptom: "TLS errors (alert 80) connecting to Tailscale Serve endpoints"
+    cause: "Client sets SNI to K8s Service name; Tailscale Serve expects tailnet FQDN"
+    resolution: "Connect via native FQDN, not K8s Service name. Egress proxy is transparent when FQDN used."
+    see_also: "tailnet_first_class_citizen.key_insight"
     discovered: "2026-01-16"
+
+  rwo_single_replica_strategy:
+    description: "Single-replica deployments with RWO volumes need Recreate strategy"
+    symptom: "Rolling update stuck—new pod can't mount volume attached to old pod on different node"
+    resolution: "Set strategy.type: Recreate in Helm values or deployment spec"
+    applies_to:
+      - homarr (fixed)
+      - netdata-parent (chart doesn't expose strategy)
+      - netdata-k8s-state (chart doesn't expose strategy)
+    discovered: "2026-01-17"
 
 ---
 # PHASES
@@ -351,11 +370,39 @@ phases:
       - "Longhorn BackupTarget configured and available"
       - "ArgoCD HA Redis StatefulSet fixed (was missing due to volumeClaimTemplates immutability)"
     pending_work:
-      - "Implement tailnet first-class citizen (CoreDNS SSA patch)"
-      - "Remove egress Services (minio-truenas, etc.)"
-      - "Update Homarr to use native tailnet FQDN for Proxmox"
-      - "Create backup schedules (critical/important/standard tiers)"
-      - "Test backup and restore procedure"
+      # Sequenced - each step depends on previous
+      step_1:
+        task: "CoreDNS SSA patch for persistent ts.net resolution"
+        status: "complete"
+        completed: "2026-01-17"
+        note: "ArgoCD manages CoreDNS ConfigMap, survives Talos upgrades"
+      step_2:
+        task: "Configure Longhorn BackupTarget using native FQDN"
+        status: "complete"
+        completed: "2026-01-17"
+        depends_on: "step_1"
+        note: "AWS_ENDPOINTS uses truenas-scale.tailfb3ea.ts.net, GitOps-managed via Helm values"
+      step_3:
+        task: "Update Homarr to use native tailnet FQDN for Proxmox"
+        status: "complete"
+        completed: "2026-01-17"
+        depends_on: "step_1"
+        note: "Connectivity verified - egress proxies transparent when using native FQDN"
+      step_4:
+        task: "Create backup schedules (critical/important/standard tiers)"
+        status: "complete"
+        completed: "2026-01-17"
+        depends_on: "step_2"
+        note: "RecurringJobs deployed, homarr-database labeled for critical tier"
+      step_5:
+        task: "Test backup and restore procedure"
+        status: "pending"
+        depends_on: "step_4"
+        note: "Waiting for first scheduled backup (~14:44 UTC)"
+    deferred:
+      - task: "Remove egress Services"
+        reason: "Egress Services are transparent when using FQDN - no need to remove"
+        note: "Keep for apps that need pod→tailnet connectivity"
     reference: "https://github.com/mitchross/talos-argocd-proxmox#-minio-s3-backup-configuration"
 
 ---

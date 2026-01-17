@@ -202,6 +202,27 @@ constraints:
     resolution: "Enable redis-ha.persistentVolume - see mothership-gitops CLAUDE.md"
     discovered: "2026-01-16"
 
+  statefulset_volumeclaimtemplates_immutable:
+    description: "K8s StatefulSet volumeClaimTemplates cannot be added after creation"
+    symptom: "ArgoCD sync succeeds but StatefulSet shows Missing after adding PVC config"
+    cause: "Kubernetes rejects volumeClaimTemplates changes on existing StatefulSets"
+    resolution: "Delete StatefulSet manually, then sync again (ArgoCD sync won't recreate)"
+    discovered: "2026-01-16"
+
+  coredns_talos_volatile:
+    description: "CoreDNS ConfigMap on Talos may be overwritten on upgrade/reboot"
+    symptom: "Custom DNS forwarding rules disappear after Talos maintenance"
+    cause: "Talos manages CoreDNS ConfigMap; manual patches are not persistent"
+    resolution: "Reapply CoreDNS patch after Talos upgrades, or use Talos machine config for DNS customization"
+    discovered: "2026-01-16"
+
+  tailscale_egress_sni:
+    description: "Tailscale operator egress Services require DNSConfig for valid TLS"
+    symptom: "TLS errors (alert 80) when connecting to Tailscale Serve endpoints via egress"
+    cause: "Egress proxy sends K8s service name as SNI; Tailscale Serve expects tailnet FQDN"
+    resolution: "Deploy DNSConfig CR + CoreDNS stub resolver; pods connect using actual FQDN with correct SNI"
+    discovered: "2026-01-16"
+
   cilium_talos_configuration:
     description: "Cilium on Talos requires specific configuration"
     severity: "hard-requirement"
@@ -281,7 +302,8 @@ phases:
 
   phase_6:
     name: "Backup Infrastructure"
-    status: "ready"
+    status: "in-progress"
+    started: "2026-01-16"
     depends_on: ["phase_5 (complete)"]
     tasks:
       - "Deploy MinIO on TrueNAS Scale"
@@ -295,6 +317,16 @@ phases:
       - "Longhorn BackupTarget shows healthy"
       - "Automated backups running on schedule"
       - "Restore tested successfully"
+    completed_work:
+      - "MinIO deployed on TrueNAS Scale (Tailscale Serve on port 9000)"
+      - "Bucket 'longhorn-backups' created with scoped IAM policy"
+      - "Tailscale egress Service for MinIO (minio-truenas)"
+      - "DNSConfig deployed for ts.net resolution"
+      - "CoreDNS stub resolver for ts.net (volatile on Talos)"
+      - "ClusterSecretStore infisical-longhorn"
+      - "ExternalSecret for MinIO credentials (AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_ENDPOINTS)"
+      - "Longhorn BackupTarget configured and available"
+      - "ArgoCD HA Redis StatefulSet fixed (was missing due to volumeClaimTemplates immutability)"
     reference: "https://github.com/mitchross/talos-argocd-proxmox#-minio-s3-backup-configuration"
 
 ---

@@ -14,3 +14,4 @@ mise.local.toml
 .lycheecache
 .claude/research-cache
 .specstory
+.cursorindexingignore

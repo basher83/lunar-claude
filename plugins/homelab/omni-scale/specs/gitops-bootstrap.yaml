@@ -297,6 +297,11 @@ constraints:
       - netdata-k8s-state (chart doesn't expose strategy)
     discovered: "2026-01-17"
 
+  longhorn_defaultsettings_initial_only:
+    description: "Longhorn Helm chart defaultSettings only apply on initial install, not updates"
+    discovered: "2026-01-18"
+    resolution: "Use Setting CRs (longhorn.io/v1beta2) for backup target configuration post-install"
+
 ---
 # PHASES
 
@@ -372,6 +377,10 @@ phases:
       - "Configure Longhorn BackupTarget via ESO"
       - "Create backup schedules (critical/important/standard tiers)"
       - "Test backup and restore procedure"
+    approach:
+      - "Backup target via Setting CRs (GitOps-managed)"
+      - "Existing Volume labels: imperative one-time fix (document mapping)"
+      - "Future volumes: tiered StorageClasses with recurringJobSelector"
     exit_criteria:
       - "MinIO accessible from cluster"
       - "Longhorn BackupTarget shows healthy"
@@ -396,10 +405,9 @@ phases:
         note: "ArgoCD manages CoreDNS ConfigMap, survives Talos upgrades"
       step_2:
         task: "Configure Longhorn BackupTarget using native FQDN"
-        status: "complete"
-        completed: "2026-01-17"
+        status: "in-progress"
         depends_on: "step_1"
-        note: "AWS_ENDPOINTS uses truenas-scale.tailfb3ea.ts.net, GitOps-managed via Helm values"
+        note: "Helm defaultSettings didn't apply — need Setting CRs"
       step_3:
         task: "Update Homarr to use native tailnet FQDN for Proxmox"
         status: "complete"
@@ -408,10 +416,9 @@ phases:
         note: "Connectivity verified - egress proxies transparent when using native FQDN"
       step_4:
         task: "Create backup schedules (critical/important/standard tiers)"
-        status: "complete"
-        completed: "2026-01-17"
+        status: "blocked"
         depends_on: "step_2"
-        note: "RecurringJobs deployed, homarr-database labeled for critical tier"
+        note: "Jobs deployed but ineffective without BackupTarget"
       step_5:
         task: "Test backup and restore procedure"
         status: "pending"

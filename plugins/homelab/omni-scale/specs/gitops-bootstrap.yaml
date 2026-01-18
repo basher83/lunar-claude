@@ -269,6 +269,24 @@ constraints:
     see_also: "tailnet_first_class_citizen.key_insight"
     discovered: "2026-01-16"
 
+  argocd_syncpolicy_patterns:
+    description: "ArgoCD Application syncPolicy best practices"
+    patterns:
+      retry_policy:
+        description: "Add retry block to handle transient sync failures"
+        config: "limit: 5, backoff: 5s with factor 2, maxDuration 3m"
+        rationale: "Handles API server hiccups, CRD race conditions without manual intervention"
+      respect_ignore_differences:
+        description: "Add RespectIgnoreDifferences=true to apps with ignoreDifferences"
+        applies_to: ["tailscale-operator", "netdata", "homarr"]
+        rationale: "Ensures prune operations respect ignoreDifferences rules"
+      prune_false_for_storage:
+        description: "Set prune: false for storage controllers"
+        applies_to: ["longhorn"]
+        rationale: "Accidental git deletion could remove PVCs—high blast radius"
+        trade_off: "Manual cleanup required for removed resources"
+    discovered: "2026-01-17"
+
   rwo_single_replica_strategy:
     description: "Single-replica deployments with RWO volumes need Recreate strategy"
     symptom: "Rolling update stuck—new pod can't mount volume attached to old pod on different node"

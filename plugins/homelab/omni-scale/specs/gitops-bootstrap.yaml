@@ -358,7 +358,8 @@ phases:
         cause: "HA Helm chart uses different release name, doesn't replace original"
         resolution: "Delete original argocd app from bootstrap.yaml or consolidate"
         severity: "low"
-        deferred_to: "phase_6"
+        status: "complete"
+        completed: "2026-01-18"
 
   phase_6:
     name: "Backup Infrastructure"

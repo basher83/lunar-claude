@@ -16,7 +16,7 @@ This reference covers features and patterns specific to commands bundled in Clau
 
 Claude Code automatically discovers commands in plugins using the following locations:
 
-```
+```text
 plugin-name/
 ├── commands/              # Auto-discovered commands
 │   ├── foo.md            # /foo (plugin:plugin-name)
@@ -25,6 +25,7 @@ plugin-name/
 ```
 
 **Key points:**
+
 - Commands are discovered at plugin load time
 - No manual registration required
 - Commands appear in `/help` with "(plugin:plugin-name)" label
@@ -34,7 +35,7 @@ plugin-name/
 
 Organize commands in subdirectories for logical grouping:
 
-```
+```text
 plugin-name/
 └── commands/
     ├── review/
@@ -46,6 +47,7 @@ plugin-name/
 ```
 
 **Namespace behavior:**
+
 - Subdirectory name becomes namespace
 - Shown as "(plugin:plugin-name:namespace)" in `/help`
 - Helps organize related commands
@@ -54,13 +56,15 @@ plugin-name/
 ### Command Naming Conventions
 
 **Plugin command names should:**
+
 1. Be descriptive and action-oriented
 2. Avoid conflicts with common command names
 3. Use hyphens for multi-word names
 4. Consider prefixing with plugin name for uniqueness
 
 **Examples:**
-```
+
+```text
 Good:
 - /mylyn-sync          (plugin-specific prefix)
 - /analyze-performance (descriptive action)
@@ -79,6 +83,7 @@ Avoid:
 `${CLAUDE_PLUGIN_ROOT}` is a special environment variable available in plugin commands that resolves to the absolute path of the plugin directory.
 
 **Why it matters:**
+
 - Enables portable paths within plugin
 - Allows referencing plugin files and scripts
 - Works across different installations
@@ -100,7 +105,8 @@ Read template: @${CLAUDE_PLUGIN_ROOT}/templates/report.md
 ```
 
 **Expands to:**
-```
+
+```text
 Run analysis: !`node /path/to/plugins/plugin-name/scripts/analyze.js`
 
 Read template: @/path/to/plugins/plugin-name/templates/report.md
@@ -164,6 +170,7 @@ Review results and report status.
 ### Best Practices
 
 1. **Always use for plugin-internal paths:**
+
    ```markdown
    # Good
    @${CLAUDE_PLUGIN_ROOT}/templates/foo.md
@@ -173,6 +180,7 @@ Review results and report status.
    ```
 
 2. **Validate file existence:**
+
    ```markdown
    ---
    description: Use plugin config if exists
@@ -186,6 +194,7 @@ Review results and report status.
    ```
 
 3. **Document plugin file structure:**
+
    ```markdown
    <!--
    Plugin structure:
@@ -197,6 +206,7 @@ Review results and report status.
    ```
 
 4. **Combine with arguments:**
+
    ```markdown
    Run: !`${CLAUDE_PLUGIN_ROOT}/bin/process.sh $1 $2`
    ```
@@ -204,16 +214,19 @@ Review results and report status.
 ### Troubleshooting
 
 **Variable not expanding:**
+
 - Ensure command is loaded from plugin
 - Check bash execution is allowed
 - Verify syntax is exact: `${CLAUDE_PLUGIN_ROOT}`
 
 **File not found errors:**
+
 - Verify file exists in plugin directory
 - Check file path is correct relative to plugin root
 - Ensure file permissions allow reading/execution
 
 **Path with spaces:**
+
 - Bash commands automatically handle spaces
 - File references work with spaces in paths
 - No special quoting needed
@@ -351,6 +364,7 @@ Note: This uses the Task tool to launch the plugin's code-analyzer agent.
 ```
 
 **Key points:**
+
 - Agent must be defined in plugin's `agents/` directory
 - Claude will automatically use Task tool to launch agent
 - Agent has access to same plugin resources
@@ -378,6 +392,7 @@ Note: This leverages the plugin's api-docs-standards skill for consistency.
 ```
 
 **Key points:**
+
 - Skill must be defined in plugin's `skills/` directory
 - Mention skill by name to hint Claude should invoke it
 - Skills provide specialized domain knowledge
@@ -401,6 +416,7 @@ Review hook output for any issues.
 ```
 
 **Key points:**
+
 - Hooks execute automatically on events
 - Commands can prepare state for hooks
 - Document hook interaction in command
@@ -457,6 +473,7 @@ $IF($1 in [dev, staging, prod],
 ```
 
 **Validation approaches:**
+
 1. Bash validation using grep/test
 2. Inline validation in prompt
 3. Script-based validation
@@ -562,7 +579,7 @@ If processing failed:
 
 ## Best Practices Summary
 
-### Plugin Commands Should:
+### Plugin Commands Should
 
 1. **Use ${CLAUDE_PLUGIN_ROOT} for all plugin-internal paths**
    - Scripts, templates, configuration, resources

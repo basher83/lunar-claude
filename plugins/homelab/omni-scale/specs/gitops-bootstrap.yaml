@@ -4,7 +4,7 @@
 initiative:
   name: "gitops-bootstrap"
   started: "2026-01-04"
-  status: "phase-5-complete"
+  status: "phase-6-complete"
   repository: "mothership-gitops"
   depends_on: "omni-deployment (production-cluster-operational)"
   summary: |
@@ -356,15 +356,16 @@ phases:
       - issue: "ArgoCD duplicate pods after HA upgrade"
         description: "Both argocd-* (non-HA) and argocd-ha-helm-* (HA) pods running"
         cause: "HA Helm chart uses different release name, doesn't replace original"
-        resolution: "Delete original argocd app from bootstrap.yaml or consolidate"
+        resolution: "Updated argocd-ingress to point to argocd-ha-helm-server"
         severity: "low"
-        status: "complete"
-        completed: "2026-01-18"
+        status: "resolved"
+        resolved: "2026-01-18"
 
   phase_6:
     name: "Backup Infrastructure"
-    status: "in-progress"
+    status: "complete"
     started: "2026-01-16"
+    completed: "2026-01-18"
     depends_on: ["phase_5 (complete)"]
     tasks:
       - "Deploy MinIO on TrueNAS Scale"
@@ -388,6 +389,10 @@ phases:
       - "ExternalSecret for MinIO credentials (AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_ENDPOINTS)"
       - "Longhorn BackupTarget configured and available"
       - "ArgoCD HA Redis StatefulSet fixed (was missing due to volumeClaimTemplates immutability)"
+      - "Tiered StorageClasses created (longhorn-critical, longhorn-important, longhorn-standard)"
+      - "Volume labeling fixed (all 7 volumes had default group, corrected to critical/important/standard)"
+      - "ArgoCD ingress fixed (argocd-server → argocd-ha-helm-server)"
+      - "Backup documentation added (docs/backup-storage.md)"
     pending_work:
       # Sequenced - each step depends on previous
       step_1:
@@ -410,14 +415,15 @@ phases:
       step_4:
         task: "Create backup schedules (critical/important/standard tiers)"
         status: "complete"
-        completed: "2026-01-17"
+        completed: "2026-01-18"
         depends_on: "step_2"
-        note: "RecurringJobs deployed, homarr-database labeled for critical tier"
+        note: "RecurringJobs deployed, all 7 volumes labeled (1 critical, 3 important, 3 standard), tiered StorageClasses for future volumes"
       step_5:
         task: "Test backup and restore procedure"
-        status: "pending"
+        status: "complete"
+        completed: "2026-01-18"
         depends_on: "step_4"
-        note: "Waiting for first scheduled backup (~14:44 UTC)"
+        note: "Backup at 08:00 UTC, restore verified via test PVC"
     deferred:
       - task: "Remove egress Services"
         reason: "Egress Services are transparent when using FQDN - no need to remove"

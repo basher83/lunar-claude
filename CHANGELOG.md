@@ -58,6 +58,13 @@
 - *(skill-factory)* Integrate write command into skill creation workflow
 - *(meta-claude)* Add slash-command-creator skill
 - *(python-tools)* Add review-uv-script command
+- *(research)* Initialize research pipeline directory structure
+- *(research)* Add report schema and 5 research agents
+- *(research)* Add lunar-research orchestrator command
+- *(research)* Add schema-based report validation
+- *(research)* Add memory solutions cache entry to index
+- *(research)* Restructure as marketplace plugin
+- *(research)* Enhance orchestrator with validation and error handling
 - *(commands)* Add design-validation slash command suite
 - *(phase-0)* Add parallel dispatch PoC with results
 - *(phase-0)* Add JSON schema validation script with self-test
@@ -72,11 +79,31 @@
 - *(plugin-dev)* Add permissionMode, skills, and capabilities fields to agent spec
 - *(agents)* Add capabilities field to agent frontmatter
 - *(verify-structure)* Add skip field support and info-only messages
-- *(research)* Initialize research pipeline directory structure
-- *(research)* Add report schema and 5 research agents
-- *(research)* Add lunar-research orchestrator command
-- *(research)* Add schema-based report validation
-- *(research)* Add memory solutions cache entry to index
+- *(git-workflow)* Add git workflow automation plugin
+- *(meta-claude)* Add prime command with $ARGUMENTS support
+- *(ansible-workflows)* Add hooks system for pipeline state management
+- *(ansible-workflows)* Add pipeline state initialization to commands
+- *(ansible-workflows)* Integrate context bundles in agents
+- *(plugin-dev)* Add /plugin-review command for plugin validation
+- *(plugin-dev)* Add /consider command for design tracking
+- *(scripts)* Major refactor of markdown_formatter.py
+- *(skill-factory)* Add package and validation scripts
+- *(homelab)* Add omni-scale plugin for Kubernetes infrastructure management
+- *(ansible-workflows)* Add capabilities field to agents
+- *(omni-scale)* Add provider-ctl script for container management
+- *(omni-scale)* Add analyze-spec command and spec files
+- *(omni-scale)* Add omni-prime context loading command
+- *(omni-scale)* Enhance status command with MCP tools integration
+- *(omni-scale)* Add adaptive polling to disaster-recovery
+- *(omni-scale)* Add tool usage patterns and gotchas to prime command
+- *(omni-scale)* Add spec reconciliation check and update cluster state
+- *(omni-scale)* Improve skill description and add provider-ctl context
+- *(lunar-claude)* Add lunar-prime command
+- *(omni-scale)* Integrate DR drill learnings into plugin
+- *(adr-assistant)* Add ADR workflow plugin
+- *(plugin-dev)* Add create-command slash command with versioned backup
+- *(security)* Add PreToolUse hooks for hardcoded secret detection
+- *(skills)* Add devtools-secrets and release-workflow skills
 
 ### 🐛 Bug Fixes
 
@@ -129,6 +156,7 @@
 - *(claude-dev-sandbox)* Improve sync script error handling and validation
 - *(skill-factory)* Correct completion options for skills
 - *(claude-docs)* Improve error handling and file encoding
+- *(research)* Address PR #24 review feedback
 - *(slash-command-creator)* Resolve skill loader syntax error
 - Address PR review feedback for Phase 0 validation
 - Address remaining PR review feedback
@@ -140,7 +168,37 @@
 - *(plugin-dev)* Escape bash execution pattern in command-development skill
 - *(plugin-dev)* Support plugin hooks.json wrapper format in validator
 - *(hookify)* Correct Python import paths for plugin installation
-- *(research)* Address PR #24 review feedback
+- *(marketplace)* Remove invalid 'skip' key from plugin entry
+- *(ci)* Add rumdl to mise tools via pipx
+- *(lint)* Exclude YouTube transcripts from markdown linting
+- *(ci)* Make pyright non-blocking and exclude research scripts
+- *(ci)* Add files filter to rumdl pre-commit hook
+- *(docs)* Wrap template placeholders in backticks
+- Treat external plugin sources as info instead of warnings
+- *(plugin-dev)* Escape dynamic bash patterns in command-development skill
+- *(plugin-dev)* Use $ notation for bash examples in code blocks
+- *(plugin-dev)* Fix remaining dynamic bash patterns in command-development
+- *(ansible-workflows)* Ensure .claude directory creation
+- *(ansible-workflows)* Remove SubagentStop hook blocking all subagent tools
+- *(git-workflow)* Simplify branch cleanup bash commands to fix syntax errors
+- *(plugin-dev)* Enforce proof-based decisions in plugin-review
+- *(plugin-dev)* Simplify /consider command
+- *(skill-development)* Prevent parser execution of backtick pattern references
+- *(config)* Correct typo in .pre-commit-config.yaml
+- *(git-workflow)* Make pre-commit hook execution conditional
+- *(skill-development)* Remove dynamic bash pattern that triggers parser bug
+- *(rules)* Remove dynamic bash patterns triggering parser bug
+- *(pre-commit)* Exclude specs/ from YAML validation
+- *(omni-scale)* Correct MCP tool naming to plugin-bundled format
+- *(omni-scale)* Correct .mcp.json format for plugin MCP registration
+- *(omni-scale)* Add explicit mcpServers reference to plugin manifest
+- *(omni-scale)* Add explicit status values for ArgoCD and Longhorn checks
+- *(omni-scale)* Use CLAUDE_PLUGIN_ROOT for script paths in skill
+- *(omni-scale)* Correct skill script path to include skills/omni-proxmox/
+- *(omni-scale)* Add PROACTIVELY to skill trigger description
+- *(omni-scale)* Correct DR round 1 timing
+- *(omni-scale)* Remove SSH commands from skill docs
+- *(omni-scale)* Remove MCP context from skill docs
 
 ### 💼 Other
 
@@ -149,6 +207,8 @@
 - *(audit-command)* Remove outdated slash command compliance auditor agent
 - *(deps)* Add dev dependencies for testing and linting
 - *(ci)* Remove link checking from PR workflow
+- Resolve conflicts with main branch
+- *(pre-commit)* Exclude examples from YAML validation
 
 ### 🚜 Refactor
 
@@ -177,12 +237,38 @@
 - *(coderabbit)* Migrate skill from meta-claude to claude-dev-sandbox
 - *(claude-dev-sandbox)* Remove working-with-claude-code skill
 - *(skill-auditor)* Remove skill auditor scripts and related files
+- *(research)* Migrate agents with capability metadata
+- *(research)* Migrate cache, schemas, and validation script
 - *(hooks)* Convert skill-forced-eval bash hook to hookify rule
 - Improve Python scripts based on PR review feedback
 - Replace print statements with structured logging
 - *(hookify)* Modernize config_loader.py with Python best practices
 - *(hookify)* Simplify skill-forced-eval hook configuration
 - *(plugin-dev)* Enhance skill-reviewer with compliance-first approach
+- *(config)* Migrate CLAUDE.md to modular rules
+- Reorder imports in intelligent-markdown-lint.py
+- *(lint)* Simplify rumdl config to inclusion-based approach
+- Externalize research-pipeline plugin to lunar-research repo
+- Rename research-pipeline to lunar-research in marketplace
+- *(git-workflow)* Move generate-changelog command to plugin
+- Migrate ansible-workflows plugin to lunar-claude
+- *(meta-plugins)* Remove version field from SKILL.md and modernize scripts
+- *(git-workflow)* Convert commands to workflow-driven patterns
+- *(git-workflow)* Improve commit-craft agent per skill best practices
+- *(scripts)* Fix import-side effects and add CLI options to note_smith.py
+- *(meta-claude)* Remove deprecated skill implementations
+- *(templates)* Remove plugin-template directory and new-plugin command
+- *(meta-claude)* Update plugin structure after consolidation
+- *(marketplace)* Sync versions and remove deprecated plugins
+- *(omni-scale)* Remove dead code, simplify log formatting
+- *(omni-scale)* Integrate provider-ctl into omni-proxmox skill
+- *(omni-scale)* Rename bootstrap to bootstrap-gitops
+- *(omni-scale)* Convert status command from procedural to declarative
+- *(omni-scale)* Condense omni-talos skill with progressive disclosure
+- *(omni-scale)* Outcome-focused command patterns
+- *(omni-scale)* Move operational items out of spec
+- *(omni-scale)* Remove implementation details from spec constraints
+- *(proxmox)* Apply beyond-mcp-v2 research findings to SKILL.md
 
 ### 📚 Documentation
 
@@ -240,6 +326,9 @@
 - Add research pipeline v2 design document
 - Add research pipeline v2 implementation plan
 - Update changelog
+- *(review)* Update PR #24 review with corrected findings
+- Update changelog
+- *(review)* Update PR #24 with resolved issues
 - Add detailed implementation plan for Research Pipeline v2
 - Add comprehensive design validation review for Research Pipeline v2
 - Add Phase 0 validation plan for Research Pipeline v2
@@ -248,7 +337,48 @@
 - *(plugin-dev)* Expand skill-creator-original.md with core principles
 - *(plugin-dev)* Expand skill-development with core principles and forbidden files
 - Add PR review report for multi-agent research pipeline
-- *(review)* Update PR #24 review with corrected findings
+- Update changelog
+- *(research)* Add pre-commit integration findings
+- *(research)* Add rumdl reference documentation
+- *(git-workflow)* Add generate-changelog to skill and README
+- *(skill-development)* Add Mistake 5 for dynamic bash patterns bug
+- *(rules)* Add dynamic bash pattern bug warning to skill-development
+- *(ansible-workflows)* Document pipeline state system and fix frontmatter
+- *(todo)* Update priorities and add new items
+- *(testing)* Add ansible-workflows evaluation framework
+- *(ansible-workflows)* Document SubagentStop hook bug
+- *(ansible-workflows)* Propose orchestrator-managed state architecture
+- *(ansible-workflows)* Remove evaluation framework documentation
+- *(agents)* Add specialized agent definitions for ansible-workflows evaluation
+- *(commit-craft)* Update agent model from sonnet to haiku
+- *(hookify)* Update usage guidelines for `uv` commands
+- *(git-workflow)* Update skill for workflow-driven commands
+- *(git-workflow)* Update README for workflow-driven commands
+- *(git-workflow)* Rewrite README using plugin-dev template
+- *(plugin-dev)* Add proof-based analysis examples to plugin-review
+- *(plugin-dev)* Mark BUG-001 as resolved in tracking file
+- *(scripts)* Update documentation for script changes
+- *(rules)* Update project conventions after consolidation
+- *(plugin-dev)* Fix command-development allowed-tools documentation
+- *(notes)* Add omni-scale plugin design notes
+- *(omni-scale)* Document provider-ctl script usage
+- *(omni-scale)* Update README with new commands and structure
+- *(bugs)* Clarify parser bug symptoms and root cause
+- *(omni-scale)* Add omnictl usage examples to prime command
+- *(lunar-claude)* Update README with current plugin inventory
+- *(omni-scale)* Add plugin development learnings doc
+- *(omni-scale)* Add DR drill learnings from 2026-01-14
+- *(omni-scale)* Add DR drill learnings from 2026-01-14
+- *(omni-scale)* Add DR round 2 learnings - Cilium/Talos config
+- *(omni-scale)* Close phase 5, mark phase 6 ready
+- *(omni-scale)* Add homarr persistence constraint
+- *(omni-scale)* Add argocd redis-ha persistence constraint
+- *(omni-scale)* Add phase 6 progress and constraint learnings
+- *(omni-scale)* Update phase 6 progress and tailnet insights
+- *(omni-scale)* Add Longhorn defaultSettings constraint, revert phase 6 progress
+- *(omni-scale)* Mark ArgoCD duplicate pods cleanup complete
+- *(omni-scale)* Complete phase 6 backup infrastructure
+- *(CLAUDE.md)* Restructure with commands, code quality, and tools guidance
 
 ### 🎨 Styling
 
@@ -258,6 +388,10 @@
 - *(audit)* Fix whitespace in research documentation
 - *(docs)* Apply markdown linting auto-fixes
 - *(meta-claude)* Fix markdown formatting in multi-agent example
+- *(research)* Fix markdown line length violations
+- *(scripts)* Apply ruff formatting
+- *(docs)* Apply rumdl auto-fixes to documentation
+- Add blank lines to skill-development rule lists
 
 ### 🧪 Testing
 
@@ -269,6 +403,7 @@
 - *(skill-auditor)* Fix B2/B3 test coverage gaps
 - *(skill-auditor)* Add edge case tests for extraction
 - *(skill-auditor)* Add automated determinism integration tests
+- *(omni-scale)* Simplify status field descriptions for eval testing
 
 ### ⚙️ Miscellaneous Tasks
 
@@ -279,14 +414,44 @@
 - *(renovate)* Use shared renovate config presets
 - Remove agent-auditor directory (moved to separate repo)
 - *(rumdl)* Exclude references/ directories from MD033 checks
+- Update gitignore
+- Remove obsolete research cache gitignore rules
+- Ignore *.local.md files
 - *(settings)* Update command paths and add user prompt hook
 - *(.gitignore)* Add backup entry for MCP JSON files
 - Remove obsolete skill-forced-eval bash hook
 - Add PR validation and release workflows
 - Update CLAUDE.md formatting and fix hookify agent
 - *(hookify)* Disable skill-forced-eval hook
-- Update gitignore
-
+- Fix CI issues. Closes #32.
+- Bump lunar-research to v1.0.0
+- Remove duplicate jina-search command
+- *(git-workflow)* Add model settings to commands
+- *(plugin-dev)* Bump version to 1.0.1 for cache refresh
+- *(plugin-dev)* Update .gitignore and format keywords in marketplace.json
+- *(plugin-dev)* Bump version to 1.0.2 in marketplace.json
+- *(plugin-dev)* Bump version to 1.1.0 in marketplace.json
+- *(marketplace)* Bump lunar-research to 1.1.1
+- *(commit-craft)* Add git-workflow skills and enhance output format
+- *(marketplace)* Bump lunar-research to 1.1.2
+- *(git-workflow)* Bump version to 1.0.1 to refresh plugin cache
+- *(git-workflow)* Bump version to 1.0.3
+- *(plugin-dev)* Bump version to 1.0.2 and format keywords
+- *(.gitignore)* Update ignored files list
+- *(plugin-dev)* Bump version to 1.0.3
+- *(git-workflow)* Replace prek with standard pre-commit tool
+- *(scripts)* Add PEP 723 metadata to utility scripts
+- *(config)* Update settings and hooks after plugin consolidation
+- *(omni-scale)* Track plugin MCP server configuration
+- *(omni-scale)* Bump version to 0.1.1
+- Sync omni-scale version in marketplace.json to 0.1.1
+- *(omni-scale)* Bump version to 0.1.2
+- *(omni-scale)* Bump to v0.2.0 for DR round 3
+- *(omni-scale)* Bump to v0.2.1
+- *(omni-scale)* Bump version to 0.2.2
+- Remove unused crawl4ai skill
+- *(omni-scale)* Bump version to 0.2.3
+- *(mise)* Add fnox plugin and Claude CLI convenience tasks
 ## [0.3.0] - 2025-11-12
 
 ### 🚀 Features

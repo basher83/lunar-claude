@@ -11,6 +11,9 @@ show_tools = true
 show_env = false
 truncate = true
 
+[plugins]
+fnox-env = "https://github.com/jdx/mise-env-fnox"
+
 [tools]
 python = "3.14.2"
 eza = "0.23.0"
@@ -22,11 +25,25 @@ uv = "0.9.26"
 ruff = "0.14.13"
 # "npm:pyright" = "1.1.407"  # Commented out due to npm registry timeout
 lychee = "0.22.0"
-prek = "0.2.13"
 "pipx:rumdl" = "0.0.223"
+pre-commit = "4.5.1"
+fnox = "latest"
+age = "latest"
 
 [env]
 _.python.venv = { path = ".venv", create = true } # create the venv if it doesn't exist
+_.fnox-env = { tools = true }
+
+# === Claude Code CLI ===
+[tasks.claude]
+description = "Run Claude Code CLI with arguments"
+run = "claude --dangerously-skip-permissions"
+alias = "ccd"
+
+[tasks.claude-continue]
+description = "Run Claude Code CLI with arguments"
+run = "claude --dangerously-skip-permissions --continue"
+alias = "ccdc"
 
 # === Changelog tasks ===
 [tasks.changelog]
@@ -89,12 +106,12 @@ echo "     git push && git push --tags"
 
 # === Hooks tasks ===
 [tasks.hooks-install]
-description = "Install prek and infisical hooks"
-run = "prek install -f && infisical scan install --pre-commit-hook"
+description = "Install pre-commit and infisical hooks"
+run = "pre-commit install -f && infisical scan install --pre-commit-hook"
 
 [tasks.pre-commit-run]
-description = "Run prek hooks"
-run = "prek run --all-files"
+description = "Run pre-commit hooks"
+run = "pre-commit run --all-files"
 
 # === Infisical tasks ===
 [tasks.infisical-scan]

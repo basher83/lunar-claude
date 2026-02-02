@@ -16,16 +16,45 @@ a structured plugin ecosystem.
 - `devops/` - Container orchestration and DevOps tools (Kubernetes, Docker)
 - `homelab/` - Homelab-specific utilities (NetBox, PowerDNS)
 
-## Essential Tools
+## Commands
 
-The `SlashCommand` tool allows Claude to execute custom slash commands
-programmatically during a conversation.
+```bash
+# Environment setup
+mise install                          # Install all tools (Python, ruff, uv, etc.)
+uv sync --group dev                   # Install Python dependencies
+mise run hooks-install                # Install pre-commit + infisical hooks
 
-The `Skill` tool allows Claude to execute skills programmatically during a
-conversation. Pre-built Agent Skills extend Claude's capabilities with
-specialized expertise.
+# Code quality
+ruff check .                          # Lint Python
+ruff format .                         # Format Python
+pyright                               # Type check (strict mode)
+mise run pre-commit-run               # Run all pre-commit hooks
 
-**HINT**: Claude can load multiple skills at once via the `Skill` tool.
+# Testing
+pytest tests/                         # Run all tests
+pytest tests/test_verify_structure.py # Run single test file
+
+# Validation
+./scripts/verify-structure.py         # Validate plugin/marketplace structure
+mise run markdown-lint                # Lint markdown (rumdl)
+mise run link-check                   # Check links in markdown (lychee)
+
+# Changelog
+mise run changelog                    # Update CHANGELOG.md
+mise run changelog-bump <version>     # Release with version bump
+```
+
+## Code Quality
+
+- **Python >=3.13** managed via mise + uv
+- **Formatter/Linter**: ruff (config in `ruff.toml`)
+- **Type checker**: pyright strict mode (`pyrightconfig.json`)
+- **Standalone scripts**: Use PEP 723 inline metadata with `#!/usr/bin/env -S uv run`
+
+## Claude Tools
+
+Use the `Skill` tool to load pre-built agent skills (can load multiple at once).
+Use `SlashCommand` to execute custom slash commands programmatically.
 
 ## Key Files
 

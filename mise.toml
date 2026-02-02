@@ -23,7 +23,7 @@ ruff = "0.14.13"
 # "npm:pyright" = "1.1.407"  # Commented out due to npm registry timeout
 lychee = "0.22.0"
 prek = "0.2.13"
-"pipx:rumdl" = "0.0.218"
+"pipx:rumdl" = "0.0.223"
 
 [env]
 _.python.venv = { path = ".venv", create = true } # create the venv if it doesn't exist

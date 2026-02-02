@@ -128,6 +128,36 @@ Lifecycle hooks (distinct from env plugin hooks):
 
 ## mise + fnox Integration
 
+### Option 0: fnox env plugin (recommended — used in this repo)
+
+```toml
+[env]
+_.fnox-env = { tools = true }
+```
+
+| Option | Purpose | Default |
+|--------|---------|---------|
+| `tools` | Access mise-managed fnox binary (required if fnox installed via mise) | `false` |
+| `profile` | fnox profile to load | `default` |
+| `fnox_bin` | Custom binary path (negates need for `tools = true`) | `fnox` |
+
+This auto-loads all fnox secrets as env vars on `cd` into the project. For
+per-environment overrides:
+
+```toml
+[env]
+_.fnox-env = { tools = true, profile = "dev" }
+
+[env.production]
+_.fnox-env = { tools = true, profile = "production" }
+```
+
+Activate via `MISE_ENV=production mise env`.
+
+**Caching**: Enable `MISE_ENV_CACHE=1` for encrypted disk caching. Clear with
+`mise cache clear` or `mise exec --fresh-env`. Cache auto-invalidates when
+`fnox.toml` changes.
+
 ### Option 1: mise task wrapping fnox exec
 
 ```toml

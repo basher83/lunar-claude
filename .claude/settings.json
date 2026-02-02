@@ -1,5 +1,27 @@
 {
     "hooks": {
+        "PreToolUse": [
+            {
+                "matcher": "Edit|Write",
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "python3 $CLAUDE_PROJECT_DIR/.claude/hooks/block-hardcoded-secrets.py",
+                        "timeout": 10
+                    }
+                ]
+            },
+            {
+                "matcher": "Bash",
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "python3 $CLAUDE_PROJECT_DIR/.claude/hooks/block-bare-secret-exports.py",
+                        "timeout": 10
+                    }
+                ]
+            }
+        ],
         "PostToolUse": [
             {
                 "matcher": "Edit|Write",

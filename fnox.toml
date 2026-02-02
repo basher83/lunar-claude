@@ -1,0 +1,11 @@
+#:schema https://fnox.jdx.dev/schema.json
+
+default_provider = "infisical"
+
+[providers]
+age = { type = "age", recipients = ["age1svkpzg9qqp4k62j90na9gz2sy8rehzy8hkavdpmpk086pl79955qcz6pxy"] }
+infisical = { type = "infisical", project_id = "7b832220-24c0-45bc-a5f1-ce9794a31259", environment = "prod", path = "/" }
+
+[secrets]
+INFISICAL_TOKEN= { provider = "age", value = "YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBnYUZDU0V4Z244ekZ6TjVGdG1wcSsxYVRXTGhzdm9rM2JjWmM4K0hYUGxnCmM4Nk00L3AvK1A0WmhmWkxRN3phMUZHU1JsU1c0MkMxbVo4YndXLzViZlUKLT4gUHctZ3JlYXNlIC5fJWdHIGMgeFBrKSBRU3w7YShcCjIrK0lyOG9DSlo2NnJxMUZZWUhlQU0xMUNhbzBhTkNjREdPb1E0dlVJU25TaHJuTkFOZWRkSWZLdFJBSlBRYUQKUm9pNVNENktaRkNxZitTS2tycWZpRTg5aVoxUlg2UUlsODN1ZWlaZWxvN3M2Z3R0M0trCi0tLSBac3FRbG9hNCtRUTdLQmdoYXlJNFlFVFZHcWQ5aDdjMTYwcm1TeFk1OWhVCiciAL4XxNmwvXv7nRnaeLkBH4guPHtKTA0hsAD/gAnPSAaOCm4zAWLTSMZiLBc50CIQgQ91XI7s+oYfRpoEGRD3SVq+sfoZaATKxzffr1IaZvIzEwKzLwuWDMSAlMY/RmQjCD8R5v7Akq3CH9IGqkpLe4z31V66E9GuBQL1hjBopRWxNwo2yVYu" }
+TEST_KEY= { provider = "infisical", value = "TEST_KEY" }

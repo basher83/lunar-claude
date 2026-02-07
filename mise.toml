@@ -15,17 +15,17 @@ truncate = true
 fnox-env = "https://github.com/jdx/mise-env-fnox"
 
 [tools]
-python = "3.14.2"
+python = "3.14.3"
 eza = "0.23.0"
 fd = "10.2.0"
 rg = "14.1.1"
 git-cliff = "2.10.1"
 shellcheck = "0.11.0"
-uv = "0.9.26"
-ruff = "0.14.13"
+uv = "0.10.0"
+ruff = "0.15.0"
 # "npm:pyright" = "1.1.407"  # Commented out due to npm registry timeout
 lychee = "0.22.0"
-"pipx:rumdl" = "0.0.223"
+"pipx:rumdl" = "0.1.15"
 pre-commit = "4.5.1"
 fnox = "latest"
 age = "latest"

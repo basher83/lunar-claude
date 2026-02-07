@@ -361,6 +361,33 @@ phases:
         status: "resolved"
         resolved: "2026-01-18"
 
+  phase_7:
+    name: "Application Workloads"
+    status: "not-started"
+    started: null
+    depends_on: ["phase_6 (complete)"]
+    summary: |
+      Migrate manually-deployed application workloads into GitOps management.
+      First candidate: anthropic-oauth-proxy (currently kubectl apply -k).
+
+    workloads:
+      anthropic_oauth_proxy:
+        source_repo: "basher83/tailnet-microservices"
+        source_path: "k8s/"
+        current_state: "deployed-manual"
+        definition_of_done:
+          - "ArgoCD Application exists in mothership-gitops/apps/"
+          - "Manifests synced and healthy via ArgoCD"
+          - "Secrets (Tailscale authkey, GHCR pull secret) sourced via ESO"
+          - "Service accessible at anthropic-oauth-proxy.tailfb3ea.ts.net"
+          - "CI in source repo passes (broken manifests validation job resolved)"
+          - "RUNBOOK in source repo updated with GitOps deployment path"
+
+    exit_criteria:
+      - "All application workloads managed via ArgoCD"
+      - "No manually-applied manifests in cluster"
+      - "Source repo CI green"
+
   phase_6:
     name: "Backup Infrastructure"
     status: "complete"

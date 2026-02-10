@@ -8,10 +8,6 @@ on:
 permissions:
   contents: write
 
-env:
-  PYTHON_VERSION: "3.13"
-  UV_VERSION: "0.9.13"
-
 jobs:
   validate:
     name: Validate Release
@@ -19,19 +15,13 @@ jobs:
     steps:
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
 
-      - name: Install uv
-        uses: astral-sh/setup-uv@803947b9bd8e9f986429fa0c5a41c367cd732b41 # v7
-        with:
-          version: ${{ env.UV_VERSION }}
+      - name: Install mise
+        uses: jdx/mise-action@6d1e696aa24c1aa1bcc1adea0212707c71ab78a8 # v3
 
-      - name: Set up Python
-        run: uv python install ${{ env.PYTHON_VERSION }}
-
-      - name: Validate marketplace structure
-        run: uv run scripts/verify-structure.py --strict
-
-      - name: Run tests
-        run: uv run pytest scripts/tests/ -v --tb=short
+      - name: Run validation and tests
+        run: |
+          mise run ci-validate
+          mise run ci-test
 
   release:
     name: Create Release

@@ -10,77 +10,9 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
-env:
-  PYTHON_VERSION: "3.13"
-  UV_VERSION: "0.9.13"
-
 jobs:
-  lint:
-    name: Lint Python
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
-
-      - name: Install uv
-        uses: astral-sh/setup-uv@803947b9bd8e9f986429fa0c5a41c367cd732b41 # v7
-        with:
-          version: ${{ env.UV_VERSION }}
-
-      - name: Set up Python
-        run: uv python install ${{ env.PYTHON_VERSION }}
-
-      - name: Install dependencies
-        run: uv sync --frozen
-
-      - name: Run ruff check
-        run: uv run ruff check scripts/
-
-      - name: Run ruff format check
-        run: uv run ruff format --check scripts/
-
-      - name: Run pyright
-        run: uv run pyright scripts/
-        continue-on-error: true  # Type warnings in research scripts
-
-  test:
-    name: Run Tests
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
-
-      - name: Install uv
-        uses: astral-sh/setup-uv@803947b9bd8e9f986429fa0c5a41c367cd732b41 # v7
-        with:
-          version: ${{ env.UV_VERSION }}
-
-      - name: Set up Python
-        run: uv python install ${{ env.PYTHON_VERSION }}
-
-      - name: Install dependencies
-        run: uv sync --frozen
-
-      - name: Run pytest
-        run: uv run pytest scripts/tests/ -v --tb=short
-
-  validate:
-    name: Validate Structure
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
-
-      - name: Install uv
-        uses: astral-sh/setup-uv@803947b9bd8e9f986429fa0c5a41c367cd732b41 # v7
-        with:
-          version: ${{ env.UV_VERSION }}
-
-      - name: Set up Python
-        run: uv python install ${{ env.PYTHON_VERSION }}
-
-      - name: Validate marketplace structure
-        run: uv run scripts/verify-structure.py --strict
-
-  markdown:
-    name: Lint Markdown
+  ci:
+    name: CI
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
@@ -88,5 +20,5 @@ jobs:
       - name: Install mise
         uses: jdx/mise-action@6d1e696aa24c1aa1bcc1adea0212707c71ab78a8 # v3
 
-      - name: Run markdown lint
-        run: mise run markdown-lint
+      - name: Run CI checks
+        run: mise run ci

@@ -13,6 +13,15 @@ repos:
     hooks:
       - id: uv-sync
 
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.14.13
+    hooks:
+      - id: ruff
+        args: [--fix]
+        files: ^scripts/
+      - id: ruff-format
+        files: ^scripts/
+
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v5.0.0
     hooks:
@@ -37,6 +46,7 @@ repos:
       - id: rumdl
         # Only lint user-facing documentation (matches .rumdl.toml include patterns)
         files: ^(README\.md|plugins/[^/]+/README\.md|plugins/[^/]+/[^/]+/README\.md|docs/architecture/[^/]+\.md)$
+        stages: [manual]
 
   - repo: https://github.com/renovatebot/pre-commit-hooks
     rev: 42.19.3

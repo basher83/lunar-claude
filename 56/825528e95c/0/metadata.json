@@ -1,0 +1,32 @@
+{
+  "cli_version": "0.4.5",
+  "checkpoint_id": "56825528e95c",
+  "session_id": "3a74de16-0d69-4427-b8d8-2a62f10c49e9",
+  "strategy": "manual-commit",
+  "created_at": "2026-02-19T05:25:24.56735Z",
+  "branch": "main",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "uv.lock"
+  ],
+  "agent": "Claude Code",
+  "turn_id": "e45dd8e21220",
+  "transcript_identifier_at_start": "96539d06-1bfa-4bb8-aac5-4863cd72b6e6",
+  "token_usage": {
+    "input_tokens": 43,
+    "cache_creation_tokens": 49913,
+    "cache_read_tokens": 1149016,
+    "output_tokens": 450,
+    "api_call_count": 27
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-02-19T05:25:24.52005Z",
+    "agent_lines": 0,
+    "human_added": 0,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 0,
+    "agent_percentage": 0
+  },
+  "transcript_path": ".claude/projects/-Users-basher8383-dev-workshop-lunar-claude/3a74de16-0d69-4427-b8d8-2a62f10c49e9.jsonl"
+}

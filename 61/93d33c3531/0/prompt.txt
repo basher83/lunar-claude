@@ -1,0 +1,145 @@
+<local-command-stderr>Error: Bash command failed for pattern "!`eza . --tree`": [stderr]
+mise ERROR error parsing config file: ~/3I/workshop/lunar-claude/mise.local.toml
+mise ERROR Config files in ~/3I/workshop/lunar-claude/mise.local.toml are not trusted.
+Trust them with `mise trust`. See https://mise.jdx.dev/cli/trust.html for more information.
+mise ERROR Run with --verbose or MISE_VERBOSE=1 for more information</local-command-stderr>
+
+---
+
+# Prime
+
+This command loads essential context for a new agent session.
+
+## Instructions
+
+- Run `git ls-files` to understand the codebase structure and file organization
+- Read the README.md to understand the project purpose, setup instructions, and key information
+- Provide a concise overview of the project based on the gathered context
+
+## Context
+
+- Codebase structure git accessible: <persisted-output>
+Output too large (40.5KB). Full output saved to: /Users/basher8383/.REDACTED.txt
+
+Preview (first 2KB):
+.claude-plugin/marketplace.json
+.claude/agents/agent-sdk-verifier.md
+.claude/agents/ansible-strategy-planner.md
+.claude/agents/jina-search.md
+.claude/agents/markdown-fixer.md
+.claude/agents/markdown-investigator.md
+.claude/agents/markdown-orchestrator.md
+.claude/agents/pr-message-reviewer.md
+.claude/agents/project-goal-evaluator.md
+.claude/agents/skill-audit-agent.md
+.claude/commands/convert-to-agent.md
+.claude/commands/convert-to-slash.md
+.claude/commands/design-validation/adr-alternatives-analysis.md
+.claude/commands/design-validation/build-vs-integrate-swot.md
+.claude/commands/design-validation/comprehensive-design-review.md
+.claude/commands/design-validation/landscape-research-protocol.md
+.claude/commands/design-validation/premortem-design-validation.md
+.claude/commands/design-validation/self-critique-design-review.md
+.claude/commands/lunar-prime.md
+.claude/commands/research-validation/parallel-poc.md
+.claude/commands/verify-pr.md
+.claude/git-workflow-command-testing.local.md
+.claude/git-workflow-plugin-review.local.md
+.claude/hookify.prevent-audit-taint.local.md
+.claude/hookify.require-uv.local.md
+.claude/hookify.skill-forced-eval.local.md
+.claude/hooks/block-bare-secret-exports.py
+.claude/hooks/block-hardcoded-secrets.py
+.claude/plugin-dev-bugs.local.md
+.claude/plugin-dev-considerations.local.md
+.claude/rules/audit-protocol.md
+.claude/rules/documentation.md
+.claude/rules/plugin-structure.md
+.claude/rules/python-scripts.md
+.claude/rules/skill-development.md
+.claude/settings.json
+.claude/skills/devtools-secrets/SKILL.md
+.claude/skills/devtools-secrets/references/fnox-configuration.md
+.claude/skills/devtools-secrets/references/infisical-patterns.md
+.claude/skills/devtools-secrets/references/mise-integration.md
+.claude/skills/release-workflow/SKILL.md
+.coderabbit.yaml
+.cursor/plans/rumdl-python-sdk-and-mcp-69b61dd5.plan.md
+.cursor/rules/github-content.mdc
+.cursor/rules/jina.mdc
+.cursor/worktrees.json
+.entire/.gitignore
+.entire/settings.json
+...
+</persisted-output>
+- Codebase structure all: <persisted-output>
+Output too large (34.4KB). Full output saved to: /Users/basher8383/.REDACTED.txt
+
+Preview (first 2KB):
+.
+├── ai_docs
+│   ├── continuous-improvement
+│   │   ├── lessons-learned-2025-11-08.md
+│   │   ├── lessons-learned-raw-data.md
+│   │   └── rules.md
+│   ├── deepwiki-vs-context7.md
+│   ├── firecrawl-python-sdk.md
+│   ├── firecrawl-scrape-github.md
+│   ├── gitingest.md
+│   ├── monorepo-marketplace.md
+│   ├── Python-uv-Script-Examples-and-References.md
+│   ├── README.md
+│   └── verify-structure-analysis.md
+├── CHANGELOG.md
+├── CLAUDE.md
+├── cliff.toml
+├── docs
+│   ├── architecture
+│   │   └── intelligent-markdown-linting-agent.md
+│   ├── checklists
+│   │   ├── claude.md-validation-checklist.md
+│   │   ├── sdk-validation-checklist.md
+│   │   ├── slash-command-validation-checklist.md
+│   │   └── subagent-validation-checklist.md
+│   ├── developer
+│   │   ├── coderabbit.md
+│   │   ├── git-cliff-configuration.md
+│   │   └── new-project-setup.md
+│   ├── ideas
+│   │   ├── adr-plugin.md
+│   │   ├── create-review-validate.md
+│   │   ├── docs-maint-agent.md
+│   │   ├── extend-deepwiki.md
+│   │   ├── ideas.md
+│   │   └── markdown-agent.md
+│   ├── notes
+│   │   ├── ai-failure-mode-pattern.md
+│   │   ├── checklists-and-templates-best-practices.md
+│   │   ├── checklists-templates-subagent-pattern.md
+│   │   ├── claude-mem-usage-guide.md
+│   │   ├── core-4-analysis.md
+│   │   ├── debug-skill-auidtor-agent.md
+│   │   ├── deep-dive-prompt.md
+│   │   ├── emergence-analysis-2025-11-06.md
+│   │   ├── github-issue-path-matching-bug-review.md
+│   │   ├── github-issue-path-matching-bug.md
+│   │   ├── issue-73-maintainer-feedback.md
+│   │   ├── issue-73-patch-verification.md
+│   │   ├── issue-73-test-plan.md
+│   │   ├── metacognitive-scaffolding-session-2025-11-05.md
+│   │   ├── omni-scale.md
+│   │   ├── opps-i-did-it-again.md
+│   │   ├── plan1-v-2.md
+│   │   ├── prompts.md
+│   │   ├── skill-auditor-improvements-v2.md
+│   │   ├── skill-auditor-improvements.md
+│   │   ├── skill-creator-testing.md
+│   │   ├── task-6-implementation-report.md
+│   │   ├── task-8-validation-summary.md
+...
+</persisted-output>
+- Project README: @README.md
+
+---
+
+You need to investigate some failing CI on PR #48. Go ahead and check out the logs, conduct root cause analysis, and patch in fixes. Test locally and make sure it passes locally, then commit the changes, push to remote, monitor CI, and report back once it's passing CI.

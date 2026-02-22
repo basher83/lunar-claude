@@ -1,0 +1,31 @@
+{
+  "cli_version": "0.4.5",
+  "checkpoint_id": "6193d33c3531",
+  "session_id": "7906a757-816d-4fb0-bb9b-d6052c75c26f",
+  "strategy": "manual-commit",
+  "created_at": "2026-02-22T04:23:02.837717Z",
+  "branch": "copilot/update-ci-setup-with-ruff",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "mise.toml"
+  ],
+  "agent": "Claude Code",
+  "turn_id": "97c9f68750ba",
+  "token_usage": {
+    "input_tokens": 27,
+    "cache_creation_tokens": 93933,
+    "cache_read_tokens": 1904698,
+    "output_tokens": 228,
+    "api_call_count": 24
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-02-22T04:23:02.751468Z",
+    "agent_lines": 45,
+    "human_added": 29,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 74,
+    "agent_percentage": 60.810810810810814
+  },
+  "transcript_path": ".claude/projects/-Users-basher8383-3I-workshop-lunar-claude/7906a757-816d-4fb0-bb9b-d6052c75c26f.jsonl"
+}

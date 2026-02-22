@@ -1,0 +1,26 @@
+{
+  "cli_version": "0.4.5",
+  "checkpoint_id": "6193d33c3531",
+  "strategy": "manual-commit",
+  "branch": "copilot/update-ci-setup-with-ruff",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "mise.toml"
+  ],
+  "sessions": [
+    {
+      "metadata": "/61/93d33c3531/0/metadata.json",
+      "transcript": "/61/93d33c3531/0/full.jsonl",
+      "context": "/61/93d33c3531/0/context.md",
+      "content_hash": "/61/93d33c3531/0/content_hash.txt",
+      "prompt": "/61/93d33c3531/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 27,
+    "cache_creation_tokens": 93933,
+    "cache_read_tokens": 1904698,
+    "output_tokens": 228,
+    "api_call_count": 24
+  }
+}

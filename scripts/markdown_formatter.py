@@ -48,7 +48,9 @@ def detect_language(code: str) -> str:
     # YAML detection (must come before others - very common in this codebase)
     # Look for key: value patterns, leading dashes for lists, or document markers
     # Exclude if it looks like JSON (has { or [ at start after stripping)
-    if (re.search(r"^---\s*$", s, re.M) or re.search(r"^\w[\w\-]*:\s*[^\{]", s, re.M)) and not re.match(r"^\s*[\{\[]", s):
+    if (
+        re.search(r"^---\s*$", s, re.M) or re.search(r"^\w[\w\-]*:\s*[^\{]", s, re.M)
+    ) and not re.match(r"^\s*[\{\[]", s):
         return "yaml"
 
     # TOML detection (common for config files)

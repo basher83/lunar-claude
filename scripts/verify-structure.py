@@ -449,13 +449,11 @@ def validate_markdown_frontmatter(
         # e.g., "argument-hint: [spec1.yaml] [spec2.yaml]"
         # We'll try to quote such values to make them valid YAML strings
         import re
+
         fixed_text = frontmatter_text
         # Match lines like "argument-hint: [something] [something]" and quote the value
         fixed_text = re.sub(
-            r'^(argument-hint:\s*)(\[.+\].*)$',
-            r'\1"\2"',
-            fixed_text,
-            flags=re.MULTILINE
+            r"^(argument-hint:\s*)(\[.+\].*)$", r'\1"\2"', fixed_text, flags=re.MULTILINE
         )
         try:
             frontmatter = yaml.safe_load(fixed_text)

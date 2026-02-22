@@ -48,6 +48,7 @@ alias = "ccdc"
 # === Changelog tasks ===
 [tasks.changelog]
 description = "Update unreleased section of CHANGELOG.md"
+shell = "bash -c"
 run = """
 set -euo pipefail
 echo "📝 Updating CHANGELOG.md with unreleased changes..."
@@ -67,6 +68,7 @@ echo "✅ CHANGELOG.md updated!"
 
 [tasks.changelog-bump]
 description = "Bump version and update changelog for a release"
+shell = "bash -c"
 run = """
 set -euo pipefail
 
@@ -145,6 +147,7 @@ run = "lychee --config lychee.toml --verbose debug '**/*.md'"
 # === CI/CD Tasks ===
 [tasks.ci-lint]
 description = "Run all linting checks (used by CI)"
+shell = "bash -c"
 run = """
 set -euo pipefail
 echo "Running ruff check..."
@@ -159,6 +162,7 @@ uv run pyright scripts/ || true
 
 [tasks.ci-test]
 description = "Run all tests (used by CI)"
+shell = "bash -c"
 run = """
 set -euo pipefail
 echo "Running pytest..."
@@ -167,6 +171,7 @@ uv run pytest scripts/tests/ -v --tb=short
 
 [tasks.ci-validate]
 description = "Validate marketplace structure (used by CI)"
+shell = "bash -c"
 run = """
 set -euo pipefail
 echo "Validating marketplace structure..."

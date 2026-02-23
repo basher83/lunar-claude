@@ -203,7 +203,7 @@
         "repo": "basher83/domain-chassis"
       },
       "description": "Shared operational methodology for all domains. Gate-based validation, session context loading, and structured document review.",
-      "version": "0.1.1",
+      "version": "0.1.2",
       "category": "meta",
       "keywords": [
         "domains",

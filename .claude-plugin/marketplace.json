@@ -197,27 +197,6 @@
       }
     },
     {
-      "name": "domain-chassis",
-      "source": {
-        "source": "github",
-        "repo": "basher83/domain-chassis"
-      },
-      "description": "Shared operational methodology for all domains. Gate-based validation, session context loading, and structured document review.",
-      "version": "0.1.2",
-      "category": "meta",
-      "keywords": [
-        "domains",
-        "chassis",
-        "gates",
-        "validation",
-        "session-context",
-        "operational-methodology"
-      ],
-      "author": {
-        "name": "basher83"
-      }
-    },
-    {
       "name": "lunar-research",
       "source": {
         "source": "github",

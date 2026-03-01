@@ -49,7 +49,7 @@ Analyze the output:
 
 Use the Task tool to invoke the commit-craft agent:
 
-- subagent_type: "commit-craft"
+- subagent_type: "git-workflow:commit-craft"
 - prompt: "Create clean, atomic commits for the current workspace changes"
 
 The commit-craft agent will:

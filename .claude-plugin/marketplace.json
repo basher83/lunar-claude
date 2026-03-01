@@ -102,7 +102,7 @@
       "name": "git-workflow",
       "source": "./plugins/devops/git-workflow",
       "description": "Git workflow automation including atomic commits, branch cleanup, and conventional commit standards",
-      "version": "1.0.4",
+      "version": "1.0.5",
       "category": "devops",
       "keywords": [
         "git",

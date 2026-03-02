@@ -80,19 +80,17 @@
     {
       "name": "python-tools",
       "source": "./plugins/devops/python-tools",
-      "description": "Comprehensive Python development toolkit covering scripting (uv), code quality (ruff/pyright), and common patterns (JSON parsing)",
-      "version": "1.0.0",
+      "description": "Python development toolkit for scripting (uv/PEP 723), JSON parsing patterns, and Claude Agent SDK development",
+      "version": "1.1.0",
       "category": "devops",
       "keywords": [
         "python",
         "uv",
         "scripting",
-        "ruff",
-        "pyright",
-        "code-quality",
+        "agent-sdk",
         "json",
         "patterns",
-        "best-practices"
+        "pep-723"
       ],
       "author": {
         "name": "basher83"

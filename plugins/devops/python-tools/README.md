@@ -35,24 +35,6 @@ Python single-file script development using uv and PEP 723 inline metadata.
 
 ---
 
-### python-code-quality
-
-Python code quality tooling with ruff (linting + formatting) and pyright (type checking).
-
-**Use when:**
-
-- Setting up linting and formatting for a project
-- Configuring type checking with pyright
-- Establishing code quality standards for a team
-- Integrating quality checks into pre-commit or CI/CD
-- Migrating from black/flake8/mypy
-
-**Triggers:** ruff, pyright, linting, formatting, type checking, code quality, pre-commit
-
-**Learn more:** [skills/python-code-quality/](skills/python-code-quality/)
-
----
-
 ### python-json-parsing
 
 Best practices for JSON parsing in Python with performance optimization and security focus.
@@ -79,7 +61,6 @@ json security, jsonpath
 Simply ask Claude for help with Python development:
 
 ```text
-"Set up ruff and pyright for my project"
 "Parse this large JSON file efficiently"
 "Create a Python script using uv that fetches API data"
 ```
@@ -111,14 +92,6 @@ This structure provides quick answers while making deep knowledge accessible whe
 - `/reference/` - uv command reference and troubleshooting
 - `/tools/` - Script conversion and validation utilities
 
-### python-code-quality
-
-- `/reference/` - Complete ruff and pyright configuration guides
-- `/patterns/` - Pre-commit hooks, CI/CD quality gates
-- `/examples/` - Starter and strict config templates
-- `/tools/` - Batch formatter and checker scripts
-- `/workflows/` - Development workflow with quality checks
-
 ### python-json-parsing
 
 - `/reference/` - Comprehensive 2025 best practices research
@@ -129,7 +102,7 @@ This structure provides quick answers while making deep knowledge accessible whe
 
 ## Version History
 
-- 1.0.0 - Initial release as comprehensive Python development toolkit
+- 1.1.0 - Remove python-code-quality skill (superseded by repo-forge presets)
+- 1.0.0 - Initial release
   - python-uv-scripts: uv-based script development
-  - python-code-quality: ruff and pyright tooling
   - python-json-parsing: JSON best practices with performance and security focus

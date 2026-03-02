@@ -1,11 +1,11 @@
 ---
-description: Run pre-commit hooks and create clean, logical commits
-allowed-tools: Bash(git:*), Bash(pre-commit:*), Bash(test:*), Task, AskUserQuestion
+description: Run hooks and create clean, logical commits
+allowed-tools: Bash(git:*), Bash(pre-commit:*), Bash(hk:*), Bash(test:*), Task, AskUserQuestion
 ---
 
 # Git Commit Workflow
 
-Orchestrate pre-commit hooks and invoke commit-craft agent for clean, logical commits.
+Orchestrate git hooks and invoke commit-craft agent for clean, logical commits.
 
 ## Current State
 
@@ -14,6 +14,7 @@ Orchestrate pre-commit hooks and invoke commit-craft agent for clean, logical co
 - Merge/rebase state: !`test -f .git/MERGE_HEAD && echo "MERGE IN PROGRESS" || test -d .git/rebase-merge && echo "REBASE IN PROGRESS" || echo "Clean"`
 - Staged files: !`git diff --cached --name-only`
 - Sensitive files check: !`git diff --cached --name-only | grep -iE '\.(env|mcp\.json)$|secret|token|key|password' || echo "None detected"`
+- Hook system: !`test -f hk.pkl && echo "hk" || (test -f .pre-commit-config.yaml && echo "pre-commit") || echo "none"`
 
 ## Workflow
 
@@ -30,11 +31,22 @@ Verify repository state:
      - Unstage (Remove sensitive files from staging)
      - Abort (Cancel commit workflow)
 
-### Step 2: Run Pre-commit Hooks (if configured)
+### Step 2: Run Hooks (if configured)
 
-Check if pre-commit is configured: `test -f .pre-commit-config.yaml`
+Detect which hook system is in use based on the "Hook system" value from Current State.
 
-If configured, execute pre-commit hooks: `pre-commit run -a`
+**If hk:** execute `hk fix`
+
+Analyze the output:
+
+- If all steps pass: Continue to Step 3
+- If steps fail with errors that cannot be auto-fixed: Report errors and stop
+- If steps modify files (formatting, newlines, etc.):
+  1. Show which files were modified
+  2. Re-stage modified files: `git add -u`
+  3. Continue to Step 3
+
+**If pre-commit:** execute `pre-commit run -a`
 
 Analyze the output:
 
@@ -44,6 +56,8 @@ Analyze the output:
   1. Show which files were modified
   2. Re-stage modified files: `git add -u`
   3. Continue to Step 3
+
+**If none:** Skip to Step 3.
 
 ### Step 3: Create Commits
 

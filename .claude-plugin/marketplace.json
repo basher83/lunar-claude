@@ -117,6 +117,29 @@
       }
     },
     {
+      "name": "repo-forge",
+      "source": "./plugins/devops/repo-forge",
+      "description": "Project setup and validation toolkit for standardizing repos with mise, pre-commit, gitignore, and changelog tooling across Python, Rust, Terraform, and Ansible projects",
+      "version": "0.1.0",
+      "category": "devops",
+      "keywords": [
+        "mise",
+        "pre-commit",
+        "gitignore",
+        "git-cliff",
+        "changelog",
+        "project-setup",
+        "validation",
+        "python",
+        "rust",
+        "terraform",
+        "ansible"
+      ],
+      "author": {
+        "name": "basher83"
+      }
+    },
+    {
       "name": "netbox-powerdns-integration",
       "source": "./plugins/homelab/netbox-powerdns-integration",
       "description": "NetBox IPAM and PowerDNS integration for automated DNS record management and infrastructure documentation",

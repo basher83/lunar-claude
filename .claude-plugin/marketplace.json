@@ -119,12 +119,12 @@
     {
       "name": "repo-forge",
       "source": "./plugins/devops/repo-forge",
-      "description": "Project setup and validation toolkit for standardizing repos with mise, pre-commit, gitignore, and changelog tooling across Python, Rust, Terraform, and Ansible projects",
-      "version": "0.1.0",
+      "description": "Project setup and validation toolkit for standardizing repos with mise, hk, and changelog tooling across Python, Rust, Terraform, and Ansible projects",
+      "version": "0.2.0",
       "category": "devops",
       "keywords": [
         "mise",
-        "pre-commit",
+        "hk",
         "gitignore",
         "git-cliff",
         "changelog",

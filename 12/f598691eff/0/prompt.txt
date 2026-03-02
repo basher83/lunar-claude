@@ -1,0 +1,41 @@
+pls review @plan.md to pick up from prior session
+
+---
+
+1 should be complete pls verify
+
+---
+
+pls add observation to the plan.md so i dont forget
+
+---
+
+alright lets move to step 2
+
+---
+
+wait, whats in claude-ai modules?
+
+---
+
+got it, only one not valid is .entire/ it ships its own nested ignore
+
+---
+
+gtg lets hit 3
+
+---
+
+rdy
+
+---
+
+clean, lets forge on!
+
+---
+
+only thing left is test in a new repo then?
+
+---
+
+well i just so happen to have a new repo lol. almost like i planned this or something. lets patch bump the plugin and marketplace jsons to be extra sure then commit and push and i'll test it out

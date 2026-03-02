@@ -1,0 +1,33 @@
+{
+  "cli_version": "0.4.8",
+  "checkpoint_id": "12f598691eff",
+  "session_id": "38df405e-e626-45ce-aba4-fe921af77dd8",
+  "strategy": "manual-commit",
+  "created_at": "2026-03-02T05:01:46.996918Z",
+  "branch": "main",
+  "checkpoints_count": 6,
+  "files_touched": [
+    ".claude-plugin/marketplace.json",
+    "plan.md",
+    "plugins/devops/repo-forge/.claude-plugin/plugin.json",
+    "plugins/devops/repo-forge/commands/repo-onboard.md"
+  ],
+  "agent": "Claude Code",
+  "turn_id": "bdf65ae5bd0c",
+  "token_usage": {
+    "input_tokens": 2078,
+    "cache_creation_tokens": 249693,
+    "cache_read_tokens": 10340457,
+    "output_tokens": 42527,
+    "api_call_count": 96
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-03-02T05:01:46.734371Z",
+    "agent_lines": 498,
+    "human_added": 0,
+    "human_modified": 2,
+    "human_removed": 0,
+    "total_committed": 500,
+    "agent_percentage": 99.6
+  }
+}

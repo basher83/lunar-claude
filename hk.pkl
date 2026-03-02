@@ -1,0 +1,118 @@
+amends "package://github.com/jdx/hk/releases/download/v1.36.0/hk@1.36.0#/Config.pkl"
+import "package://github.com/jdx/hk/releases/download/v1.36.0/hk@1.36.0#/Builtins.pkl"
+import ".hk/vendors/astral-sh-ruff-pre-commit/hooks.pkl" as Vendors_astral_sh_ruff_pre_commit
+import ".hk/vendors/renovatebot-pre-commit-hooks/hooks.pkl" as Vendors_renovatebot_pre_commit_hooks
+import ".hk/vendors/astral-sh-uv-pre-commit/hooks.pkl" as Vendors_astral_sh_uv_pre_commit
+import ".hk/vendors/rvben-rumdl-pre-commit/hooks.pkl" as Vendors_rvben_rumdl_pre_commit
+
+// TODO: Vendored repos detected
+// The .hk/vendors directory is a compatibility layer for pre-commit projects.
+// For better performance and idiomatic hk usage, consider installing tools with mise:
+//   mise use <tool>@<version>
+// Then update your hooks to use the mise-installed tools directly.
+//
+
+local linters = new Mapping<String, Step> {
+    ["uv-sync"] = (Vendors_astral_sh_uv_pre_commit.uv_sync) {
+        exclude = Regex(#"^\.hk/"#)
+    }
+    ["ruff"] = (Builtins.ruff) {
+        exclude = Regex(#"^\.hk/"#)
+        // files pattern from pre-commit: ^scripts/
+        // Note: Convert regex to glob pattern for hk
+        // args from pre-commit: --fix
+        // Consider updating check/fix commands with these args
+    }
+    ["ruff-format"] = (Builtins.ruff_format) {
+        exclude = Regex(#"^\.hk/"#)
+    }
+    ["trailing-whitespace"] = (Builtins.trailing_whitespace) {
+        exclude = Regex(#"^\.hk/"#)
+    }
+    ["end-of-file-fixer"] = (Builtins.newlines) {
+        exclude = Regex(#"^\.hk/"#)
+    }
+    ["check-yaml"] {
+        glob = "**/*.{yml,yaml}"
+        exclude = Regex(#"(examples/.*\.yaml$|specs/.*\.yaml$)|^\.hk/"#)
+        check = "python -c \"import yaml, sys; [yaml.safe_load(open(f)) for f in sys.argv[1:]]\""
+    }
+    ["check-added-large-files"] = (Builtins.check_added_large_files) {
+        exclude = Regex(#"^\.hk/"#)
+    }
+    ["detect-private-key"] = (Builtins.detect_private_key) {
+        exclude = Regex(#"^\.hk/"#)
+    }
+    ["check-executables-have-shebangs"] = (Builtins.check_executables_have_shebangs) {
+        exclude = Regex(#"^\.hk/"#)
+    }
+    ["check-ast"] = (Builtins.python_check_ast) {
+        exclude = Regex(#"^\.hk/"#)
+    }
+    ["check-json"] {
+        glob = "**/*.json"
+        exclude = Regex(#"^\.hk/"#)
+        check = "python -c \"import json, sys; [json.load(open(f)) for f in sys.argv[1:]]\""
+    }
+    ["check-merge-conflict"] = (Builtins.check_merge_conflict) {
+        exclude = Regex(#"^\.hk/"#)
+    }
+    ["check-symlinks"] = (Builtins.check_symlinks) {
+        exclude = Regex(#"^\.hk/"#)
+    }
+    ["renovate-config-validator"] = (Vendors_renovatebot_pre_commit_hooks.renovate_config_validator) {
+        exclude = Regex(#"^\.hk/"#)
+        // args from pre-commit: --strict
+    }
+}
+
+local custom_steps = new Mapping<String, Step> {
+    // Repo: https://github.com/pre-commit/pre-commit-hooks @ v5.0.0
+    ["check-shebang-scripts-are-executable"] {
+        exclude = Regex(#"^\.hk/"#)
+        // TODO: Configure check and/or fix commands
+        // check = "..."
+        // fix = "..."
+    }
+    // Repo: https://github.com/pre-commit/pre-commit-hooks @ v5.0.0
+    ["detect-aws-credentials"] {
+        exclude = Regex(#"^\.hk/"#)
+        // TODO: Configure check and/or fix commands
+        // check = "..."
+        // fix = "..."
+        // Original args: --allow-missing-credentials
+    }
+}
+
+local manual_steps = new Mapping<String, Step> {
+    ["rumdl"] = (Vendors_rvben_rumdl_pre_commit.rumdl) {
+        glob = "{README.md,plugins/*/README.md,plugins/*/*/README.md,docs/architecture/*.md}"
+        exclude = Regex(#"^\.hk/"#)
+    }
+}
+
+hooks {
+    ["pre-commit"] {
+        fix = true
+        stash = "git"
+        steps {
+            ...linters
+            ...custom_steps
+        }
+    }
+    ["check"] {
+        steps {
+            ...linters
+            ...custom_steps
+            ...manual_steps
+        }
+    }
+    ["fix"] {
+        fix = true
+        steps {
+            ...linters
+            ...custom_steps
+            ...manual_steps
+        }
+    }
+}

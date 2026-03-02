@@ -1,4 +1,4 @@
-# Mise configuration for terraform-homelab
+# Mise configuration for lunar-claude
 min_version = "2024.9.5"
 
 [settings]
@@ -15,20 +15,21 @@ truncate = true
 fnox-env = "https://github.com/jdx/mise-env-fnox"
 
 [tools]
-python = "3.14.3"
+python = "latest"
 eza = "0.23.0"
 fd = "10.2.0"
 rg = "14.1.1"
-git-cliff = "2.10.1"
-shellcheck = "0.11.0"
-uv = "0.10.4"
-ruff = "0.15.2"
+git-cliff = "latest"
+shellcheck = "latest"
+uv = "latest"
+ruff = "latest"
 # "npm:pyright" = "1.1.407"  # Commented out due to npm registry timeout
 lychee = "0.23.0"
 "pipx:rumdl" = "0.1.25"
-pre-commit = "4.5.1"
 fnox = "latest"
 age = "latest"
+hk = "latest"
+pkl = "latest"
 
 [env]
 _.python.venv = { path = ".venv", create = true } # create the venv if it doesn't exist
@@ -45,75 +46,9 @@ description = "Run Claude Code CLI with arguments"
 run = "claude --dangerously-skip-permissions --continue"
 alias = "ccdc"
 
-# === Changelog tasks ===
-[tasks.changelog]
-description = "Update unreleased section of CHANGELOG.md"
-shell = "bash -c"
-run = """
-set -euo pipefail
-echo "📝 Updating CHANGELOG.md with unreleased changes..."
-
-# Check if CHANGELOG.md exists
-if [ ! -f CHANGELOG.md ]; then
-  echo "⚠️  CHANGELOG.md not found. Generating initial changelog..."
-  git-cliff -o CHANGELOG.md
-  echo "✅ Initial CHANGELOG.md created!"
-  exit 0
-fi
-
-# Regenerate the entire changelog to include new unreleased commits
-git-cliff -o CHANGELOG.md
-echo "✅ CHANGELOG.md updated!"
-"""
-
-[tasks.changelog-bump]
-description = "Bump version and update changelog for a release"
-shell = "bash -c"
-run = """
-set -euo pipefail
-
-if [ -z "${1:-}" ]; then
-  echo "❌ Error: Version number required"
-  echo ""
-  echo "Usage: mise run changelog-bump <version>"
-  echo "Example: mise run changelog-bump 0.1.4"
-  exit 1
-fi
-
-VERSION="$1"
-
-# Validate version format (basic semver check)
-if ! echo "$VERSION" | grep -qE '^[0-9]+\\.[0-9]+\\.[0-9]+$'; then
-  echo "❌ Error: Invalid version format. Expected: X.Y.Z (e.g., 0.1.4)"
-  exit 1
-fi
-
-echo "📝 Creating release v$VERSION..."
-
-# Generate changelog for the new version
-git-cliff --tag "v$VERSION" -o CHANGELOG.md
-
-echo "✅ CHANGELOG.md updated for v$VERSION!"
-echo ""
-echo "Next steps:"
-echo "  1. Review CHANGELOG.md"
-echo "  2. Update version in .claude-plugin/marketplace.json and plugin manifests"
-echo "  3. Commit changes:"
-echo "     git add CHANGELOG.md .claude-plugin/ && git commit -m 'chore: release v$VERSION'"
-echo "  4. Create annotated tag:"
-echo "     git tag -a v$VERSION -m 'Release v$VERSION'"
-echo "  5. Push to GitHub:"
-echo "     git push && git push --tags"
-"""
-
-# === Hooks tasks ===
 [tasks.hooks-install]
-description = "Install pre-commit and infisical hooks"
-run = "pre-commit install -f && infisical scan install --pre-commit-hook"
-
-[tasks.pre-commit-run]
-description = "Run pre-commit hooks"
-run = "pre-commit run --all-files"
+description = "Install hk and infisical hooks"
+run = "hk install --mise && infisical scan install --pre-commit-hook"
 
 # === Infisical tasks ===
 [tasks.infisical-scan]
@@ -144,40 +79,39 @@ run = "lychee --config lychee.toml '**/*.md'"
 description = "Check all links in markdown files with verbose output"
 run = "lychee --config lychee.toml --verbose debug '**/*.md'"
 
-# === CI/CD Tasks ===
-[tasks.ci-lint]
-description = "Run all linting checks (used by CI)"
-shell = "bash -c"
-run = """
-set -euo pipefail
-echo "Running ruff check..."
-uv run ruff check scripts/
-
-echo "Running ruff format check..."
-uv run ruff format --check scripts/
-
-echo "Running pyright (warnings allowed)..."
-uv run pyright scripts/ || true
-"""
-
-[tasks.ci-test]
-description = "Run all tests (used by CI)"
-shell = "bash -c"
-run = """
-set -euo pipefail
-echo "Running pytest..."
-uv run pytest scripts/tests/ -v --tb=short
-"""
-
-[tasks.ci-validate]
-description = "Validate marketplace structure (used by CI)"
-shell = "bash -c"
-run = """
-set -euo pipefail
-echo "Validating marketplace structure..."
-uv run scripts/verify-structure.py --strict
-"""
+[tasks.validate]
+description = "Validate marketplace structure"
+run = "uv run scripts/verify-structure.py --strict"
 
 [tasks.ci]
-description = "Run all CI checks locally"
-depends = ["ci-lint", "ci-test", "ci-validate"]
+depends = ["lint", "test", "validate"]
+description = "Full CI gate"
+run = "echo 'CI passed'"
+
+[tasks.lint]
+description = "Run all checks"
+run = "hk check"
+
+[tasks.fix]
+description = "Auto-fix issues"
+run = "hk fix"
+
+[tasks.sync]
+description = "Install dependencies"
+run = "uv sync"
+
+[tasks.upgrade]
+description = "Upgrade dependencies"
+run = "uv lock --upgrade"
+
+[tasks.test]
+description = "Run tests"
+run = "uv run pytest"
+
+[tasks.typecheck]
+description = "Type check"
+run = "uv run pyright"
+
+[tasks.format]
+description = "Format code"
+run = "ruff format ."

@@ -4,7 +4,8 @@ Development scripts for the claude-dev-sandbox plugin.
 
 ## sync_docs.py
 
-Hybrid Claude Code documentation synchronization script. Combines best practices from multiple implementations to provide comprehensive, efficient documentation syncing.
+Hybrid Claude Code documentation synchronization script. Combines best practices from
+multiple implementations to provide comprehensive, efficient documentation syncing.
 
 ### Features
 

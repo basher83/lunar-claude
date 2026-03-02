@@ -1,6 +1,7 @@
 # Command Development Skill
 
-Comprehensive guidance on creating Claude Code slash commands, including file format, frontmatter options, dynamic arguments, and best practices.
+Comprehensive guidance on creating Claude Code slash commands, including file format,
+frontmatter options, dynamic arguments, and best practices.
 
 ## Overview
 

@@ -19,9 +19,7 @@ jobs:
         uses: jdx/mise-action@6d1e696aa24c1aa1bcc1adea0212707c71ab78a8 # v3
 
       - name: Run validation and tests
-        run: |
-          mise run ci-validate
-          mise run ci-test
+        run: mise run ci
 
   release:
     name: Create Release

@@ -10,8 +10,7 @@ A preset is an executable bash script with MISE metadata comments:
 #!/usr/bin/env bash
 #MISE dir="{{cwd}}"
 
-mise use uv
-mise use pre-commit
+mise use uv ruff
 mise config set env._.python.venv.path .venv
 mise config set env._.python.venv.create true -t bool
 mise tasks add --description "Run linter" lint -- hk check
@@ -149,7 +148,7 @@ mise config set env._.python.venv.create true -t bool
 mise tasks add --description "Install dependencies" sync -- uv sync
 mise tasks add --description "Upgrade dependencies" upgrade -- uv lock --upgrade
 mise tasks add --description "Run tests" test -- uv run pytest
-mise tasks add --description "Type check" typecheck -- uv run mypy src/
+mise tasks add --description "Type check" typecheck -- uv run pyright
 
 # Postinstall hook: auto-setup after mise install
 mise config set hooks.postinstall "hk install --mise && uv sync"

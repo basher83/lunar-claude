@@ -75,7 +75,8 @@ Only if .pre-commit-config.yaml was detected AND user confirmed in Phase 2.
 
 Run migration steps sequentially:
 
-1. `hk migrate pre-commit` — reads .pre-commit-config.yaml, generates hk.pkl
+1. `hk migrate pre-commit --force` — reads .pre-commit-config.yaml, generates
+   hk.pkl. The `--force` flag is required because Phase 3 already created hk.pkl.
 2. Read the generated hk.pkl and show it to the user for review
 3. `hk install --mise` — set up git hooks with mise integration
 4. Ask user via AskUserQuestion whether to remove .pre-commit-config.yaml:
@@ -86,12 +87,32 @@ Run migration steps sequentially:
      - Keep (Keep it alongside hk.pkl for now)
 5. If remove: delete .pre-commit-config.yaml
 6. Check if pre-commit is in mise.toml tools — if so, run `mise rm pre-commit`
+7. Clean up stale prek/pre-commit hooks from `.git/hooks/`. Check each hook file
+   for "prek" in its contents and remove any that are prek-generated (typically
+   post-checkout, post-merge, post-rewrite). Do NOT remove hooks from other
+   tools (e.g., Entire CLI hooks in post-commit, pre-push, prepare-commit-msg).
 
 IMPORTANT: If a language preset already wrote hk.pkl in Phase 3, the migration
 in this phase will overwrite it. The migrated hk.pkl preserves existing hook
 configurations from pre-commit. After migration, the user should review and
 merge any language-specific steps (ruff, shellcheck, etc.) back into the
 migrated hk.pkl manually.
+
+IMPORTANT: The hk migration maps pre-commit hooks to hk builtins, but some
+mappings produce different behavior than the original:
+
+- `check-yaml` maps to `Builtins.yamllint` — this is a YAML style linter
+  (line length, indentation), not a syntax validator. The original pre-commit
+  `check-yaml` only validated that files parse as YAML. Replace with a custom
+  step using `python -c "import yaml, sys; ..."` for syntax-only checking.
+- `check-json` maps to `Builtins.jq` — this is a JSON reformatter that diffs
+  files against jq's output. The original `check-json` only validated syntax.
+  Replace with a custom step using `python -c "import json, sys; ..."`.
+- Vendored steps (from `.hk/vendors/`) may lack glob filters, causing tools
+  like ruff-format to run on all files. Replace vendored steps with their
+  Builtins equivalents where available (e.g., `Builtins.ruff_format`).
+- Vendored rumdl will run on all files. Scope its glob to match the original
+  pre-commit files pattern.
 
 ## Phase 5: Renovate Language Preset (conditional)
 

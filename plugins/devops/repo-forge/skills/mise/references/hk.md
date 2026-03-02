@@ -147,12 +147,21 @@ Default pre-commit hooks run fast steps only. CI runs `hk check --slow` for the 
 
 ```bash
 hk migrate pre-commit       # Reads .pre-commit-config.yaml, generates hk.pkl
+hk migrate pre-commit --force  # Use --force if hk.pkl already exists
 hk install --mise            # Set up git hooks
 rm .pre-commit-config.yaml   # Remove old config
 mise rm pre-commit           # Remove pre-commit tool from mise
 ```
 
 The migration command converts hook repos to builtins where possible and preserves glob patterns and exclusions.
+
+After migration, check `.git/hooks/` for stale prek-generated hooks (post-checkout, post-merge, post-rewrite) and remove them. These reference pre-commit and will error on every git operation once the config is gone.
+
+Known migration mapping issues to review in the generated hk.pkl:
+
+- `Builtins.yamllint` is a style enforcer (line length, indentation rules), not a syntax validator. The original pre-commit `check-yaml` only validated YAML parses correctly. Replace with a custom syntax check if style enforcement is unwanted.
+- `Builtins.jq` reformats JSON files and diffs the output. The original `check-json` only validated JSON syntax. Replace with a custom syntax check to avoid unwanted reformatting.
+- Vendored steps from `.hk/vendors/` may lack glob filters. Replace with Builtins equivalents where available (e.g., `Builtins.ruff_format` instead of vendored ruff-format).
 
 ## Global Configuration
 

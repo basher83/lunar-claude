@@ -1,13 +1,15 @@
 ---
 name: mise
 description: >-
-  This skill provides mise configuration patterns, task definitions, and language-specific
-  setup guidance. This skill should be used when the user asks to "set up mise", "create a
-  mise.toml", "configure task runner", "manage tool versions", "add a task to mise",
-  "set up Python with mise", "configure Rust toolchain", "onboard a repo", "add mise to this
-  project", "set up dev environment", "configure environment variables in mise", "set up
-  global mise config", or mentions mise configuration, dev tooling setup, task definitions,
-  layered configuration, or project onboarding.
+  This skill provides mise configuration patterns, task definitions, hooks, presets, and
+  language-specific setup guidance. This skill should be used when the user asks to "set up
+  mise", "create a mise.toml", "configure task runner", "manage tool versions", "add a task
+  to mise", "set up Python with mise", "configure Rust toolchain", "onboard a repo", "add
+  mise to this project", "set up dev environment", "configure environment variables in mise",
+  "set up global mise config", "create a preset", "scaffold a new project", "set up hk",
+  "configure git hooks with hk", "generate bootstrap", "mise generate", "migrate from
+  pre-commit", or mentions mise configuration, dev tooling setup, task definitions, hooks,
+  presets, project scaffolding, or hk git hook management.
 ---
 
 # mise
@@ -259,6 +261,101 @@ wait_for = ["build"]                # Waits without forcing execution
 
 Independent dependencies run in parallel by default. Control parallelism with `[settings] jobs = 4`.
 
+## Version Resolution
+
+Never hardcode tool versions from training data — they will be wrong. Always resolve versions at runtime through mise.
+
+Use `mise use <tool>` to install and pin a tool. It queries the registry, resolves the current version, installs it, and writes the pinned version to mise.toml. Default is fuzzy pinning (`mise use python@3.13` writes `python = "3.13"`). Use `--pin` for exact versions (`python = "3.13.2"`) when patch-level precision matters.
+
+For discovery:
+
+- `mise ls-remote <tool>` — list all available versions from the registry
+- `mise ls` — list currently installed tools and versions
+- `mise outdated` — show tools with newer versions available
+- `mise up --bump` — upgrade all tools while maintaining semver ranges
+
+When writing presets, scripts, or giving version advice: always use `mise use` to resolve versions live. Never embed version strings from memory.
+
+## Hooks
+
+Hooks execute scripts during `mise activate` sessions and tool installations. Define them in `mise.toml`:
+
+```toml
+[hooks]
+enter = "echo 'entering project'"
+postinstall = { task = "post-setup" }
+```
+
+Events: `enter` (first project entry), `cd` (every directory change), `leave` (exit project), `preinstall`, `postinstall`. The `enter` and `postinstall` events are the most useful — enter for project validation, postinstall for tool-specific setup after `mise install`.
+
+Shell hooks execute in the current shell context for sourcing files:
+
+```toml
+[hooks.enter]
+shell = "bash"
+script = "source .envrc.local"
+```
+
+Watch files for auto-formatting on change:
+
+```toml
+[[watch_files]]
+patterns = ["src/**/*.rs"]
+run = "cargo fmt"
+```
+
+See [Hooks Reference](references/hooks.md) for all events, environment variables, and patterns.
+
+## Scaffolding with `mise generate`
+
+mise generates common project files. Use these in presets instead of writing files from scratch:
+
+- `mise generate bootstrap --localize --write` — install script for contributors without mise. `--localize` sandboxes mise into `.mise/` within the project.
+- `mise generate config` — creates mise.toml, can import from `.tool-versions`
+- `mise generate git-pre-commit --task=<task> --write` — git pre-commit hook that runs a mise task
+- `mise generate github-action --write --task=ci` — CI workflow using jdx/mise-action
+- `mise generate task-docs` — documentation for all defined tasks
+- `mise generate task-stubs` — shims in `bin/` so contributors run tasks without mise installed
+
+Pair `bootstrap` with `task-stubs` for zero-mise-required contributor onboarding.
+
+## Presets
+
+Presets are reusable scaffolding scripts stored in `~/.config/mise/tasks/preset/`. Run with `mise preset:<name>`. They compose through dependency chains:
+
+```bash
+#!/usr/bin/env bash
+#MISE dir="{{cwd}}"
+#MISE depends=["preset:base"]
+
+mise use python uv ruff
+mise config set env._.python.venv.path .venv
+mise config set env._.python.venv.create true -t bool
+mise tasks add --description "Install deps" sync -- uv sync
+```
+
+The pattern: `mise use` for tool versions (resolved live), `mise config set` for configuration, `mise tasks add` for task definitions, `mise generate` for standard files, and direct file writes for non-mise configs (cliff.toml, .gitignore, hk.pkl).
+
+Presets are global by design — they scaffold new repos that have no project-level configuration yet.
+
+See [Presets Reference](references/presets.md) for the full API and example preset skeletons.
+
+## hk Integration
+
+hk is a Rust-based git hook manager by the same author as mise. It replaces the pre-commit framework with parallel execution, file-level read/write locks, and built-in linter definitions that resolve tools through mise.
+
+```bash
+mise use hk                # Install hk
+hk init --mise             # Generate hk.pkl + mise integration
+hk install --mise          # Set up git hooks
+```
+
+hk provides builtins for common tools: `ruff`, `cargo_clippy`, `cargo_fmt`, `shellcheck`, `yamllint`, `prettier`, `eslint`, `mypy`, `hclfmt`, `detect_private_key`, `check_merge_conflict`, `trailing_whitespace`, `check_conventional_commit`, and many more. Builtins need no version pinning — tools resolve through mise.
+
+For existing repos using pre-commit, migrate with `hk migrate pre-commit`. This reads `.pre-commit-config.yaml`, generates `hk.pkl`, and converts hook repos to builtins where possible.
+
+See [hk Reference](references/hk.md) for PKL config details, the full builtins list, step configuration, and profiles.
+
 ## Settings
 
 ```toml
@@ -279,6 +376,9 @@ See [Examples](examples/examples.md) for complete Claude Code integration task p
 
 - [Python Ecosystem](references/python.md) — Version management, venv handling, and task patterns for Python projects
 - [Rust Ecosystem](references/rust.md) — Toolchain management and task patterns for Rust projects
+- [Hooks](references/hooks.md) — Hook events, environment variables, and common patterns
+- [Presets](references/presets.md) — Preset anatomy, CLI reference, dependency chaining, and example skeletons
+- [hk Git Hooks](references/hk.md) — hk.pkl configuration, builtins, step options, profiles, and migration
 - [Examples](examples/examples.md) — Complete `mise.toml` files for common project types
 
 ## External Resources
@@ -286,3 +386,5 @@ See [Examples](examples/examples.md) for complete Claude Code integration task p
 - [mise documentation](https://mise.jdx.dev/) — Official docs
 - [mise GitHub](https://github.com/jdx/mise) — Source repository
 - [mise.toml schema](https://mise.jdx.dev/schema/mise.json) — JSON schema for editor validation
+- [hk documentation](https://hk.jdx.dev/) — Git hook manager docs
+- [hk GitHub](https://github.com/jdx/hk) — Git hook manager source

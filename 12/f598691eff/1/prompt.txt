@@ -1,0 +1,1183 @@
+this is my claude code marketplace repo. I'd like to work on some maintainece tasks. I just added a new skill as well and need to add another still.
+
+---
+
+ah right, its a standalone skill next to the actual plugins. good catch. ok so probably a new plugin then or need to combine some things. the intention for mise is to have a few skills and maybe other plugin components to assist in setting up new repos and validating repos are set up properly. So mise is what i use everywhere, then i need pre-commit, gitignore setup and veriify, gitcliff for changelogs then project type identification and setup. my projects are mostly all python, rust, terraform, ansible
+
+---
+
+repo-forge sounds good. stand up the plugin structure + move mise in, then build the other skills iteratively
+
+---
+
+Continue from where you left off.
+
+---
+
+use plugin-dev:create-plugin workflow
+
+---
+
+# Plugin Creation Workflow
+
+Guide the user through creating a complete, high-quality Claude Code plugin from initial concept to tested implementation. Follow a systematic approach: understand requirements, design components, clarify details, implement following best practices, validate, and test.
+
+## Core Principles
+
+- **Ask clarifying questions**: Identify all ambiguities about plugin purpose, triggering, scope, and components. Ask specific, concrete questions rather than making assumptions. Wait for user answers before proceeding with implementation.
+- **Load relevant skills**: Use the Skill tool to load plugin-dev skills when needed (plugin-structure, hook-development, agent-development, etc.)
+- **Use specialized agents**: Leverage agent-creator, plugin-validator, and skill-reviewer agents for AI-assisted development
+- **Follow best practices**: Apply patterns from plugin-dev's own implementation
+- **Progressive disclosure**: Create lean skills with references/examples
+- **Use TodoWrite**: Track all progress throughout all phases
+
+**Initial request:** 
+
+---
+
+## Phase 1: Discovery
+
+**Goal**: Understand what plugin needs to be built and what problem it solves
+
+**Actions**:
+1. Create todo list with all 7 phases
+2. If plugin purpose is clear from arguments:
+   - Summarize understanding
+   - Identify plugin type (integration, workflow, analysis, toolkit, etc.)
+3. If plugin purpose is unclear, ask user:
+   - What problem does this plugin solve?
+   - Who will use it and when?
+   - What should it do?
+   - Any similar plugins to reference?
+4. Summarize understanding and confirm with user before proceeding
+
+**Output**: Clear statement of plugin purpose and target users
+
+---
+
+## Phase 2: Component Planning
+
+**Goal**: Determine what plugin components are needed
+
+**MUST load plugin-structure skill** using Skill tool before this phase.
+
+**Actions**:
+1. Load plugin-structure skill to understand component types
+2. Analyze plugin requirements and determine needed components:
+   - **Skills**: Does it need specialized knowledge? (hooks API, MCP patterns, etc.)
+   - **Commands**: User-initiated actions? (deploy, configure, analyze)
+   - **Agents**: Autonomous tasks? (validation, generation, analysis)
+   - **Hooks**: Event-driven automation? (validation, notifications)
+   - **MCP**: External service integration? (databases, APIs)
+   - **Settings**: User configuration? (.local.md files)
+3. For each component type needed, identify:
+   - How many of each type
+   - What each one does
+   - Rough triggering/usage patterns
+4. Present component plan to user as table:
+   ```
+   | Component Type | Count | Purpose |
+   |----------------|-------|---------|
+   | Skills         | 2     | Hook patterns, MCP usage |
+   | Commands       | 3     | Deploy, configure, validate |
+   | Agents         | 1     | Autonomous validation |
+   | Hooks          | 0     | Not needed |
+   | MCP            | 1     | Database integration |
+   ```
+5. Get user confirmation or adjustments
+
+**Output**: Confirmed list of components to create
+
+---
+
+## Phase 3: Detailed Design & Clarifying Questions
+
+**Goal**: Specify each component in detail and resolve all ambiguities
+
+**CRITICAL**: This is one of the most important phases. DO NOT SKIP.
+
+**Actions**:
+1. For each component in the plan, identify underspecified aspects:
+   - **Skills**: What triggers them? What knowledge do they provide? How detailed?
+   - **Commands**: What arguments? What tools? Interactive or automated?
+   - **Agents**: When to trigger (proactive/reactive)? What tools? Output format?
+   - **Hooks**: Which events? Prompt or command based? Validation criteria?
+   - **MCP**: What server type? Authentication? Which tools?
+   - **Settings**: What fields? Required vs optional? Defaults?
+
+2. **Present all questions to user in organized sections** (one section per component type)
+
+3. **Wait for answers before proceeding to implementation**
+
+4. If user says "whatever you think is best", provide specific recommendations and get explicit confirmation
+
+**Example questions for a skill**:
+- What specific user queries should trigger this skill?
+- Should it include utility scripts? What functionality?
+- How detailed should the core SKILL.md be vs references/?
+- Any real-world examples to include?
+
+**Example questions for an agent**:
+- Should this agent trigger proactively after certain actions, or only when explicitly requested?
+- What tools does it need (Read, Write, Bash, etc.)?
+- What should the output format be?
+- Any specific quality standards to enforce?
+
+**Output**: Detailed specification for each component
+
+---
+
+## Phase 4: Plugin Structure Creation
+
+**Goal**: Create plugin directory structure and manifest
+
+**Actions**:
+1. Determine plugin name (kebab-case, descriptive)
+2. Choose plugin location:
+   - Ask user: "Where should I create the plugin?"
+   - Offer options: current directory, ../new-plugin-name, custom path
+3. Create directory structure using bash:
+   ```bash
+   mkdir -p plugin-name/.claude-plugin
+   mkdir -p plugin-name/skills     # if needed
+   mkdir -p plugin-name/commands   # if needed
+   mkdir -p plugin-name/agents     # if needed
+   mkdir -p plugin-name/hooks      # if needed
+   ```
+4. Create plugin.json manifest using Write tool:
+   ```json
+   {
+     "name": "plugin-name",
+     "version": "0.1.0",
+     "description": "[brief description]",
+     "author": {
+       "name": "[author from user or default]",
+       "email": "[email or default]"
+     }
+   }
+   ```
+5. Create README.md template
+6. Create .gitignore if needed (for .claude/*.local.md, etc.)
+7. Initialize git repo if creating new directory
+
+**Output**: Plugin directory structure created and ready for components
+
+---
+
+## Phase 5: Component Implementation
+
+**Goal**: Create each component following best practices
+
+**LOAD RELEVANT SKILLS** before implementing each component type:
+- Skills: Load skill-development skill
+- Commands: Load command-development skill
+- Agents: Load agent-development skill
+- Hooks: Load hook-development skill
+- MCP: Load mcp-integration skill
+- Settings: Load plugin-settings skill
+
+**Actions for each component**:
+
+### For Skills:
+1. Load skill-development skill using Skill tool
+2. For each skill:
+   - Ask user for concrete usage examples (or use from Phase 3)
+   - Plan resources (scripts/, references/, examples/)
+   - Create skill directory structure
+   - Write SKILL.md with:
+     - Third-person description with specific trigger phrases
+     - Lean body (1,500-2,000 words) in imperative form
+     - References to supporting files
+   - Create reference files for detailed content
+   - Create example files for working code
+   - Create utility scripts if needed
+3. Use skill-reviewer agent to validate each skill
+
+### For Commands:
+1. Load command-development skill using Skill tool
+2. For each command:
+   - Write command markdown with frontmatter
+   - Include clear description and argument-hint
+   - Specify allowed-tools (minimal necessary)
+   - Write instructions FOR Claude (not TO user)
+   - Provide usage examples and tips
+   - Reference relevant skills if applicable
+
+### For Agents:
+1. Load agent-development skill using Skill tool
+2. For each agent, use agent-creator agent:
+   - Provide description of what agent should do
+   - Agent-creator generates: identifier, whenToUse with examples, systemPrompt
+   - Create agent markdown file with frontmatter and system prompt
+   - Add appropriate model, color, and tools
+   - Validate with validate-agent.sh script
+
+### For Hooks:
+1. Load hook-development skill using Skill tool
+2. For each hook:
+   - Create hooks/hooks.json with hook configuration
+   - Prefer prompt-based hooks for complex logic
+   - Use /Users/basher8383/.claude/plugins/cache/claude-plugins-official/plugin-dev/55b58ec6e564 for portability
+   - Create hook scripts if needed (in examples/ not scripts/)
+   - Test with validate-hook-schema.sh and test-hook.sh utilities
+
+### For MCP:
+1. Load mcp-integration skill using Skill tool
+2. Create .mcp.json configuration with:
+   - Server type (stdio for local, SSE for hosted)
+   - Command and args (with /Users/basher8383/.claude/plugins/cache/claude-plugins-official/plugin-dev/55b58ec6e564)
+   - extensionToLanguage mapping if LSP
+   - Environment variables as needed
+3. Document required env vars in README
+4. Provide setup instructions
+
+### For Settings:
+1. Load plugin-settings skill using Skill tool
+2. Create settings template in README
+3. Create example .claude/plugin-name.local.md file (as documentation)
+4. Implement settings reading in hooks/commands as needed
+5. Add to .gitignore: `.claude/*.local.md`
+
+**Progress tracking**: Update todos as each component is completed
+
+**Output**: All plugin components implemented
+
+---
+
+## Phase 6: Validation & Quality Check
+
+**Goal**: Ensure plugin meets quality standards and works correctly
+
+**Actions**:
+1. **Run plugin-validator agent**:
+   - Use plugin-validator agent to comprehensively validate plugin
+   - Check: manifest, structure, naming, components, security
+   - Review validation report
+
+2. **Fix critical issues**:
+   - Address any critical errors from validation
+   - Fix any warnings that indicate real problems
+
+3. **Review with skill-reviewer** (if plugin has skills):
+   - For each skill, use skill-reviewer agent
+   - Check description quality, progressive disclosure, writing style
+   - Apply recommendations
+
+4. **Test agent triggering** (if plugin has agents):
+   - For each agent, verify <example> blocks are clear
+   - Check triggering conditions are specific
+   - Run validate-agent.sh on agent files
+
+5. **Test hook configuration** (if plugin has hooks):
+   - Run validate-hook-schema.sh on hooks/hooks.json
+   - Test hook scripts with test-hook.sh
+   - Verify /Users/basher8383/.claude/plugins/cache/claude-plugins-official/plugin-dev/55b58ec6e564 usage
+
+6. **Present findings**:
+   - Summary of validation results
+   - Any remaining issues
+   - Overall quality assessment
+
+7. **Ask user**: "Validation complete. Issues found: [count critical], [count warnings]. Would you like me to fix them now, or proceed to testing?"
+
+**Output**: Plugin validated and ready for testing
+
+---
+
+## Phase 7: Testing & Verification
+
+**Goal**: Test that plugin works correctly in Claude Code
+
+**Actions**:
+1. **Installation instructions**:
+   - Show user how to test locally:
+     ```bash
+     cc --plugin-dir /path/to/plugin-name
+     ```
+   - Or copy to `.claude-plugin/` for project testing
+
+2. **Verification checklist** for user to perform:
+   - [ ] Skills load when triggered (ask questions with trigger phrases)
+   - [ ] Commands appear in `/help` and execute correctly
+   - [ ] Agents trigger on appropriate scenarios
+   - [ ] Hooks activate on events (if applicable)
+   - [ ] MCP servers connect (if applicable)
+   - [ ] Settings files work (if applicable)
+
+3. **Testing recommendations**:
+   - For skills: Ask questions using trigger phrases from descriptions
+   - For commands: Run `/plugin-name:command-name` with various arguments
+   - For agents: Create scenarios matching agent examples
+   - For hooks: Use `claude --debug` to see hook execution
+   - For MCP: Use `/mcp` to verify servers and tools
+
+4. **Ask user**: "I've prepared the plugin for testing. Would you like me to guide you through testing each component, or do you want to test it yourself?"
+
+5. **If user wants guidance**, walk through testing each component with specific test cases
+
+**Output**: Plugin tested and verified working
+
+---
+
+## Phase 8: Documentation & Next Steps
+
+**Goal**: Ensure plugin is well-documented and ready for distribution
+
+**Actions**:
+1. **Verify README completeness**:
+   - Check README has: overview, features, installation, prerequisites, usage
+   - For MCP plugins: Document required environment variables
+   - For hook plugins: Explain hook activation
+   - For settings: Provide configuration templates
+
+2. **Add marketplace entry** (if publishing):
+   - Show user how to add to marketplace.json
+   - Help draft marketplace description
+   - Suggest category and tags
+
+3. **Create summary**:
+   - Mark all todos complete
+   - List what was created:
+     - Plugin name and purpose
+     - Components created (X skills, Y commands, Z agents, etc.)
+     - Key files and their purposes
+     - Total file count and structure
+   - Next steps:
+     - Testing recommendations
+     - Publishing to marketplace (if desired)
+     - Iteration based on usage
+
+4. **Suggest improvements** (optional):
+   - Additional components that could enhance plugin
+   - Integration opportunities
+   - Testing strategies
+
+**Output**: Complete, documented plugin ready for use or publication
+
+---
+
+## Important Notes
+
+### Throughout All Phases
+
+- **Use TodoWrite** to track progress at every phase
+- **Load skills with Skill tool** when working on specific component types
+- **Use specialized agents** (agent-creator, plugin-validator, skill-reviewer)
+- **Ask for user confirmation** at key decision points
+- **Follow plugin-dev's own patterns** as reference examples
+- **Apply best practices**:
+  - Third-person descriptions for skills
+  - Imperative form in skill bodies
+  - Commands written FOR Claude
+  - Strong trigger phrases
+  - /Users/basher8383/.claude/plugins/cache/claude-plugins-official/plugin-dev/55b58ec6e564 for portability
+  - Progressive disclosure
+  - Security-first (HTTPS, no hardcoded credentials)
+
+### Key Decision Points (Wait for User)
+
+1. After Phase 1: Confirm plugin purpose
+2. After Phase 2: Approve component plan
+3. After Phase 3: Proceed to implementation
+4. After Phase 6: Fix issues or proceed
+5. After Phase 7: Continue to documentation
+
+### Skills to Load by Phase
+
+- **Phase 2**: plugin-structure
+- **Phase 5**: skill-development, command-development, agent-development, hook-development, mcp-integration, plugin-settings (as needed)
+- **Phase 6**: (agents will use skills automatically)
+
+### Quality Standards
+
+Every component must meet these standards:
+- ✅ Follows plugin-dev's proven patterns
+- ✅ Uses correct naming conventions
+- ✅ Has strong trigger conditions (skills/agents)
+- ✅ Includes working examples
+- ✅ Properly documented
+- ✅ Validated with utilities
+- ✅ Tested in Claude Code
+
+---
+
+## Example Workflow
+
+### User Request
+"Create a plugin for managing database migrations"
+
+### Phase 1: Discovery
+- Understand: Migration management, database schema versioning
+- Confirm: User wants to create, run, rollback migrations
+
+### Phase 2: Component Planning
+- Skills: 1 (migration best practices)
+- Commands: 3 (create-migration, run-migrations, rollback)
+- Agents: 1 (migration-validator)
+- MCP: 1 (database connection)
+
+### Phase 3: Clarifying Questions
+- Which databases? (PostgreSQL, MySQL, etc.)
+- Migration file format? (SQL, code-based?)
+- Should agent validate before applying?
+- What MCP tools needed? (query, execute, schema)
+
+### Phase 4-8: Implementation, Validation, Testing, Documentation
+
+---
+
+**Begin with Phase 1: Discovery**
+
+---
+
+looks good to me
+
+---
+
+Base directory for this skill: /Users/basher8383/.claude/plugins/cache/claude-plugins-official/plugin-dev/55b58ec6e564/skills/plugin-structure
+
+# Plugin Structure for Claude Code
+
+## Overview
+
+Claude Code plugins follow a standardized directory structure with automatic component discovery. Understanding this structure enables creating well-organized, maintainable plugins that integrate seamlessly with Claude Code.
+
+**Key concepts:**
+- Conventional directory layout for automatic discovery
+- Manifest-driven configuration in `.claude-plugin/plugin.json`
+- Component-based organization (commands, agents, skills, hooks)
+- Portable path references using `/Users/basher8383/.claude/plugins/cache/claude-plugins-official/plugin-dev/55b58ec6e564`
+- Explicit vs. auto-discovered component loading
+
+## Directory Structure
+
+Every Claude Code plugin follows this organizational pattern:
+
+```
+plugin-name/
+├── .claude-plugin/
+│   └── plugin.json          # Required: Plugin manifest
+├── commands/                 # Slash commands (.md files)
+├── agents/                   # Subagent definitions (.md files)
+├── skills/                   # Agent skills (subdirectories)
+│   └── skill-name/
+│       └── SKILL.md         # Required for each skill
+├── hooks/
+│   └── hooks.json           # Event handler configuration
+├── .mcp.json                # MCP server definitions
+└── scripts/                 # Helper scripts and utilities
+```
+
+**Critical rules:**
+
+1. **Manifest location**: The `plugin.json` manifest MUST be in `.claude-plugin/` directory
+2. **Component locations**: All component directories (commands, agents, skills, hooks) MUST be at plugin root level, NOT nested inside `.claude-plugin/`
+3. **Optional components**: Only create directories for components the plugin actually uses
+4. **Naming convention**: Use kebab-case for all directory and file names
+
+## Plugin Manifest (plugin.json)
+
+The manifest defines plugin metadata and configuration. Located at `.claude-plugin/plugin.json`:
+
+### Required Fields
+
+```json
+{
+  "name": "plugin-name"
+}
+```
+
+**Name requirements:**
+- Use kebab-case format (lowercase with hyphens)
+- Must be unique across installed plugins
+- No spaces or special characters
+- Example: `code-review-assistant`, `test-runner`, `api-docs`
+
+### Recommended Metadata
+
+```json
+{
+  "name": "plugin-name",
+  "version": "1.0.0",
+  "description": "Brief explanation of plugin purpose",
+  "author": {
+    "name": "Author Name",
+    "email": "author@example.com",
+    "url": "https://example.com"
+  },
+  "homepage": "https://docs.example.com",
+  "repository": "https://github.com/user/plugin-name",
+  "license": "MIT",
+  "keywords": ["testing", "automation", "ci-cd"]
+}
+```
+
+**Version format**: Follow semantic versioning (MAJOR.MINOR.PATCH)
+**Keywords**: Use for plugin discovery and categorization
+
+### Component Path Configuration
+
+Specify custom paths for components (supplements default directories):
+
+```json
+{
+  "name": "plugin-name",
+  "commands": "./custom-commands",
+  "agents": ["./agents", "./specialized-agents"],
+  "hooks": "./config/hooks.json",
+  "mcpServers": "./.mcp.json"
+}
+```
+
+**Important**: Custom paths supplement defaults—they don't replace them. Components in both default directories and custom paths will load.
+
+**Path rules:**
+- Must be relative to plugin root
+- Must start with `./`
+- Cannot use absolute paths
+- Support arrays for multiple locations
+
+## Component Organization
+
+### Commands
+
+**Location**: `commands/` directory
+**Format**: Markdown files with YAML frontmatter
+**Auto-discovery**: All `.md` files in `commands/` load automatically
+
+**Example structure**:
+```
+commands/
+├── review.md        # /review command
+├── test.md          # /test command
+└── deploy.md        # /deploy command
+```
+
+**File format**:
+```markdown
+---
+name: command-name
+description: Command description
+---
+
+Command implementation instructions...
+```
+
+**Usage**: Commands integrate as native slash commands in Claude Code
+
+### Agents
+
+**Location**: `agents/` directory
+**Format**: Markdown files with YAML frontmatter
+**Auto-discovery**: All `.md` files in `agents/` load automatically
+
+**Example structure**:
+```
+agents/
+├── code-reviewer.md
+├── test-generator.md
+└── refactorer.md
+```
+
+**File format**:
+```markdown
+---
+description: Agent role and expertise
+capabilities:
+  - Specific task 1
+  - Specific task 2
+---
+
+Detailed agent instructions and knowledge...
+```
+
+**Usage**: Users can invoke agents manually, or Claude Code selects them automatically based on task context
+
+### Skills
+
+**Location**: `skills/` directory with subdirectories per skill
+**Format**: Each skill in its own directory with `SKILL.md` file
+**Auto-discovery**: All `SKILL.md` files in skill subdirectories load automatically
+
+**Example structure**:
+```
+skills/
+├── api-testing/
+│   ├── SKILL.md
+│   ├── scripts/
+│   │   └── test-runner.py
+│   └── references/
+│       └── api-spec.md
+└── database-migrations/
+    ├── SKILL.md
+    └── examples/
+        └── migration-template.sql
+```
+
+**SKILL.md format**:
+```markdown
+---
+name: Skill Name
+description: When to use this skill
+version: 1.0.0
+---
+
+Skill instructions and guidance...
+```
+
+**Supporting files**: Skills can include scripts, references, examples, or assets in subdirectories
+
+**Usage**: Claude Code autonomously activates skills based on task context matching the description
+
+### Hooks
+
+**Location**: `hooks/hooks.json` or inline in `plugin.json`
+**Format**: JSON configuration defining event handlers
+**Registration**: Hooks register automatically when plugin enables
+
+**Example structure**:
+```
+hooks/
+├── hooks.json           # Hook configuration
+└── scripts/
+    ├── validate.sh      # Hook script
+    └── check-style.sh   # Hook script
+```
+
+**Configuration format**:
+```json
+{
+  "PreToolUse": [{
+    "matcher": "Write|Edit",
+    "hooks": [{
+      "type": "command",
+      "command": "bash /Users/basher8383/.claude/plugins/cache/claude-plugins-official/plugin-dev/55b58ec6e564/hooks/scripts/validate.sh",
+      "timeout": 30
+    }]
+  }]
+}
+```
+
+**Available events**: PreToolUse, PostToolUse, Stop, SubagentStop, SessionStart, SessionEnd, UserPromptSubmit, PreCompact, Notification
+
+**Usage**: Hooks execute automatically in response to Claude Code events
+
+### MCP Servers
+
+**Location**: `.mcp.json` at plugin root or inline in `plugin.json`
+**Format**: JSON configuration for MCP server definitions
+**Auto-start**: Servers start automatically when plugin enables
+
+**Example format**:
+```json
+{
+  "mcpServers": {
+    "server-name": {
+      "command": "node",
+      "args": ["/Users/basher8383/.claude/plugins/cache/claude-plugins-official/plugin-dev/55b58ec6e564/servers/server.js"],
+      "env": {
+        "API_KEY": "${API_KEY}"
+      }
+    }
+  }
+}
+```
+
+**Usage**: MCP servers integrate seamlessly with Claude Code's tool system
+
+## Portable Path References
+
+### /Users/basher8383/.claude/plugins/cache/claude-plugins-official/plugin-dev/55b58ec6e564
+
+Use `/Users/basher8383/.claude/plugins/cache/claude-plugins-official/plugin-dev/55b58ec6e564` environment variable for all intra-plugin path references:
+
+```json
+{
+  "command": "bash /Users/basher8383/.claude/plugins/cache/claude-plugins-official/plugin-dev/55b58ec6e564/scripts/run.sh"
+}
+```
+
+**Why it matters**: Plugins install in different locations depending on:
+- User installation method (marketplace, local, npm)
+- Operating system conventions
+- User preferences
+
+**Where to use it**:
+- Hook command paths
+- MCP server command arguments
+- Script execution references
+- Resource file paths
+
+**Never use**:
+- Hardcoded absolute paths (`/Users/name/plugins/...`)
+- Relative paths from working directory (`./scripts/...` in commands)
+- Home directory shortcuts (`~/plugins/...`)
+
+### Path Resolution Rules
+
+**In manifest JSON fields** (hooks, MCP servers):
+```json
+"command": "/Users/basher8383/.claude/plugins/cache/claude-plugins-official/plugin-dev/55b58ec6e564/scripts/tool.sh"
+```
+
+**In component files** (commands, agents, skills):
+```markdown
+Reference scripts at: /Users/basher8383/.claude/plugins/cache/claude-plugins-official/plugin-dev/55b58ec6e564/scripts/helper.py
+```
+
+**In executed scripts**:
+```bash
+#!/bin/bash
+# /Users/basher8383/.claude/plugins/cache/claude-plugins-official/plugin-dev/55b58ec6e564 available as environment variable
+source "/Users/basher8383/.claude/plugins/cache/claude-plugins-official/plugin-dev/55b58ec6e564/lib/common.sh"
+```
+
+## File Naming Conventions
+
+### Component Files
+
+**Commands**: Use kebab-case `.md` files
+- `code-review.md` → `/code-review`
+- `run-tests.md` → `/run-tests`
+- `api-docs.md` → `/api-docs`
+
+**Agents**: Use kebab-case `.md` files describing role
+- `test-generator.md`
+- `code-reviewer.md`
+- `performance-analyzer.md`
+
+**Skills**: Use kebab-case directory names
+- `api-testing/`
+- `database-migrations/`
+- `error-handling/`
+
+### Supporting Files
+
+**Scripts**: Use descriptive kebab-case names with appropriate extensions
+- `validate-input.sh`
+- `generate-report.py`
+- `process-data.js`
+
+**Documentation**: Use kebab-case markdown files
+- `api-reference.md`
+- `migration-guide.md`
+- `best-practices.md`
+
+**Configuration**: Use standard names
+- `hooks.json`
+- `.mcp.json`
+- `plugin.json`
+
+## Auto-Discovery Mechanism
+
+Claude Code automatically discovers and loads components:
+
+1. **Plugin manifest**: Reads `.claude-plugin/plugin.json` when plugin enables
+2. **Commands**: Scans `commands/` directory for `.md` files
+3. **Agents**: Scans `agents/` directory for `.md` files
+4. **Skills**: Scans `skills/` for subdirectories containing `SKILL.md`
+5. **Hooks**: Loads configuration from `hooks/hooks.json` or manifest
+6. **MCP servers**: Loads configuration from `.mcp.json` or manifest
+
+**Discovery timing**:
+- Plugin installation: Components register with Claude Code
+- Plugin enable: Components become available for use
+- No restart required: Changes take effect on next Claude Code session
+
+**Override behavior**: Custom paths in `plugin.json` supplement (not replace) default directories
+
+## Best Practices
+
+### Organization
+
+1. **Logical grouping**: Group related components together
+   - Put test-related commands, agents, and skills together
+   - Create subdirectories in `scripts/` for different purposes
+
+2. **Minimal manifest**: Keep `plugin.json` lean
+   - Only specify custom paths when necessary
+   - Rely on auto-discovery for standard layouts
+   - Use inline configuration only for simple cases
+
+3. **Documentation**: Include README files
+   - Plugin root: Overall purpose and usage
+   - Component directories: Specific guidance
+   - Script directories: Usage and requirements
+
+### Naming
+
+1. **Consistency**: Use consistent naming across components
+   - If command is `test-runner`, name related agent `test-runner-agent`
+   - Match skill directory names to their purpose
+
+2. **Clarity**: Use descriptive names that indicate purpose
+   - Good: `api-integration-testing/`, `code-quality-checker.md`
+   - Avoid: `utils/`, `misc.md`, `temp.sh`
+
+3. **Length**: Balance brevity with clarity
+   - Commands: 2-3 words (`review-pr`, `run-ci`)
+   - Agents: Describe role clearly (`code-reviewer`, `test-generator`)
+   - Skills: Topic-focused (`error-handling`, `api-design`)
+
+### Portability
+
+1. **Always use /Users/basher8383/.claude/plugins/cache/claude-plugins-official/plugin-dev/55b58ec6e564**: Never hardcode paths
+2. **Test on multiple systems**: Verify on macOS, Linux, Windows
+3. **Document dependencies**: List required tools and versions
+4. **Avoid system-specific features**: Use portable bash/Python constructs
+
+### Maintenance
+
+1. **Version consistently**: Update version in plugin.json for releases
+2. **Deprecate gracefully**: Mark old components clearly before removal
+3. **Document breaking changes**: Note changes affecting existing users
+4. **Test thoroughly**: Verify all components work after changes
+
+## Common Patterns
+
+### Minimal Plugin
+
+Single command with no dependencies:
+```
+my-plugin/
+├── .claude-plugin/
+│   └── plugin.json    # Just name field
+└── commands/
+    └── hello.md       # Single command
+```
+
+### Full-Featured Plugin
+
+Complete plugin with all component types:
+```
+my-plugin/
+├── .claude-plugin/
+│   └── plugin.json
+├── commands/          # User-facing commands
+├── agents/            # Specialized subagents
+├── skills/            # Auto-activating skills
+├── hooks/             # Event handlers
+│   ├── hooks.json
+│   └── scripts/
+├── .mcp.json          # External integrations
+└── scripts/           # Shared utilities
+```
+
+### Skill-Focused Plugin
+
+Plugin providing only skills:
+```
+my-plugin/
+├── .claude-plugin/
+│   └── plugin.json
+└── skills/
+    ├── skill-one/
+    │   └── SKILL.md
+    └── skill-two/
+        └── SKILL.md
+```
+
+## Troubleshooting
+
+**Component not loading**:
+- Verify file is in correct directory with correct extension
+- Check YAML frontmatter syntax (commands, agents, skills)
+- Ensure skill has `SKILL.md` (not `README.md` or other name)
+- Confirm plugin is enabled in Claude Code settings
+
+**Path resolution errors**:
+- Replace all hardcoded paths with `/Users/basher8383/.claude/plugins/cache/claude-plugins-official/plugin-dev/55b58ec6e564`
+- Verify paths are relative and start with `./` in manifest
+- Check that referenced files exist at specified paths
+- Test with `echo $CLAUDE_PLUGIN_ROOT` in hook scripts
+
+**Auto-discovery not working**:
+- Confirm directories are at plugin root (not in `.claude-plugin/`)
+- Check file naming follows conventions (kebab-case, correct extensions)
+- Verify custom paths in manifest are correct
+- Restart Claude Code to reload plugin configuration
+
+**Conflicts between plugins**:
+- Use unique, descriptive component names
+- Namespace commands with plugin name if needed
+- Document potential conflicts in plugin README
+- Consider command prefixes for related functionality
+
+---
+
+For detailed examples and advanced patterns, see files in `references/` and `examples/` directories.
+
+---
+
+Continue from where you left off.
+
+---
+
+we got stuck somehow
+
+---
+
+ok same thing again, i can see the plan.md on disk. it starts at phase 4 to phase 7
+
+---
+
+lets try again. I was using the desktop app but that wasn't working so cli it is now
+
+---
+
+<task-notification>
+<task-id>a164724448ba9fd1a</task-id>
+<tool-use-id>REDACTED</tool-use-id>
+<status>completed</status>
+<summary>Agent "Check mise experimental setting" completed</summary>
+<result>I now have enough information to provide a definitive answer.
+
+# Research Summary: mise File-Based Tasks and Experimental Status
+
+## Key Findings
+
+Tasks (both TOML-based and file-based) in mise no longer require `experimental = true`. They graduated from experimental status in late 2024, approximately around November 2024. The `experimental = true` setting can be safely removed if it was only being used to enable tasks.
+
+## Detailed Analysis
+
+The timeline of tasks and experimental status in mise is as follows.
+
+In early 2024 (around February), jdx explicitly warned in a discussion post that tasks were experimental and would go through design changes. At that time, `experimental = true` was required in your `mise.toml` (or `MISE_EXPERIMENTAL=1` environment variable) to use both TOML-based and file-based tasks.
+
+Throughout 2024, the tasks feature was refined, tested, and iterated on. By the "mise-en-place welcomes 2025" discussion (posted late 2024), jdx announced: "After much testing, experimentation, and feedback, mise tasks are now out of experimental." In a December 2024 Hacker News thread, jdx (as author of mise) stated that tasks "only came out of experimental like a month ago," placing the graduation roughly around November 2024.
+
+As of the current documentation at mise.jdx.dev (checked March 2026), there is zero mention of `experimental = true` being required for file-based tasks anywhere on the tasks documentation pages, the file-tasks page, the task-configuration page, the settings page, or the FAQ. Tasks are presented as a standard, stable feature throughout.
+
+The `experimental` setting still exists in mise, but it now gates other features. Based on the 2025 experimental features discussion, things that still require `experimental = true` include hooks, watch_file_hooks, spm backend, mise.lock, and monorepo tasks (which use a separate `experimental_monorepo_root` flag). Standard file-based tasks and TOML-based tasks are not among them.
+
+## Conclusion
+
+You can safely remove `experimental = true` from your mise configuration if its sole purpose was enabling file-based tasks. This has been unnecessary since approximately mise v2024.11.x (November 2024). If you are using other experimental features like hooks or monorepo tasks, you would still need it for those.
+
+## Sources
+
+- [mise-en-place welcomes 2025 (Discussion #4057)](https://github.com/jdx/mise/discussions/4057)
+- [2025 experimental features (Discussion #5085)](https://github.com/jdx/mise/discussions/5085)
+- [Roadmap 2024-2025 (Discussion #3340)](https://github.com/jdx/mise/discussions/3340)
+- [2024 Update (Discussion #1581)](https://github.com/jdx/mise/discussions/1581)
+- [mise Tasks Documentation](https://mise.jdx.dev/tasks/)
+- [mise File Tasks Documentation](https://mise.jdx.dev/tasks/file-tasks.html)
+- [mise Settings Documentation](https://mise.jdx.dev/configuration/settings.html)
+- [mise Task Configuration Documentation](https://mise.jdx.dev/tasks/task-configuration.html)
+- [Hacker News thread - jdx comment on experimental status](https://news.ycombinator.com/item?id=42353634)
+
+## Research Notes
+
+Research conducted: 2026-03-01. The exact release version where the experimental gate was removed could not be pinpointed to a single tagged release, but the convergence of evidence (jdx's own statements, documentation state, and timeline) firmly places it around November 2024. No conflicting sources were found; all evidence is consistent.</result>
+<usage><total_tokens>17164</total_tokens><tool_uses>23</tool_uses><duration_ms>153839</duration_ms></usage>
+</task-notification>
+Full transcript available at: /private/tmp/claude-501/-Users-basher8383-3I-workshop-lunar-claude/tasks/a164724448ba9fd1a.output
+
+---
+
+i've got a seperate session currently aggregating configs across my repos, i'll have a full repot soon to work from
+
+---
+
+sure we can do that
+
+---
+
+# Git Commit Workflow
+
+Orchestrate pre-commit hooks and invoke commit-craft agent for clean, logical commits.
+
+## Current State
+
+- Branch and status: ## main...origin/main
+ M .claude-plugin/marketplace.json
+?? plan.md
+?? plugins/devops/repo-forge/
+- Working directory:  M .claude-plugin/marketplace.json
+?? plan.md
+?? plugins/devops/repo-forge/
+- Merge/rebase state: Clean
+- Staged files: 
+- Sensitive files check: None detected
+
+## Workflow
+
+### Step 1: Pre-flight Checks
+
+Verify repository state:
+
+1. If merge or rebase in progress, stop and inform user
+2. If sensitive files detected, use AskUserQuestion:
+   - header: "Sensitive"
+   - question: "Sensitive files detected in staged changes. Proceed with commit?"
+   - options:
+     - Continue (I understand the risk, proceed)
+     - Unstage (Remove sensitive files from staging)
+     - Abort (Cancel commit workflow)
+
+### Step 2: Run Pre-commit Hooks (if configured)
+
+Check if pre-commit is configured: `test -f .pre-commit-config.yaml`
+
+If configured, execute pre-commit hooks: `pre-commit run -a`
+
+Analyze the output:
+
+- If hooks pass: Continue to Step 3
+- If hooks fail with errors: Report errors and stop
+- If hooks modify files (formatting, etc.):
+  1. Show which files were modified
+  2. Re-stage modified files: `git add -u`
+  3. Continue to Step 3
+
+### Step 3: Create Commits
+
+Use the Task tool to invoke the commit-craft agent:
+
+- subagent_type: "git-workflow:commit-craft"
+- prompt: "Create clean, atomic commits for the current workspace changes"
+
+The commit-craft agent will:
+
+1. Analyze all workspace changes
+2. Group related changes into atomic commits
+3. Create conventional commit messages
+4. Execute commits handling any additional hook runs
+
+---
+
+results are in ~/3I/config-aggregation.md
+
+---
+
+gitignore wasn't covered, i can submit another tasker though. anything else to grab along with that?
+
+---
+
+while thats running an importnat note here is the agents using these must not guess version numbers because they will be wrong. the best solution i have is use mise to look for it, the mise cli will tell us
+
+---
+
+no latest is not a good idea. if i need to pin versions im screwed there. also theres some things that might be useful in https://mise.jdx.dev/tips-and-tricks.html and actually the smarter move is this https://mise.jdx.dev/mise-cookbook/presets.html
+
+---
+
+i have one, but haven't reviewed it in awhile ~/.config/mise/tasks/preset/uv
+
+---
+
+~/3I/config-aggregation.md is back. and also theres more we can do here now that I'm looking at mise configs. even have hooks https://mise.jdx.dev/hooks.html
+
+---
+
+yeah, lets use that plan.md as our working doc here to track what we are finding and the direction we are going. because this could easilly turn into just a mise skill plus a onboard this repo directive
+
+---
+
+lets do this, use deepwiki and context7 mcps to dig into jdx/mise more and see what else we can leverage here
+
+---
+
+that IS a goldmine! hk is legit too: Why does this exist?
+git hooks need to be fast above all else or else developers won't use them. Parallelism is the best (and likely only) way to achieve acceptable performance at the git hook manager level.
+
+Existing alternatives to hk such as lefthook support very basic parallel execution of shell script however because linters may edit files—this naive approach can break down if multiple linters affect the same file.
+
+I felt that a git hook manager that had tighter integration with the linters would be able to leverage read/write file locks to enable more aggressive parallelism while preventing race conditions. This read/write locking is the primary reason I built hk, however there are other design decisions worth noting that I think makes hk a better experience than its peers:
+
+hk has a bunch of builtins you can use for common linters like prettier or black.
+hk stashes unstaged changes before running "fix" hooks. This prevents a common issue with pre-commit hooks where files containing both staged and unstaged changes get modified and the unstaged changes end up being staged erroneously.
+By default, hk uses libgit2 to directly interact with git instead of shelling out many times to git. (This generally makes hk much faster but there are situations like fsmonitor where it may perform worse)
+hk is a Rust CLI which gives it great startup performance.
+hk is designed to work well with my other project mise-en-place which makes it easy to manage dependencies for hk linters.
+
+---
+
+lets do it
+
+---
+
+i trust it, that dev is legit
+
+---
+
+nah lets do it, you have the context
+
+---
+
+lets commit
+
+---
+
+# Git Commit Workflow
+
+Orchestrate pre-commit hooks and invoke commit-craft agent for clean, logical commits.
+
+## Current State
+
+- Branch and status: ## main...origin/main [ahead 2]
+ M plugins/devops/repo-forge/skills/mise/SKILL.md
+?? plan.md
+?? plugins/devops/repo-forge/skills/mise/references/hk.md
+?? plugins/devops/repo-forge/skills/mise/references/hooks.md
+?? plugins/devops/repo-forge/skills/mise/references/presets.md
+- Working directory:  M plugins/devops/repo-forge/skills/mise/SKILL.md
+?? plan.md
+?? plugins/devops/repo-forge/skills/mise/references/hk.md
+?? plugins/devops/repo-forge/skills/mise/references/hooks.md
+?? plugins/devops/repo-forge/skills/mise/references/presets.md
+- Merge/rebase state: Clean
+- Staged files: 
+- Sensitive files check: None detected
+
+## Workflow
+
+### Step 1: Pre-flight Checks
+
+Verify repository state:
+
+1. If merge or rebase in progress, stop and inform user
+2. If sensitive files detected, use AskUserQuestion:
+   - header: "Sensitive"
+   - question: "Sensitive files detected in staged changes. Proceed with commit?"
+   - options:
+     - Continue (I understand the risk, proceed)
+     - Unstage (Remove sensitive files from staging)
+     - Abort (Cancel commit workflow)
+
+### Step 2: Run Pre-commit Hooks (if configured)
+
+Check if pre-commit is configured: `test -f .pre-commit-config.yaml`
+
+If configured, execute pre-commit hooks: `pre-commit run -a`
+
+Analyze the output:
+
+- If hooks pass: Continue to Step 3
+- If hooks fail with errors: Report errors and stop
+- If hooks modify files (formatting, etc.):
+  1. Show which files were modified
+  2. Re-stage modified files: `git add -u`
+  3. Continue to Step 3
+
+### Step 3: Create Commits
+
+Use the Task tool to invoke the commit-craft agent:
+
+- subagent_type: "git-workflow:commit-craft"
+- prompt: "Create clean, atomic commits for the current workspace changes"
+
+The commit-craft agent will:
+
+1. Analyze all workspace changes
+2. Group related changes into atomic commits
+3. Create conventional commit messages
+4. Execute commits handling any additional hook runs
+
+---
+
+and we just did 1 from next steps right
+
+---
+
+yeah you are nearly maxed out context. i think the plan is solid enough for a new session to hop in unless you think anything should be added

@@ -1,0 +1,29 @@
+{
+  "cli_version": "0.4.8",
+  "checkpoint_id": "29d59e7dcd86",
+  "strategy": "manual-commit",
+  "branch": "main",
+  "checkpoints_count": 6,
+  "files_touched": [
+    "plugins/devops/repo-forge/skills/mise/SKILL.md",
+    "plugins/devops/repo-forge/skills/mise/references/hk.md",
+    "plugins/devops/repo-forge/skills/mise/references/hooks.md",
+    "plugins/devops/repo-forge/skills/mise/references/presets.md"
+  ],
+  "sessions": [
+    {
+      "metadata": "/29/d59e7dcd86/0/metadata.json",
+      "transcript": "/29/d59e7dcd86/0/full.jsonl",
+      "context": "/29/d59e7dcd86/0/context.md",
+      "content_hash": "/29/d59e7dcd86/0/content_hash.txt",
+      "prompt": "/29/d59e7dcd86/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 164,
+    "cache_creation_tokens": 323443,
+    "cache_read_tokens": 11705896,
+    "output_tokens": 34286,
+    "api_call_count": 113
+  }
+}

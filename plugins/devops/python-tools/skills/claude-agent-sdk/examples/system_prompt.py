@@ -2,7 +2,6 @@
 """Example demonstrating different system_prompt configurations."""
 
 import anyio
-
 from claude_agent_sdk import (
     AssistantMessage,
     ClaudeAgentOptions,

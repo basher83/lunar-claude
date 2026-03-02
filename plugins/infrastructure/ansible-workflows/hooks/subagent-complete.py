@@ -65,7 +65,7 @@ def parse_frontmatter(content: str) -> tuple[dict, str]:
     try:
         end_idx = content.index("---", 3)
         frontmatter_text = content[3:end_idx].strip()
-        body = content[end_idx + 3:].strip()
+        body = content[end_idx + 3 :].strip()
 
         # Simple YAML parsing for our known keys
         frontmatter = {}

@@ -46,13 +46,13 @@ from pathlib import Path
 
 # Common import name -> PyPI package name mappings
 IMPORT_TO_PACKAGE = {
-    'cv2': 'opencv-python',
-    'PIL': 'Pillow',
-    'yaml': 'PyYAML',
-    'bs4': 'beautifulsoup4',
-    'sklearn': 'scikit-learn',
-    'dotenv': 'python-dotenv',
-    'claude_agent_sdk': 'claude-agent-sdk',
+    "cv2": "opencv-python",
+    "PIL": "Pillow",
+    "yaml": "PyYAML",
+    "bs4": "beautifulsoup4",
+    "sklearn": "scikit-learn",
+    "dotenv": "python-dotenv",
+    "claude_agent_sdk": "claude-agent-sdk",
 }
 
 
@@ -70,7 +70,7 @@ def get_pypi_latest_version(package_name: str) -> str | None:
             response = client.get(url)
             if response.status_code == 200:
                 data = response.json()
-                return data['info']['version']
+                return data["info"]["version"]
     except Exception:
         # Network error, package not found, etc. - fail silently
         pass
@@ -90,16 +90,16 @@ def find_version_in_project(package_name: str, script_path: Path) -> str | None:
         pyproject_path = current / "pyproject.toml"
         if pyproject_path.exists():
             try:
-                content = pyproject_path.read_text(encoding='utf-8')
+                content = pyproject_path.read_text(encoding="utf-8")
                 data = tomllib.loads(content)
 
                 # Check [project.dependencies]
-                deps = data.get('project', {}).get('dependencies', [])
+                deps = data.get("project", {}).get("dependencies", [])
                 for dep in deps:
                     if isinstance(dep, str) and dep.startswith(package_name):
                         # Extract version constraint
                         # e.g., "package>=1.0.0" -> ">=1.0.0"
-                        version_part = dep[len(package_name):].strip()
+                        version_part = dep[len(package_name) :].strip()
                         if version_part:
                             return version_part
 
@@ -135,8 +135,8 @@ def normalize_package_name(import_name: str, use_pypi: bool = True) -> str:
         return IMPORT_TO_PACKAGE[import_name]
 
     # Try hyphen normalization (most common pattern)
-    if '_' in import_name:
-        hyphenated = import_name.replace('_', '-')
+    if "_" in import_name:
+        hyphenated = import_name.replace("_", "-")
 
         # Validate with PyPI if enabled
         if use_pypi and get_pypi_latest_version(hyphenated):
@@ -150,11 +150,7 @@ def normalize_package_name(import_name: str, use_pypi: bool = True) -> str:
     return import_name
 
 
-def resolve_package_version(
-    import_name: str,
-    script_path: Path,
-    use_pypi: bool = True
-) -> str:
+def resolve_package_version(import_name: str, script_path: Path, use_pypi: bool = True) -> str:
     """
     Resolve package name and version constraint.
 
@@ -187,7 +183,7 @@ def resolve_package_version(
 
 def has_pep723_metadata(content: str) -> bool:
     """Check if script already has PEP 723 metadata"""
-    pattern = r'# /// script\r?\n((?:#.*(?:\r?\n|(?=\r?\n?#\s*///)))+)(?:\r?\n)?#\s*///'
+    pattern = r"# /// script\r?\n((?:#.*(?:\r?\n|(?=\r?\n?#\s*///)))+)(?:\r?\n)?#\s*///"
     return bool(re.search(pattern, content, re.MULTILINE))
 
 
@@ -197,18 +193,18 @@ def read_requirements_file(req_path: Path) -> list[str]:
         return []
 
     try:
-        content = req_path.read_text(encoding='utf-8')
+        content = req_path.read_text(encoding="utf-8")
         deps = []
         for line in content.splitlines():
             line = line.strip()
             # Skip empty lines and comments
-            if not line or line.startswith('#'):
+            if not line or line.startswith("#"):
                 continue
             # Skip -e and --editable
-            if line.startswith('-e') or line.startswith('--editable'):
+            if line.startswith("-e") or line.startswith("--editable"):
                 continue
             # Skip -r and --requirement
-            if line.startswith('-r') or line.startswith('--requirement'):
+            if line.startswith("-r") or line.startswith("--requirement"):
                 continue
             deps.append(line)
         return deps
@@ -231,11 +227,11 @@ def detect_imports(content: str) -> list[str]:
             if isinstance(node, ast.Import):
                 for alias in node.names:
                     # Get base module name
-                    base = alias.name.split('.')[0]
+                    base = alias.name.split(".")[0]
                     imports.add(base)
             elif isinstance(node, ast.ImportFrom):
                 if node.module:
-                    base = node.module.split('.')[0]
+                    base = node.module.split(".")[0]
                     imports.add(base)
     except SyntaxError as e:
         print(f"Warning: Could not parse script for imports: {e}", file=sys.stderr)
@@ -243,14 +239,61 @@ def detect_imports(content: str) -> list[str]:
 
     # Filter out standard library modules (basic filter)
     stdlib_modules = {
-        'abc', 'argparse', 'ast', 'asyncio', 'base64', 'collections', 'contextlib',
-        'copy', 'csv', 'dataclasses', 'datetime', 'decimal', 'email', 'enum', 'functools',
-        'glob', 'hashlib', 'http', 'inspect', 'io', 'itertools', 'json', 'logging',
-        'math', 'multiprocessing', 'operator', 'os', 'pathlib', 'pickle', 'platform',
-        'pprint', 'queue', 're', 'secrets', 'shutil', 'socket', 'sqlite3', 'ssl',
-        'string', 'subprocess', 'sys', 'tempfile', 'threading', 'time', 'tomllib',
-        'traceback', 'typing', 'unittest', 'urllib', 'uuid', 'warnings', 'weakref',
-        'xml', 'zipfile', 'zoneinfo'
+        "abc",
+        "argparse",
+        "ast",
+        "asyncio",
+        "base64",
+        "collections",
+        "contextlib",
+        "copy",
+        "csv",
+        "dataclasses",
+        "datetime",
+        "decimal",
+        "email",
+        "enum",
+        "functools",
+        "glob",
+        "hashlib",
+        "http",
+        "inspect",
+        "io",
+        "itertools",
+        "json",
+        "logging",
+        "math",
+        "multiprocessing",
+        "operator",
+        "os",
+        "pathlib",
+        "pickle",
+        "platform",
+        "pprint",
+        "queue",
+        "re",
+        "secrets",
+        "shutil",
+        "socket",
+        "sqlite3",
+        "ssl",
+        "string",
+        "subprocess",
+        "sys",
+        "tempfile",
+        "threading",
+        "time",
+        "tomllib",
+        "traceback",
+        "typing",
+        "unittest",
+        "urllib",
+        "uuid",
+        "warnings",
+        "weakref",
+        "xml",
+        "zipfile",
+        "zoneinfo",
     }
 
     third_party = [imp for imp in imports if imp not in stdlib_modules]
@@ -258,9 +301,7 @@ def detect_imports(content: str) -> list[str]:
 
 
 def generate_header(
-    dependencies: list[str],
-    python_version: str = ">=3.11",
-    quiet: bool = False
+    dependencies: list[str], python_version: str = ">=3.11", quiet: bool = False
 ) -> str:
     """Generate PEP 723 header with shebang"""
     shebang = "#!/usr/bin/env -S uv run --script"
@@ -291,7 +332,7 @@ def convert_script(
     dry_run: bool = False,
     python_version: str = ">=3.11",
     quiet_mode: bool = False,
-    use_pypi: bool = True
+    use_pypi: bool = True,
 ) -> bool:
     """
     Convert script to uv format.
@@ -300,7 +341,7 @@ def convert_script(
     """
     # Read original script
     try:
-        content = script_path.read_text(encoding='utf-8')
+        content = script_path.read_text(encoding="utf-8")
     except (FileNotFoundError, PermissionError, OSError, UnicodeDecodeError) as e:
         print(f"Error: Cannot read {script_path}: {e}", file=sys.stderr)
         return False
@@ -352,9 +393,13 @@ def convert_script(
                     elif imp != normalized_pkg:
                         print(f"  - Normalized '{imp}' → '{normalized_pkg}' (auto-detected)")
 
-                    if '>=' in dep:
-                        version = dep.split('>=')[1]
-                        source = "from project" if find_version_in_project(dep.split('>=')[0], script_path) else "from PyPI"
+                    if ">=" in dep:
+                        version = dep.split(">=")[1]
+                        source = (
+                            "from project"
+                            if find_version_in_project(dep.split(">=")[0], script_path)
+                            else "from PyPI"
+                        )
                         print(f"  - Resolved version: {version} {source}")
                     else:
                         print(f"  - Using package: {dep} (uv will resolve version)")
@@ -365,10 +410,10 @@ def convert_script(
     header = generate_header(dependencies, python_version, quiet_mode)
 
     # Remove old shebang if present
-    lines = content.split('\n')
-    if lines and lines[0].startswith('#!'):
+    lines = content.split("\n")
+    if lines and lines[0].startswith("#!"):
         # Skip old shebang
-        content_without_shebang = '\n'.join(lines[1:])
+        content_without_shebang = "\n".join(lines[1:])
     else:
         content_without_shebang = content
 
@@ -396,11 +441,12 @@ def convert_script(
 
     # Write output
     try:
-        output_path.write_text(new_content, encoding='utf-8')
+        output_path.write_text(new_content, encoding="utf-8")
         print(f"✓ Created: {output_path}")
 
         # Make executable
         import stat
+
         current_permissions = output_path.stat().st_mode
         output_path.chmod(current_permissions | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
         print("✓ Made executable")
@@ -425,41 +471,33 @@ def main():
     parser = argparse.ArgumentParser(
         description="Convert Python scripts to uv single-file format",
         formatter_class=argparse.RawDescriptionHelpFormatter,
-        epilog=__doc__
+        epilog=__doc__,
     )
-    parser.add_argument('script', help='Python script to convert')
+    parser.add_argument("script", help="Python script to convert")
     parser.add_argument(
-        '--requirements', '-r',
-        help='Path to requirements.txt (default: look in same directory)'
-    )
-    parser.add_argument(
-        '--detect-imports', '-d',
-        action='store_true',
-        help='Detect dependencies from imports (basic detection)'
+        "--requirements", "-r", help="Path to requirements.txt (default: look in same directory)"
     )
     parser.add_argument(
-        '--output', '-o',
-        help='Output filename (default: <script>_uv.py)'
+        "--detect-imports",
+        "-d",
+        action="store_true",
+        help="Detect dependencies from imports (basic detection)",
+    )
+    parser.add_argument("--output", "-o", help="Output filename (default: <script>_uv.py)")
+    parser.add_argument(
+        "--python-version",
+        "-p",
+        default=">=3.11",
+        help="Python version constraint (default: >=3.11)",
+    )
+    parser.add_argument("--quiet", "-q", action="store_true", help="Add --quiet flag to shebang")
+    parser.add_argument(
+        "--dry-run", "-n", action="store_true", help="Preview conversion without creating file"
     )
     parser.add_argument(
-        '--python-version', '-p',
-        default='>=3.11',
-        help='Python version constraint (default: >=3.11)'
-    )
-    parser.add_argument(
-        '--quiet', '-q',
-        action='store_true',
-        help='Add --quiet flag to shebang'
-    )
-    parser.add_argument(
-        '--dry-run', '-n',
-        action='store_true',
-        help='Preview conversion without creating file'
-    )
-    parser.add_argument(
-        '--no-pypi',
-        action='store_true',
-        help='Skip PyPI queries for version resolution (faster, offline)'
+        "--no-pypi",
+        action="store_true",
+        help="Skip PyPI queries for version resolution (faster, offline)",
     )
 
     args = parser.parse_args()
@@ -485,7 +523,7 @@ def main():
         dry_run=args.dry_run,
         python_version=args.python_version,
         quiet_mode=args.quiet,
-        use_pypi=not args.no_pypi
+        use_pypi=not args.no_pypi,
     )
 
     sys.exit(0 if success else 1)

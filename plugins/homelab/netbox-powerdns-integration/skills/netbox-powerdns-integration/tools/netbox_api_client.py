@@ -40,16 +40,14 @@ Example:
 
 import os
 import sys
-from typing import Optional
 from dataclasses import dataclass
 
-import typer
-from rich import print as rprint
-from rich.console import Console
-from rich.table import Table
-from rich.panel import Panel
 import pynetbox
+import typer
 from infisical_sdk import InfisicalSDKClient
+from rich.console import Console
+from rich.panel import Panel
+from rich.table import Table
 
 app = typer.Typer(help="NetBox API Client for Matrix cluster infrastructure")
 console = Console()
@@ -59,9 +57,11 @@ console = Console()
 # Configuration and Authentication
 # ============================================================================
 
+
 @dataclass
 class NetBoxConfig:
     """NetBox connection configuration."""
+
     url: str
     token: str
     ssl_verify: bool = True
@@ -91,20 +91,18 @@ def get_netbox_client() -> pynetbox.api:
 
         if not client_id or not client_secret:
             console.print(
-                "[red]INFISICAL_CLIENT_ID and INFISICAL_CLIENT_SECRET environment variables required[/red]")
+                "[red]INFISICAL_CLIENT_ID and INFISICAL_CLIENT_SECRET environment variables required[/red]"
+            )
             raise typer.Exit(1)
 
-        client.auth.universal_auth.login(
-            client_id=client_id,
-            client_secret=client_secret
-        )
+        client.auth.universal_auth.login(client_id=client_id, client_secret=client_secret)
 
         # Get NetBox API token from Infisical
         secret = client.secrets.get_secret_by_name(
             secret_name="NETBOX_API_TOKEN",
             project_id="7b832220-24c0-45bc-a5f1-ce9794a31259",
             environment_slug="prod",
-            secret_path="/matrix"
+            secret_path="/matrix",
         )
 
         token = secret.secretValue
@@ -113,11 +111,7 @@ def get_netbox_client() -> pynetbox.api:
             console.print("[red]NETBOX_API_TOKEN is empty in Infisical[/red]")
             raise ValueError("NETBOX_API_TOKEN is empty")
 
-        config = NetBoxConfig(
-            url="https://netbox.spaceships.work",
-            token=token,
-            ssl_verify=True
-        )
+        config = NetBoxConfig(url="https://netbox.spaceships.work", token=token, ssl_verify=True)
 
         return pynetbox.api(config.url, token=config.token)
 
@@ -137,9 +131,7 @@ sites_app = typer.Typer(help="Manage NetBox sites")
 
 
 @sites_app.command("list")
-def sites_list(
-    output: str = typer.Option("table", help="Output format: table or json")
-):
+def sites_list(output: str = typer.Option("table", help="Output format: table or json")):
     """List all sites in NetBox."""
     nb = get_netbox_client()
 
@@ -148,13 +140,14 @@ def sites_list(
 
         if output == "json":
             import json
+
             sites_data = [
                 {
                     "id": s.id,
                     "name": s.name,
                     "slug": s.slug,
-                    "status": s.status.value if hasattr(s.status, 'value') else str(s.status),
-                    "description": s.description or ""
+                    "status": s.status.value if hasattr(s.status, "value") else str(s.status),
+                    "description": s.description or "",
                 }
                 for s in sites
             ]
@@ -172,9 +165,8 @@ def sites_list(
                     str(site.id),
                     site.name,
                     site.slug,
-                    site.status.value if hasattr(
-                        site.status, 'value') else str(site.status),
-                    site.description or ""
+                    site.status.value if hasattr(site.status, "value") else str(site.status),
+                    site.description or "",
                 )
 
             console.print(table)
@@ -188,7 +180,7 @@ def sites_list(
 @sites_app.command("get")
 def sites_get(
     slug: str = typer.Option(..., help="Site slug"),
-    output: str = typer.Option("table", help="Output format: table or json")
+    output: str = typer.Option("table", help="Output format: table or json"),
 ):
     """Get specific site by slug."""
     nb = get_netbox_client()
@@ -202,25 +194,28 @@ def sites_get(
 
         if output == "json":
             import json
+
             site_data = {
                 "id": site.id,
                 "name": site.name,
                 "slug": site.slug,
-                "status": site.status.value if hasattr(site.status, 'value') else str(site.status),
+                "status": site.status.value if hasattr(site.status, "value") else str(site.status),
                 "description": site.description or "",
-                "tags": [tag.name for tag in site.tags] if site.tags else []
+                "tags": [tag.name for tag in site.tags] if site.tags else [],
             }
             print(json.dumps(site_data, indent=2))
         else:
-            console.print(Panel(
-                f"[green]Name:[/green] {site.name}\n"
-                f"[green]Slug:[/green] {site.slug}\n"
-                f"[green]Status:[/green] {site.status}\n"
-                f"[green]Description:[/green] {site.description or 'N/A'}\n"
-                f"[green]Tags:[/green] {', '.join([tag.name for tag in site.tags]) if site.tags else 'None'}",
-                title=f"Site: {site.name}",
-                border_style="green"
-            ))
+            console.print(
+                Panel(
+                    f"[green]Name:[/green] {site.name}\n"
+                    f"[green]Slug:[/green] {site.slug}\n"
+                    f"[green]Status:[/green] {site.status}\n"
+                    f"[green]Description:[/green] {site.description or 'N/A'}\n"
+                    f"[green]Tags:[/green] {', '.join([tag.name for tag in site.tags]) if site.tags else 'None'}",
+                    title=f"Site: {site.name}",
+                    border_style="green",
+                )
+            )
 
     except Exception as e:
         console.print(f"[red]Error getting site: {e}[/red]")
@@ -236,10 +231,10 @@ devices_app = typer.Typer(help="Manage NetBox devices")
 
 @devices_app.command("list")
 def devices_list(
-    site: Optional[str] = typer.Option(None, help="Filter by site slug"),
-    role: Optional[str] = typer.Option(None, help="Filter by device role"),
-    tag: Optional[str] = typer.Option(None, help="Filter by tag"),
-    output: str = typer.Option("table", help="Output format: table or json")
+    site: str | None = typer.Option(None, help="Filter by site slug"),
+    role: str | None = typer.Option(None, help="Filter by device role"),
+    tag: str | None = typer.Option(None, help="Filter by tag"),
+    output: str = typer.Option("table", help="Output format: table or json"),
 ):
     """List devices with optional filtering."""
     nb = get_netbox_client()
@@ -248,25 +243,25 @@ def devices_list(
         # Build filter
         filters = {}
         if site:
-            filters['site'] = site
+            filters["site"] = site
         if role:
-            filters['role'] = role
+            filters["role"] = role
         if tag:
-            filters['tag'] = tag
+            filters["tag"] = tag
 
-        devices = nb.dcim.devices.filter(
-            **filters) if filters else nb.dcim.devices.all()
+        devices = nb.dcim.devices.filter(**filters) if filters else nb.dcim.devices.all()
 
         if output == "json":
             import json
+
             devices_data = [
                 {
                     "id": d.id,
                     "name": d.name,
                     "site": d.site.name if d.site else None,
                     "role": d.device_role.name if d.device_role else None,
-                    "status": d.status.value if hasattr(d.status, 'value') else str(d.status),
-                    "primary_ip": str(d.primary_ip4.address) if d.primary_ip4 else None
+                    "status": d.status.value if hasattr(d.status, "value") else str(d.status),
+                    "primary_ip": str(d.primary_ip4.address) if d.primary_ip4 else None,
                 }
                 for d in devices
             ]
@@ -286,14 +281,12 @@ def devices_list(
                     device.name,
                     device.site.name if device.site else "N/A",
                     device.device_role.name if device.device_role else "N/A",
-                    device.status.value if hasattr(
-                        device.status, 'value') else str(device.status),
-                    str(device.primary_ip4.address) if device.primary_ip4 else "N/A"
+                    device.status.value if hasattr(device.status, "value") else str(device.status),
+                    str(device.primary_ip4.address) if device.primary_ip4 else "N/A",
                 )
 
             console.print(table)
-            console.print(
-                f"\n[green]Total devices: {len(list(devices))}[/green]")
+            console.print(f"\n[green]Total devices: {len(list(devices))}[/green]")
 
     except Exception as e:
         console.print(f"[red]Error listing devices: {e}[/red]")
@@ -303,7 +296,7 @@ def devices_list(
 @devices_app.command("get")
 def devices_get(
     name: str = typer.Option(..., help="Device name"),
-    output: str = typer.Option("table", help="Output format: table or json")
+    output: str = typer.Option("table", help="Output format: table or json"),
 ):
     """Get device details including interfaces."""
     nb = get_netbox_client()
@@ -320,35 +313,42 @@ def devices_get(
 
         if output == "json":
             import json
+
             device_data = {
                 "id": device.id,
                 "name": device.name,
                 "site": device.site.name if device.site else None,
                 "role": device.device_role.name if device.device_role else None,
-                "status": device.status.value if hasattr(device.status, 'value') else str(device.status),
+                "status": device.status.value
+                if hasattr(device.status, "value")
+                else str(device.status),
                 "primary_ip4": str(device.primary_ip4.address) if device.primary_ip4 else None,
                 "interfaces": [
                     {
                         "name": iface.name,
-                        "type": iface.type.value if hasattr(iface.type, 'value') else str(iface.type),
+                        "type": iface.type.value
+                        if hasattr(iface.type, "value")
+                        else str(iface.type),
                         "enabled": iface.enabled,
-                        "mtu": iface.mtu
+                        "mtu": iface.mtu,
                     }
                     for iface in interfaces
-                ]
+                ],
             }
             print(json.dumps(device_data, indent=2))
         else:
             # Device info
-            console.print(Panel(
-                f"[green]Name:[/green] {device.name}\n"
-                f"[green]Site:[/green] {device.site.name if device.site else 'N/A'}\n"
-                f"[green]Role:[/green] {device.device_role.name if device.device_role else 'N/A'}\n"
-                f"[green]Status:[/green] {device.status}\n"
-                f"[green]Primary IP:[/green] {device.primary_ip4.address if device.primary_ip4 else 'N/A'}",
-                title=f"Device: {device.name}",
-                border_style="green"
-            ))
+            console.print(
+                Panel(
+                    f"[green]Name:[/green] {device.name}\n"
+                    f"[green]Site:[/green] {device.site.name if device.site else 'N/A'}\n"
+                    f"[green]Role:[/green] {device.device_role.name if device.device_role else 'N/A'}\n"
+                    f"[green]Status:[/green] {device.status}\n"
+                    f"[green]Primary IP:[/green] {device.primary_ip4.address if device.primary_ip4 else 'N/A'}",
+                    title=f"Device: {device.name}",
+                    border_style="green",
+                )
+            )
 
             # Interfaces table
             if interfaces:
@@ -361,10 +361,9 @@ def devices_get(
                 for iface in interfaces:
                     iface_table.add_row(
                         iface.name,
-                        iface.type.value if hasattr(
-                            iface.type, 'value') else str(iface.type),
+                        iface.type.value if hasattr(iface.type, "value") else str(iface.type),
                         "✓" if iface.enabled else "✗",
-                        str(iface.mtu) if iface.mtu else "default"
+                        str(iface.mtu) if iface.mtu else "default",
                     )
 
                 console.print("\n", iface_table)
@@ -383,9 +382,9 @@ vms_app = typer.Typer(help="Manage NetBox virtual machines")
 
 @vms_app.command("list")
 def vms_list(
-    cluster: Optional[str] = typer.Option(None, help="Filter by cluster"),
-    tag: Optional[str] = typer.Option(None, help="Filter by tag"),
-    output: str = typer.Option("table", help="Output format: table or json")
+    cluster: str | None = typer.Option(None, help="Filter by cluster"),
+    tag: str | None = typer.Option(None, help="Filter by tag"),
+    output: str = typer.Option("table", help="Output format: table or json"),
 ):
     """List virtual machines."""
     nb = get_netbox_client()
@@ -393,15 +392,19 @@ def vms_list(
     try:
         filters = {}
         if cluster:
-            filters['cluster'] = cluster
+            filters["cluster"] = cluster
         if tag:
-            filters['tag'] = tag
+            filters["tag"] = tag
 
-        vms = nb.virtualization.virtual_machines.filter(
-            **filters) if filters else nb.virtualization.virtual_machines.all()
+        vms = (
+            nb.virtualization.virtual_machines.filter(**filters)
+            if filters
+            else nb.virtualization.virtual_machines.all()
+        )
 
         if output == "json":
             import json
+
             vms_data = [
                 {
                     "id": vm.id,
@@ -409,8 +412,8 @@ def vms_list(
                     "cluster": vm.cluster.name if vm.cluster else None,
                     "vcpus": vm.vcpus,
                     "memory": vm.memory,
-                    "status": vm.status.value if hasattr(vm.status, 'value') else str(vm.status),
-                    "primary_ip": str(vm.primary_ip4.address) if vm.primary_ip4 else None
+                    "status": vm.status.value if hasattr(vm.status, "value") else str(vm.status),
+                    "primary_ip": str(vm.primary_ip4.address) if vm.primary_ip4 else None,
                 }
                 for vm in vms
             ]
@@ -432,9 +435,8 @@ def vms_list(
                     vm.cluster.name if vm.cluster else "N/A",
                     str(vm.vcpus) if vm.vcpus else "N/A",
                     str(vm.memory) if vm.memory else "N/A",
-                    vm.status.value if hasattr(
-                        vm.status, 'value') else str(vm.status),
-                    str(vm.primary_ip4.address) if vm.primary_ip4 else "N/A"
+                    vm.status.value if hasattr(vm.status, "value") else str(vm.status),
+                    str(vm.primary_ip4.address) if vm.primary_ip4 else "N/A",
                 )
 
             console.print(table)
@@ -448,7 +450,7 @@ def vms_list(
 @vms_app.command("get")
 def vms_get(
     name: str = typer.Option(..., help="VM name"),
-    output: str = typer.Option("table", help="Output format: table or json")
+    output: str = typer.Option("table", help="Output format: table or json"),
 ):
     """Get VM details including interfaces and IPs."""
     nb = get_netbox_client()
@@ -461,11 +463,11 @@ def vms_get(
             sys.exit(1)
 
         # Get interfaces
-        interfaces = nb.virtualization.interfaces.filter(
-            virtual_machine_id=vm.id)
+        interfaces = nb.virtualization.interfaces.filter(virtual_machine_id=vm.id)
 
         if output == "json":
             import json
+
             vm_data = {
                 "id": vm.id,
                 "name": vm.name,
@@ -473,30 +475,28 @@ def vms_get(
                 "vcpus": vm.vcpus,
                 "memory": vm.memory,
                 "disk": vm.disk,
-                "status": vm.status.value if hasattr(vm.status, 'value') else str(vm.status),
+                "status": vm.status.value if hasattr(vm.status, "value") else str(vm.status),
                 "primary_ip4": str(vm.primary_ip4.address) if vm.primary_ip4 else None,
                 "interfaces": [
-                    {
-                        "name": iface.name,
-                        "enabled": iface.enabled,
-                        "mtu": iface.mtu
-                    }
+                    {"name": iface.name, "enabled": iface.enabled, "mtu": iface.mtu}
                     for iface in interfaces
-                ]
+                ],
             }
             print(json.dumps(vm_data, indent=2))
         else:
-            console.print(Panel(
-                f"[green]Name:[/green] {vm.name}\n"
-                f"[green]Cluster:[/green] {vm.cluster.name if vm.cluster else 'N/A'}\n"
-                f"[green]vCPUs:[/green] {vm.vcpus or 'N/A'}\n"
-                f"[green]Memory:[/green] {vm.memory or 'N/A'} MB\n"
-                f"[green]Disk:[/green] {vm.disk or 'N/A'} GB\n"
-                f"[green]Status:[/green] {vm.status}\n"
-                f"[green]Primary IP:[/green] {vm.primary_ip4.address if vm.primary_ip4 else 'N/A'}",
-                title=f"VM: {vm.name}",
-                border_style="green"
-            ))
+            console.print(
+                Panel(
+                    f"[green]Name:[/green] {vm.name}\n"
+                    f"[green]Cluster:[/green] {vm.cluster.name if vm.cluster else 'N/A'}\n"
+                    f"[green]vCPUs:[/green] {vm.vcpus or 'N/A'}\n"
+                    f"[green]Memory:[/green] {vm.memory or 'N/A'} MB\n"
+                    f"[green]Disk:[/green] {vm.disk or 'N/A'} GB\n"
+                    f"[green]Status:[/green] {vm.status}\n"
+                    f"[green]Primary IP:[/green] {vm.primary_ip4.address if vm.primary_ip4 else 'N/A'}",
+                    title=f"VM: {vm.name}",
+                    border_style="green",
+                )
+            )
 
             if interfaces:
                 iface_table = Table(title="Interfaces")
@@ -508,7 +508,7 @@ def vms_get(
                     iface_table.add_row(
                         iface.name,
                         "✓" if iface.enabled else "✗",
-                        str(iface.mtu) if iface.mtu else "default"
+                        str(iface.mtu) if iface.mtu else "default",
                     )
 
                 console.print("\n", iface_table)
@@ -527,11 +527,10 @@ ips_app = typer.Typer(help="Manage NetBox IP addresses")
 
 @ips_app.command("query")
 def ips_query(
-    dns_name: Optional[str] = typer.Option(
-        None, help="Filter by DNS name (partial match)"),
-    address: Optional[str] = typer.Option(None, help="Filter by IP address"),
-    tag: Optional[str] = typer.Option(None, help="Filter by tag"),
-    output: str = typer.Option("table", help="Output format: table or json")
+    dns_name: str | None = typer.Option(None, help="Filter by DNS name (partial match)"),
+    address: str | None = typer.Option(None, help="Filter by IP address"),
+    tag: str | None = typer.Option(None, help="Filter by tag"),
+    output: str = typer.Option("table", help="Output format: table or json"),
 ):
     """Query IP addresses."""
     nb = get_netbox_client()
@@ -539,28 +538,28 @@ def ips_query(
     try:
         filters = {}
         if dns_name:
-            filters['dns_name__ic'] = dns_name  # Case-insensitive contains
+            filters["dns_name__ic"] = dns_name  # Case-insensitive contains
         if address:
-            filters['address'] = address
+            filters["address"] = address
         if tag:
-            filters['tag'] = tag
+            filters["tag"] = tag
 
         if not filters:
-            console.print(
-                "[yellow]Please provide at least one filter[/yellow]")
+            console.print("[yellow]Please provide at least one filter[/yellow]")
             sys.exit(0)
 
         ips = nb.ipam.ip_addresses.filter(**filters)
 
         if output == "json":
             import json
+
             ips_data = [
                 {
                     "id": ip.id,
                     "address": str(ip.address),
                     "dns_name": ip.dns_name or "",
-                    "status": ip.status.value if hasattr(ip.status, 'value') else str(ip.status),
-                    "assigned_to": ip.assigned_object.name if ip.assigned_object else None
+                    "status": ip.status.value if hasattr(ip.status, "value") else str(ip.status),
+                    "assigned_to": ip.assigned_object.name if ip.assigned_object else None,
                 }
                 for ip in ips
             ]
@@ -578,9 +577,8 @@ def ips_query(
                     str(ip.id),
                     str(ip.address),
                     ip.dns_name or "",
-                    ip.status.value if hasattr(
-                        ip.status, 'value') else str(ip.status),
-                    ip.assigned_object.name if ip.assigned_object else "N/A"
+                    ip.status.value if hasattr(ip.status, "value") else str(ip.status),
+                    ip.assigned_object.name if ip.assigned_object else "N/A",
                 )
 
             console.print(table)
@@ -602,7 +600,7 @@ prefixes_app = typer.Typer(help="Manage NetBox prefixes")
 def prefixes_available(
     prefix: str = typer.Option(..., help="Prefix (e.g., 192.168.3.0/24)"),
     limit: int = typer.Option(10, help="Max results to show"),
-    output: str = typer.Option("table", help="Output format: table or json")
+    output: str = typer.Option("table", help="Output format: table or json"),
 ):
     """Get available IPs in a prefix."""
     nb = get_netbox_client()
@@ -618,17 +616,16 @@ def prefixes_available(
 
         if output == "json":
             import json
+
             print(json.dumps([str(ip.address) for ip in available], indent=2))
         else:
             console.print(f"\n[green]Prefix:[/green] {prefix}")
-            console.print(
-                f"[green]Available IPs (showing first {limit}):[/green]\n")
+            console.print(f"[green]Available IPs (showing first {limit}):[/green]\n")
 
             for ip in available:
                 console.print(f"  • {ip.address}")
 
-            console.print(
-                f"\n[yellow]Total available: {len(available)}+[/yellow]")
+            console.print(f"\n[yellow]Total available: {len(available)}+[/yellow]")
 
     except Exception as e:
         console.print(f"[red]Error getting available IPs: {e}[/red]")

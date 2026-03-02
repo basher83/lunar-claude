@@ -17,10 +17,11 @@ Usage:
     python cli-app.py process input.txt --output output.txt
 """
 
+from pathlib import Path
+
 import typer
 from rich import print
 from rich.console import Console
-from pathlib import Path
 
 app = typer.Typer()
 console = Console()

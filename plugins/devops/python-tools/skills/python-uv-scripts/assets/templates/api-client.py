@@ -18,9 +18,10 @@ Usage:
     python api-client.py
 """
 
-import httpx
 import os
 import sys
+
+import httpx
 from rich import print
 from rich.console import Console
 

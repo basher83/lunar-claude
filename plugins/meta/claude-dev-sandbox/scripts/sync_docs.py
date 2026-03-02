@@ -66,13 +66,13 @@ SEED_URLS = [
 # URL patterns that define each tier
 # Core: Essential for Claude Code plugin/skill development
 CORE_PATTERNS = [
-    r"/agent-sdk/",           # Agent SDK docs (plugins, skills, etc.)
-    r"/agent-skills/",        # Agent Skills API
+    r"/agent-sdk/",  # Agent SDK docs (plugins, skills, etc.)
+    r"/agent-skills/",  # Agent Skills API
 ]
 
 # Extended: Useful but not always needed
 EXTENDED_PATTERNS = [
-    r"/agents-and-tools/",    # Tool use, MCP, etc.
+    r"/agents-and-tools/",  # Tool use, MCP, etc.
     r"/build-with-claude/prompt-engineering/",  # Prompt engineering guides
 ]
 
@@ -236,7 +236,9 @@ def save_cache(cache_file: Path, cache: SyncCache) -> None:
         temp_file.write_text(json.dumps(data, indent=2))
         temp_file.replace(cache_file)  # Atomic on POSIX systems
     except PermissionError:
-        console.print(f"[red]Error: Cannot write cache file (permission denied): {cache_file}[/red]")
+        console.print(
+            f"[red]Error: Cannot write cache file (permission denied): {cache_file}[/red]"
+        )
         console.print("[yellow]Sync state will not be preserved for next run[/yellow]")
     except OSError as e:
         console.print(f"[red]Error saving cache: {e}[/red]")
@@ -322,7 +324,7 @@ def url_to_page_name(url: str) -> str:
     ]
     for prefix in section_prefixes:
         if path.startswith(prefix):
-            path = path[len(prefix):]
+            path = path[len(prefix) :]
             break
 
     # Replace slashes with dashes for flat storage
@@ -428,7 +430,9 @@ def discover_via_crawl(
     if discovery_failures > 0:
         console.print(f"[yellow]Warning: {discovery_failures} URLs failed during crawl[/yellow]")
         if len(discovered) > 0 and discovery_failures > len(discovered) * 0.2:
-            console.print("[yellow]High failure rate - consider re-running with --rediscover[/yellow]")
+            console.print(
+                "[yellow]High failure rate - consider re-running with --rediscover[/yellow]"
+            )
 
     console.print(f"[green]Crawl complete: {len(discovered)} pages found[/green]")
     return discovered
@@ -448,9 +452,7 @@ def discover_via_llms_txt(client: httpx.Client) -> dict[str, PageMeta]:
 
         discovered: dict[str, PageMeta] = {}
         # Match all docs and release-notes pages
-        pattern = re.compile(
-            r"https://docs\.claude\.com/en/(?:docs|release-notes)/[^\s)]+\.md"
-        )
+        pattern = re.compile(r"https://docs\.claude\.com/en/(?:docs|release-notes)/[^\s)]+\.md")
 
         for match in pattern.finditer(response.text):
             url = match.group(0)
@@ -464,7 +466,9 @@ def discover_via_llms_txt(client: httpx.Client) -> dict[str, PageMeta]:
         return discovered
 
     except httpx.TimeoutException:
-        console.print("[yellow]Warning: llms.txt fetch timed out - using crawl results only[/yellow]")
+        console.print(
+            "[yellow]Warning: llms.txt fetch timed out - using crawl results only[/yellow]"
+        )
         return {}
     except httpx.HTTPStatusError as e:
         console.print(f"[yellow]Warning: llms.txt returned HTTP {e.response.status_code}[/yellow]")
@@ -770,7 +774,9 @@ def main(
     try:
         output_dir.mkdir(parents=True, exist_ok=True)
     except PermissionError:
-        console.print(f"[red]Cannot create output directory (permission denied): {output_dir}[/red]")
+        console.print(
+            f"[red]Cannot create output directory (permission denied): {output_dir}[/red]"
+        )
         raise typer.Exit(code=1)
     except OSError as e:
         console.print(f"[red]Cannot create output directory: {output_dir}[/red]")
@@ -850,9 +856,7 @@ def main(
 
         # Filter pages by tier
         pages_to_sync = {
-            name: meta
-            for name, meta in cache.pages.items()
-            if meta.tier in tiers_to_sync
+            name: meta for name, meta in cache.pages.items() if meta.tier in tiers_to_sync
         }
 
         if format_output == OutputFormat.RICH:
@@ -880,9 +884,7 @@ def main(
 
                     # Check for changes via headers
                     if not force:
-                        needs_update, etag, last_mod = check_for_changes(
-                            client, meta.url, meta
-                        )
+                        needs_update, etag, last_mod = check_for_changes(client, meta.url, meta)
                         if not needs_update:
                             console.print(f"[dim]⊙ {name} (unchanged)[/dim]")
                             skipped += 1
@@ -924,9 +926,7 @@ def main(
             # JSON mode - silent operation
             for name, meta in pages_to_sync.items():
                 if not force:
-                    needs_update, etag, last_mod = check_for_changes(
-                        client, meta.url, meta
-                    )
+                    needs_update, etag, last_mod = check_for_changes(client, meta.url, meta)
                     if not needs_update:
                         skipped += 1
                         continue
@@ -937,9 +937,7 @@ def main(
                     downloaded += 1
                     continue
 
-                status, updated_meta = download_page(
-                    client, name, meta, output_dir, etag, last_mod
-                )
+                status, updated_meta = download_page(client, name, meta, output_dir, etag, last_mod)
 
                 if status == DownloadStatus.SUCCESS:
                     cache.pages[name] = updated_meta

@@ -138,9 +138,7 @@ async def example_with_interrupt():
     async with ClaudeSDKClient() as client:
         # Start a long-running task
         print("\nUser: Count from 1 to 100 slowly")
-        await client.query(
-            "Count from 1 to 100 slowly, with a brief pause between each number"
-        )
+        await client.query("Count from 1 to 100 slowly, with a brief pause between each number")
 
         # Create a background task to consume messages
         messages_received = []
@@ -232,9 +230,7 @@ async def example_with_options():
             if isinstance(msg, AssistantMessage):
                 display_message(msg)
                 for block in msg.content:
-                    if hasattr(block, "name") and not isinstance(
-                        block, TextBlock
-                    ):  # ToolUseBlock
+                    if hasattr(block, "name") and not isinstance(block, TextBlock):  # ToolUseBlock
                         tool_uses.append(getattr(block, "name", ""))
             else:
                 display_message(msg)
@@ -355,12 +351,12 @@ async def example_control_protocol():
             print(f"  - Output style: {server_info.get('output_style', 'unknown')}")
 
             # Show available output styles if present
-            styles = server_info.get('available_output_styles', [])
+            styles = server_info.get("available_output_styles", [])
             if styles:
                 print(f"  - Available output styles: {', '.join(styles)}")
 
             # Show a few example commands
-            commands = server_info.get('commands', [])[:5]
+            commands = server_info.get("commands", [])[:5]
             if commands:
                 print("  - Example commands:")
                 for cmd in commands:
@@ -377,6 +373,7 @@ async def example_control_protocol():
 
         # Start consuming messages in background to enable interrupt
         messages = []
+
         async def consume():
             async for msg in client.receive_response():
                 messages.append(msg)
@@ -445,10 +442,8 @@ async def example_error_handling():
                         display_message(msg)
                         break
 
-        except asyncio.TimeoutError:
-            print(
-                "\nResponse timeout after 10 seconds - demonstrating graceful handling"
-            )
+        except TimeoutError:
+            print("\nResponse timeout after 10 seconds - demonstrating graceful handling")
             print(f"Received {len(messages)} messages before timeout")
 
     except CLIConnectionError as e:

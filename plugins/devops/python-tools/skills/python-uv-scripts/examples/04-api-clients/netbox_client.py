@@ -42,14 +42,13 @@ Example output:
 
 import re
 import sys
-from typing import Optional
 from dataclasses import dataclass
 
 import pynetbox
 from infisical import InfisicalClient
 from rich.console import Console
-from rich.table import Table
 from rich.panel import Panel
+from rich.table import Table
 
 console = Console()
 
@@ -58,9 +57,11 @@ console = Console()
 # Configuration
 # ============================================================================
 
+
 @dataclass
 class NetBoxConfig:
     """NetBox connection configuration."""
+
     url: str = "https://netbox.spaceships.work"
     project_id: str = "7b832220-24c0-45bc-a5f1-ce9794a31259"
     environment: str = "prod"
@@ -71,7 +72,8 @@ class NetBoxConfig:
 # Authentication
 # ============================================================================
 
-def get_netbox_client(config: NetBoxConfig) -> Optional[pynetbox.api]:
+
+def get_netbox_client(config: NetBoxConfig) -> pynetbox.api | None:
     """
     Get authenticated NetBox API client.
 
@@ -93,7 +95,7 @@ def get_netbox_client(config: NetBoxConfig) -> Optional[pynetbox.api]:
             secret_name="NETBOX_API_TOKEN",
             project_id=config.project_id,
             environment=config.environment,
-            path=config.path
+            path=config.path,
         ).secret_value
 
         if not token:
@@ -116,6 +118,7 @@ def get_netbox_client(config: NetBoxConfig) -> Optional[pynetbox.api]:
 # Data Validation
 # ============================================================================
 
+
 def validate_vm_name(name: str) -> bool:
     """
     Validate VM name format.
@@ -129,13 +132,14 @@ def validate_vm_name(name: str) -> bool:
     Returns:
         True if valid, False otherwise
     """
-    pattern = r'^[a-z0-9-]+$'
+    pattern = r"^[a-z0-9-]+$"
     return bool(re.match(pattern, name))
 
 
 # ============================================================================
 # NetBox Queries
 # ============================================================================
+
 
 def get_cluster_vms(nb: pynetbox.api, cluster_name: str = "Matrix") -> list:
     """
@@ -157,7 +161,7 @@ def get_cluster_vms(nb: pynetbox.api, cluster_name: str = "Matrix") -> list:
         return []
 
 
-def get_vm_details(nb: pynetbox.api, vm_name: str) -> Optional[dict]:
+def get_vm_details(nb: pynetbox.api, vm_name: str) -> dict | None:
     """
     Get detailed information about a VM.
 
@@ -189,11 +193,7 @@ def get_vm_details(nb: pynetbox.api, vm_name: str) -> Optional[dict]:
             iface_ips = nb.ipam.ip_addresses.filter(vminterface_id=iface.id)
             ips.extend(iface_ips)
 
-        return {
-            "vm": vm,
-            "interfaces": list(interfaces),
-            "ips": ips
-        }
+        return {"vm": vm, "interfaces": list(interfaces), "ips": ips}
 
     except Exception as e:
         console.print(f"[red]Error getting VM details: {e}[/red]")
@@ -203,6 +203,7 @@ def get_vm_details(nb: pynetbox.api, vm_name: str) -> Optional[dict]:
 # ============================================================================
 # Output Formatting
 # ============================================================================
+
 
 def display_vms_table(vms: list) -> None:
     """
@@ -229,8 +230,8 @@ def display_vms_table(vms: list) -> None:
             vm.name,
             str(vm.vcpus) if vm.vcpus else "N/A",
             str(vm.memory) if vm.memory else "N/A",
-            vm.status.value if hasattr(vm.status, 'value') else str(vm.status),
-            str(vm.primary_ip4.address) if vm.primary_ip4 else "N/A"
+            vm.status.value if hasattr(vm.status, "value") else str(vm.status),
+            str(vm.primary_ip4.address) if vm.primary_ip4 else "N/A",
         )
 
     console.print(table)
@@ -273,9 +274,9 @@ def display_vm_details(details: dict) -> None:
         for iface in interfaces:
             iface_table.add_row(
                 iface.name,
-                iface.type.value if hasattr(iface.type, 'value') else str(iface.type),
+                iface.type.value if hasattr(iface.type, "value") else str(iface.type),
                 "✓" if iface.enabled else "✗",
-                str(iface.mtu) if iface.mtu else "default"
+                str(iface.mtu) if iface.mtu else "default",
             )
 
         console.print("\n", iface_table)
@@ -291,7 +292,7 @@ def display_vm_details(details: dict) -> None:
             ip_table.add_row(
                 str(ip.address),
                 ip.dns_name or "",
-                ip.status.value if hasattr(ip.status, 'value') else str(ip.status)
+                ip.status.value if hasattr(ip.status, "value") else str(ip.status),
             )
 
         console.print("\n", ip_table)
@@ -301,7 +302,8 @@ def display_vm_details(details: dict) -> None:
 # Main
 # ============================================================================
 
-def main(vm_name: Optional[str] = None) -> int:
+
+def main(vm_name: str | None = None) -> int:
     """
     Main entry point.
 
@@ -346,12 +348,9 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="NetBox API client example",
         formatter_class=argparse.RawDescriptionHelpFormatter,
-        epilog=__doc__
+        epilog=__doc__,
     )
-    parser.add_argument(
-        "--vm",
-        help="Specific VM to query (default: list all)"
-    )
+    parser.add_argument("--vm", help="Specific VM to query (default: list all)")
 
     args = parser.parse_args()
 

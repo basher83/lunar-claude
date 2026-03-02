@@ -20,6 +20,7 @@ Environment Variables:
 import argparse
 import os
 import sys
+
 from proxmoxer import ProxmoxAPI, ResourceException
 
 
@@ -39,14 +40,14 @@ class TemplateValidator:
                     user=user,
                     token_name=token_name,
                     token_value=token_value,
-                    verify_ssl=False
+                    verify_ssl=False,
                 )
             else:
                 self.proxmox = ProxmoxAPI(
                     self.endpoint,
                     user=auth_kwargs["user"],
                     password=auth_kwargs["password"],
-                    verify_ssl=False
+                    verify_ssl=False,
                 )
         except Exception as e:
             print(f"❌ Failed to connect to Proxmox: {e}", file=sys.stderr)
@@ -54,13 +55,13 @@ class TemplateValidator:
 
     def find_template(self, template_id: int, node: str = None):
         """Find template on cluster."""
-        nodes = [node] if node else [n['node'] for n in self.proxmox.nodes.get()]
+        nodes = [node] if node else [n["node"] for n in self.proxmox.nodes.get()]
 
         for node_name in nodes:
             try:
                 vms = self.proxmox.nodes(node_name).qemu.get()
                 for vm in vms:
-                    if vm['vmid'] == template_id:
+                    if vm["vmid"] == template_id:
                         return node_name, vm
             except ResourceException:
                 continue
@@ -81,11 +82,11 @@ class TemplateValidator:
         print(f"✓ Found on node: {node_name}")
 
         # Check if it's actually a template
-        if vm_info.get('template', 0) != 1:
+        if vm_info.get("template", 0) != 1:
             print(f"❌ VM {template_id} is not a template", file=sys.stderr)
             return False
 
-        print(f"✓ Confirmed as template")
+        print("✓ Confirmed as template")
 
         # Get detailed config
         try:
@@ -118,7 +119,7 @@ class TemplateValidator:
         print("-" * 50)
 
         # Print template info
-        print(f"\n📊 Template Info:")
+        print("\n📊 Template Info:")
         print(f"  Name: {config.get('name', 'N/A')}")
         print(f"  Memory: {config.get('memory', 'N/A')} MB")
         print(f"  Cores: {config.get('cores', 'N/A')}")
@@ -134,40 +135,40 @@ class TemplateValidator:
     def _check_cloudinit(self, config):
         """Check for cloud-init drive."""
         for key in config:
-            if key.startswith('ide') and 'cloudinit' in str(config[key]):
+            if key.startswith("ide") and "cloudinit" in str(config[key]):
                 return True, f"Found at {key}"
         return False, "Missing cloud-init drive (should be ide2)"
 
     def _check_agent(self, config):
         """Check for QEMU guest agent."""
-        agent = config.get('agent', '0')
-        if agent in ['1', 'enabled=1']:
+        agent = config.get("agent", "0")
+        if agent in ["1", "enabled=1"]:
             return True, "Enabled"
         return False, "Not enabled (recommended for IP detection)"
 
     def _check_scsi(self, config):
         """Check SCSI controller type."""
-        scsihw = config.get('scsihw', '')
-        if 'virtio' in scsihw:
+        scsihw = config.get("scsihw", "")
+        if "virtio" in scsihw:
             return True, f"Using {scsihw}"
         return False, f"Not using virtio-scsi (found: {scsihw or 'none'})"
 
     def _check_boot_disk(self, config):
         """Check for boot disk."""
         for key in config:
-            if key.startswith('scsi') and key != 'scsihw':
+            if key.startswith("scsi") and key != "scsihw":
                 return True, f"Found at {key}"
         return False, "No SCSI disk found"
 
     def _check_serial(self, config):
         """Check for serial console."""
-        if 'serial0' in config:
+        if "serial0" in config:
             return True, "Configured"
         return False, "Not configured (recommended for cloud images)"
 
     def _check_efi(self, config):
         """Check for EFI disk."""
-        if 'efidisk0' in config:
+        if "efidisk0" in config:
             return True, "Configured"
         return False, "Not configured (needed for UEFI boot)"
 
@@ -177,20 +178,10 @@ def main():
         description="Validate Proxmox VM template health and configuration"
     )
     parser.add_argument(
-        "--template-id",
-        type=int,
-        required=True,
-        help="Template VM ID (e.g., 9000)"
+        "--template-id", type=int, required=True, help="Template VM ID (e.g., 9000)"
     )
-    parser.add_argument(
-        "--node",
-        help="Specific Proxmox node to check (default: search all nodes)"
-    )
-    parser.add_argument(
-        "--all-nodes",
-        action="store_true",
-        help="Search all nodes in cluster"
-    )
+    parser.add_argument("--node", help="Specific Proxmox node to check (default: search all nodes)")
+    parser.add_argument("--all-nodes", action="store_true", help="Search all nodes in cluster")
 
     args = parser.parse_args()
 
@@ -210,7 +201,10 @@ def main():
     elif username and password:
         validator = TemplateValidator(endpoint, "password", user=username, password=password)
     else:
-        print("❌ Authentication required: set PROXMOX_VE_API_TOKEN or PROXMOX_VE_USERNAME/PASSWORD", file=sys.stderr)
+        print(
+            "❌ Authentication required: set PROXMOX_VE_API_TOKEN or PROXMOX_VE_USERNAME/PASSWORD",
+            file=sys.stderr,
+        )
         sys.exit(1)
 
     # Validate template

@@ -25,27 +25,21 @@ from claude_agent_sdk import (
 async def add_numbers(args: dict[str, Any]) -> dict[str, Any]:
     """Add two numbers together."""
     result = args["a"] + args["b"]
-    return {
-        "content": [{"type": "text", "text": f"{args['a']} + {args['b']} = {result}"}]
-    }
+    return {"content": [{"type": "text", "text": f"{args['a']} + {args['b']} = {result}"}]}
 
 
 @tool("subtract", "Subtract one number from another", {"a": float, "b": float})
 async def subtract_numbers(args: dict[str, Any]) -> dict[str, Any]:
     """Subtract b from a."""
     result = args["a"] - args["b"]
-    return {
-        "content": [{"type": "text", "text": f"{args['a']} - {args['b']} = {result}"}]
-    }
+    return {"content": [{"type": "text", "text": f"{args['a']} - {args['b']} = {result}"}]}
 
 
 @tool("multiply", "Multiply two numbers", {"a": float, "b": float})
 async def multiply_numbers(args: dict[str, Any]) -> dict[str, Any]:
     """Multiply two numbers."""
     result = args["a"] * args["b"]
-    return {
-        "content": [{"type": "text", "text": f"{args['a']} × {args['b']} = {result}"}]
-    }
+    return {"content": [{"type": "text", "text": f"{args['a']} × {args['b']} = {result}"}]}
 
 
 @tool("divide", "Divide one number by another", {"a": float, "b": float})
@@ -53,16 +47,12 @@ async def divide_numbers(args: dict[str, Any]) -> dict[str, Any]:
     """Divide a by b."""
     if args["b"] == 0:
         return {
-            "content": [
-                {"type": "text", "text": "Error: Division by zero is not allowed"}
-            ],
+            "content": [{"type": "text", "text": "Error: Division by zero is not allowed"}],
             "is_error": True,
         }
 
     result = args["a"] / args["b"]
-    return {
-        "content": [{"type": "text", "text": f"{args['a']} ÷ {args['b']} = {result}"}]
-    }
+    return {"content": [{"type": "text", "text": f"{args['a']} ÷ {args['b']} = {result}"}]}
 
 
 @tool("sqrt", "Calculate square root", {"n": float})
@@ -90,11 +80,7 @@ async def square_root(args: dict[str, Any]) -> dict[str, Any]:
 async def power(args: dict[str, Any]) -> dict[str, Any]:
     """Raise base to the exponent power."""
     result = args["base"] ** args["exponent"]
-    return {
-        "content": [
-            {"type": "text", "text": f"{args['base']}^{args['exponent']} = {result}"}
-        ]
-    }
+    return {"content": [{"type": "text", "text": f"{args['base']}^{args['exponent']} = {result}"}]}
 
 
 def display_message(msg):
@@ -114,9 +100,7 @@ def display_message(msg):
             if isinstance(block, TextBlock):
                 print(f"User: {block.text}")
             elif isinstance(block, ToolResultBlock):
-                print(
-                    f"Tool Result: {block.content[:100] if block.content else 'None'}..."
-                )
+                print(f"Tool Result: {block.content[:100] if block.content else 'None'}...")
     elif isinstance(msg, AssistantMessage):
         for block in msg.content:
             if isinstance(block, TextBlock):

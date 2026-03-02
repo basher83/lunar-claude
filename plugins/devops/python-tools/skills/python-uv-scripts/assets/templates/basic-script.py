@@ -13,6 +13,7 @@ Usage:
     python basic-script.py
 """
 
+
 def main():
     """Main entry point for the script."""
     print("Hello from uv!")

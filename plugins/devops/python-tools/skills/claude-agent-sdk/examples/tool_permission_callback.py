@@ -24,18 +24,14 @@ tool_usage_log = []
 
 
 async def my_permission_callback(
-    tool_name: str,
-    input_data: dict,
-    context: ToolPermissionContext
+    tool_name: str, input_data: dict, context: ToolPermissionContext
 ) -> PermissionResultAllow | PermissionResultDeny:
     """Control tool permissions based on tool type and input."""
 
     # Log the tool request
-    tool_usage_log.append({
-        "tool": tool_name,
-        "input": input_data,
-        "suggestions": context.suggestions
-    })
+    tool_usage_log.append(
+        {"tool": tool_name, "input": input_data, "suggestions": context.suggestions}
+    )
 
     print(f"\n🔧 Tool Permission Request: {tool_name}")
     print(f"   Input: {json.dumps(input_data, indent=2)}")
@@ -50,9 +46,7 @@ async def my_permission_callback(
         file_path = input_data.get("file_path", "")
         if file_path.startswith("/etc/") or file_path.startswith("/usr/"):
             print(f"   ❌ Denying write to system directory: {file_path}")
-            return PermissionResultDeny(
-                message=f"Cannot write to system directory: {file_path}"
-            )
+            return PermissionResultDeny(message=f"Cannot write to system directory: {file_path}")
 
         # Redirect writes to a safe directory
         if not file_path.startswith("/tmp/") and not file_path.startswith("./"):
@@ -60,9 +54,7 @@ async def my_permission_callback(
             print(f"   ⚠️  Redirecting write from {file_path} to {safe_path}")
             modified_input = input_data.copy()
             modified_input["file_path"] = safe_path
-            return PermissionResultAllow(
-                updated_input=modified_input
-            )
+            return PermissionResultAllow(updated_input=modified_input)
 
     # Check dangerous bash commands
     if tool_name == "Bash":
@@ -88,9 +80,7 @@ async def my_permission_callback(
     if user_input in ("y", "yes"):
         return PermissionResultAllow()
     else:
-        return PermissionResultDeny(
-            message="User denied permission"
-        )
+        return PermissionResultDeny(message="User denied permission")
 
 
 async def main():
@@ -111,7 +101,7 @@ async def main():
         can_use_tool=my_permission_callback,
         # Use default permission mode to ensure callbacks are invoked
         permission_mode="default",
-        cwd="."  # Set working directory
+        cwd=".",  # Set working directory
     )
 
     # Create client and send a query that will use multiple tools
@@ -150,7 +140,7 @@ async def main():
     for i, usage in enumerate(tool_usage_log, 1):
         print(f"\n{i}. Tool: {usage['tool']}")
         print(f"   Input: {json.dumps(usage['input'], indent=6)}")
-        if usage['suggestions']:
+        if usage["suggestions"]:
             print(f"   Suggestions: {usage['suggestions']}")
 
 

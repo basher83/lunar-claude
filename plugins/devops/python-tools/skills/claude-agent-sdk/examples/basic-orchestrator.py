@@ -21,7 +21,6 @@ Key patterns:
 import os
 
 import anyio
-
 from claude_agent_sdk import (
     AgentDefinition,
     AssistantMessage,

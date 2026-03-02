@@ -29,13 +29,13 @@ import json
 import re
 import subprocess
 import sys
-from dataclasses import dataclass, asdict
-from typing import Dict, List, Optional
+from dataclasses import asdict, dataclass
 
 
 @dataclass
 class NodeStatus:
     """Cluster node status"""
+
     name: str
     online: bool
     node_id: int
@@ -45,24 +45,26 @@ class NodeStatus:
 @dataclass
 class CorosyncStatus:
     """Corosync ring status"""
+
     ring_id: int
-    nodes: List[str]
+    nodes: list[str]
     status: str
 
 
 @dataclass
 class ClusterHealth:
     """Overall cluster health"""
+
     cluster_name: str
     quorate: bool
     node_count: int
     expected_votes: int
     total_votes: int
-    nodes: List[NodeStatus]
-    corosync_rings: List[CorosyncStatus]
-    config_version: Optional[int]
-    warnings: List[str]
-    errors: List[str]
+    nodes: list[NodeStatus]
+    corosync_rings: list[CorosyncStatus]
+    config_version: int | None
+    warnings: list[str]
+    errors: list[str]
 
     @property
     def is_healthy(self) -> bool:
@@ -88,20 +90,21 @@ class ClusterHealthChecker:
             corosync_rings=[],
             config_version=None,
             warnings=[],
-            errors=[]
+            errors=[],
         )
 
     def _validate_node(self, node: str) -> bool:
         """Validate node is a valid hostname or IP address"""
         import re
+
         # Allow valid hostnames and IPv4/IPv6 addresses
-        hostname_pattern = r'^[a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?(\.[a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?)*$'
-        ipv4_pattern = r'^(\d{1,3}\.){3}\d{1,3}$'
-        ipv6_pattern = r'^([0-9a-fA-F]{0,4}:){2,7}[0-9a-fA-F]{0,4}$'
+        hostname_pattern = r"^[a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?(\.[a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?)*$"
+        ipv4_pattern = r"^(\d{1,3}\.){3}\d{1,3}$"
+        ipv6_pattern = r"^([0-9a-fA-F]{0,4}:){2,7}[0-9a-fA-F]{0,4}$"
         return bool(
-            re.match(hostname_pattern, node) or
-            re.match(ipv4_pattern, node) or
-            re.match(ipv6_pattern, node)
+            re.match(hostname_pattern, node)
+            or re.match(ipv4_pattern, node)
+            or re.match(ipv6_pattern, node)
         )
 
     def run_command(self, command: str) -> str:
@@ -113,7 +116,7 @@ class ClusterHealthChecker:
                 capture_output=True,
                 text=True,
                 check=True,
-                timeout=30
+                timeout=30,
             )
             return result.stdout
         except subprocess.TimeoutExpired:
@@ -131,30 +134,30 @@ class ClusterHealthChecker:
             return
 
         # Parse cluster name
-        cluster_match = re.search(r'Cluster name:\s+(\S+)', output)
+        cluster_match = re.search(r"Cluster name:\s+(\S+)", output)
         if cluster_match:
             self.health.cluster_name = cluster_match.group(1)
 
         # Parse quorum status
-        quorum_match = re.search(r'Quorate:\s+(\w+)', output)
+        quorum_match = re.search(r"Quorate:\s+(\w+)", output)
         if quorum_match:
-            self.health.quorate = quorum_match.group(1).lower() == 'yes'
+            self.health.quorate = quorum_match.group(1).lower() == "yes"
 
         if not self.health.quorate:
             self.health.errors.append("Cluster does not have quorum!")
 
         # Parse node count
-        node_match = re.search(r'Nodes:\s+(\d+)', output)
+        node_match = re.search(r"Nodes:\s+(\d+)", output)
         if node_match:
             self.health.node_count = int(node_match.group(1))
 
         # Parse expected votes
-        expected_match = re.search(r'Expected votes:\s+(\d+)', output)
+        expected_match = re.search(r"Expected votes:\s+(\d+)", output)
         if expected_match:
             self.health.expected_votes = int(expected_match.group(1))
 
         # Parse total votes
-        total_match = re.search(r'Total votes:\s+(\d+)', output)
+        total_match = re.search(r"Total votes:\s+(\d+)", output)
         if total_match:
             self.health.total_votes = int(total_match.group(1))
 
@@ -172,7 +175,7 @@ class ClusterHealthChecker:
             return
 
         # Parse node list (skip header)
-        lines = output.strip().split('\n')[1:]  # Skip header
+        lines = output.strip().split("\n")[1:]  # Skip header
         for line in lines:
             if not line.strip():
                 continue
@@ -186,12 +189,9 @@ class ClusterHealthChecker:
                     ip = parts[3] if len(parts) >= 4 else "unknown"
                     online = True  # If in list, assumed online
 
-                    self.health.nodes.append(NodeStatus(
-                        name=name,
-                        online=online,
-                        node_id=node_id,
-                        ip=ip
-                    ))
+                    self.health.nodes.append(
+                        NodeStatus(name=name, online=online, node_id=node_id, ip=ip)
+                    )
                 except (ValueError, IndexError) as e:
                     self.health.warnings.append(f"Failed to parse node line: {line}: {e}")
 
@@ -217,28 +217,30 @@ class ClusterHealthChecker:
         #     status  = ring 0 active with no faults
 
         current_ring = None
-        for line in output.split('\n'):
+        for line in output.split("\n"):
             line = line.strip()
 
-            if line.startswith('RING ID'):
-                ring_match = re.search(r'RING ID (\d+)', line)
+            if line.startswith("RING ID"):
+                ring_match = re.search(r"RING ID (\d+)", line)
                 if ring_match:
                     current_ring = int(ring_match.group(1))
 
-            elif 'status' in line.lower() and current_ring is not None:
-                status_match = re.search(r'status\s*=\s*(.+)', line)
+            elif "status" in line.lower() and current_ring is not None:
+                status_match = re.search(r"status\s*=\s*(.+)", line)
                 if status_match:
                     status = status_match.group(1)
 
                     # Check for faults
-                    if 'no faults' not in status.lower():
+                    if "no faults" not in status.lower():
                         self.health.errors.append(f"Corosync ring {current_ring}: {status}")
 
-                    self.health.corosync_rings.append(CorosyncStatus(
-                        ring_id=current_ring,
-                        nodes=[],  # Could parse this if needed
-                        status=status
-                    ))
+                    self.health.corosync_rings.append(
+                        CorosyncStatus(
+                            ring_id=current_ring,
+                            nodes=[],  # Could parse this if needed
+                            status=status,
+                        )
+                    )
 
     def check_config_version(self):
         """Check cluster configuration version"""
@@ -257,7 +259,7 @@ class ClusterHealthChecker:
 
         # Check pmxcfs filesystem
         output = self.run_command("pvecm status | grep -i 'cluster filesystem'")
-        if output and 'online' not in output.lower():
+        if output and "online" not in output.lower():
             self.health.warnings.append("Cluster filesystem may not be online")
 
     def run_all_checks(self) -> ClusterHealth:
@@ -275,18 +277,12 @@ def main():
     parser = argparse.ArgumentParser(
         description="Check Proxmox cluster health",
         formatter_class=argparse.RawDescriptionHelpFormatter,
-        epilog=__doc__
+        epilog=__doc__,
     )
     parser.add_argument(
-        '--node',
-        default='foxtrot',
-        help='Cluster node to check (default: foxtrot)'
+        "--node", default="foxtrot", help="Cluster node to check (default: foxtrot)"
     )
-    parser.add_argument(
-        '--json',
-        action='store_true',
-        help='Output as JSON'
-    )
+    parser.add_argument("--json", action="store_true", help="Output as JSON")
 
     args = parser.parse_args()
 
@@ -335,5 +331,5 @@ def main():
             sys.exit(1)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

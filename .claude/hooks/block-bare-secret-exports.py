@@ -5,18 +5,47 @@ import json
 import re
 import sys
 
-SAFE_VARS = frozenset({
-    "PATH", "HOME", "USER", "SHELL", "TERM", "EDITOR", "LANG",
-    "LC_ALL", "LC_CTYPE", "PYTHONPATH", "NODE_PATH", "GOPATH",
-    "VIRTUAL_ENV", "CONDA_PREFIX", "XDG_CONFIG_HOME", "XDG_DATA_HOME",
-    "PS1", "PROMPT", "DISPLAY", "WAYLAND_DISPLAY", "TZ", "PAGER",
-    "MISE_ENV", "MISE_SHELL",
-})
+SAFE_VARS = frozenset(
+    {
+        "PATH",
+        "HOME",
+        "USER",
+        "SHELL",
+        "TERM",
+        "EDITOR",
+        "LANG",
+        "LC_ALL",
+        "LC_CTYPE",
+        "PYTHONPATH",
+        "NODE_PATH",
+        "GOPATH",
+        "VIRTUAL_ENV",
+        "CONDA_PREFIX",
+        "XDG_CONFIG_HOME",
+        "XDG_DATA_HOME",
+        "PS1",
+        "PROMPT",
+        "DISPLAY",
+        "WAYLAND_DISPLAY",
+        "TZ",
+        "PAGER",
+        "MISE_ENV",
+        "MISE_SHELL",
+    }
+)
 
 SECRET_INDICATORS = [
-    "KEY", "SECRET", "TOKEN", "PASSWORD", "CREDENTIAL",
-    "AUTH", "DATABASE_URL", "REDIS_URL", "MONGO_URI",
-    "CONNECTION_STRING", "DSN",
+    "KEY",
+    "SECRET",
+    "TOKEN",
+    "PASSWORD",
+    "CREDENTIAL",
+    "AUTH",
+    "DATABASE_URL",
+    "REDIS_URL",
+    "MONGO_URI",
+    "CONNECTION_STRING",
+    "DSN",
 ]
 
 

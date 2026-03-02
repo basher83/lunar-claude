@@ -35,16 +35,15 @@ Example:
 
 import os
 import sys
-from typing import Optional
 from dataclasses import dataclass
 
+import pynetbox
 import typer
+from infisical_sdk import InfisicalSDKClient
 from rich.console import Console
-from rich.table import Table
 from rich.panel import Panel
 from rich.progress import Progress, SpinnerColumn, TextColumn
-import pynetbox
-from infisical_sdk import InfisicalSDKClient
+from rich.table import Table
 
 app = typer.Typer()
 console = Console()
@@ -54,9 +53,11 @@ console = Console()
 # Configuration and Authentication
 # ============================================================================
 
+
 @dataclass
 class NetBoxConfig:
     """NetBox connection configuration."""
+
     url: str
     token: str
     ssl_verify: bool = True
@@ -85,20 +86,19 @@ def get_netbox_client() -> pynetbox.api:
         client_secret = os.getenv("INFISICAL_CLIENT_SECRET")
 
         if not client_id or not client_secret:
-            console.print("[red]INFISICAL_CLIENT_ID and INFISICAL_CLIENT_SECRET environment variables required[/red]")
+            console.print(
+                "[red]INFISICAL_CLIENT_ID and INFISICAL_CLIENT_SECRET environment variables required[/red]"
+            )
             raise typer.Exit(1)
 
-        client.auth.universal_auth.login(
-            client_id=client_id,
-            client_secret=client_secret
-        )
+        client.auth.universal_auth.login(client_id=client_id, client_secret=client_secret)
 
         # Get NetBox API token from Infisical
         secret = client.secrets.get_secret_by_name(
             secret_name="NETBOX_API_TOKEN",
             project_id="7b832220-24c0-45bc-a5f1-ce9794a31259",
             environment_slug="prod",
-            secret_path="/matrix"
+            secret_path="/matrix",
         )
 
         token = secret.secretValue
@@ -107,11 +107,7 @@ def get_netbox_client() -> pynetbox.api:
             console.print("[red]NETBOX_API_TOKEN is empty in Infisical[/red]")
             raise ValueError("NETBOX_API_TOKEN is empty")
 
-        config = NetBoxConfig(
-            url="https://netbox.spaceships.work",
-            token=token,
-            ssl_verify=True
-        )
+        config = NetBoxConfig(url="https://netbox.spaceships.work", token=token, ssl_verify=True)
 
         return pynetbox.api(config.url, token=config.token)
 
@@ -127,19 +123,16 @@ def get_netbox_client() -> pynetbox.api:
 def available_ips(
     prefix: str = typer.Option(..., help="Prefix (e.g., 192.168.3.0/24)"),
     limit: int = typer.Option(10, help="Number of IPs to show"),
-    output: str = typer.Option("table", help="Output format: table or json")
+    output: str = typer.Option("table", help="Output format: table or json"),
 ):
     """Get available IPs in a prefix."""
     nb = get_netbox_client()
 
     try:
         with Progress(
-            SpinnerColumn(),
-            TextColumn("[progress.description]{task.description}"),
-            console=console
+            SpinnerColumn(), TextColumn("[progress.description]{task.description}"), console=console
         ) as progress:
-            task = progress.add_task(
-                f"Querying prefix {prefix}...", total=None)
+            task = progress.add_task(f"Querying prefix {prefix}...", total=None)
 
             prefix_obj = nb.ipam.prefixes.get(prefix=prefix)
 
@@ -152,18 +145,19 @@ def available_ips(
 
         if output == "json":
             import json
+
             data = {
                 "prefix": str(prefix),
                 "total_shown": len(available),
-                "available_ips": [str(ip.address) for ip in available]
+                "available_ips": [str(ip.address) for ip in available],
             }
             print(json.dumps(data, indent=2))
         else:
             console.print(f"\n[green]Prefix:[/green] {prefix}")
             console.print(
-                f"[green]Site:[/green] {prefix_obj.site.name if prefix_obj.site else 'N/A'}")
-            console.print(
-                f"[green]Description:[/green] {prefix_obj.description or 'N/A'}\n")
+                f"[green]Site:[/green] {prefix_obj.site.name if prefix_obj.site else 'N/A'}"
+            )
+            console.print(f"[green]Description:[/green] {prefix_obj.description or 'N/A'}\n")
 
             table = Table(title="Available IP Addresses")
             table.add_column("IP Address", style="cyan")
@@ -173,8 +167,7 @@ def available_ips(
                 table.add_row(str(ip.address), "✓")
 
             console.print(table)
-            console.print(
-                f"\n[yellow]Showing first {limit} available IPs[/yellow]")
+            console.print(f"\n[yellow]Showing first {limit} available IPs[/yellow]")
 
     except Exception as e:
         console.print(f"[red]Error: {e}[/red]")
@@ -183,9 +176,9 @@ def available_ips(
 
 @app.command("utilization")
 def prefix_utilization(
-    site: Optional[str] = typer.Option(None, help="Filter by site slug"),
-    role: Optional[str] = typer.Option(None, help="Filter by prefix role"),
-    output: str = typer.Option("table", help="Output format: table or json")
+    site: str | None = typer.Option(None, help="Filter by site slug"),
+    role: str | None = typer.Option(None, help="Filter by prefix role"),
+    output: str = typer.Option("table", help="Output format: table or json"),
 ):
     """Show prefix utilization statistics."""
     nb = get_netbox_client()
@@ -193,28 +186,26 @@ def prefix_utilization(
     try:
         filters = {}
         if site:
-            filters['site'] = site
+            filters["site"] = site
         if role:
-            filters['role'] = role
+            filters["role"] = role
 
         with Progress(
-            SpinnerColumn(),
-            TextColumn("[progress.description]{task.description}"),
-            console=console
+            SpinnerColumn(), TextColumn("[progress.description]{task.description}"), console=console
         ) as progress:
             task = progress.add_task("Querying prefixes...", total=None)
-            prefixes = nb.ipam.prefixes.filter(
-                **filters) if filters else nb.ipam.prefixes.all()
+            prefixes = nb.ipam.prefixes.filter(**filters) if filters else nb.ipam.prefixes.all()
 
         if output == "json":
             import json
+
             data = [
                 {
                     "prefix": str(p.prefix),
                     "site": p.site.name if p.site else None,
                     "role": p.role.name if p.role else None,
-                    "utilization": float(p.utilization) if hasattr(p, 'utilization') else 0.0,
-                    "description": p.description or ""
+                    "utilization": float(p.utilization) if hasattr(p, "utilization") else 0.0,
+                    "description": p.description or "",
                 }
                 for p in prefixes
             ]
@@ -228,7 +219,7 @@ def prefix_utilization(
             table.add_column("Description")
 
             for p in prefixes:
-                utilization = p.utilization if hasattr(p, 'utilization') else 0
+                utilization = p.utilization if hasattr(p, "utilization") else 0
                 util_pct = f"{utilization}%"
 
                 # Color code based on utilization
@@ -244,7 +235,7 @@ def prefix_utilization(
                     p.site.name if p.site else "N/A",
                     p.role.name if p.role else "N/A",
                     f"[{util_color}]{util_pct}[/{util_color}]",
-                    p.description or ""
+                    p.description or "",
                 )
 
             console.print(table)
@@ -257,19 +248,16 @@ def prefix_utilization(
 @app.command("assignments")
 def ip_assignments(
     prefix: str = typer.Option(..., help="Prefix (e.g., 192.168.3.0/24)"),
-    output: str = typer.Option("table", help="Output format: table or json")
+    output: str = typer.Option("table", help="Output format: table or json"),
 ):
     """Show IP assignments in a prefix."""
     nb = get_netbox_client()
 
     try:
         with Progress(
-            SpinnerColumn(),
-            TextColumn("[progress.description]{task.description}"),
-            console=console
+            SpinnerColumn(), TextColumn("[progress.description]{task.description}"), console=console
         ) as progress:
-            task = progress.add_task(
-                f"Querying prefix {prefix}...", total=None)
+            task = progress.add_task(f"Querying prefix {prefix}...", total=None)
 
             prefix_obj = nb.ipam.prefixes.get(prefix=prefix)
             if not prefix_obj:
@@ -282,16 +270,17 @@ def ip_assignments(
 
         if output == "json":
             import json
+
             data = [
                 {
                     "address": str(ip.address),
                     "dns_name": ip.dns_name or "",
-                    "status": ip.status.value if hasattr(ip.status, 'value') else str(ip.status),
+                    "status": ip.status.value if hasattr(ip.status, "value") else str(ip.status),
                     "assigned_to": {
                         "type": ip.assigned_object_type if ip.assigned_object else None,
-                        "name": ip.assigned_object.name if ip.assigned_object else None
+                        "name": ip.assigned_object.name if ip.assigned_object else None,
                     },
-                    "description": ip.description or ""
+                    "description": ip.description or "",
                 }
                 for ip in ips
             ]
@@ -307,17 +296,19 @@ def ip_assignments(
             for ip in ips:
                 assigned_to = "N/A"
                 if ip.assigned_object:
-                    obj_type = ip.assigned_object_type.split(
-                        '.')[-1] if ip.assigned_object_type else "unknown"
+                    obj_type = (
+                        ip.assigned_object_type.split(".")[-1]
+                        if ip.assigned_object_type
+                        else "unknown"
+                    )
                     assigned_to = f"{ip.assigned_object.name} ({obj_type})"
 
                 table.add_row(
                     str(ip.address),
                     ip.dns_name or "",
-                    ip.status.value if hasattr(
-                        ip.status, 'value') else str(ip.status),
+                    ip.status.value if hasattr(ip.status, "value") else str(ip.status),
                     assigned_to,
-                    ip.description or ""
+                    ip.description or "",
                 )
 
             console.print(table)
@@ -330,8 +321,8 @@ def ip_assignments(
 
 @app.command("vlans")
 def list_vlans(
-    site: Optional[str] = typer.Option(None, help="Filter by site slug"),
-    output: str = typer.Option("table", help="Output format: table or json")
+    site: str | None = typer.Option(None, help="Filter by site slug"),
+    output: str = typer.Option("table", help="Output format: table or json"),
 ):
     """List VLANs."""
     nb = get_netbox_client()
@@ -339,22 +330,24 @@ def list_vlans(
     try:
         filters = {}
         if site:
-            filters['site'] = site
+            filters["site"] = site
 
         # Materialize once to avoid re-fetching on len() call
-        vlans = list(nb.ipam.vlans.filter(**filters)
-                     if filters else nb.ipam.vlans.all())
+        vlans = list(nb.ipam.vlans.filter(**filters) if filters else nb.ipam.vlans.all())
 
         if output == "json":
             import json
+
             data = [
                 {
                     "id": vlan.id,
                     "vid": vlan.vid,
                     "name": vlan.name,
                     "site": vlan.site.name if vlan.site else None,
-                    "status": vlan.status.value if hasattr(vlan.status, 'value') else str(vlan.status),
-                    "description": vlan.description or ""
+                    "status": vlan.status.value
+                    if hasattr(vlan.status, "value")
+                    else str(vlan.status),
+                    "description": vlan.description or "",
                 }
                 for vlan in vlans
             ]
@@ -374,9 +367,8 @@ def list_vlans(
                     str(vlan.vid),
                     vlan.name,
                     vlan.site.name if vlan.site else "N/A",
-                    vlan.status.value if hasattr(
-                        vlan.status, 'value') else str(vlan.status),
-                    vlan.description or ""
+                    vlan.status.value if hasattr(vlan.status, "value") else str(vlan.status),
+                    vlan.description or "",
                 )
 
             console.print(table)
@@ -388,9 +380,7 @@ def list_vlans(
 
 
 @app.command("summary")
-def ipam_summary(
-    site: str = typer.Option(..., help="Site slug")
-):
+def ipam_summary(site: str = typer.Option(..., help="Site slug")):
     """Show IPAM summary for a site."""
     nb = get_netbox_client()
 
@@ -401,9 +391,7 @@ def ipam_summary(
             sys.exit(1)
 
         with Progress(
-            SpinnerColumn(),
-            TextColumn("[progress.description]{task.description}"),
-            console=console
+            SpinnerColumn(), TextColumn("[progress.description]{task.description}"), console=console
         ) as progress:
             task = progress.add_task("Gathering IPAM data...", total=None)
 
@@ -411,36 +399,41 @@ def ipam_summary(
             prefixes = list(nb.ipam.prefixes.filter(site=site))
 
             # Get IPs
-            ips = list(nb.ipam.ip_addresses.filter(site=site)
-                       if hasattr(nb.ipam.ip_addresses, 'filter') else [])
+            ips = list(
+                nb.ipam.ip_addresses.filter(site=site)
+                if hasattr(nb.ipam.ip_addresses, "filter")
+                else []
+            )
 
             # Get VLANs
             vlans = list(nb.ipam.vlans.filter(site=site))
 
         # Display summary
-        console.print(Panel(
-            f"[green]Site:[/green] {site_obj.name}\n"
-            f"[green]Prefixes:[/green] {len(prefixes)}\n"
-            f"[green]IP Addresses:[/green] {len(ips)}\n"
-            f"[green]VLANs:[/green] {len(vlans)}",
-            title="IPAM Summary",
-            border_style="cyan"
-        ))
+        console.print(
+            Panel(
+                f"[green]Site:[/green] {site_obj.name}\n"
+                f"[green]Prefixes:[/green] {len(prefixes)}\n"
+                f"[green]IP Addresses:[/green] {len(ips)}\n"
+                f"[green]VLANs:[/green] {len(vlans)}",
+                title="IPAM Summary",
+                border_style="cyan",
+            )
+        )
 
         # Prefix details
         if prefixes:
             console.print("\n[yellow]Prefixes:[/yellow]")
             for p in prefixes:
-                utilization = p.utilization if hasattr(p, 'utilization') else 0
+                utilization = p.utilization if hasattr(p, "utilization") else 0
                 console.print(
-                    f"  • {p.prefix} - {p.description or 'No description'} ({utilization}% used)")
+                    f"  • {p.prefix} - {p.description or 'No description'} ({utilization}% used)"
+                )
 
         # VLAN details
         if vlans:
             console.print("\n[yellow]VLANs:[/yellow]")
             for v in vlans:
-                console.print(
-                    f"  • VLAN {v.vid} ({v.name}) - {v.description or 'No description'}")
+                console.print(f"  • VLAN {v.vid} ({v.name}) - {v.description or 'No description'}")
 
     except Exception as e:
         console.print(f"[red]Error: {e}[/red]")

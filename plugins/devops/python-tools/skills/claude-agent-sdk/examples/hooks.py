@@ -13,7 +13,6 @@ Usage:
 import asyncio
 import logging
 import sys
-from typing import Any
 
 from claude_agent_sdk import ClaudeAgentOptions, ClaudeSDKClient
 from claude_agent_sdk.types import (
@@ -96,7 +95,7 @@ async def review_tool_output(
             "hookSpecificOutput": {
                 "hookEventName": "PostToolUse",
                 "additionalContext": "The command encountered an error. You may want to try a different approach.",
-            }
+            },
         }
 
     return {}
@@ -165,7 +164,7 @@ async def example_pretooluse() -> None:
             "PreToolUse": [
                 HookMatcher(matcher="Bash", hooks=[check_bash_command]),
             ],
-        }
+        },
     )
 
     async with ClaudeSDKClient(options=options) as client:
@@ -218,7 +217,9 @@ async def example_userpromptsubmit() -> None:
 async def example_posttooluse() -> None:
     """Demonstrate PostToolUse hook with reason and systemMessage fields."""
     print("=== PostToolUse Example ===")
-    print("This example shows how PostToolUse can provide feedback with reason and systemMessage.\n")
+    print(
+        "This example shows how PostToolUse can provide feedback with reason and systemMessage.\n"
+    )
 
     options = ClaudeAgentOptions(
         allowed_tools=["Bash"],
@@ -226,7 +227,7 @@ async def example_posttooluse() -> None:
             "PostToolUse": [
                 HookMatcher(matcher="Bash", hooks=[review_tool_output]),
             ],
-        }
+        },
     )
 
     async with ClaudeSDKClient(options=options) as client:
@@ -242,7 +243,9 @@ async def example_posttooluse() -> None:
 async def example_decision_fields() -> None:
     """Demonstrate permissionDecision, reason, and systemMessage fields."""
     print("=== Permission Decision Example ===")
-    print("This example shows how to use permissionDecision='allow'/'deny' with reason and systemMessage.\n")
+    print(
+        "This example shows how to use permissionDecision='allow'/'deny' with reason and systemMessage.\n"
+    )
 
     options = ClaudeAgentOptions(
         allowed_tools=["Write", "Bash"],
@@ -251,7 +254,7 @@ async def example_decision_fields() -> None:
             "PreToolUse": [
                 HookMatcher(matcher="Write", hooks=[strict_approval_hook]),
             ],
-        }
+        },
     )
 
     async with ClaudeSDKClient(options=options) as client:
@@ -287,7 +290,7 @@ async def example_continue_control() -> None:
             "PostToolUse": [
                 HookMatcher(matcher="Bash", hooks=[stop_on_error_hook]),
             ],
-        }
+        },
     )
 
     async with ClaudeSDKClient(options=options) as client:

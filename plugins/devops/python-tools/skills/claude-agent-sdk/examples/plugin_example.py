@@ -12,7 +12,6 @@ a custom /greet command.
 from pathlib import Path
 
 import anyio
-
 from claude_agent_sdk import (
     ClaudeAgentOptions,
     SystemMessage,

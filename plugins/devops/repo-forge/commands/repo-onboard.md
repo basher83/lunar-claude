@@ -113,6 +113,11 @@ mappings produce different behavior than the original:
   Builtins equivalents where available (e.g., `Builtins.ruff_format`).
 - Vendored rumdl will run on all files. Scope its glob to match the original
   pre-commit files pattern.
+- The migrated hk.pkl will NOT include a `commit-msg` hook. The preset's
+  hk.pkl defines one (check_conventional_commit), but migration overwrites
+  it. Add the commit-msg hook back manually, especially if Entire CLI is
+  installed — its commit-msg hook chains to hk and will error if the hook
+  is missing from hk.pkl.
 
 ## Phase 5: Renovate Language Preset (conditional)
 

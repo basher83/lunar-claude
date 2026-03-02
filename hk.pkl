@@ -91,6 +91,10 @@ local manual_steps = new Mapping<String, Step> {
     }
 }
 
+local commit_steps = new Mapping<String, Step> {
+    ["check_conventional_commit"] = Builtins.check_conventional_commit
+}
+
 hooks {
     ["pre-commit"] {
         fix = true
@@ -99,6 +103,9 @@ hooks {
             ...linters
             ...custom_steps
         }
+    }
+    ["commit-msg"] {
+        steps = commit_steps
     }
     ["check"] {
         steps {

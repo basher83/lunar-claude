@@ -1,0 +1,39 @@
+{
+  "cli_version": "0.4.8",
+  "checkpoint_id": "7e8cfef7c237",
+  "strategy": "manual-commit",
+  "branch": "main",
+  "checkpoints_count": 12,
+  "files_touched": [
+    ".editorconfig",
+    ".github/workflows/release.yml",
+    ".gitignore",
+    ".pre-commit-config.yaml",
+    "bin/mise",
+    "cliff.toml",
+    "hk.pkl",
+    "mise.toml",
+    "plugins/devops/repo-forge/commands/repo-onboard.md",
+    "plugins/devops/repo-forge/skills/mise/references/hk.md",
+    "plugins/devops/repo-forge/skills/mise/references/presets.md",
+    "plugins/meta/claude-dev-sandbox/scripts/README.md",
+    "plugins/meta/plugin-dev/skills/command-development/README.md",
+    "ruff.toml"
+  ],
+  "sessions": [
+    {
+      "metadata": "/7e/8cfef7c237/0/metadata.json",
+      "transcript": "/7e/8cfef7c237/0/full.jsonl",
+      "context": "/7e/8cfef7c237/0/context.md",
+      "content_hash": "/7e/8cfef7c237/0/content_hash.txt",
+      "prompt": "/7e/8cfef7c237/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 147,
+    "cache_creation_tokens": 125629,
+    "cache_read_tokens": 9761191,
+    "output_tokens": 27160,
+    "api_call_count": 120
+  }
+}

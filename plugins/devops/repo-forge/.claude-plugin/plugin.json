@@ -1,0 +1,22 @@
+{
+  "name": "repo-forge",
+  "version": "0.1.0",
+  "description": "Project setup and validation toolkit for standardizing repos with mise, pre-commit, gitignore, and changelog tooling across Python, Rust, Terraform, and Ansible projects",
+  "author": {
+    "name": "basher83",
+    "email": "basher83@mail.spaceships.work"
+  },
+  "keywords": [
+    "mise",
+    "pre-commit",
+    "gitignore",
+    "git-cliff",
+    "changelog",
+    "project-setup",
+    "validation",
+    "python",
+    "rust",
+    "terraform",
+    "ansible"
+  ]
+}

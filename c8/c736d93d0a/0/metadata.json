@@ -1,0 +1,31 @@
+{
+  "cli_version": "0.4.8",
+  "checkpoint_id": "c8c736d93d0a",
+  "session_id": "38df405e-e626-45ce-aba4-fe921af77dd8",
+  "strategy": "manual-commit",
+  "created_at": "2026-03-02T05:58:01.767516Z",
+  "branch": "main",
+  "checkpoints_count": 3,
+  "files_touched": [
+    "plugins/devops/git-workflow/commands/git-commit.md",
+    "plugins/devops/repo-forge/README.md"
+  ],
+  "agent": "Claude Code",
+  "turn_id": "e13f1f0a5a95",
+  "token_usage": {
+    "input_tokens": 2146,
+    "cache_creation_tokens": 270359,
+    "cache_read_tokens": 17596126,
+    "output_tokens": 51369,
+    "api_call_count": 142
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-03-02T05:58:01.42593Z",
+    "agent_lines": 46,
+    "human_added": 2,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 48,
+    "agent_percentage": 95.83333333333334
+  }
+}

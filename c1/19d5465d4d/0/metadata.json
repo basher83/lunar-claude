@@ -1,0 +1,30 @@
+{
+  "cli_version": "0.4.8",
+  "checkpoint_id": "c119d5465d4d",
+  "session_id": "7d3da1d6-e8cb-4a49-b026-7eea4403f551",
+  "strategy": "manual-commit",
+  "created_at": "2026-03-02T03:46:04.571312Z",
+  "branch": "main",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "plugins/devops/repo-forge/README.md"
+  ],
+  "agent": "Claude Code",
+  "turn_id": "3544363093a0",
+  "token_usage": {
+    "input_tokens": 173,
+    "cache_creation_tokens": 325528,
+    "cache_read_tokens": 12638491,
+    "output_tokens": 35438,
+    "api_call_count": 118
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-03-02T03:46:04.231031Z",
+    "agent_lines": 0,
+    "human_added": 10,
+    "human_modified": 5,
+    "human_removed": 0,
+    "total_committed": 10,
+    "agent_percentage": 0
+  }
+}

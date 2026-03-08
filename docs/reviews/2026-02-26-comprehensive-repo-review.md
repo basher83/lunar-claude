@@ -14,18 +14,18 @@ The codebase demonstrates strong engineering foundations including path traversa
 prevention, comprehensive schema validation, SHA-pinned CI actions, and a
 sophisticated secrets management stack (fnox + infisical + age).
 
-However, the review identified **2 HIGH severity**, **15 MEDIUM severity**, and
-**20+ LOW severity** findings across security, code quality, CI/CD, documentation,
-and technical debt. The most significant systemic issue is **the gap between
-configured quality gates and their actual enforcement** -- pyright is a no-op in CI,
-ruff only covers `scripts/`, tests in `tests/` never run in CI, and CLAUDE.md
-claims strict type checking while the config uses standard mode.
+However, the review identified **15 MEDIUM severity** and **20+ LOW severity**
+findings across security, code quality, CI/CD, documentation, and technical debt.
+The most significant systemic issue is **configuration drift** -- CLAUDE.md claims
+strict type checking while pyrightconfig.json uses standard mode, PEP 723 scripts
+target Python 3.11 instead of the documented 3.13, and pyright is not part of the
+CI pipeline at all.
 
 ### Key Metrics
 
 | Metric | Value |
 |--------|-------|
-| Total plugins | 13 (11 local, 2 external) |
+| Total plugins | 13 (12 local, 1 external) |
 | Total skills | 29 |
 | Total commands | 36 |
 | Total agents | 23 |
@@ -51,25 +51,10 @@ claims strict type checking while the config uses standard mode.
 
 ## 1. Security Audit
 
-### 1.1 Critical & High Severity Findings
-
-**HIGH: SSH Command Injection via CEPH Pool Name**
-- **File:** `plugins/infrastructure/proxmox-infrastructure/skills/proxmox-infrastructure/tools/check_ceph_health.py:332`
-- **Issue:** `pool_name` from remote CEPH JSON is interpolated directly into an SSH command string without sanitization. A compromised CEPH cluster could inject shell commands.
-- **Fix:** Validate against `^[a-zA-Z0-9._-]+$` or use `shlex.quote()`.
-
-**HIGH: No Plugin Sandboxing or Integrity Checks**
-- **File:** `.claude-plugin/marketplace.json`
-- **Issue:** Plugins execute with full system privileges -- filesystem, network, SSH keys, environment secrets. External plugins (domain-chassis, lunar-research) are loaded from GitHub with no hash verification.
-- **Mitigating factor:** This is a personal homelab marketplace with owner-controlled sources.
-- **Fix:** Document the trust model explicitly. Consider plugin integrity hashes for external sources.
-
-### 1.2 Medium Severity Findings
+### 1.1 Medium Severity Findings
 
 | Finding | File | Description |
 |---------|------|-------------|
-| `.gitignore` gaps | `.gitignore` | Missing `.env*`, `*.pem`, `*.key`, `credentials*` exclusions |
-| Secret hook gaps | `.claude/hooks/block-*.py` | Only matches uppercase vars; misses ANTHROPIC_API_KEY, OPENAI_API_KEY, cloud provider tokens |
 | CodeRabbit Gitleaks disabled | `.coderabbit.yaml:213` | Secret scanning layer disabled in PR reviews |
 | SSH without `--` separator | `plugins/homelab/omni-scale/.../provider-ctl.py:41` | SSH command omits `--` option terminator |
 | URL-derived filename | `scripts/extract_docs_example.py:26` | No sanitization of URL path used as filename |
@@ -78,7 +63,7 @@ claims strict type checking while the config uses standard mode.
 | No dependency scanning in CI | Workflows | Neither workflow runs `pip-audit`, `safety check`, or `uv audit` |
 | `--dangerously-skip-permissions` | `mise.toml:39-46` | Claude tasks disable all permission checks |
 
-### 1.3 Positive Security Findings
+### 1.2 Positive Security Findings
 
 - Zero uses of `eval()`, `exec()`, `pickle`, or `shell=True` in production code
 - All YAML parsing uses `yaml.safe_load()`
@@ -96,10 +81,6 @@ claims strict type checking while the config uses standard mode.
 **Test-Implementation API Mismatch**
 - **File:** `tests/test_verify_structure.py:436-469`
 - **Issue:** Tests call `calculate_exit_code()` and compare to a single int, but the function returns a 4-tuple `(exit_code, total_errors, total_warnings, total_info)`. Tests will fail if executed.
-
-**CI Test Task Skips Top-Level Tests**
-- **File:** `mise.toml:168`
-- **Issue:** `ci-test` runs only `pytest scripts/tests/` but not `tests/`. Four test files (`test_verify_structure.py`, `test_aggregation.py`, `test_e2e_intelligent_linting.py`, `test_sdk_migration.py`) are never run in CI.
 
 ### 2.2 Python Script Quality Summary
 
@@ -136,9 +117,8 @@ claims strict type checking while the config uses standard mode.
 
 | Config | Setting | Expected | Actual |
 |--------|---------|----------|--------|
-| `ruff.toml` | `target-version` | `py313` | `py311` |
+| `ruff.toml` | `target-version` | `py313` | Not set (defaults to ruff's default) |
 | `pyrightconfig.json` | `typeCheckingMode` | `strict` (per CLAUDE.md) | `standard` |
-| `mise.toml` | Header comment | `lunar-claude` | `terraform-homelab` |
 | PEP 723 scripts | `requires-python` | `>=3.13` (per pyproject.toml) | `>=3.11` |
 | `mise.toml` | Python version | Match pyproject.toml | `3.14.3` vs `>=3.13` |
 
@@ -169,7 +149,6 @@ Duplicated functions: `has_yaml_frontmatter()`, `is_toml_section()`, `categorize
 | `scripts/test_cache_precision.py` | Move to `tests/` | Test script in wrong directory |
 | `scripts/bash_command_validator_example.py` | Delete | Duplicate of `examples/hooks/bash_cmd_validator/` |
 | `plugins/meta/plugin-dev/commands/create-command-v0.1.0.md` | Delete | Old version alongside current |
-| `docs/research/beyond-mcp/` | Delete | Superseded by `beyond-mcp-v2/` |
 
 ### 3.2 Documentation Bloat
 
@@ -180,7 +159,6 @@ The `docs/` directory contains **228 files across 44 directories (3.6 MB)**:
 - `docs/reviews/`: 44 audit reports
 
 Notable duplicates:
-- `docs/research/beyond-mcp/` vs `beyond-mcp-v2/` (6 identical filenames)
 - `docs/notes/skill-auditor-improvements.md` vs `skill-auditor-improvements-v2.md`
 - `docs/notes/workflow-analysis.md` vs `workflow-analysis-2.md`
 - Typos: `debug-skill-auidtor-agent.md` (should be "auditor"), `opps-i-did-it-again.md` (should be "oops")
@@ -190,7 +168,7 @@ Notable duplicates:
 - **Split test directories:** `tests/` and `scripts/tests/` with awkward `importlib.util` loading
 - **Agent duplication:** `agent-sdk-verifier.md` exists in both `.claude/agents/` and `plugins/devops/python-tools/agents/`
 - **Unused agents:** `.claude/agents/markdown-{investigator,fixer,orchestrator}.md` only used by superseded `intelligent-markdown-lint.py`
-- **Editor configs checked in:** `.cursor/` and `.entire/` directories should be in `.gitignore`
+- **Editor configs checked in:** `.entire/` directory should be in `.gitignore`
 
 ---
 
@@ -249,7 +227,7 @@ These work via auto-discovery but explicit commands would improve discoverabilit
 
 | Area | Rating | Key Issue |
 |------|--------|-----------|
-| README.md | 3/5 | Missing 3 plugins, no prerequisites, sparse dev section |
+| README.md | 3/5 | Missing 2 plugins (repo-forge, adr-assistant), no prerequisites, sparse dev section |
 | CLAUDE.md | 4/5 | Category descriptions stale (mentions Docker/Terraform with no plugins) |
 | Plugin READMEs | 4/5 | Install command errors in 3 plugins, author mismatch in plugin-dev |
 | Architecture | 2/5 | No formal ADRs despite having an adr-assistant plugin |
@@ -283,21 +261,20 @@ These work via auto-discovery but explicit commands would improve discoverabilit
 | Gate | Ruff Lint | Ruff Format | Pyright | Tests | Structure | Markdown | Secrets |
 |------|-----------|-------------|---------|-------|-----------|----------|---------|
 | Pre-commit | scripts/ only | scripts/ only | No | No | No | Manual | detect-private-key |
-| CI (PR) | scripts/ only | scripts/ only | No-op (`\|\| true`) | scripts/tests/ only | Yes | No | No |
-| CI (Release) | **No** | **No** | **No** | scripts/tests/ only | Yes | No | No |
+| CI (PR) | scripts/ only | scripts/ only | Not included | Yes | Yes | No | No |
+| CI (Release) | **No** | **No** | **No** | Yes | Yes | No | No |
 | CodeRabbit | Yes | No | No | No | No | Yes | **Disabled** |
 | Claude Hook | Auto-fix | Auto-fix | No | No | No | No | Yes |
 
-Key gaps: Releases can ship without linting. Top-level tests never run. Pyright never blocks. Plugins are never linted.
+Key gaps: Releases can ship without linting. Pyright exists as a task but is not part of the CI pipeline. Plugins are never linted.
 
 ### 6.2 CI/CD Findings
 
 | Priority | Finding | Recommendation |
 |----------|---------|----------------|
 | P1 | No dependency caching in CI | Add `cache: true` to mise-action |
-| P1 | Pyright is no-op (`\|\| true`) | Fix errors and enforce, or document as advisory |
+| P1 | Pyright not included in CI pipeline | Add to `ci` task dependencies or document as advisory-only |
 | P1 | Release validation skips linting | Use `mise run ci` instead of individual tasks |
-| P1 | Tests in `tests/` never run in CI | Update ci-test to include both directories |
 | P1 | 5-step manual release process | Automate version bumping and tag creation |
 | P2 | No markdown linting in CI | Add as non-blocking step |
 | P2 | No test coverage reporting | Add `pytest-cov` |
@@ -309,23 +286,24 @@ Key gaps: Releases can ship without linting. Top-level tests never run. Pyright 
 ## 7. Cross-Cutting Themes
 
 ### Theme 1: Configuration Drift
-Python version appears as 3.11, 3.13, 3.14, and 3.7+ across different files. pyright
-claims strict but runs standard. mise.toml references wrong project name. This creates
-confusion and reduces trust in the configuration.
+Python version appears as 3.11, 3.13, and 3.14 across different files. pyright
+claims strict in CLAUDE.md but pyrightconfig.json uses standard. ruff.toml has no
+target-version set. This creates confusion and reduces trust in the configuration.
 
 **Fix:** Single source of truth for Python version; align all configs in one pass.
 
 ### Theme 2: Enforcement Gap
-Quality tools are configured but not enforced. Pyright passes regardless of errors.
-Ruff only covers half the Python files. Markdown linting is manual-only. Tests are
-split across directories with CI only running one.
+Quality tools are configured but not enforced. Pyright exists as a task but is not
+part of the CI pipeline. Ruff only covers half the Python files. Markdown linting
+is manual-only.
 
 **Fix:** Close the gap between what's configured and what's enforced in CI.
 
 ### Theme 3: Documentation-Reality Divergence
-CLAUDE.md says "strict mode" but config says "standard". README promises Docker and
-Terraform plugins that don't exist. cliff.toml docs describe features that aren't
-enabled. Plugin install commands are wrong in 3 READMEs.
+CLAUDE.md says "strict mode" but config says "standard". Plugin install commands
+are wrong in 3 READMEs. cliff.toml docs describe features that aren't enabled.
+Two plugins (repo-forge, adr-assistant) are registered in the marketplace but
+missing from the main README.
 
 **Fix:** Audit all documentation claims against actual state.
 
@@ -344,46 +322,43 @@ up.
 
 | # | Action | Category | Files Affected |
 |---|--------|----------|----------------|
-| 1 | Fix `ci-test` to run both `tests/` and `scripts/tests/` | CI/CD | `mise.toml` |
-| 2 | Fix `calculate_exit_code` test-implementation mismatch | Code Quality | `tests/test_verify_structure.py` |
-| 3 | Sanitize CEPH pool name in SSH command | Security | `check_ceph_health.py:332` |
-| 4 | Add `.env*`, `*.pem`, `*.key` to `.gitignore` | Security | `.gitignore` |
-| 5 | Align Python version across all configs to `>=3.13` | Config | ruff.toml, pyrightconfig.json, all PEP 723 scripts |
-| 6 | Fix pyright config to match CLAUDE.md (strict vs standard) | Config | pyrightconfig.json or CLAUDE.md |
-| 7 | Fix mise.toml comment from "terraform-homelab" to "lunar-claude" | Config | `mise.toml:1` |
+| 1 | Fix `calculate_exit_code` test-implementation mismatch | Code Quality | `tests/test_verify_structure.py` |
+| 2 | Align Python version across all configs to `>=3.13` | Config | ruff.toml, pyrightconfig.json, all PEP 723 scripts |
+| 3 | Fix pyright config to match CLAUDE.md (strict vs standard) | Config | pyrightconfig.json or CLAUDE.md |
+| 4 | Add pyright to CI pipeline | CI/CD | `mise.toml` |
 
 ### Tier 2: Fix Soon (MEDIUM impact, improves quality)
 
 | # | Action | Category | Files Affected |
 |---|--------|----------|----------------|
-| 8 | Delete `intelligent-markdown-lint.py` (superseded) | Tech Debt | scripts/, .claude/agents/ |
-| 9 | Add `permissions: {}` to `pr-check.yml` | Security | `.github/workflows/pr-check.yml` |
-| 10 | Enable Gitleaks in CodeRabbit | Security | `.coderabbit.yaml` |
-| 11 | Add `ci-lint` to release workflow | CI/CD | `.github/workflows/release.yml` |
-| 12 | Add CI caching (mise + uv) | CI/CD | `.github/workflows/pr-check.yml` |
-| 13 | Fix install commands in 3 plugin READMEs | Docs | ansible-workflows, plugin-dev, git-workflow |
-| 14 | Add missing plugins to main README | Docs | `README.md` |
-| 15 | Expand secret detection hooks (more token patterns) | Security | `.claude/hooks/block-*.py` |
-| 16 | Add tests for `markdown_formatter.py` | Code Quality | `tests/` |
-| 17 | Consolidate test directories | Tech Debt | `tests/`, `scripts/tests/` |
-| 18 | Delete superseded/dead files (see Section 3.1) | Tech Debt | Multiple |
+| 5 | Delete `intelligent-markdown-lint.py` (superseded) | Tech Debt | scripts/, .claude/agents/ |
+| 6 | Add `permissions: {}` to `pr-check.yml` | Security | `.github/workflows/pr-check.yml` |
+| 7 | Enable Gitleaks in CodeRabbit | Security | `.coderabbit.yaml` |
+| 8 | Add `ci-lint` to release workflow | CI/CD | `.github/workflows/release.yml` |
+| 9 | Add CI caching (mise + uv) | CI/CD | `.github/workflows/pr-check.yml` |
+| 10 | Fix install commands in 3 plugin READMEs | Docs | ansible-workflows, plugin-dev, git-workflow |
+| 11 | Add missing plugins to main README | Docs | `README.md` |
+| 12 | Add tests for `markdown_formatter.py` | Code Quality | `tests/` |
+| 13 | Consolidate test directories | Tech Debt | `tests/`, `scripts/tests/` |
+| 14 | Delete superseded/dead files (see Section 3.1) | Tech Debt | Multiple |
+| 15 | Add `.entire/` to `.gitignore` | Config | `.gitignore` |
 
 ### Tier 3: Plan for Later (Strategic improvements)
 
 | # | Action | Category | Effort |
 |---|--------|----------|--------|
-| 19 | Create Docker/Container plugin | Feature | MEDIUM |
-| 20 | Create Terraform/OpenTofu plugin | Feature | MEDIUM |
-| 21 | Create system architecture overview document | Docs | SMALL |
-| 22 | Create CONTRIBUTING.md | Docs | SMALL |
-| 23 | Add formal ADRs using adr-assistant | Docs | SMALL |
-| 24 | Create lightweight plugin scaffold script | Feature | SMALL |
-| 25 | Add commands for orphaned skills | Feature | SMALL |
-| 26 | Add dependency vulnerability scanning to CI | Security | SMALL |
-| 27 | Create VM provisioning pipeline (cross-plugin) | Feature | MEDIUM |
-| 28 | Add monitoring/backup skills | Feature | MEDIUM |
-| 29 | Add test coverage reporting | CI/CD | SMALL |
-| 30 | Automate release process | CI/CD | MEDIUM |
+| 16 | Create Docker/Container plugin | Feature | MEDIUM |
+| 17 | Create Terraform/OpenTofu plugin | Feature | MEDIUM |
+| 18 | Create system architecture overview document | Docs | SMALL |
+| 19 | Create CONTRIBUTING.md | Docs | SMALL |
+| 20 | Add formal ADRs using adr-assistant | Docs | SMALL |
+| 21 | Create lightweight plugin scaffold script | Feature | SMALL |
+| 22 | Add commands for orphaned skills | Feature | SMALL |
+| 23 | Add dependency vulnerability scanning to CI | Security | SMALL |
+| 24 | Create VM provisioning pipeline (cross-plugin) | Feature | MEDIUM |
+| 25 | Add monitoring/backup skills | Feature | MEDIUM |
+| 26 | Add test coverage reporting | CI/CD | SMALL |
+| 27 | Automate release process | CI/CD | MEDIUM |
 
 ---
 
@@ -434,3 +409,10 @@ This review was conducted using 6 specialized agents working in parallel:
 
 Each agent independently reviewed the full repository with no shared context, then
 findings were synthesized and deduplicated into this consolidated report.
+
+**Post-review verification (2026-03-08):** All findings were verified against the
+actual codebase. Seven false positives were identified and removed, including a
+false HIGH-severity SSH injection finding (code uses subprocess.run with list args),
+incorrect .gitignore gap claims (patterns already present), and fabricated CI task
+references (no `ci-test` task exists). Severity counts and recommendation numbering
+were updated accordingly.

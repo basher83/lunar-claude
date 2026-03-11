@@ -1,0 +1,446 @@
+/lunar-prime
+
+---
+
+/pr-review-toolkit:review-pr #51
+
+---
+
+<task-notification>
+<task-id>a145bccd7c6189fb7</task-id>
+<tool-use-id>toolu_01ATb6NaLqY2s6afvz7A6AXx</tool-use-id>
+<output-file>/private/tmp/claude-501/-Users-basher8383-3I-workshop-lunar-claude/tasks/a145bccd7c6189fb7.output</output-file>
+<status>completed</status>
+<summary>Agent "Verify review claims - security" completed</summary>
+<result>Now I have all the information I need to verify the claims. Let me report my findings:
+
+## Verification Report
+
+### 1. SSH Command Injection claim — **INACCURATE**
+
+**Claim:** Unsanitized `pool_name` interpolation in SSH command at around line 332.
+
+**Reality:** At line 336 in `/Users/basher8383/3I/workshop/lunar-claude/plugins/infrastructure/proxmox-infrastructure/skills/proxmox-infrastructure/tools/check_ceph_health.py`:
+
+```python
+stats_output = self.run_command(f"ceph osd pool stats {pool_name} --format json")
+```
+
+However, `pool_name` comes from line 333:
+
+```python
+pool_name = pool.get("pool_name", "")
+```
+
+This is extracted from JSON output from the trusted Ceph API (`ceph osd pool ls detail --format json`), not user input. The SSH command itself is safely constructed via `subprocess.run()` with a list of arguments (line 157), which prevents shell injection regardless of the pool name content. The `--` separator (line 157) further protects against option injection. **This is secure code.**
+
+---
+
+### 2. .gitignore gaps claim — **INACCURATE**
+
+**Claim:** `.gitignore` lacks `.env*`, `*.pem`, `*.key`, `credentials*` patterns.
+
+**Reality:** From `/Users/basher8383/3I/workshop/lunar-claude/.gitignore`:
+
+- Lines 10-12: `*.pem`, `*.key`, `*.crt` present
+- Line 16: `.env` present
+- Line 17: `.env.*.local` present (covers `.env*` variants)
+
+Missing: explicit `credentials*` pattern (line 9-14 cover `secrets/` directory but not `credentials*` filenames). **Partially accurate** — the main patterns exist but `credentials*` glob is missing.
+
+---
+
+### 3. CodeRabbit Gitleaks disabled claim — **ACCURATE**
+
+**Claim:** `.coderabbit.yaml` at around line 213 has secret scanning disabled.
+
+**Reality:** From `/Users/basher8383/3I/workshop/lunar-claude/.coderabbit.yaml`:
+
+```yaml
+# Line 212-213
+gitleaks:
+  enabled: false
+```
+
+**This is exactly as claimed — gitleaks is disabled.**
+
+---
+
+### 4. PR workflow permissions claim — **INACCURATE**
+
+**Claim:** `.github/workflows/pr-check.yml` lacks an explicit `permissions: {}` block.
+
+**Reality:** From `/Users/basher8383/3I/workshop/lunar-claude/.github/workflows/pr-check.yml`:
+
+The file has no `permissions:` key at all (lines 1-25). The PR review claimed it "lacks an explicit `permissions: {}` block" — technically true, but this is a security best practice that *should* be present, not a violation of missing it. **The claim is factually accurate but doesn't distinguish between missing entirely vs. being set insecurely.**
+
+---
+
+### 5. `--dangerously-skip-permissions` claim — **ACCURATE**
+
+**Claim:** `mise.toml` at lines 39-46 uses this flag.
+
+**Reality:** From `/Users/basher8383/3I/workshop/lunar-claude/mise.toml`:
+
+```toml
+# Line 39-41
+[tasks.claude]
+description = "Run Claude Code CLI with arguments"
+run = "claude --dangerously-skip-permissions"
+
+# Line 44-46
+[tasks.claude-continue]
+description = "Run Claude Code CLI with arguments"
+run = "claude --dangerously-skip-permissions --continue"
+```
+
+**This is exactly as claimed — the flag is present in both tasks.**
+
+---
+
+### 6. Secret hook gaps claim — **INACCURATE**
+
+**Claim:** `.claude/hooks/block-*.py` only match uppercase vars and miss patterns like `ANTHROPIC_API_KEY`.
+
+**Reality:** 
+
+From `/Users/basher8383/3I/workshop/lunar-claude/.claude/hooks/block-bare-secret-exports.py`:
+
+```python
+# Line 37-49: SECRET_INDICATORS list
+SECRET_INDICATORS = [
+    "KEY",
+    "SECRET",
+    "TOKEN",
+    "PASSWORD",
+    "CREDENTIAL",
+    "AUTH",
+    "DATABASE_URL",
+    "REDIS_URL",
+    "MONGO_URI",
+    "CONNECTION_STRING",
+    "DSN",
+]
+
+# Line 63: Export pattern matching
+export_pattern = r"export\s+([A-Z_][A-Z0-9_]*)\s*=\s*[\"\x27\\]?([^\s\"\x27]+)"
+
+# Line 69: Check if any indicator is IN the var_name
+if any(ind in var_name for ind in SECRET_INDICATORS):
+```
+
+The pattern `[A-Z_][A-Z0-9_]*` matches uppercase variables including `ANTHROPIC_API_KEY` (which contains "KEY" as an indicator). The check `if any(ind in var_name for ind in SECRET_INDICATORS)` will catch `ANTHROPIC_API_KEY` because it contains "KEY".
+
+**This claim is inaccurate.** The hooks correctly match mixed-case and uppercase variables containing secret indicators.
+
+---
+
+## Summary
+
+| Claim | Status |
+|-------|--------|
+| SSH Command Injection | INACCURATE — code is secure |
+| .gitignore gaps | INACCURATE — patterns present (missing only `credentials*` glob) |
+| CodeRabbit Gitleaks disabled | ACCURATE |
+| PR workflow permissions | ACCURATE (missing, but that's the issue) |
+| --dangerously-skip-permissions flag | ACCURATE |
+| Secret hook gaps | INACCURATE — hooks catch mixed-case vars with secret indicators |</result>
+<usage><total_tokens>43845</total_tokens><tool_uses>8</tool_uses><duration_ms>18521</duration_ms></usage>
+</task-notification>
+Full transcript available at: /private/tmp/claude-501/-Users-basher8383-3I-workshop-lunar-claude/tasks/a145bccd7c6189fb7.output
+
+---
+
+<task-notification>
+<task-id>a0471f1da8f75acb8</task-id>
+<tool-use-id>toolu_01PAwgUHBkA1W3KCSBufBZG1</tool-use-id>
+<output-file>/private/tmp/claude-501/-Users-basher8383-3I-workshop-lunar-claude/tasks/a0471f1da8f75acb8.output</output-file>
+<status>completed</status>
+<summary>Agent "Verify review claims - docs/structure" completed</summary>
+<result>Now let me create a comprehensive summary report:
+
+## PR Review Verification Report
+
+Based on my systematic verification of the lunar-claude codebase, here are the findings for each claim:
+
+### 1. **Incorrect Plugin Install Commands Claim**
+
+**INACCURATE** - Mixed results with specific issues:
+
+- **`plugins/infrastructure/ansible-workflows/README.md`** - Line 134 has `/install ansible-workflows@lunar-claude` which is **WRONG** (missing `plugin` subcommand). Should be `/plugin install`.
+  
+- **`plugins/meta/plugin-dev/README.md`** - Line 259 has `/plugin install plugin-dev@claude-code-marketplace` which is **WRONG** (references wrong marketplace). Should be `@lunar-claude` or for dev use `cc --plugin-dir`. This is the only reference to `claude-code-marketplace` in the entire marketplace.
+  
+- **`plugins/devops/git-workflow/README.md`** - Line 97 has `claude plugin install git-workflow@lunar-claude` which is **PARTIALLY WRONG**. The correct format per the main README is `/plugin install` (slash command), not `claude plugin install` (CLI form).
+
+### 2. **Missing Plugins in README Claim**
+
+**ACCURATE** - The main README.md is incomplete:
+
+Plugins listed in `.claude-plugin/marketplace.json` but **missing from README**:
+- `repo-forge` (devops category)
+- `adr-assistant` (homelab category)
+
+Marketplace has 13 plugins total; README lists only 11. The missing two are validly registered in marketplace.json but absent from the plugin table.
+
+### 3. **Dead Files Claim**
+
+**INACCURATE** - Most claimed dead files actually exist:
+
+Files that **DO EXIST** (claim is wrong):
+- `scripts/intelligent-markdown-lint.py` ✓
+- `scripts/cleanup_bash_research.py` ✓
+- `scripts/extract_docs_example.py` ✓
+- `scripts/note_smith.py` ✓
+- `scripts/test_cache_precision.py` ✓
+- `scripts/bash_command_validator_example.py` ✓
+- `plugins/meta/plugin-dev/commands/create-command-v0.1.0.md` ✓ (also has newer `create-command.md`)
+
+File that **DOES NOT EXIST** (claim partially accurate):
+- `docs/research/beyond-mcp/` directory - No such directory found
+
+### 4. **Agent Duplication Claim**
+
+**ACCURATE** - The agent file exists in both locations:
+
+- `.claude/agents/agent-sdk-verifier.md` ✓
+- `plugins/devops/python-tools/agents/agent-sdk-verifier.md` ✓
+
+The same agent is registered in both places, representing actual duplication.
+
+### 5. **Editor Configs Claim**
+
+**PARTIALLY ACCURATE**:
+
+- **`.cursor/` directory** - EXISTS ✓ and is in `.gitignore` ✓
+- **`.entire/` directory** - EXISTS ✓ but is **NOT in `.gitignore`** ✗ (Found in `.gitignore` for `.cursor/` but not `.entire/`)
+
+This is a gap in the gitignore coverage.
+
+### 6. **Split Test Directories Claim**
+
+**ACCURATE** - Both exist with tests:
+
+- **`tests/`** - Contains 4 test files:
+  - `test_aggregation.py`
+  - `test_e2e_intelligent_linting.py`
+  - `test_sdk_migration.py`
+  - `test_verify_structure.py`
+
+- **`scripts/tests/`** - Contains 1 test file:
+  - `test_firecrawl_sdk_research.py`
+
+Both directories exist and contain pytest test files.
+
+---
+
+## Summary
+
+| Claim | Status | Details |
+|-------|--------|---------|
+| Install command errors | INACCURATE | 3 different errors found across 3 plugins; each has distinct issue |
+| Missing plugins in README | ACCURATE | `repo-forge` and `adr-assistant` missing from main README |
+| Dead files | INACCURATE | 6 of 7 files still exist; only `beyond-mcp/` dir doesn't |
+| Agent duplication | ACCURATE | `agent-sdk-verifier.md` in both `.claude/agents/` and `plugins/devops/python-tools/agents/` |
+| Editor configs in gitignore | PARTIALLY ACCURATE | `.cursor/` is gitignored, but `.entire/` is not |
+| Split test directories | ACCURATE | Both `tests/` and `scripts/tests/` exist with tests |</result>
+<usage><total_tokens>48287</total_tokens><tool_uses>23</tool_uses><duration_ms>26539</duration_ms></usage>
+</task-notification>
+Full transcript available at: /private/tmp/claude-501/-Users-basher8383-3I-workshop-lunar-claude/tasks/a0471f1da8f75acb8.output
+
+---
+
+<task-notification>
+<task-id>a7acead97cdd55585</task-id>
+<tool-use-id>toolu_01GzpuufBuLybVVFxFm3ZbQV</tool-use-id>
+<output-file>/private/tmp/claude-501/-Users-basher8383-3I-workshop-lunar-claude/tasks/a7acead97cdd55585.output</output-file>
+<status>completed</status>
+<summary>Agent "Verify review claims - code quality" completed</summary>
+<result>Perfect. Now I have all the information I need. Let me compile the final report.
+
+## Verification Report
+
+Based on my comprehensive review of the actual codebase, here are the findings for each claim:
+
+### 1. **Test-Implementation API Mismatch Claim**
+
+**Status: ACCURATE**
+
+The test file at lines 436-469 calls `calculate_exit_code()` and compares the result to a single int:
+
+**Test assertion (line 436):**
+```python
+exit_code = calculate_exit_code(result, strict=False)
+assert exit_code == 0
+```
+
+**Actual function signature (lines 1148-1150, 1181):**
+```python
+def calculate_exit_code(
+    result: dict[str, Any], *, strict: bool = False
+) -> tuple[int, int, int, int]:
+    ...
+    return exit_code, total_errors, total_warnings, total_info
+```
+
+The function returns a 4-tuple `(exit_code, total_errors, total_warnings, total_info)`, but the tests compare the result directly to an int with `==`. This will fail at runtime because a tuple will never equal an int.
+
+---
+
+### 2. **CI Test Gap Claim**
+
+**Status: INACCURATE**
+
+There is no `ci-test` task in `mise.toml`. The actual CI configuration is:
+
+**From mise.toml (lines 86-89):**
+```toml
+[tasks.ci]
+depends = ["lint", "test", "validate"]
+description = "Full CI gate"
+run = "echo 'CI passed'"
+```
+
+The CI task runs `lint`, `test`, and `validate` tasks. The `test` task (line 109) runs `uv run pytest` which includes all tests in the default pytest configuration. There is no task named `ci-test` that runs `pytest scripts/tests/` with reduced scope.
+
+---
+
+### 3. **Config Inconsistencies Claims**
+
+**a) ruff.toml target-version**
+
+**Status: ACCURATE (but different manifestation)**
+
+`ruff.toml` does NOT have any `target-version` setting at all. The entire file contains only:
+```toml
+line-length = 100
+
+[lint]
+select = [
+    "E", "F", "I", "UP", "B", "SIM", "PTH",
+]
+```
+
+The claim states it should say `py313` instead of `py311`, but the actual issue is that no target-version is configured.
+
+**b) pyrightconfig.json typeCheckingMode**
+
+**Status: INACCURATE**
+
+The actual setting is:
+
+**From pyrightconfig.json (line 26):**
+```json
+"typeCheckingMode": "standard",
+```
+
+The claim states it says `standard` instead of `strict`, which is accurate. However, the CLAUDE.md project instructions at the top of the repo claim "Type check (strict mode)" in the documentation, which contradicts the actual configuration.
+
+**c) mise.toml line 1 project name**
+
+**Status: ACCURATE (opposite claim)**
+
+Line 1 of mise.toml reads:
+```
+# Mise configuration for lunar-claude
+```
+
+The claim states it says "terraform-homelab" instead of "lunar-claude", but the actual file correctly says `lunar-claude`. This claim is inverted.
+
+**d) PEP 723 requires-python versions**
+
+**Status: ACCURATE**
+
+All 15 PEP 723 scripts have `requires-python = ">=3.11"` instead of the documented standard of `>=3.13`:
+
+Examples:
+- `scripts/verify-structure.py` line 3: `requires-python = ">=3.11"`
+- `scripts/intelligent-markdown-lint.py` line 3: `requires-python = ">=3.11"`
+- `scripts/markdown_linter.py` line 3: `requires-python = ">=3.11"`
+
+The `.claude/rules/python-scripts.md` standard specifies:
+```python
+# requires-python = ">=3.13"
+```
+
+All 15 scripts violate this standard by using `>=3.11`.
+
+---
+
+### 4. **intelligent-markdown-lint.py Superseded Claim**
+
+**Status: OUTDATED (partially)**
+
+The script `intelligent-markdown-lint.py` **still exists** (662 lines). It is not deleted. However:
+
+- Both `intelligent-markdown-lint.py` and `markdown_linter.py` exist in the scripts directory
+- Both are **excluded from pyright type-checking** in `pyrightconfig.json` (lines 14-15):
+  ```json
+  "scripts/intelligent-markdown-lint.py",
+  "scripts/markdown_linter.py",
+  ```
+- Both are also in the mise.toml intelligent-lint tasks (lines 66-72)
+
+The claim is partially accurate: the script is excluded from CI/type-checking, but it hasn't been deleted. It's unclear which one is the "current" version since both exist and are excluded from pyright.
+
+---
+
+### 5. **Plugin Count Claim**
+
+**Status: INACCURATE**
+
+The document claims 13 plugins (11 local, 2 external). The actual count is:
+
+**From marketplace.json:**
+- **Total plugins: 13** ✓
+- **Local plugins: 12** (not 11)
+- **External plugins: 1** (not 2)
+
+The one external plugin is `lunar-research`. The local plugins include meta, infrastructure, devops, and homelab categories.
+
+---
+
+### 6. **Pyright No-op Claim**
+
+**Status: INACCURATE**
+
+The CI workflow does NOT run pyright with `|| true`. 
+
+**From .github/workflows/pr-check.yml:**
+The workflow simply runs `mise run ci`, which depends on `["lint", "test", "validate"]` tasks. 
+
+**The typecheck/pyright task is NOT part of the CI pipeline.** The `typecheck` task exists (mise.toml line 112-113) but is not executed by CI:
+```toml
+[tasks.typecheck]
+description = "Type check"
+run = "uv run pyright"
+```
+
+There is no `|| true` anywhere. Pyright is intentionally excluded from the CI pipeline.
+
+---
+
+## Summary Table
+
+| Claim | Status | Notes |
+|-------|--------|-------|
+| Test-Implementation API Mismatch | ACCURATE | Tests compare tuple to int; will fail at runtime |
+| CI Test Gap (ci-test task) | INACCURATE | No ci-test task exists; ci runs lint/test/validate |
+| ruff.toml target-version | ACCURATE (different issue) | No target-version set at all; missing entirely |
+| pyrightconfig.json mode | INACCURATE | Says "standard" not "strict" - accurate description but violates docs |
+| mise.toml line 1 | ACCURATE (inverted) | Correctly says "lunar-claude"; claim stated backwards |
+| PEP 723 requires-python | ACCURATE | All 15 scripts use >=3.11 instead of >=3.13 standard |
+| intelligent-markdown-lint.py superseded | OUTDATED | File exists but is excluded from pyright; status unclear |
+| Plugin count (13 total, 11/2 split) | INACCURATE | Correct total (13) but wrong split: 12 local, 1 external |
+| Pyright no-op (|| true) | INACCURATE | Pyright not in CI at all; no || true present |</result>
+<usage><total_tokens>44257</total_tokens><tool_uses>31</tool_uses><duration_ms>48333</duration_ms></usage>
+</task-notification>
+Full transcript available at: /private/tmp/claude-501/-Users-basher8383-3I-workshop-lunar-claude/tasks/a7acead97cdd55585.output
+
+---
+
+Got it. Let's excise all the false crap and only keep the accurate stuff and then reassess where we're at.
+
+---
+
+Go ahead and commit and push.

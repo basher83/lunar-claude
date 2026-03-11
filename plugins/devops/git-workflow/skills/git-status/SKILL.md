@@ -1,24 +1,19 @@
 ---
+name: git-status
 description: Summarize the current state of the git repository
-allowed-tools: Bash(git:*)
-model: haiku
+context: fork
 ---
-
-# Git Status
 
 Summarize the current state of the git repository.
 
-## Repository State
+Run the following commands to gather state:
 
-Branch and sync status: !`git status -sb`
-
-Working directory: !`git status --short`
-
-Recent commits: !`git log --oneline -5`
-
-Stashes: !`git stash list`
-
-## Task
+```bash
+$ git status -sb
+$ git status --short
+$ git log --oneline -5
+$ git stash list
+```
 
 Provide a concise summary including:
 

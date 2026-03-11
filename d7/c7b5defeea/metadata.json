@@ -3,7 +3,7 @@
   "checkpoint_id": "d7c7b5defeea",
   "strategy": "manual-commit",
   "branch": "main",
-  "checkpoints_count": 2,
+  "checkpoints_count": 7,
   "files_touched": [
     "hk.pkl"
   ],
@@ -13,13 +13,19 @@
       "transcript": "/d7/c7b5defeea/0/full.jsonl",
       "content_hash": "/d7/c7b5defeea/0/content_hash.txt",
       "prompt": "/d7/c7b5defeea/0/prompt.txt"
+    },
+    {
+      "metadata": "/d7/c7b5defeea/1/metadata.json",
+      "transcript": "/d7/c7b5defeea/1/full.jsonl",
+      "content_hash": "/d7/c7b5defeea/1/content_hash.txt",
+      "prompt": "/d7/c7b5defeea/1/prompt.txt"
     }
   ],
   "token_usage": {
-    "input_tokens": 65,
-    "cache_creation_tokens": 353533,
-    "cache_read_tokens": 4676569,
-    "output_tokens": 17960,
-    "api_call_count": 53
+    "input_tokens": 117,
+    "cache_creation_tokens": 432467,
+    "cache_read_tokens": 7239154,
+    "output_tokens": 25480,
+    "api_call_count": 94
   }
 }

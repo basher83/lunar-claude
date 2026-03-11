@@ -1,0 +1,21 @@
+/generate-changelog
+
+---
+
+/repo-forge:repo-onboard
+
+---
+
+run the diff
+
+---
+
+restore the mise and hk
+
+---
+
+ok i meant to add back the hooks not restore to the broken hooks set up
+
+---
+
+/git-status

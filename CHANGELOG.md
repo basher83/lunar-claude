@@ -104,6 +104,10 @@
 - *(plugin-dev)* Add create-command slash command with versioned backup
 - *(security)* Add PreToolUse hooks for hardcoded secret detection
 - *(skills)* Add devtools-secrets and release-workflow skills
+- *(devops)* Add repo-forge plugin for project setup and validation
+- *(repo-forge)* Add repo-onboard command and bump to v0.2.0
+- *(git-workflow)* Add hk support to git-commit command
+- *(repo-forge)* Migrate from pre-commit to hk
 
 ### 🐛 Bug Fixes
 
@@ -199,6 +203,10 @@
 - *(omni-scale)* Correct DR round 1 timing
 - *(omni-scale)* Remove SSH commands from skill docs
 - *(omni-scale)* Remove MCP context from skill docs
+- *(git-workflow)* Qualify commit-craft agent reference in git-commit command
+- *(repo-forge)* Add commit-msg hook to hk.pkl for entire cli compatibility
+- *(reviews)* Remove 7 false positives from comprehensive repo review
+- *(git-workflow)* Add dynamic context injection and agent definitions to skills
 
 ### 💼 Other
 
@@ -209,6 +217,8 @@
 - *(ci)* Remove link checking from PR workflow
 - Resolve conflicts with main branch
 - *(pre-commit)* Exclude examples from YAML validation
+- *(omni-scale)* Add phase_7 for application workloads GitOps
+- *(deps)* Bump cryptography 46.0.3 -> 46.0.5
 
 ### 🚜 Refactor
 
@@ -269,6 +279,10 @@
 - *(omni-scale)* Move operational items out of spec
 - *(omni-scale)* Remove implementation details from spec constraints
 - *(proxmox)* Apply beyond-mcp-v2 research findings to SKILL.md
+- Remove domain-chassis from marketplace registry
+- *(python-tools)* Remove python-code-quality skill
+- *(git-workflow)* Migrate commands to fork-isolated skills
+- *(git-workflow)* Implement fork-isolated skill-based architecture
 
 ### 📚 Documentation
 
@@ -379,6 +393,12 @@
 - *(omni-scale)* Mark ArgoCD duplicate pods cleanup complete
 - *(omni-scale)* Complete phase 6 backup infrastructure
 - *(CLAUDE.md)* Restructure with commands, code quality, and tools guidance
+- Update changelog
+- *(devtools-secrets)* Expand fnox configuration guide with provider options
+- *(devtools-secrets)* Document fnox env plugin integration with mise
+- *(mise-skill)* Expand documentation with hooks, presets, and hk integration
+- *(repo-forge)* Update README to reflect collapsed architecture
+- *(reviews)* Add comprehensive multi-agent repository review
 
 ### 🎨 Styling
 
@@ -392,6 +412,7 @@
 - *(scripts)* Apply ruff formatting
 - *(docs)* Apply rumdl auto-fixes to documentation
 - Add blank lines to skill-development rule lists
+- Apply ruff auto-fixes across codebase
 
 ### 🧪 Testing
 
@@ -452,6 +473,17 @@
 - Remove unused crawl4ai skill
 - *(omni-scale)* Bump version to 0.2.3
 - *(mise)* Add fnox plugin and Claude CLI convenience tasks
+- Clean up
+- Add entire
+- *(marketplace)* Add domain-chassis plugin
+- Bump domain-chassis to 0.1.1 in marketplace
+- Bump domain-chassis to 0.1.2 in marketplace
+- *(git-workflow)* Bump version to 1.0.5
+- *(git-workflow)* Bump marketplace version to 1.0.5
+- *(marketplace)* Register repo-forge plugin
+- Add horizon kit cache files to gitignore
+- *(git-workflow)* Bump version to 1.1.0
+- *(git-workflow)* Bump version to 1.1.1
 ## [0.3.0] - 2025-11-12
 
 ### 🚀 Features

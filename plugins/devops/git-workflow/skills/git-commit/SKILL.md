@@ -43,7 +43,7 @@ description: |
   assistant: "I'll use the commit-craft agent to split this into reviewable, atomic commits."
   </example>
 context: fork
-agent: commit-craft
+agent: git-workflow:commit-craft
 ---
 
 Create clean, atomic commits for the current workspace changes.

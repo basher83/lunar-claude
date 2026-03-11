@@ -2,18 +2,22 @@
 name: git-status
 description: Summarize the current state of the git repository
 context: fork
+agent: general-purpose
 ---
 
 Summarize the current state of the git repository.
 
-Run the following commands to gather state:
+## Repository State
 
-```bash
-$ git status -sb
-$ git status --short
-$ git log --oneline -5
-$ git stash list
-```
+Branch and sync status: !`git status -sb`
+
+Working directory: !`git status --short`
+
+Recent commits: !`git log --oneline -5`
+
+Stashes: !`git stash list`
+
+## Task
 
 Provide a concise summary including:
 

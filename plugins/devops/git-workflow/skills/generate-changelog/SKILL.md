@@ -2,6 +2,7 @@
 name: generate-changelog
 description: Generate changelog using git-cliff, optionally bump version tag
 context: fork
+agent: general-purpose
 ---
 
 Generate or update CHANGELOG.md using git-cliff based on conventional commits.
@@ -12,16 +13,17 @@ If no action was specified, determine the workflow by asking the user.
 
 ## Current State
 
-Gather context:
+Branch and status: !`git status -sb`
 
-```bash
-$ git status -sb
-$ git log --oneline -10
-$ git describe --tags --abbrev=0 2>/dev/null || echo "No tags yet"
-$ git log --oneline @{u}..HEAD 2>/dev/null || echo "No upstream or no unpushed commits"
-$ git status --porcelain | head -5 || echo "Clean"
-$ git-cliff --unreleased 2>/dev/null | head -20 || echo "No unreleased changes or git-cliff not configured"
-```
+Recent commits: !`git log --oneline -10`
+
+Latest tag: !`git describe --tags --abbrev=0 2>/dev/null || echo "No tags yet"`
+
+Unpushed commits: !`git log --oneline @{u}..HEAD 2>/dev/null || echo "No upstream or no unpushed commits"`
+
+Working directory: !`git status --porcelain | head -5 || echo "Clean"`
+
+Unreleased changes preview: !`git-cliff --unreleased 2>/dev/null | head -20 || echo "No unreleased changes or git-cliff not configured"`
 
 ## Pre-flight Check
 

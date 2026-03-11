@@ -1,7 +1,4 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": [
-    "local>basher83/renovate-config",
-    "local>basher83/renovate-config//presets/python.json"
-  ]
+  "extends": ["local>basher83/renovate-config"]
 }

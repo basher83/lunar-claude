@@ -115,3 +115,7 @@ run = "uv run pyright"
 [tasks.format]
 description = "Format code"
 run = "ruff format ."
+
+[tasks.changelog]
+description = "Update changelog"
+run = "git-cliff -o CHANGELOG.md"

@@ -7,24 +7,22 @@ description: This skill should be used when the user asks to "make commits", "co
 
 Guidance for creating clean, atomic commits and organizing git workflows effectively.
 
-## Available Commands
+## Available Skills
 
-This plugin provides commands to automate git workflows:
+This plugin provides fork-isolated skills to automate git workflows:
 
-| Command | Purpose |
-|---------|---------|
-| `/git-status` | Quick repository status summary |
-| `/git-commit` | Create commits with pre-commit hooks |
-| `/branch-cleanup` | Clean up merged/stale branches |
-| `/generate-changelog` | Generate CHANGELOG.md using git-cliff |
+| Skill | Purpose |
+|-------|---------|
+| `git-status` | Quick repository status summary |
+| `git-commit` | Create commits with pre-commit hooks via commit-craft agent |
+| `branch-cleanup` | Clean up merged/stale branches |
+| `generate-changelog` | Generate CHANGELOG.md using git-cliff |
+
+All workflow skills use `context: fork` for delegation isolation. The `git-commit` skill delegates to the commit-craft agent, which handles the full commit workflow including pre-commit hook detection, execution, and failure recovery.
 
 ### Changelog Generation
 
-Use `/generate-changelog` after creating commits to update CHANGELOG.md. The command uses a workflow-driven approach:
-
-1. Shows current state (branch, recent commits, latest tag, unreleased changes)
-2. Prompts to select action: Preview, Generate, or Release
-3. For releases, analyzes commits and recommends version bump level
+Use `generate-changelog` after creating commits to update CHANGELOG.md. Accepts an optional action argument (preview, generate, release). Without an argument, prompts interactively.
 
 ## Conventional Commit Format
 

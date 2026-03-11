@@ -5,17 +5,31 @@ organization, and branch management.
 
 ## Overview
 
-The git-workflow plugin provides tools for maintaining clean git history:
+The git-workflow plugin provides fork-isolated skills for maintaining clean git history:
 
 1. **git-workflow skill** - Best practices for conventional commits and branch naming
-2. **commit-craft agent** - Creates clean, atomic commits from workspace changes
-3. **4 workflow commands** - Status, commit, branch cleanup, and changelog generation
+2. **commit-craft agent** - Creates clean, atomic commits (invoked through git-commit skill)
+3. **4 workflow skills** - Status, commit, branch cleanup, and changelog generation
 
-All commands use workflow-driven patterns with interactive prompts rather than command-line arguments.
+All workflow skills use `context: fork` for delegation isolation. The commit skill delegates
+to the commit-craft agent, which handles the full commit workflow including pre-commit hook
+detection, execution, and failure recovery.
 
-## Commands
+## Skills
 
-### /git-status
+### git-commit
+
+Create clean, atomic commits with pre-commit hook handling.
+
+**How it works:**
+
+1. Invokes commit-craft agent in a fork-isolated context
+2. commit-craft detects and runs pre-commit hooks
+3. Analyzes changes, groups into atomic commits
+4. Creates conventional commit messages
+5. Handles hook failures with re-staging and retry
+
+### git-status
 
 Quick repository status summary.
 
@@ -26,18 +40,7 @@ Quick repository status summary.
 - Recent commits (last 5)
 - Stash list
 
-### /git-commit
-
-Orchestrates pre-commit hooks and commit creation.
-
-**Workflow:**
-
-1. Shows branch status and pre-flight checks
-2. Detects sensitive files (.env, credentials)
-3. Runs pre-commit hooks
-4. Invokes commit-craft agent for atomic commits
-
-### /branch-cleanup
+### branch-cleanup
 
 Interactive branch cleanup workflow.
 
@@ -48,32 +51,31 @@ Interactive branch cleanup workflow.
 - Protected branch exclusion (main, master, develop, staging, production, release/*)
 - Optional remote cleanup
 
-### /generate-changelog
+### generate-changelog
 
-Changelog generation using git-cliff.
+Changelog generation using git-cliff. Accepts an optional action argument.
 
-**Workflow options:**
+**Actions:**
 
-- **Preview** - Show unreleased changes without writing
-- **Generate** - Create/update CHANGELOG.md and commit
-- **Release** - Generate changelog + create version tag (with AI-recommended bump level)
+- **preview** - Show unreleased changes without writing
+- **generate** - Create/update CHANGELOG.md and commit
+- **release** - Generate changelog + create version tag (with AI-recommended bump level)
 
 ## Agent
 
 ### commit-craft
 
-Creates clean, atomic commits from workspace changes.
+Creates clean, atomic commits from workspace changes. Invoked through the git-commit skill
+with `context: fork` for delegation isolation — not invoked directly.
 
 **Capabilities:**
 
+- Detects and handles pre-commit hooks (execution, formatter re-staging, failure recovery)
 - Analyzes workspace changes and identifies logical groupings
 - Creates atomic commits following conventional commit format
-- Handles pre-commit hook failures gracefully
 - Generates clear commit messages with proper scope and type
 
-**Trigger phrases:** "create commits", "commit all changes", "organize commits", "make commits"
-
-## Skill
+## Reference Skill
 
 ### git-workflow
 
@@ -91,63 +93,12 @@ Best practices for conventional commits and branch naming.
 
 **Note:** Project-specific CLAUDE.md conventions take precedence over skill defaults.
 
-## Installation
-
-```bash
-claude plugin install git-workflow@lunar-claude
-```
-
-Or for development:
-
-```bash
-cc --plugin-dir /path/to/git-workflow
-```
-
 ## Dependencies
 
 - `git` - Git version control (required)
-- `pre-commit` - Pre-commit hooks (optional, for /git-commit)
-- `git-cliff` - Changelog generator (required for /generate-changelog)
+- `pre-commit` - Pre-commit hooks (optional, for git-commit)
+- `git-cliff` - Changelog generator (required for generate-changelog)
 - `gh` - GitHub CLI (optional, for PR status)
-
-## Use Cases
-
-### After implementing a feature
-
-```text
-User: "I've finished the authentication module"
-→ commit-craft agent triggers proactively
-→ Analyzes changes, groups into atomic commits
-→ Creates conventional commit messages
-```
-
-### Before a release
-
-```text
-/generate-changelog
-→ Shows unreleased changes since last tag
-→ Select "Release" workflow
-→ AI recommends version bump (patch/minor/major)
-→ Creates changelog + version tag
-```
-
-### Cleaning up branches
-
-```text
-/branch-cleanup
-→ Shows merged and stale branches
-→ Excludes protected branches
-→ Interactive selection of cleanup scope
-→ Shows recovery commands with commit SHAs
-```
-
-## Version
-
-1.0.3
-
-## Author
-
-basher83
 
 ## License
 

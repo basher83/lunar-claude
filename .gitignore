@@ -1,44 +1,19 @@
-# === OS ===
+/.mcp.json
+.mcp.json.backup
+.vscode
 .DS_Store
-.vscode/
-.idea/
-*.swp
-*.swo
-*.log
-
-# === Security ===
-*.pem
-*.key
-*.crt
-*.backup
-secrets/
-.vault_pass.txt
-.env
-.env.*.local
-
-# === Tools ===
-.hk/
-.lychee-report.md
+.venv
+.worktrees/
+.rumdl-cache
+.rumdl_cache
+.ruff_cache
+*.pyc
 mise.local.toml
 
-# === Claude/AI ===
-.specstory/
-.claude/*.local.md
-.claude/convergence-count
-.claude/ralph-activity.log
-.cursor/
+.lychee-report.md
+.lycheecache
+.claude/research-cache
+.specstory
 .cursorindexingignore
-.mcp.json
-
-# === Python ===
-__pycache__/
-*.py[cod]
-*$py.class
-.venv/
-*.egg-info/
-dist/
-build/
-.pytest_cache/
-.mypy_cache/
-.ruff_cache/
-.coverage
+.hk/
+hk.pkl

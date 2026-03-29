@@ -35,6 +35,9 @@ pkl = "latest"
 _.python.venv = { path = ".venv", create = true } # create the venv if it doesn't exist
 _.fnox-env = { tools = true }
 
+[hooks]
+postinstall = "hk install --mise && uv sync"
+
 # === Claude Code CLI ===
 [tasks.claude]
 description = "Run Claude Code CLI with arguments"

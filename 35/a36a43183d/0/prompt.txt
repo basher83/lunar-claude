@@ -1,0 +1,5 @@
+Review mise settings and validate mise ci works as designed
+
+---
+
+yeah, fix all 3

@@ -1,0 +1,27 @@
+{
+  "cli_version": "0.5.1",
+  "checkpoint_id": "35a36a43183d",
+  "strategy": "manual-commit",
+  "branch": "main",
+  "checkpoints_count": 2,
+  "files_touched": [
+    ".claude/rules/skill-development.md",
+    ".claude/settings.json",
+    "plan.md"
+  ],
+  "sessions": [
+    {
+      "metadata": "/35/a36a43183d/0/metadata.json",
+      "transcript": "/35/a36a43183d/0/full.jsonl",
+      "content_hash": "/35/a36a43183d/0/content_hash.txt",
+      "prompt": "/35/a36a43183d/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 51,
+    "cache_creation_tokens": 106756,
+    "cache_read_tokens": 3058363,
+    "output_tokens": 23914,
+    "api_call_count": 46
+  }
+}

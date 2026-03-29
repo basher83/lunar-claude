@@ -99,8 +99,8 @@
     {
       "name": "git-workflow",
       "source": "./plugins/devops/git-workflow",
-      "description": "Git workflow automation with fork-isolated skills for atomic commits, branch cleanup, and conventional commit standards",
-      "version": "1.1.1",
+      "description": "Git workflow automation with fork-isolated skills for atomic commits, branch cleanup, conventional commit standards, and context-aware PR review",
+      "version": "1.2.0",
       "category": "devops",
       "keywords": [
         "git",
@@ -108,7 +108,9 @@
         "branches",
         "workflow",
         "automation",
-        "conventional-commits"
+        "conventional-commits",
+        "review",
+        "pr-review"
       ],
       "author": {
         "name": "basher83"

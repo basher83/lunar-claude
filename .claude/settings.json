@@ -46,24 +46,6 @@
     ],
     "PreToolUse": [
       {
-        "matcher": "Edit|Write",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "python3 $CLAUDE_PROJECT_DIR/.claude/hooks/block-hardcoded-secrets.py"
-          }
-        ]
-      },
-      {
-        "matcher": "Bash",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "python3 $CLAUDE_PROJECT_DIR/.claude/hooks/block-bare-secret-exports.py"
-          }
-        ]
-      },
-      {
         "matcher": "Task",
         "hooks": [
           {
@@ -74,15 +56,6 @@
       }
     ],
     "PostToolUse": [
-      {
-        "matcher": "Edit|Write",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "jq -r '.tool_input.file_path' | while read file_path; do if [[ \"$file_path\" =~ \\.py$ ]]; then ruff check --fix \"$file_path\" \u0026\u0026 ruff format \"$file_path\"; fi; done"
-          }
-        ]
-      },
       {
         "matcher": "Task",
         "hooks": [
@@ -104,8 +77,6 @@
     ]
   },
   "permissions": {
-    "deny": [
-      "Read(./.entire/metadata/**)"
-    ]
+    "deny": ["Read(./.entire/metadata/**)"]
   }
 }

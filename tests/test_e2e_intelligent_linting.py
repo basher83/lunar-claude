@@ -14,6 +14,8 @@ import shutil
 import sys
 from pathlib import Path
 
+import pytest
+
 # Add scripts to path
 sys.path.insert(0, "scripts")
 
@@ -31,6 +33,7 @@ parse_rumdl_output = intelligent_markdown_lint.parse_rumdl_output
 triage_errors = intelligent_markdown_lint.triage_errors
 
 
+@pytest.mark.asyncio
 async def test_e2e_intelligent_linting():
     """Test complete intelligent linting workflow."""
 

@@ -432,7 +432,7 @@ class TestExitCodes:
         from verify_structure import calculate_exit_code
 
         result = {"marketplace_errors": [], "plugin_results": {}}
-        exit_code = calculate_exit_code(result, strict=False)
+        exit_code, _, _, _ = calculate_exit_code(result, strict=False)
         assert exit_code == 0
 
     def test_exit_0_warnings_normal_mode(self):
@@ -443,7 +443,7 @@ class TestExitCodes:
             "marketplace_errors": [],
             "plugin_results": {"test-plugin": {"warnings": ["warning1"]}},
         }
-        exit_code = calculate_exit_code(result, strict=False)
+        exit_code, _, _, _ = calculate_exit_code(result, strict=False)
         assert exit_code == 0
 
     def test_exit_1_warnings_strict_mode(self):
@@ -454,7 +454,7 @@ class TestExitCodes:
             "marketplace_errors": [],
             "plugin_results": {"test-plugin": {"warnings": ["warning1"]}},
         }
-        exit_code = calculate_exit_code(result, strict=True)
+        exit_code, _, _, _ = calculate_exit_code(result, strict=True)
         assert exit_code == 1
 
     def test_exit_1_with_errors(self):
@@ -466,8 +466,8 @@ class TestExitCodes:
             "plugin_results": {"test-plugin": {"manifest": ["error1"]}},
         }
 
-        assert calculate_exit_code(result, strict=False) == 1
-        assert calculate_exit_code(result, strict=True) == 1
+        assert calculate_exit_code(result, strict=False)[0] == 1
+        assert calculate_exit_code(result, strict=True)[0] == 1
 
 
 class TestConflictDetection:
@@ -480,7 +480,7 @@ class TestConflictDetection:
         marketplace_entry = {"name": "test", "version": "1.0.0"}
         plugin_json = {"name": "test", "version": "2.0.0"}
 
-        warnings = check_manifest_conflicts("test-plugin", marketplace_entry, plugin_json)
+        warnings, _info = check_manifest_conflicts("test-plugin", marketplace_entry, plugin_json)
 
         assert len(warnings) > 0
         assert any("version" in w.lower() for w in warnings)
@@ -493,7 +493,7 @@ class TestConflictDetection:
 
         entry = {"name": "test", "version": "1.0.0"}
 
-        warnings = check_manifest_conflicts("test-plugin", entry, entry)
+        warnings, _info = check_manifest_conflicts("test-plugin", entry, entry)
 
         assert len(warnings) == 0
 
@@ -508,7 +508,7 @@ class TestConflictDetectionEdgeCases:
         marketplace = {"keywords": ["terraform", "ansible", "infrastructure"]}
         plugin_json = {"keywords": ["ansible", "infrastructure", "terraform"]}
 
-        warnings = check_manifest_conflicts("test", marketplace, plugin_json)
+        warnings, _info = check_manifest_conflicts("test", marketplace, plugin_json)
 
         # Should have NO keyword warnings
         assert not any("keyword" in w.lower() for w in warnings)

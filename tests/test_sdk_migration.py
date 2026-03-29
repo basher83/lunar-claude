@@ -7,6 +7,7 @@ subagent spawning with mocked SDK responses.
 """
 
 # Import functions from the script
+import builtins
 import importlib.util
 import json
 import os
@@ -14,6 +15,8 @@ from pathlib import Path
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
+
+_real_isinstance = builtins.isinstance
 
 # Import module with dashes in filename
 script_path = Path(__file__).parent.parent / "scripts" / "intelligent-markdown-lint.py"
@@ -135,15 +138,21 @@ class TestGetSDKOptions:
 
         assert options.allowed_tools == ["Bash", "Task", "Read", "Write"]
         assert options.permission_mode == "acceptEdits"
-        assert "investigator" in options.agents
-        assert "fixer" in options.agents
+        assert "markdown-investigator" in options.agents
+        assert "markdown-fixer" in options.agents
         assert options.model == "claude-sonnet-4-5-20250929"
 
     @patch.dict(os.environ, {}, clear=True)
-    def test_get_sdk_options_no_api_key(self):
-        """Test SDK options creation without API key."""
-        with pytest.raises(ValueError, match="ANTHROPIC_API_KEY environment variable not set"):
-            get_sdk_options()
+    @patch.object(intelligent_markdown_lint, "load_agent_definition")
+    def test_get_sdk_options_no_api_key(self, mock_load):
+        """Test SDK options creation without API key still works (SDK handles auth)."""
+        mock_agent = MagicMock()
+        mock_agent.description = "Test agent"
+        mock_load.return_value = mock_agent
+
+        # SDK handles authentication automatically — no ValueError expected
+        options = get_sdk_options()
+        assert options is not None
 
     @patch.dict(os.environ, {"ANTHROPIC_API_KEY": "sk-test-key"})
     @patch.object(intelligent_markdown_lint, "load_agent_definition")
@@ -155,6 +164,22 @@ class TestGetSDKOptions:
             get_sdk_options()
 
 
+def _patched_isinstance(overrides):
+    """Create a patched isinstance that checks overrides first.
+
+    Directly replaces builtins.isinstance to avoid Mock machinery recursion.
+    overrides: list of (obj, cls) tuples that should return True.
+    """
+
+    def _isinstance(obj, cls):
+        for mock_obj, mock_cls in overrides:
+            if obj is mock_obj and cls is mock_cls:
+                return True
+        return _real_isinstance(obj, cls)
+
+    return _isinstance
+
+
 class TestSpawnInvestigator:
     """Test investigator subagent spawning."""
 
@@ -162,21 +187,14 @@ class TestSpawnInvestigator:
     @patch.dict(os.environ, {"ANTHROPIC_API_KEY": "sk-test-key"})
     @patch.object(intelligent_markdown_lint, "get_sdk_options")
     @patch.object(intelligent_markdown_lint, "ClaudeSDKClient")
-    @patch.object(intelligent_markdown_lint, "AssistantMessage")
-    @patch.object(intelligent_markdown_lint, "TextBlock")
-    async def test_spawn_investigator_success(
-        self, mock_text_block_class, mock_assistant_msg_class, mock_client_class, mock_get_options
-    ):
+    async def test_spawn_investigator_success(self, mock_client_class, mock_get_options):
         """Test successful investigator spawning with valid JSON response."""
-        # Mock SDK options
         mock_options = MagicMock()
         mock_get_options.return_value = mock_options
 
-        # Mock SDK client and response
         mock_client = AsyncMock()
         mock_client_class.return_value.__aenter__.return_value = mock_client
 
-        # Mock investigator JSON response
         investigation_report = {
             "investigations": [
                 {
@@ -192,36 +210,35 @@ class TestSpawnInvestigator:
             ]
         }
 
-        # Create mock message with JSON in code block
         mock_text_block = MagicMock()
         mock_text_block.text = f"""```json
 {json.dumps(investigation_report, indent=2)}
 ```"""
 
-        mock_message = MagicMock(spec=intelligent_markdown_lint.AssistantMessage)
+        mock_message = MagicMock()
         mock_message.content = [mock_text_block]
 
-        # Mock isinstance checks
-        def isinstance_side_effect(obj, cls):
-            if obj == mock_message and cls == intelligent_markdown_lint.AssistantMessage:
-                return True
-            if obj == mock_text_block and cls == intelligent_markdown_lint.TextBlock:
-                return True
-            return type(obj) == cls
-
-        # Mock async iteration
         async def mock_receive_response():
             yield mock_message
 
         mock_client.receive_response = mock_receive_response
         mock_client.query = AsyncMock()
 
-        # Execute with mocked isinstance
-        with patch("builtins.isinstance", side_effect=isinstance_side_effect):
+        AssistantMessage = intelligent_markdown_lint.AssistantMessage
+        TextBlock = intelligent_markdown_lint.TextBlock
+        patched = _patched_isinstance(
+            [
+                (mock_message, AssistantMessage),
+                (mock_text_block, TextBlock),
+            ]
+        )
+        builtins.isinstance = patched
+        try:
             assignment = {"assignment": [{"file": "test.md", "errors": []}]}
             result = await spawn_investigator(assignment)
+        finally:
+            builtins.isinstance = _real_isinstance
 
-        # Verify
         assert result == investigation_report
         mock_client.query.assert_called_once()
 
@@ -237,19 +254,11 @@ class TestSpawnInvestigator:
         mock_client = AsyncMock()
         mock_client_class.return_value.__aenter__.return_value = mock_client
 
-        # Mock message with no JSON
         mock_text_block = MagicMock()
         mock_text_block.text = "This is just text without JSON"
 
-        mock_message = MagicMock(spec=intelligent_markdown_lint.AssistantMessage)
+        mock_message = MagicMock()
         mock_message.content = [mock_text_block]
-
-        def isinstance_side_effect(obj, cls):
-            if obj == mock_message and cls == intelligent_markdown_lint.AssistantMessage:
-                return True
-            if obj == mock_text_block and cls == intelligent_markdown_lint.TextBlock:
-                return True
-            return type(obj) == cls
 
         async def mock_receive_response():
             yield mock_message
@@ -257,11 +266,21 @@ class TestSpawnInvestigator:
         mock_client.receive_response = mock_receive_response
         mock_client.query = AsyncMock()
 
-        # Execute and expect error
-        with patch("builtins.isinstance", side_effect=isinstance_side_effect):
+        AssistantMessage = intelligent_markdown_lint.AssistantMessage
+        TextBlock = intelligent_markdown_lint.TextBlock
+        patched = _patched_isinstance(
+            [
+                (mock_message, AssistantMessage),
+                (mock_text_block, TextBlock),
+            ]
+        )
+        builtins.isinstance = patched
+        try:
             assignment = {"assignment": []}
             with pytest.raises(RuntimeError, match="did not return valid JSON"):
                 await spawn_investigator(assignment)
+        finally:
+            builtins.isinstance = _real_isinstance
 
 
 class TestSpawnFixer:
@@ -279,7 +298,6 @@ class TestSpawnFixer:
         mock_client = AsyncMock()
         mock_client_class.return_value.__aenter__.return_value = mock_client
 
-        # Mock fixer JSON response
         fix_report = {
             "results": [{"file": "test.md", "fixed": 5, "errors_before": 10, "errors_after": 5}]
         }
@@ -287,15 +305,8 @@ class TestSpawnFixer:
         mock_text_block = MagicMock()
         mock_text_block.text = f"```json\n{json.dumps(fix_report)}\n```"
 
-        mock_message = MagicMock(spec=intelligent_markdown_lint.AssistantMessage)
+        mock_message = MagicMock()
         mock_message.content = [mock_text_block]
-
-        def isinstance_side_effect(obj, cls):
-            if obj == mock_message and cls == intelligent_markdown_lint.AssistantMessage:
-                return True
-            if obj == mock_text_block and cls == intelligent_markdown_lint.TextBlock:
-                return True
-            return type(obj) == cls
 
         async def mock_receive_response():
             yield mock_message
@@ -303,12 +314,21 @@ class TestSpawnFixer:
         mock_client.receive_response = mock_receive_response
         mock_client.query = AsyncMock()
 
-        # Execute
-        with patch("builtins.isinstance", side_effect=isinstance_side_effect):
+        AssistantMessage = intelligent_markdown_lint.AssistantMessage
+        TextBlock = intelligent_markdown_lint.TextBlock
+        patched = _patched_isinstance(
+            [
+                (mock_message, AssistantMessage),
+                (mock_text_block, TextBlock),
+            ]
+        )
+        builtins.isinstance = patched
+        try:
             assignment = {"assignment": [{"path": "test.md", "errors": []}]}
             result = await spawn_fixer(assignment)
+        finally:
+            builtins.isinstance = _real_isinstance
 
-        # Verify
         assert result == fix_report
         mock_client.query.assert_called_once()
 
@@ -327,15 +347,8 @@ class TestSpawnFixer:
         mock_text_block = MagicMock()
         mock_text_block.text = "No JSON here"
 
-        mock_message = MagicMock(spec=intelligent_markdown_lint.AssistantMessage)
+        mock_message = MagicMock()
         mock_message.content = [mock_text_block]
-
-        def isinstance_side_effect(obj, cls):
-            if obj == mock_message and cls == intelligent_markdown_lint.AssistantMessage:
-                return True
-            if obj == mock_text_block and cls == intelligent_markdown_lint.TextBlock:
-                return True
-            return type(obj) == cls
 
         async def mock_receive_response():
             yield mock_message
@@ -343,7 +356,18 @@ class TestSpawnFixer:
         mock_client.receive_response = mock_receive_response
         mock_client.query = AsyncMock()
 
-        with patch("builtins.isinstance", side_effect=isinstance_side_effect):
+        AssistantMessage = intelligent_markdown_lint.AssistantMessage
+        TextBlock = intelligent_markdown_lint.TextBlock
+        patched = _patched_isinstance(
+            [
+                (mock_message, AssistantMessage),
+                (mock_text_block, TextBlock),
+            ]
+        )
+        builtins.isinstance = patched
+        try:
             assignment = {"assignment": []}
             with pytest.raises(RuntimeError, match="did not return valid JSON"):
                 await spawn_fixer(assignment)
+        finally:
+            builtins.isinstance = _real_isinstance

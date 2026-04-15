@@ -1,10 +1,12 @@
 ---
 name: ansible-playbook-design
 description: >
-  This skill should be used when creating new Ansible playbooks, designing playbook
-  structure, implementing state-based playbooks with present/absent patterns, organizing
-  plays and tasks, or structuring playbook variables. Covers play organization, variable
-  scoping, and state-based design patterns.
+  Patterns for designing well-structured, maintainable Ansible playbooks with
+  state-based (present/absent) design, play organization, and proper variable scoping.
+when_to_use: >
+  Use when creating new Ansible playbooks, designing playbook structure, implementing
+  state-based playbooks with present/absent patterns, organizing plays and tasks, or
+  structuring playbook variables.
 ---
 
 # Ansible Playbook Design

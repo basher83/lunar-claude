@@ -1,9 +1,13 @@
 ---
 name: ansible-idempotency
 description: >
-  This skill should be used when writing idempotent Ansible tasks, using command
-  or shell modules, implementing changed_when and failed_when directives, creating
-  check-before-create patterns, or troubleshooting tasks that always show "changed".
+  Techniques for writing truly idempotent Ansible tasks using changed_when,
+  failed_when, and check-before-create patterns to eliminate spurious "changed"
+  reports.
+when_to_use: >
+  Use when writing idempotent Ansible tasks, using command or shell modules,
+  implementing changed_when and failed_when directives, creating check-before-create
+  patterns, or troubleshooting tasks that always show "changed".
 ---
 
 # Ansible Idempotency Patterns

@@ -1,6 +1,12 @@
 ---
 name: git-workflow
-description: This skill should be used when the user asks to "make commits", "commit all changes", "create a branch", "name a branch", "organize commits", "conventional commits", "generate changelog", "release version", "bump version", or needs guidance on git workflow best practices including commit organization, branch naming, and conventional commit format.
+description: >
+  Best practices for git workflow automation including atomic commits, branch naming,
+  conventional commit format, and changelog generation.
+when_to_use: >
+  Use when making commits, committing all changes, creating a branch, naming a branch,
+  organizing commits, working with conventional commits, generating a changelog,
+  releasing a version, or bumping a version.
 ---
 
 # Git Workflow Best Practices

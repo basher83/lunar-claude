@@ -1,9 +1,13 @@
 ---
 name: ansible-error-handling
 description: >
-  This skill should be used when implementing error handling in Ansible, using
-  block/rescue/always patterns, creating retry logic with until/retries, handling
-  expected failures gracefully, or providing clear error messages with assert and fail.
+  Implements robust error handling in Ansible using block/rescue/always patterns,
+  retry logic with until/retries, and clear assertion patterns for graceful failure
+  management.
+when_to_use: >
+  Use when implementing error handling in Ansible, using block/rescue/always patterns,
+  creating retry logic with until/retries, handling expected failures gracefully, or
+  providing clear error messages with assert and fail.
 ---
 
 # Ansible Error Handling

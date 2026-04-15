@@ -1,10 +1,12 @@
 ---
 name: devtools-secrets
 description: >
-  Knowledge and guardrails for the mise + fnox + infisical secrets toolchain.
-  Use when the user asks to "configure secrets", "set up fnox", "infisical",
-  "mise env", "secrets management", "environment variables for secrets",
-  or mentions secret injection, secret providers, or env var hygiene.
+  Knowledge and guardrails for the mise + fnox + infisical secrets toolchain,
+  covering secret injection, secret providers, and env var hygiene.
+when_to_use: >
+  Use when configuring secrets, setting up fnox or infisical, working with mise env,
+  managing environment variables for secrets, or dealing with secret injection and
+  secret providers.
 ---
 
 # DevTools Secrets

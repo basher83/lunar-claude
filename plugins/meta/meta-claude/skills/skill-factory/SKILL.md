@@ -1,12 +1,13 @@
 ---
 name: skill-factory
 description: >
-  Research-backed skill creation workflow with automated firecrawl research gathering, multi-tier
-  validation, and comprehensive auditing. Use when "create skills with research automation",
-  "build research-backed skills", "validate skills end-to-end", "automate skill research and
-  creation", needs 9-phase workflow from research through final audit, wants firecrawl-powered
-  research combined with validation, or requires quality-assured skill creation following
-  Anthropic specifications for Claude Code.
+  Research-backed skill creation workflow with automated firecrawl research gathering,
+  multi-tier validation, and comprehensive auditing across a 9-phase process from
+  research through final audit, following Anthropic specifications for Claude Code.
+when_to_use: >
+  Use when creating skills with research automation, building research-backed skills,
+  validating skills end-to-end, or automating skill research and creation with
+  firecrawl-powered research combined with quality-assured validation.
 ---
 
 # Skill Factory

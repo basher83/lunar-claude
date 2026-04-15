@@ -1,9 +1,12 @@
 ---
 name: ansible-proxmox
 description: >
-  This skill should be used when automating Proxmox VE with Ansible, creating VMs
-  or templates, managing Proxmox clusters, using community.proxmox collection,
-  or deciding between native modules and CLI commands (pvecm, pveceph, qm).
+  Expert Proxmox VE automation using the community.proxmox Ansible collection for
+  VM provisioning, template management, and cluster operations with minimal CLI usage.
+when_to_use: >
+  Use when automating Proxmox VE with Ansible, creating VMs or templates, managing
+  Proxmox clusters, using the community.proxmox collection, or deciding between native
+  modules and CLI commands (pvecm, pveceph, qm).
 ---
 
 # Ansible Proxmox Integration

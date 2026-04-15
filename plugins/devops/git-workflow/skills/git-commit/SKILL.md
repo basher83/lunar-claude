@@ -1,7 +1,9 @@
 ---
 name: git-commit
-description: |
-  Run hooks and create clean, logical commits
+description: Run hooks and create clean, logical commits via the commit-craft agent.
+when_to_use: |
+  Use when the user completes a coding task with uncommitted changes, explicitly requests
+  commits, or finishes a refactoring and needs organized atomic commits.
 
   <example>
   Context: User just finished implementing a feature across multiple files.

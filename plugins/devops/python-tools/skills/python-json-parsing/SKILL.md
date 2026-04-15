@@ -2,10 +2,11 @@
 name: python-json-parsing
 description: >
   Python JSON parsing best practices covering performance optimization (orjson/msgspec),
-  handling large files (streaming/JSONL), security (injection prevention),
-  and advanced querying (JSONPath/JMESPath).
-  Use when working with JSON data, parsing APIs, handling large JSON files,
-  or optimizing JSON performance.
+  handling large files (streaming/JSONL), security (injection prevention), and
+  advanced querying (JSONPath/JMESPath).
+when_to_use: >
+  Use when working with JSON data, parsing APIs, handling large JSON files, or
+  optimizing JSON performance.
 ---
 
 # Python JSON Parsing Best Practices

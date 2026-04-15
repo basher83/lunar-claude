@@ -1,15 +1,13 @@
 ---
 name: mise
-description: >-
-  This skill provides mise configuration patterns, task definitions, hooks, presets, and
-  language-specific setup guidance. This skill should be used when the user asks to "set up
-  mise", "create a mise.toml", "configure task runner", "manage tool versions", "add a task
-  to mise", "set up Python with mise", "configure Rust toolchain", "onboard a repo", "add
-  mise to this project", "set up dev environment", "configure environment variables in mise",
-  "set up global mise config", "create a preset", "scaffold a new project", "set up hk",
-  "configure git hooks with hk", "generate bootstrap", "mise generate", "migrate from
-  pre-commit", or mentions mise configuration, dev tooling setup, task definitions, hooks,
-  presets, project scaffolding, or hk git hook management.
+description: >
+  Mise configuration patterns, task definitions, hooks, presets, and language-specific
+  setup guidance for dev environment management and project tooling.
+when_to_use: >
+  Use when setting up mise, creating a mise.toml, configuring a task runner, managing
+  tool versions, adding tasks to mise, setting up Python or Rust with mise, onboarding
+  a repo, configuring environment variables, creating presets, scaffolding new projects,
+  setting up hk git hooks, generating bootstrap, or migrating from pre-commit.
 ---
 
 # mise

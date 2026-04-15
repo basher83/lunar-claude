@@ -1,6 +1,12 @@
 ---
 name: agent-development
-description: This skill should be used when the user asks to "create an agent", "add an agent", "write a subagent", "agent frontmatter", "when to use description", "agent examples", "agent tools", "agent colors", "autonomous agent", or needs guidance on agent structure, system prompts, triggering conditions, or agent development best practices for Claude Code plugins.
+description: >
+  Guidance for developing Claude Code sub-agents with proper frontmatter, system
+  prompts, triggering conditions, and autonomous task handling patterns.
+when_to_use: >
+  Use when creating an agent, adding an agent, writing a subagent, configuring agent
+  frontmatter, setting up agent examples and tools, or needing guidance on autonomous
+  agent structure and system prompts for Claude Code plugins.
 ---
 
 # Agent Development for Claude Code Plugins

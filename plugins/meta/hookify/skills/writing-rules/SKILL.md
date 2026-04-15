@@ -1,8 +1,11 @@
 ---
 name: Writing Hookify Rules
 description: >
-  This skill should be used when the user asks to "create a hookify rule", "write a hook rule",
-  "configure hookify", "add a hookify rule", or needs guidance on hookify rule syntax and patterns.
+  Guidance for writing Hookify rules — markdown files with YAML frontmatter that define
+  behavioral patterns and conversation automation hooks.
+when_to_use: >
+  Use when creating a hookify rule, writing a hook rule, configuring hookify, or adding
+  a hookify rule.
 ---
 
 # Writing Hookify Rules

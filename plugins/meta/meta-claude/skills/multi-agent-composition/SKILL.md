@@ -1,12 +1,13 @@
 ---
 name: multi-agent-composition
 description: >
-  This skill should be used when the user asks to "choose between skill and agent", "compose
-  multi-agent system", "orchestrate agents", "manage agent context", "design component
-  architecture", "should I use a skill or agent", "when to use hooks vs MCP", "build orchestrator
-  workflow", needs decision frameworks for Claude Code components (skills, sub-agents, hooks, MCP
-  servers, slash commands), context management patterns, or wants to build effective multi-component
-  agentic systems with proper orchestration and anti-patterns guidance.
+  Decision frameworks and patterns for choosing and composing Claude Code components —
+  skills, sub-agents, hooks, MCP servers, and slash commands — into effective
+  multi-component agentic systems with proper orchestration and context management.
+when_to_use: >
+  Use when choosing between skill and agent, composing a multi-agent system,
+  orchestrating agents, managing agent context, designing component architecture,
+  deciding when to use hooks vs MCP, or building orchestrator workflows.
 ---
 
 # Multi-Agent Composition

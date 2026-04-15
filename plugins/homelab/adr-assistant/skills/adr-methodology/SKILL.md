@@ -1,6 +1,12 @@
 ---
 name: adr-methodology
-description: This skill should be used when the user asks to "create an ADR", "document an architecture decision", "compare architectural options", "generate assessment criteria", "analyze trade-offs", or mentions Architecture Decision Records, MADR templates, or decision matrices.
+description: >
+  Structured frameworks for documenting architectural decisions using MADR templates,
+  option analysis, trade-off matrices, and human-in-the-loop AI assistance.
+when_to_use: >
+  Use when creating an ADR, documenting an architecture decision, comparing
+  architectural options, generating assessment criteria, analyzing trade-offs, or
+  working with Architecture Decision Records and decision matrices.
 ---
 
 # ADR Methodology

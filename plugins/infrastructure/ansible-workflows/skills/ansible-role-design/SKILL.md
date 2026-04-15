@@ -1,9 +1,12 @@
 ---
 name: ansible-role-design
 description: >
-  This skill should be used when creating Ansible roles, designing role directory
-  structure, organizing role variables in defaults vs vars, writing role handlers,
-  or structuring role tasks. Based on analysis of 7 production geerlingguy roles.
+  Production-grade Ansible role structure patterns for directory layout, variable
+  organization (defaults vs vars), handlers, and task organization, derived from
+  analysis of 7 geerlingguy production roles.
+when_to_use: >
+  Use when creating Ansible roles, designing role directory structure, organizing role
+  variables in defaults vs vars, writing role handlers, or structuring role tasks.
 ---
 
 # Ansible Role Design

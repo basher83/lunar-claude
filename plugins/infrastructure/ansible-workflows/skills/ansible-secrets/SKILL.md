@@ -1,9 +1,12 @@
 ---
 name: ansible-secrets
 description: >
-  This skill should be used when working with secrets in Ansible playbooks, integrating
-  Infisical vault, using no_log directive, retrieving credentials securely, or
-  implementing fallback patterns for secrets. Covers the reusable Infisical lookup task.
+  Secure secrets handling in Ansible with Infisical vault integration, no_log directive
+  enforcement, and a reusable Infisical lookup task for safe credential retrieval.
+when_to_use: >
+  Use when working with secrets in Ansible playbooks, integrating Infisical vault,
+  using no_log directive, retrieving credentials securely, or implementing fallback
+  patterns for secrets.
 ---
 
 # Ansible Secrets Management

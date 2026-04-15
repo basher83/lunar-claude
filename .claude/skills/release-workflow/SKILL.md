@@ -1,10 +1,12 @@
 ---
 name: release-workflow
 description: >
-  Release conventions and changelog configuration for lunar-claude.
-  Use when the user asks to "prepare a release", "bump the version",
-  "update the changelog", "create a release tag", "what version should
-  this be", or needs to understand the changelog/release process.
+  Release conventions and changelog configuration for lunar-claude, covering version
+  bumping, changelog generation via git-cliff, and release tagging.
+when_to_use: >
+  Use when preparing a release, bumping the version, updating the changelog, creating
+  a release tag, determining what version something should be, or understanding the
+  changelog/release process.
 ---
 
 # Release Workflow

@@ -1,10 +1,12 @@
 ---
 name: ansible-fundamentals
 description: >
-  This skill should be used when writing Ansible playbooks, creating Ansible tasks,
-  running ansible-playbook commands, selecting Ansible modules, or working with
-  Ansible collections. Provides golden rules, FQCN requirements, module selection
-  guidance, and execution patterns using uv run.
+  Core principles and golden rules for writing production-quality Ansible automation,
+  covering FQCN requirements, module selection guidance, and execution patterns using
+  uv run.
+when_to_use: >
+  Use when writing Ansible playbooks, creating Ansible tasks, running ansible-playbook
+  commands, selecting Ansible modules, or working with Ansible collections.
 ---
 
 # Ansible Fundamentals

@@ -1,11 +1,12 @@
 ---
 name: python-uv-scripts
 description: >
-  Python single-file script development using uv and PEP 723 inline metadata.
-  Prevents invalid patterns like [tool.uv.metadata].
+  Python single-file script development using uv and PEP 723 inline metadata,
+  preventing invalid patterns like [tool.uv.metadata].
+when_to_use: >
   Use when creating standalone Python utilities, converting scripts to uv format,
-  managing script dependencies, implementing script testing,
-  or establishing team standards for script development.
+  managing script dependencies, implementing script testing, or establishing team
+  standards for script development.
 ---
 
 # Python Single-File Scripts with uv

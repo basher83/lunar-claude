@@ -1,11 +1,13 @@
 ---
 name: coderabbit
 description: >
-  AI-powered code review using CodeRabbit CLI and GitHub integration. Use when running
-  local code reviews before commits ("run coderabbit", "review my changes"), configuring
-  .coderabbit.yaml files, integrating CodeRabbit with Claude Code for autonomous review
-  workflows, using @coderabbitai commands in pull requests, or setting up automated
-  code review pipelines.
+  AI-powered code review using CodeRabbit CLI and GitHub integration, covering local
+  reviews, .coderabbit.yaml configuration, and automated review pipelines.
+when_to_use: >
+  Use when running local code reviews before commits, configuring .coderabbit.yaml
+  files, integrating CodeRabbit with Claude Code for autonomous review workflows,
+  using @coderabbitai commands in pull requests, or setting up automated code review
+  pipelines.
 ---
 
 # CodeRabbit

@@ -1,6 +1,12 @@
 ---
 name: claude-agent-sdk
-description: This skill should be used when building applications with the Claude Agent SDK (Python). Use for creating orchestrators with subagents, configuring agents programmatically, setting up hooks and permissions, and following SDK best practices. Trigger when implementing agentic workflows, multi-agent systems, or SDK-based automation.
+description: >
+  Builds production-ready applications with the Claude Agent SDK for Python, covering
+  orchestrators with subagents, programmatic agent configuration, hooks, and permissions.
+when_to_use: >
+  Use when building applications with the Claude Agent SDK, creating orchestrators with
+  subagents, configuring agents programmatically, setting up hooks and permissions,
+  implementing agentic workflows, or building multi-agent systems.
 ---
 
 # Claude Agent SDK

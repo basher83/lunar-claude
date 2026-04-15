@@ -1,11 +1,13 @@
 ---
 name: omni-talos
-description: This skill provides operational tooling and guidance for Omni Proxmox
-  infrastructure. Use when the user asks to "check provider status", "restart provider",
-  "view provider logs", "debug provider registration", "create a machine class",
-  "configure Proxmox provider", "set up CEL storage selectors", "create a Talos cluster",
-  or needs guidance on Omni + Proxmox infrastructure integration for Talos Kubernetes
-  clusters.
+description: >
+  Operational tooling for Talos Linux Kubernetes clusters via Sidero Omni with Proxmox
+  infrastructure provider, covering machine classes, CEL storage selectors, and provider
+  lifecycle management.
+when_to_use: >
+  Use when checking provider status, restarting provider, viewing provider logs,
+  debugging provider registration, creating a machine class, configuring Proxmox
+  provider, setting up CEL storage selectors, or creating a Talos cluster.
 ---
 
 # Omni + Proxmox Infrastructure Provider

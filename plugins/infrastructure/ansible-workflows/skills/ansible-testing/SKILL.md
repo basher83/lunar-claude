@@ -1,9 +1,11 @@
 ---
 name: ansible-testing
 description: >
-  This skill should be used when running ansible-lint, configuring linting rules,
-  testing Ansible playbooks, validating playbook syntax, or setting up integration
-  tests. Covers ansible-lint configuration and testing strategies.
+  Testing strategies and ansible-lint configuration for validating Ansible automation
+  quality, covering lint rules, syntax validation, and integration test setup.
+when_to_use: >
+  Use when running ansible-lint, configuring linting rules, testing Ansible playbooks,
+  validating playbook syntax, or setting up integration tests.
 ---
 
 # Ansible Testing

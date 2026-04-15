@@ -1,25 +1,17 @@
 ---
 name: proxmox-infrastructure
 description: Manage the Matrix/Virgo-Core Proxmox VE cluster (nodes Foxtrot, Golf, Hotel - MINISFORUM MS-A2 with AMD Ryzen 9 9955HX). Covers VM provisioning, VLAN networking, CEPH storage, and automation via Python (proxmoxer), Ansible (community.general.proxmox), and Terraform (Telmate/proxmox).
+when_to_use: >
+  Use when cloning VM templates, checking CEPH storage health, configuring VLAN
+  networking for Proxmox VMs, creating cloud-init templates, checking node status
+  (Foxtrot, Golf, Hotel), deploying VMs with Terraform, configuring MTU 9000 for CEPH
+  networks, troubleshooting VM deployment, using Ansible proxmox modules, or validating
+  template configuration via the Proxmox API.
 ---
 
 # Proxmox Infrastructure: Matrix/Virgo-Core Cluster
 
 Manage 3-node Proxmox VE cluster with CEPH storage, VLAN networking, and cloud-init automation.
-
-## Trigger Phrases
-
-Use this skill when you see:
-- "Clone the Ubuntu template to create a new VM"
-- "Check CEPH storage health on the cluster"
-- "Configure VLAN 30 networking for a Proxmox VM"
-- "Create a cloud-init template from Ubuntu noble image"
-- "What's the status of nodes Foxtrot, Golf, or Hotel?"
-- "Deploy VMs using Terraform and the Proxmox provider"
-- "Configure MTU 9000 for CEPH storage networks"
-- "Troubleshoot VM deployment or networking issues"
-- "Use Ansible community.general.proxmox modules"
-- "Validate template configuration via Proxmox API"
 
 ## Available Tools
 

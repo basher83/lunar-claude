@@ -1,0 +1,101 @@
+{
+  "cli_version": "0.5.5",
+  "checkpoint_id": "c2eea9276ef4",
+  "session_id": "e00ba8a8-08be-4e5c-9b63-7244d241309c",
+  "strategy": "manual-commit",
+  "created_at": "2026-04-15T06:37:21.082581Z",
+  "branch": "main",
+  "checkpoints_count": 2,
+  "files_touched": [
+    ".claude/skills/devtools-secrets/SKILL.md",
+    ".claude/skills/release-workflow/SKILL.md",
+    "examples/skills/mcp-builder/SKILL.md",
+    "examples/skills/skill-creator/SKILL.md",
+    "examples/skills/video-processor/SKILL.md",
+    "plugins/devops/git-workflow/skills/git-commit/SKILL.md",
+    "plugins/devops/git-workflow/skills/git-workflow/SKILL.md",
+    "plugins/devops/python-tools/skills/claude-agent-sdk/SKILL.md",
+    "plugins/devops/python-tools/skills/python-json-parsing/SKILL.md",
+    "plugins/devops/python-tools/skills/python-uv-scripts/SKILL.md",
+    "plugins/devops/repo-forge/skills/mise/SKILL.md",
+    "plugins/homelab/adr-assistant/skills/adr-methodology/SKILL.md",
+    "plugins/homelab/omni-scale/skills/omni-talos/SKILL.md",
+    "plugins/infrastructure/ansible-workflows/skills/ansible-error-handling/SKILL.md",
+    "plugins/infrastructure/ansible-workflows/skills/ansible-fundamentals/SKILL.md",
+    "plugins/infrastructure/ansible-workflows/skills/ansible-idempotency/SKILL.md",
+    "plugins/infrastructure/ansible-workflows/skills/ansible-playbook-design/SKILL.md",
+    "plugins/infrastructure/ansible-workflows/skills/ansible-proxmox/SKILL.md",
+    "plugins/infrastructure/ansible-workflows/skills/ansible-role-design/SKILL.md",
+    "plugins/infrastructure/ansible-workflows/skills/ansible-secrets/SKILL.md",
+    "plugins/infrastructure/ansible-workflows/skills/ansible-testing/SKILL.md",
+    "plugins/infrastructure/proxmox-infrastructure/skills/proxmox-infrastructure/SKILL.md",
+    "plugins/meta/claude-dev-sandbox/skills/coderabbit/SKILL.md",
+    "plugins/meta/hookify/skills/writing-rules/SKILL.md",
+    "plugins/meta/meta-claude/skills/multi-agent-composition/SKILL.md",
+    "plugins/meta/meta-claude/skills/skill-factory/SKILL.md",
+    "plugins/meta/plugin-dev/skills/agent-development/SKILL.md",
+    "plugins/meta/plugin-dev/skills/command-development/SKILL.md",
+    "plugins/meta/plugin-dev/skills/hook-development/SKILL.md",
+    "plugins/meta/plugin-dev/skills/mcp-integration/SKILL.md",
+    "plugins/meta/plugin-dev/skills/plugin-settings/SKILL.md",
+    "plugins/meta/plugin-dev/skills/plugin-structure/SKILL.md"
+  ],
+  "agent": "Claude Code",
+  "model": "",
+  "turn_id": "fe2959601b13",
+  "token_usage": {
+    "input_tokens": 481,
+    "cache_creation_tokens": 104181,
+    "cache_read_tokens": 4421839,
+    "output_tokens": 44842,
+    "api_call_count": 59
+  },
+  "session_metrics": {
+    "turn_count": 3
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-04-15T06:37:21.06571Z",
+    "agent_lines": 206,
+    "agent_removed": 114,
+    "human_added": 0,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 206,
+    "total_lines_changed": 320,
+    "agent_percentage": 100,
+    "metric_version": 2
+  },
+  "prompt_attributions": [
+    {
+      "checkpoint_number": 1,
+      "user_lines_added": 407,
+      "user_lines_removed": 0,
+      "agent_lines_added": 0,
+      "agent_lines_removed": 0,
+      "user_added_per_file": {
+        ".claude/settings.local.json": 36,
+        "plan.md": 371
+      }
+    },
+    {
+      "checkpoint_number": 2,
+      "user_lines_added": 36,
+      "user_lines_removed": 0,
+      "agent_lines_added": 629,
+      "agent_lines_removed": 136,
+      "user_added_per_file": {
+        ".claude/settings.local.json": 36
+      }
+    },
+    {
+      "checkpoint_number": 3,
+      "user_lines_added": 36,
+      "user_lines_removed": 0,
+      "agent_lines_added": 718,
+      "agent_lines_removed": 169,
+      "user_added_per_file": {
+        ".claude/settings.local.json": 36
+      }
+    }
+  ]
+}

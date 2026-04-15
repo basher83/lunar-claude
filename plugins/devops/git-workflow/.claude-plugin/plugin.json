@@ -1,6 +1,6 @@
 {
   "name": "git-workflow",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Git workflow automation with fork-isolated skills for atomic commits, branch cleanup, conventional commit standards, and context-aware PR review",
   "author": {
     "name": "basher83",

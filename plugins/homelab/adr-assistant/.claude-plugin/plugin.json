@@ -1,8 +1,13 @@
 {
   "name": "adr-assistant",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Human-in-the-loop Architecture Decision Record workflow",
-  "keywords": ["adr", "architecture", "documentation", "decision-records"],
+  "keywords": [
+    "adr",
+    "architecture",
+    "documentation",
+    "decision-records"
+  ],
   "author": {
     "name": "basher83"
   },

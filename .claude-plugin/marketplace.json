@@ -13,7 +13,7 @@
       "name": "meta-claude",
       "source": "./plugins/meta/meta-claude",
       "description": "Meta tools for creating and composing Claude Code components including skills, agents, hooks, commands, and multi-component system architecture",
-      "version": "0.3.0",
+      "version": "0.3.1",
       "category": "meta",
       "keywords": [
         "meta",
@@ -31,9 +31,14 @@
       "name": "claude-dev-sandbox",
       "source": "./plugins/meta/claude-dev-sandbox",
       "description": "Development sandbox for testing and prototyping Claude Code components (hooks, skills, commands, agents) before promoting to production plugins",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "category": "meta",
-      "keywords": ["development", "testing", "sandbox", "prototype"],
+      "keywords": [
+        "development",
+        "testing",
+        "sandbox",
+        "prototype"
+      ],
       "author": {
         "name": "basher83"
       }
@@ -42,7 +47,7 @@
       "name": "ansible-workflows",
       "source": "./plugins/infrastructure/ansible-workflows",
       "description": "End-to-end Ansible workflow automation: design, create, validate, and review playbooks and roles with orchestrated multi-agent pipelines",
-      "version": "1.0.1",
+      "version": "1.0.2",
       "category": "infrastructure",
       "keywords": [
         "ansible",
@@ -63,7 +68,7 @@
       "name": "proxmox-infrastructure",
       "source": "./plugins/infrastructure/proxmox-infrastructure",
       "description": "Proxmox VE cluster management including VM provisioning, templates, VLAN networking, and CEPH storage",
-      "version": "1.0.3",
+      "version": "1.0.4",
       "category": "infrastructure",
       "keywords": [
         "proxmox",
@@ -81,7 +86,7 @@
       "name": "python-tools",
       "source": "./plugins/devops/python-tools",
       "description": "Python development toolkit for scripting (uv/PEP 723), JSON parsing patterns, and Claude Agent SDK development",
-      "version": "1.1.0",
+      "version": "1.1.1",
       "category": "devops",
       "keywords": [
         "python",
@@ -100,7 +105,7 @@
       "name": "git-workflow",
       "source": "./plugins/devops/git-workflow",
       "description": "Git workflow automation with fork-isolated skills for atomic commits, branch cleanup, conventional commit standards, and context-aware PR review",
-      "version": "1.2.0",
+      "version": "1.2.1",
       "category": "devops",
       "keywords": [
         "git",
@@ -120,7 +125,7 @@
       "name": "repo-forge",
       "source": "./plugins/devops/repo-forge",
       "description": "Project setup and validation toolkit for standardizing repos with mise, hk, and changelog tooling across Python, Rust, Terraform, and Ansible projects",
-      "version": "0.2.0",
+      "version": "0.2.1",
       "category": "devops",
       "keywords": [
         "mise",
@@ -143,7 +148,7 @@
       "name": "netbox-powerdns-integration",
       "source": "./plugins/homelab/netbox-powerdns-integration",
       "description": "NetBox IPAM and PowerDNS integration for automated DNS record management and infrastructure documentation",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "category": "homelab",
       "keywords": [
         "netbox",
@@ -162,7 +167,7 @@
       "name": "omni-scale",
       "source": "./plugins/homelab/omni-scale",
       "description": "Sidero Omni + Talos Kubernetes infrastructure management on Proxmox with GitOps deployment patterns",
-      "version": "0.2.3",
+      "version": "0.2.4",
       "category": "homelab",
       "keywords": [
         "omni",
@@ -181,9 +186,14 @@
       "name": "adr-assistant",
       "source": "./plugins/homelab/adr-assistant",
       "description": "Human-in-the-loop Architecture Decision Record workflow",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "category": "homelab",
-      "keywords": ["adr", "architecture", "documentation", "decision-records"],
+      "keywords": [
+        "adr",
+        "architecture",
+        "documentation",
+        "decision-records"
+      ],
       "author": {
         "name": "basher83"
       }
@@ -192,9 +202,15 @@
       "name": "hookify",
       "source": "./plugins/meta/hookify",
       "description": "Easily create hooks to prevent unwanted behaviors by analyzing conversation patterns",
-      "version": "0.1.2",
+      "version": "0.1.3",
       "category": "meta",
-      "keywords": ["hooks", "automation", "rules", "validation", "behavior"],
+      "keywords": [
+        "hooks",
+        "automation",
+        "rules",
+        "validation",
+        "behavior"
+      ],
       "author": {
         "name": "Daisy Hollman",
         "email": "daisy@anthropic.com"
@@ -204,7 +220,7 @@
       "name": "plugin-dev",
       "source": "./plugins/meta/plugin-dev",
       "description": "Comprehensive plugin development toolkit for creating Claude Code plugins with AI-powered guidance for skills, agents, commands, and hooks",
-      "version": "1.0.3",
+      "version": "1.0.4",
       "category": "meta",
       "keywords": [
         "plugin",

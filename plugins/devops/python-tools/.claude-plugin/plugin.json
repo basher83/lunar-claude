@@ -1,11 +1,19 @@
 {
   "name": "python-tools",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Python development toolkit for scripting (uv/PEP 723), JSON parsing patterns, and Claude Agent SDK development",
   "author": {
     "name": "basher83",
     "email": "basher83@mail.spaceships.work"
   },
-  "keywords": ["python", "uv", "scripting", "agent-sdk", "json", "patterns", "pep-723"],
+  "keywords": [
+    "python",
+    "uv",
+    "scripting",
+    "agent-sdk",
+    "json",
+    "patterns",
+    "pep-723"
+  ],
   "homepage": "https://github.com/basher83/lunar-claude"
 }

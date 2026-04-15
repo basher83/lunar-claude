@@ -1,6 +1,6 @@
 {
   "name": "repo-forge",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Project setup and validation toolkit for standardizing repos with mise, hk, and changelog tooling across Python, Rust, Terraform, and Ansible projects",
   "author": {
     "name": "basher83",

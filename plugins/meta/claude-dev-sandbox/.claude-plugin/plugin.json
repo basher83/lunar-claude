@@ -1,9 +1,14 @@
 {
   "name": "claude-dev-sandbox",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Development sandbox for testing and prototyping Claude Code components (hooks, skills, commands, agents) before promoting to production plugins",
   "author": {
     "name": "basher83"
   },
-  "keywords": ["development", "testing", "sandbox", "prototype"]
+  "keywords": [
+    "development",
+    "testing",
+    "sandbox",
+    "prototype"
+  ]
 }

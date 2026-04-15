@@ -1,0 +1,36 @@
+/lunar-prime
+
+---
+
+We need to coordinate a large refactor on all the skills in the repo, heres the context: # Skills new features
+
+source: https://code.claude.com/docs/en/skills
+date source was revied: 13 April 2026
+
+There is a new frontmatter key for skills to split the trigger phrases from the description. The two keys are now `description` and `when_to_use`:
+
+- **`description`**: What the skill does and when to use it. Claude uses this to decide when to apply the skill automatically. If omitted, it uses the first paragraph of markdown content.
+
+- **`when_to_use`**: Additional context for when Claude should invoke the skill, such as trigger phrases or example requests.
+
+Both are appended together in the skill listing and **truncated at 1,536 characters combined** to reduce context usage. You should front-load the key use case in the description since it's the primary field Claude uses for automatic invocation decisions.
+
+## Example
+
+So previously I had `description: This skill should be used when the user asks to "prime the vault", "load vault context", "what's in flight", "vault prime", "load vault domain context", "what's the current state of the vault", or mentions loading initial context for a working session, getting oriented on the current state of things, or wanting a summary of active work and queue state. Provides session context loading by reading the doctrine, project index, queue, and triage state.` should I update that?
+
+Yes, you should update it. Your current description is too focused on trigger phrases and use cases rather than **what the skill does**. 
+
+Restructure it to:
+1. **Lead with the core function**: "Loads and summarizes session context by reading the doctrine, project index, queue, and triage state."
+2. **Then mention when to use it**: "Use when the user asks to prime/load vault context, check what's in flight, get oriented on current state, or wants a summary of active work and queue."
+
+This front-loads the key use case (as the docs recommend) and keeps Claude's decision-making clear. The trigger phrases can go in `when_to_use` if you have that field.
+
+---
+
+lets make sure we patch bump all the plugin.jsons as well
+
+---
+
+lets make commits

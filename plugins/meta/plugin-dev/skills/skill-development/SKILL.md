@@ -1,6 +1,12 @@
 ---
 name: skill-development
-description: This skill should be used when the user wants to "create a skill", "add a skill to plugin", "write a new skill", "improve skill description", "organize skill content", or needs guidance on skill structure, progressive disclosure, or skill development best practices for Claude Code plugins.
+description: >
+  Guidance for creating effective Claude Code plugin skills with proper structure,
+  progressive disclosure, and content organization best practices.
+when_to_use: >
+  Use when creating a skill, adding a skill to a plugin, writing a new skill,
+  improving skill descriptions, organizing skill content, or needing guidance on
+  skill structure and progressive disclosure for Claude Code plugins.
 ---
 
 # Skill Development for Claude Code Plugins
@@ -59,7 +65,8 @@ skill-name/
 ├── SKILL.md (required)
 │   ├── YAML frontmatter metadata (required)
 │   │   ├── name: (required)
-│   │   └── description: (required)
+│   │   ├── description: (required)
+│   │   └── when_to_use: (optional)
 │   └── Markdown instructions (required)
 └── Bundled Resources (optional)
     ├── scripts/          - Executable code (Python/Bash/etc.)
@@ -69,7 +76,7 @@ skill-name/
 
 #### SKILL.md (required)
 
-**Metadata Quality:** The `name` and `description` in YAML frontmatter determine when Claude will use the skill. Be specific about what the skill does and when to use it. Use the third-person (e.g. "This skill should be used when..." instead of "Use this skill when...").
+**Metadata Quality:** The `name` and `description` in YAML frontmatter determine when Claude will use the skill. Use `description` to state what the skill does (lead with the core function). Use the optional `when_to_use` field for trigger phrases and example requests — both fields are concatenated in the skill listing and truncated at 1,536 characters combined.
 
 #### Bundled Resources (optional)
 
@@ -203,26 +210,40 @@ Also, delete any example files and directories not needed for the skill. Create 
 
 **Writing Style:** Write the entire skill using **imperative/infinitive form** (verb-first instructions), not second person. Use objective, instructional language (e.g., "To accomplish X, do Y" rather than "You should do X" or "If you need to do X"). This maintains consistency and clarity for AI consumption.
 
-**Description (Frontmatter):** Use third-person format with specific trigger phrases:
+**Description (Frontmatter):** Split function from triggers using two fields:
+
+- `description`: What the skill does. Lead with the core function. Claude uses this for automatic invocation decisions.
+- `when_to_use`: When to invoke the skill — trigger phrases, example requests, concrete scenarios.
 
 ```yaml
 ---
 name: Skill Name
-description: This skill should be used when the user asks to "specific phrase 1", "specific phrase 2", "specific phrase 3". Include exact phrases users would say that should trigger this skill. Be concrete and specific.
+description: >
+  Core function of this skill in one or two sentences. What does it do?
+  What domain knowledge or workflow does it provide?
+when_to_use: >
+  Use when the user asks to "specific phrase 1", "specific phrase 2", or needs
+  guidance on X, Y, Z.
 ---
 ```
 
 **Good description examples:**
 
 ```yaml
-description: This skill should be used when the user asks to "create a hook", "add a PreToolUse hook", "validate tool use", "implement prompt-based hooks", or mentions hook events (PreToolUse, PostToolUse, Stop).
+description: >
+  Comprehensive guidance for creating Claude Code plugin hooks — event-driven
+  automation using PreToolUse, PostToolUse, Stop, and other lifecycle events via
+  the advanced prompt-based hooks API.
+when_to_use: >
+  Use when creating a hook, adding PreToolUse/PostToolUse/Stop hooks, validating
+  tool use, implementing prompt-based hooks, or setting up event-driven automation.
 ```
 
 **Bad description examples:**
 
 ```yaml
-description: Use this skill when working with hooks.  # Wrong person, vague
-description: Load when user needs hook help.  # Not third person
+description: Use this skill when working with hooks.  # vague, no function stated
+description: Load when user needs hook help.  # still no function, still vague
 description: Provides hook guidance.  # No trigger phrases
 ```
 
@@ -439,21 +460,25 @@ You need to configure the MCP server.
 You must validate settings before use.
 ```
 
-### Third-Person in Description
+### Description and When-to-Use
 
-The frontmatter description must use third person:
+The `description` field states what the skill does — lead with the core function. The optional `when_to_use` field holds trigger phrases and example requests.
 
 **Correct:**
 
 ```yaml
-description: This skill should be used when the user asks to "create X", "configure Y"...
+description: >
+  Core function of the skill — what domain knowledge, workflow, or guidance it
+  provides.
+when_to_use: >
+  Use when the user asks to "create X", "configure Y", or needs guidance on Z.
 ```
 
 **Incorrect:**
 
 ```yaml
-description: Use this skill when you want to create X...
-description: Load this skill when user asks...
+description: This skill should be used when the user asks to "create X"...  # trigger phrases in description
+description: Use this skill when you want to create X...  # vague, no function stated
 ```
 
 ### Objective, Instructional Language
@@ -489,9 +514,9 @@ Before finalizing a skill:
 
 **Description Quality:**
 
-- [ ] Uses third person ("This skill should be used when...")
-- [ ] Includes specific trigger phrases users would say
-- [ ] Lists concrete scenarios ("create X", "configure Y")
+- [ ] `description` leads with core function (what the skill does)
+- [ ] Trigger phrases and example requests are in `when_to_use`, not `description`
+- [ ] Combined `description` + `when_to_use` under 1,536 characters
 - [ ] Not vague or generic
 
 **Content Quality:**
@@ -519,7 +544,7 @@ Before finalizing a skill:
 
 ## Common Mistakes to Avoid
 
-### Mistake 1: Weak Trigger Description
+### Mistake 1: Weak Description
 
 ❌ **Bad:**
 
@@ -527,15 +552,20 @@ Before finalizing a skill:
 description: Provides guidance for working with hooks.
 ```
 
-**Why bad:** Vague, no specific trigger phrases, not third person
+**Why bad:** Too vague — states the topic but not the function. No trigger phrases anywhere.
 
 ✅ **Good:**
 
 ```yaml
-description: This skill should be used when the user asks to "create a hook", "add a PreToolUse hook", "validate tool use", or mentions hook events. Provides comprehensive hooks API guidance.
+description: >
+  Comprehensive guidance for creating Claude Code plugin hooks — event-driven
+  automation using PreToolUse, PostToolUse, Stop, and other lifecycle events.
+when_to_use: >
+  Use when creating a hook, adding PreToolUse/PostToolUse/Stop hooks, validating
+  tool use, or setting up event-driven automation.
 ```
 
-**Why good:** Third person, specific phrases, concrete scenarios
+**Why good:** Description leads with the core function; `when_to_use` has concrete trigger phrases.
 
 ### Mistake 2: Too Much in SKILL.md
 
@@ -682,8 +712,8 @@ Good for: Complex domains with validation utilities
 
 ✅ **DO:**
 
-- Use third-person in description ("This skill should be used when...")
-- Include specific trigger phrases ("create X", "configure Y")
+- Lead `description` with the core function (what the skill does)
+- Put trigger phrases and example requests in `when_to_use`
 - Keep SKILL.md lean (1,500-2,000 words)
 - Use progressive disclosure (move details to references/)
 - Write in imperative/infinitive form

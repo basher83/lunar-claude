@@ -1,0 +1,1 @@
+commit all local changes and an untracked files. for any parent dir that contains a .claude-plugin/plugin.json we need to patch bump the semver as part of the commits ie plugins/devops/git-workflow/.claude-plugin/plugin.json should bump to version: 1.2.2 once all commits are created go ahead and push to remote

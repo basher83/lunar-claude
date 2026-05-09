@@ -1,0 +1,69 @@
+{
+  "cli_version": "0.6.1",
+  "checkpoint_id": "4f734d2ff970",
+  "session_id": "3634e70d-a0f8-460e-81e2-a2276fc1309a",
+  "strategy": "manual-commit",
+  "created_at": "2026-05-09T19:58:25.742972Z",
+  "branch": "main",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "plugins/devops/git-workflow/.claude-plugin/plugin.json",
+    "plugins/devops/git-workflow/docs/inventory.md",
+    "plugins/devops/git-workflow/docs/research.md",
+    "plugins/devops/git-workflow/skills/git-commit/SKILL.md",
+    "plugins/devops/git-workflow/skills/git-status/SKILL.md"
+  ],
+  "agent": "Claude Code",
+  "model": "",
+  "turn_id": "86953dc7de64",
+  "token_usage": {
+    "input_tokens": 58,
+    "cache_creation_tokens": 19747,
+    "cache_read_tokens": 97738,
+    "output_tokens": 3117,
+    "api_call_count": 7
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-05-09T19:58:25.74037Z",
+    "agent_lines": 0,
+    "agent_removed": 1,
+    "human_added": 0,
+    "human_modified": 0,
+    "human_removed": 40,
+    "total_committed": 1,
+    "total_lines_changed": 41,
+    "agent_percentage": 2.4390243902439024,
+    "metric_version": 2
+  },
+  "prompt_attributions": [
+    {
+      "checkpoint_number": 1,
+      "user_lines_added": 1685,
+      "user_lines_removed": 45,
+      "agent_lines_added": 0,
+      "agent_lines_removed": 0,
+      "user_added_per_file": {
+        ".claude/settings.local.json": 36,
+        "plugins/devops/git-workflow/docs/inventory.md": 367,
+        "plugins/devops/git-workflow/docs/research.md": 188,
+        "plugins/devops/git-workflow/skills/git-commit/SKILL.md": 6,
+        "plugins/homelab/omni-scale/skills/omni-talos/SKILL.md": 1,
+        "plugins/homelab/omni-scale/skills/omni-talos/references/provider-setup.md": 3,
+        "plugins/homelab/omni-scale/skills/omni-talos/scripts/provider-ctl.py": 88,
+        "plugins/meta/claude-md-management/.claude-plugin/plugin.json": 9,
+        "plugins/meta/claude-md-management/LICENSE": 202,
+        "plugins/meta/claude-md-management/README.md": 40,
+        "plugins/meta/claude-md-management/commands/revise-claude-md.md": 54,
+        "plugins/meta/claude-md-management/skills/claude-md-improver/SKILL.md": 179,
+        "plugins/meta/claude-md-management/skills/claude-md-improver/references/quality-criteria.md": 109,
+        "plugins/meta/claude-md-management/skills/claude-md-improver/references/templates.md": 253,
+        "plugins/meta/claude-md-management/skills/claude-md-improver/references/update-guidelines.md": 150
+      },
+      "user_removed_per_file": {
+        "plugins/devops/git-workflow/skills/git-commit/SKILL.md": 39,
+        "plugins/devops/git-workflow/skills/git-status/SKILL.md": 1,
+        "plugins/homelab/omni-scale/skills/omni-talos/scripts/provider-ctl.py": 5
+      }
+    }
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "cli_version": "0.6.1",
+  "checkpoint_id": "7baa97194a1c",
+  "session_id": "3634e70d-a0f8-460e-81e2-a2276fc1309a",
+  "strategy": "manual-commit",
+  "created_at": "2026-05-09T19:59:06.938505Z",
+  "branch": "main",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "plugins/meta/claude-md-management/.claude-plugin/plugin.json",
+    "plugins/meta/claude-md-management/LICENSE",
+    "plugins/meta/claude-md-management/README.md",
+    "plugins/meta/claude-md-management/commands/revise-claude-md.md",
+    "plugins/meta/claude-md-management/skills/claude-md-improver/SKILL.md",
+    "plugins/meta/claude-md-management/skills/claude-md-improver/references/quality-criteria.md",
+    "plugins/meta/claude-md-management/skills/claude-md-improver/references/templates.md",
+    "plugins/meta/claude-md-management/skills/claude-md-improver/references/update-guidelines.md"
+  ],
+  "agent": "Claude Code",
+  "model": "",
+  "turn_id": "86953dc7de64",
+  "checkpoint_transcript_start": 90,
+  "transcript_lines_at_start": 90,
+  "token_usage": {
+    "input_tokens": 16,
+    "cache_creation_tokens": 2849,
+    "cache_read_tokens": 50050,
+    "output_tokens": 783,
+    "api_call_count": 2
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-05-09T19:59:06.936325Z",
+    "agent_lines": 996,
+    "agent_removed": 0,
+    "human_added": 0,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 996,
+    "total_lines_changed": 996,
+    "agent_percentage": 100,
+    "metric_version": 2
+  }
+}

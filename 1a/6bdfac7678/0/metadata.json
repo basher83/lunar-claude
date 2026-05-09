@@ -1,0 +1,39 @@
+{
+  "cli_version": "0.6.1",
+  "checkpoint_id": "1a6bdfac7678",
+  "session_id": "3634e70d-a0f8-460e-81e2-a2276fc1309a",
+  "strategy": "manual-commit",
+  "created_at": "2026-05-09T19:58:48.282218Z",
+  "branch": "main",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "plugins/homelab/omni-scale/.claude-plugin/plugin.json",
+    "plugins/homelab/omni-scale/skills/omni-talos/SKILL.md",
+    "plugins/homelab/omni-scale/skills/omni-talos/references/provider-setup.md",
+    "plugins/homelab/omni-scale/skills/omni-talos/scripts/provider-ctl.py"
+  ],
+  "agent": "Claude Code",
+  "model": "",
+  "turn_id": "86953dc7de64",
+  "checkpoint_transcript_start": 69,
+  "transcript_lines_at_start": 69,
+  "token_usage": {
+    "input_tokens": 24,
+    "cache_creation_tokens": 4056,
+    "cache_read_tokens": 63525,
+    "output_tokens": 1103,
+    "api_call_count": 3
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-05-09T19:58:48.279675Z",
+    "agent_lines": 89,
+    "agent_removed": 6,
+    "human_added": 0,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 89,
+    "total_lines_changed": 95,
+    "agent_percentage": 100,
+    "metric_version": 2
+  }
+}

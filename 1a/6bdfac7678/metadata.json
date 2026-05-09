@@ -1,0 +1,28 @@
+{
+  "cli_version": "0.6.1",
+  "checkpoint_id": "1a6bdfac7678",
+  "strategy": "manual-commit",
+  "branch": "main",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "plugins/homelab/omni-scale/.claude-plugin/plugin.json",
+    "plugins/homelab/omni-scale/skills/omni-talos/SKILL.md",
+    "plugins/homelab/omni-scale/skills/omni-talos/references/provider-setup.md",
+    "plugins/homelab/omni-scale/skills/omni-talos/scripts/provider-ctl.py"
+  ],
+  "sessions": [
+    {
+      "metadata": "/1a/6bdfac7678/0/metadata.json",
+      "transcript": "/1a/6bdfac7678/0/full.jsonl",
+      "content_hash": "/1a/6bdfac7678/0/content_hash.txt",
+      "prompt": ""
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 24,
+    "cache_creation_tokens": 4056,
+    "cache_read_tokens": 63525,
+    "output_tokens": 1103,
+    "api_call_count": 3
+  }
+}

@@ -20,6 +20,7 @@ Use `${CLAUDE_PLUGIN_ROOT}/skills/omni-talos/scripts/provider-ctl.py` for provid
 
 | Task | Command |
 |------|---------|
+| Check status | `${CLAUDE_PLUGIN_ROOT}/skills/omni-talos/scripts/provider-ctl.py --status` |
 | View logs | `${CLAUDE_PLUGIN_ROOT}/skills/omni-talos/scripts/provider-ctl.py --logs 50` |
 | Raw JSON logs | `${CLAUDE_PLUGIN_ROOT}/skills/omni-talos/scripts/provider-ctl.py --logs 50 --raw` |
 | Restart provider | `${CLAUDE_PLUGIN_ROOT}/skills/omni-talos/scripts/provider-ctl.py --restart` |

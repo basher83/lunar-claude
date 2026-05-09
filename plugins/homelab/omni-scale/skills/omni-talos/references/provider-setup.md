@@ -63,6 +63,9 @@ After deployment:
 omnictl get infraproviders
 
 # Check provider status
+scripts/provider-ctl.py --status
+
+# Or inspect Omni's provider status objects directly
 omnictl get infraproviderstatuses
 
 # View provider logs

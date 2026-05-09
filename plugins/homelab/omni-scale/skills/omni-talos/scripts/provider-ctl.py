@@ -11,11 +11,13 @@ Team: homelab
 Author: infrastructure@spaceships.work
 
 Usage:
+    provider-ctl.py --status
     provider-ctl.py --restart
     provider-ctl.py --logs [N]
     provider-ctl.py --logs [N] --raw
 
 Examples:
+    provider-ctl.py --status
     provider-ctl.py --restart
     provider-ctl.py --logs 25
     provider-ctl.py --logs 50 --raw
@@ -26,6 +28,7 @@ import json
 import subprocess
 import sys
 from datetime import datetime
+from typing import Any
 
 SSH_HOST = "omni-provider"
 CONTAINER = "omni-provider-proxmox-provider-1"
@@ -33,6 +36,7 @@ DEFAULT_LOG_LINES = 25
 MAX_LOG_LINES = 100
 RESTART_TIMEOUT = 30
 LOG_TIMEOUT = 10
+STATUS_TIMEOUT = 10
 
 
 def ssh_command(cmd: str, timeout: int) -> tuple[int, str, str]:
@@ -94,11 +98,75 @@ def format_timestamp(ts: float | str) -> str:
         if isinstance(ts, (int, float)):
             dt = datetime.fromtimestamp(ts)
         else:
-            # Try parsing as float string first
-            dt = datetime.fromtimestamp(float(ts))
+            try:
+                dt = datetime.fromtimestamp(float(ts))
+            except ValueError:
+                dt = datetime.fromisoformat(ts.replace("Z", "+00:00"))
     except (ValueError, TypeError, OSError):
         return str(ts)
     return dt.strftime("%Y-%m-%d %H:%M:%S")
+
+
+def get_container_inspect() -> tuple[int, dict[str, Any] | None]:
+    """Fetch container inspect data."""
+    inspect_format = "{{json .}}"
+    rc, out, err = ssh_command(
+        f"docker inspect --format '{inspect_format}' {CONTAINER}",
+        STATUS_TIMEOUT,
+    )
+
+    if rc == 124:
+        print(f"Error: Status retrieval timed out after {STATUS_TIMEOUT}s", file=sys.stderr)
+        return 1, None
+
+    if rc != 0:
+        message = err or out
+        if "No such object" in message or "No such container" in message:
+            print(f"Error: Container '{CONTAINER}' not found", file=sys.stderr)
+        else:
+            print(f"Error: Failed to inspect container: {message}", file=sys.stderr)
+        return 1, None
+
+    try:
+        return 0, json.loads(out)
+    except json.JSONDecodeError:
+        print("Error: Failed to parse container inspect output", file=sys.stderr)
+        return 1, None
+
+
+def get_status() -> int:
+    """Report container status and return non-zero if unhealthy."""
+    rc, inspect_data = get_container_inspect()
+    if rc != 0 or inspect_data is None:
+        return 1
+
+    state = inspect_data.get("State", {})
+    running = bool(state.get("Running"))
+    status = state.get("Status", "unknown")
+    health = state.get("Health", {}).get("Status")
+    started_at = format_timestamp(state.get("StartedAt", ""))
+    finished_at = format_timestamp(state.get("FinishedAt", ""))
+    exit_code = state.get("ExitCode")
+
+    print(f"Host: {SSH_HOST}")
+    print(f"Container: {inspect_data.get('Name', '').lstrip('/') or CONTAINER}")
+    print(f"Status: {status}")
+    if health:
+        print(f"Health: {health}")
+    print(f"Running: {'yes' if running else 'no'}")
+    print(f"Started: {started_at}")
+    if not running and finished_at and finished_at != "0001-01-01 00:00:00":
+        print(f"Finished: {finished_at}")
+    if exit_code is not None:
+        print(f"Exit code: {exit_code}")
+
+    if not running:
+        return 1
+
+    if health and health != "healthy":
+        return 1
+
+    return 0
 
 
 def should_include_schematic(entry: dict) -> bool:
@@ -179,6 +247,7 @@ def main() -> int:
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
+  %(prog)s --status           Show provider container status
   %(prog)s --restart          Restart the provider container
   %(prog)s --logs             Show last 25 log lines (filtered)
   %(prog)s --logs 50          Show last 50 log lines (filtered)
@@ -186,6 +255,11 @@ Examples:
         """,
     )
 
+    parser.add_argument(
+        "--status",
+        action="store_true",
+        help="Show provider container status",
+    )
     parser.add_argument(
         "--restart",
         action="store_true",
@@ -211,13 +285,18 @@ Examples:
         print("Error: --raw requires --logs", file=sys.stderr)
         return 1
 
-    if not args.restart and args.logs is None:
+    actions = [args.status, args.restart, args.logs is not None]
+
+    if sum(bool(action) for action in actions) == 0:
         parser.print_help()
         return 1
 
-    if args.restart and args.logs is not None:
-        print("Error: --restart and --logs are mutually exclusive", file=sys.stderr)
+    if sum(bool(action) for action in actions) > 1:
+        print("Error: --status, --restart, and --logs are mutually exclusive", file=sys.stderr)
         return 1
+
+    if args.status:
+        return get_status()
 
     if args.restart:
         return restart_container()

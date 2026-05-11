@@ -1,0 +1,25 @@
+help troubleshoot:; basher8383@BrentsMacStudio  % mise install
+Resolved 1 package in 191ms
+Downloading rumdl (4.8MiB)
+ Downloaded rumdl
+Prepared 1 package in 177ms
+Installed 1 package in 3ms
+ + rumdl==0.1.91
+Installed 1 executable: rumdl
+mise 2026.5.4 by @jdx                                                                                                                                                               [2/2]
+pipx:rumdl@0.1.91        uv tool install rumdl==0.1.91                                                                                                                                  ✔
+lychee@0.24.2            extract lychee-aarch64-apple-darwin.tar.gz                                                                                                                     ✔
+hk WARN  failed to parse cache file: /Users/basher8383/Library/Caches/hk/configs/86de6f2f807931b3-76814.json expected regex object, string, or array of strings at line 1 column 18705
+hk WARN  failed to parse cache file: /Users/basher8383/Library/Caches/hk/configs/86de6f2f807931b3-76814.json expected regex object, string, or array of strings at line 1 column 18705
+Installed hk hook: /Users/basher8383/3I/workshop/lunar-claude/.git/hooks/pre-commit
+Installed hk hook: /Users/basher8383/3I/workshop/lunar-claude/.git/hooks/commit-msg
+Resolved 46 packages in 4ms
+Checked 43 packages in 14ms
+
+---
+
+lets run it
+
+---
+
+try option 1 and see if the warning clears

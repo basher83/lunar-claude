@@ -1,0 +1,27 @@
+{
+  "cli_version": "0.6.1",
+  "checkpoint_id": "7265ecb41802",
+  "strategy": "manual-commit",
+  "branch": "main",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "hk.pkl",
+    "scripts/check-json.sh",
+    "scripts/check-yaml.sh"
+  ],
+  "sessions": [
+    {
+      "metadata": "/72/65ecb41802/0/metadata.json",
+      "transcript": "/72/65ecb41802/0/full.jsonl",
+      "content_hash": "/72/65ecb41802/0/content_hash.txt",
+      "prompt": "/72/65ecb41802/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 36,
+    "cache_creation_tokens": 88438,
+    "cache_read_tokens": 871451,
+    "output_tokens": 9999,
+    "api_call_count": 21
+  }
+}

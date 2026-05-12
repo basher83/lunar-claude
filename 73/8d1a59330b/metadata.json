@@ -1,0 +1,25 @@
+{
+  "cli_version": "0.6.1",
+  "checkpoint_id": "738d1a59330b",
+  "strategy": "manual-commit",
+  "branch": "main",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "plugins/devops/repo-forge/docs/2026-05-11-hk-custom-syntax-validation.md"
+  ],
+  "sessions": [
+    {
+      "metadata": "/73/8d1a59330b/0/metadata.json",
+      "transcript": "/73/8d1a59330b/0/full.jsonl",
+      "content_hash": "/73/8d1a59330b/0/content_hash.txt",
+      "prompt": "/73/8d1a59330b/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 151,
+    "cache_creation_tokens": 372356,
+    "cache_read_tokens": 5718500,
+    "output_tokens": 86036,
+    "api_call_count": 57
+  }
+}

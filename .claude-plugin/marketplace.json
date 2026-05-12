@@ -105,7 +105,7 @@
       "name": "git-workflow",
       "source": "./plugins/devops/git-workflow",
       "description": "Git workflow automation with fork-isolated skills for atomic commits, branch cleanup, conventional commit standards, and context-aware PR review",
-      "version": "1.2.1",
+      "version": "1.2.3",
       "category": "devops",
       "keywords": [
         "git",

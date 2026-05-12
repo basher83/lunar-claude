@@ -10,7 +10,7 @@ redesigning. Pair with `research.md` for reference-implementation comparisons.
 Declared at `.claude-plugin/plugin.json`.
 
 - **Name**: `git-workflow`
-- **Version**: `1.2.2`
+- **Version**: `1.2.3`
 - **Description**: Git workflow automation with fork-isolated skills for atomic
   commits, branch cleanup, conventional commit standards, and context-aware PR
   review

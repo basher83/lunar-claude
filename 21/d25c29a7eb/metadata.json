@@ -1,0 +1,28 @@
+{
+  "cli_version": "0.6.1",
+  "checkpoint_id": "21d25c29a7eb",
+  "strategy": "manual-commit",
+  "branch": "main",
+  "checkpoints_count": 4,
+  "files_touched": [
+    ".emdash.json",
+    "hk.pkl",
+    "plugins/devops/git-workflow/agents/commit-craft.md",
+    "plugins/devops/git-workflow/skills/git-workflow/SKILL.md"
+  ],
+  "sessions": [
+    {
+      "metadata": "/21/d25c29a7eb/0/metadata.json",
+      "transcript": "/21/d25c29a7eb/0/full.jsonl",
+      "content_hash": "/21/d25c29a7eb/0/content_hash.txt",
+      "prompt": "/21/d25c29a7eb/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 42,
+    "cache_creation_tokens": 115900,
+    "cache_read_tokens": 1045216,
+    "output_tokens": 8874,
+    "api_call_count": 23
+  }
+}

@@ -1,0 +1,264 @@
+{
+  "cli_version": "0.6.1",
+  "checkpoint_id": "c0178e704015",
+  "session_id": "5829246b-ebb8-417c-a4b9-2b4b4d77b825",
+  "strategy": "manual-commit",
+  "created_at": "2026-05-12T08:14:27.615865Z",
+  "branch": "main",
+  "checkpoints_count": 17,
+  "files_touched": [
+    "plugins/devops/git-workflow/agents/commit-craft.md",
+    "plugins/devops/git-workflow/docs/git-commit.md",
+    "plugins/devops/git-workflow/skills/git-workflow/SKILL.md"
+  ],
+  "agent": "Claude Code",
+  "model": "claude-opus-4-7[1m]",
+  "turn_id": "b2fabfb1f2c4",
+  "token_usage": {
+    "input_tokens": 151,
+    "cache_creation_tokens": 372356,
+    "cache_read_tokens": 5718500,
+    "output_tokens": 86036,
+    "api_call_count": 57
+  },
+  "session_metrics": {
+    "turn_count": 19
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-05-12T08:14:27.598956Z",
+    "agent_lines": 0,
+    "agent_removed": 0,
+    "human_added": 0,
+    "human_modified": 11,
+    "human_removed": 12,
+    "total_committed": 0,
+    "total_lines_changed": 27,
+    "agent_percentage": 0,
+    "metric_version": 2
+  },
+  "prompt_attributions": [
+    {
+      "checkpoint_number": 1,
+      "user_lines_added": 109,
+      "user_lines_removed": 210,
+      "agent_lines_added": 0,
+      "agent_lines_removed": 0,
+      "user_added_per_file": {
+        ".claude/agents/entire-search.md": 25,
+        ".claude/settings.json": 53,
+        ".claude/settings.local.json": 5,
+        "hk.pkl": 3,
+        "plugins/devops/git-workflow/agents/commit-craft.md": 1,
+        "plugins/devops/git-workflow/skills/git-workflow/SKILL.md": 12,
+        "scripts/check-json.sh": 5,
+        "scripts/check-yaml.sh": 5
+      },
+      "user_removed_per_file": {
+        ".claude/hookify.prevent-audit-taint.local.md": 68,
+        ".claude/hookify.require-uv.local.md": 24,
+        ".claude/hookify.skill-forced-eval.local.md": 35,
+        ".claude/settings.json": 23,
+        ".claude/settings.local.json": 24,
+        ".emdash.json": 15,
+        "hk.pkl": 3,
+        "plugins/devops/git-workflow/agents/commit-craft.md": 2,
+        "plugins/devops/git-workflow/skills/git-workflow/SKILL.md": 16
+      }
+    },
+    {
+      "checkpoint_number": 2,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 109,
+      "agent_lines_removed": 210
+    },
+    {
+      "checkpoint_number": 3,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 109,
+      "agent_lines_removed": 210
+    },
+    {
+      "checkpoint_number": 4,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 109,
+      "agent_lines_removed": 210
+    },
+    {
+      "checkpoint_number": 5,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 109,
+      "agent_lines_removed": 210
+    },
+    {
+      "checkpoint_number": 6,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 109,
+      "agent_lines_removed": 210
+    },
+    {
+      "checkpoint_number": 7,
+      "user_lines_added": 267,
+      "user_lines_removed": 0,
+      "agent_lines_added": 109,
+      "agent_lines_removed": 210,
+      "user_added_per_file": {
+        "plugins/devops/repo-forge/docs/hk-hooks.md": 93,
+        "plugins/devops/repo-forge/docs/hk-python-project-example.md": 86,
+        "plugins/devops/repo-forge/docs/mise-hk-integration.md": 88
+      }
+    },
+    {
+      "checkpoint_number": 8,
+      "user_lines_added": 278,
+      "user_lines_removed": 1,
+      "agent_lines_added": 228,
+      "agent_lines_removed": 210,
+      "user_added_per_file": {
+        "plugins/devops/repo-forge/docs/2026-05-11-hk-custom-syntax-validation.md": 11,
+        "plugins/devops/repo-forge/docs/hk-hooks.md": 93,
+        "plugins/devops/repo-forge/docs/hk-python-project-example.md": 86,
+        "plugins/devops/repo-forge/docs/mise-hk-integration.md": 88
+      },
+      "user_removed_per_file": {
+        "plugins/devops/repo-forge/docs/2026-05-11-hk-custom-syntax-validation.md": 1
+      }
+    },
+    {
+      "checkpoint_number": 9,
+      "user_lines_added": 278,
+      "user_lines_removed": 1,
+      "agent_lines_added": 228,
+      "agent_lines_removed": 210,
+      "user_added_per_file": {
+        "plugins/devops/repo-forge/docs/2026-05-11-hk-custom-syntax-validation.md": 11,
+        "plugins/devops/repo-forge/docs/hk-hooks.md": 93,
+        "plugins/devops/repo-forge/docs/hk-python-project-example.md": 86,
+        "plugins/devops/repo-forge/docs/mise-hk-integration.md": 88
+      },
+      "user_removed_per_file": {
+        "plugins/devops/repo-forge/docs/2026-05-11-hk-custom-syntax-validation.md": 1
+      }
+    },
+    {
+      "checkpoint_number": 10,
+      "user_lines_added": 278,
+      "user_lines_removed": 1,
+      "agent_lines_added": 228,
+      "agent_lines_removed": 210,
+      "user_added_per_file": {
+        "plugins/devops/repo-forge/docs/2026-05-11-hk-custom-syntax-validation.md": 11,
+        "plugins/devops/repo-forge/docs/hk-hooks.md": 93,
+        "plugins/devops/repo-forge/docs/hk-python-project-example.md": 86,
+        "plugins/devops/repo-forge/docs/mise-hk-integration.md": 88
+      },
+      "user_removed_per_file": {
+        "plugins/devops/repo-forge/docs/2026-05-11-hk-custom-syntax-validation.md": 1
+      }
+    },
+    {
+      "checkpoint_number": 11,
+      "user_lines_added": 278,
+      "user_lines_removed": 1,
+      "agent_lines_added": 228,
+      "agent_lines_removed": 210,
+      "user_added_per_file": {
+        "plugins/devops/repo-forge/docs/2026-05-11-hk-custom-syntax-validation.md": 11,
+        "plugins/devops/repo-forge/docs/hk-hooks.md": 93,
+        "plugins/devops/repo-forge/docs/hk-python-project-example.md": 86,
+        "plugins/devops/repo-forge/docs/mise-hk-integration.md": 88
+      },
+      "user_removed_per_file": {
+        "plugins/devops/repo-forge/docs/2026-05-11-hk-custom-syntax-validation.md": 1
+      }
+    },
+    {
+      "checkpoint_number": 12,
+      "user_lines_added": 278,
+      "user_lines_removed": 1,
+      "agent_lines_added": 228,
+      "agent_lines_removed": 210,
+      "user_added_per_file": {
+        "plugins/devops/repo-forge/docs/2026-05-11-hk-custom-syntax-validation.md": 11,
+        "plugins/devops/repo-forge/docs/hk-hooks.md": 93,
+        "plugins/devops/repo-forge/docs/hk-python-project-example.md": 86,
+        "plugins/devops/repo-forge/docs/mise-hk-integration.md": 88
+      },
+      "user_removed_per_file": {
+        "plugins/devops/repo-forge/docs/2026-05-11-hk-custom-syntax-validation.md": 1
+      }
+    },
+    {
+      "checkpoint_number": 13,
+      "user_lines_added": 267,
+      "user_lines_removed": 0,
+      "agent_lines_added": 241,
+      "agent_lines_removed": 210,
+      "user_added_per_file": {
+        "plugins/devops/repo-forge/docs/hk-hooks.md": 93,
+        "plugins/devops/repo-forge/docs/hk-python-project-example.md": 86,
+        "plugins/devops/repo-forge/docs/mise-hk-integration.md": 88
+      }
+    },
+    {
+      "checkpoint_number": 14,
+      "user_lines_added": 267,
+      "user_lines_removed": 0,
+      "agent_lines_added": 241,
+      "agent_lines_removed": 210,
+      "user_added_per_file": {
+        "plugins/devops/repo-forge/docs/hk-hooks.md": 93,
+        "plugins/devops/repo-forge/docs/hk-python-project-example.md": 86,
+        "plugins/devops/repo-forge/docs/mise-hk-integration.md": 88
+      }
+    },
+    {
+      "checkpoint_number": 15,
+      "user_lines_added": 267,
+      "user_lines_removed": 0,
+      "agent_lines_added": 348,
+      "agent_lines_removed": 210,
+      "user_added_per_file": {
+        "plugins/devops/repo-forge/docs/hk-hooks.md": 93,
+        "plugins/devops/repo-forge/docs/hk-python-project-example.md": 86,
+        "plugins/devops/repo-forge/docs/mise-hk-integration.md": 88
+      }
+    },
+    {
+      "checkpoint_number": 16,
+      "user_lines_added": 271,
+      "user_lines_removed": 4,
+      "agent_lines_added": 348,
+      "agent_lines_removed": 210,
+      "user_added_per_file": {
+        "plugins/devops/git-workflow/agents/commit-craft.md": 1,
+        "plugins/devops/git-workflow/docs/git-commit.md": 2,
+        "plugins/devops/git-workflow/skills/git-workflow/SKILL.md": 1,
+        "plugins/devops/repo-forge/docs/hk-hooks.md": 93,
+        "plugins/devops/repo-forge/docs/hk-python-project-example.md": 86,
+        "plugins/devops/repo-forge/docs/mise-hk-integration.md": 88
+      },
+      "user_removed_per_file": {
+        "plugins/devops/git-workflow/agents/commit-craft.md": 1,
+        "plugins/devops/git-workflow/docs/git-commit.md": 2,
+        "plugins/devops/git-workflow/skills/git-workflow/SKILL.md": 1
+      }
+    },
+    {
+      "checkpoint_number": 17,
+      "user_lines_added": 267,
+      "user_lines_removed": 0,
+      "agent_lines_added": 355,
+      "agent_lines_removed": 214,
+      "user_added_per_file": {
+        "plugins/devops/repo-forge/docs/hk-hooks.md": 93,
+        "plugins/devops/repo-forge/docs/hk-python-project-example.md": 86,
+        "plugins/devops/repo-forge/docs/mise-hk-integration.md": 88
+      }
+    }
+  ]
+}

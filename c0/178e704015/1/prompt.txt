@@ -1,0 +1,109 @@
+/lunar-prime
+
+---
+
+use @"entire-search (agent)" to trace the linage of scripts/check-json.sh and scripts/check-yaml.sh, I see they are untracked but have no idea why they are created and what the intention is
+
+---
+
+use @"entire-search (agent)" to trace the linage of scripts/check-json.sh and scripts/check-yaml.sh, I see they are untracked but have no idea why they are created and what the intention is
+
+---
+
+Well I need more info. like why are they seperate bash scripts vs added into mise directly?
+
+---
+
+I don't know if I'd call that a defensible answer. What proof do you have of any of this? Specifically "hk can't call mise tasks"
+
+---
+
+lets do this first: Look at session 9a56b75d transcript directly to see what "option 1" was vs. the alternatives.
+
+---
+
+lets do this first: Look at session 9a56b75d transcript directly to see what "option 1" was vs. the alternatives.
+
+---
+
+You do have a Mise skill that you can leverage to look for how it interacts with HK
+
+---
+
+ok lets do this first; in plugins/devops/repo-forge/docs create a new doc for this convo. from my end I can to the repo saw untracked files and started looking at what got left. noticed scripts/check-json.sh and scripts/check-yaml.sh and thought "hmmm what the heck, I don't remember these at all" and then had you investigate via entire. you initially made assertions to which i pushed back on and asked the more direct question " why are they seperate bash scripts vs added into mise directly?". to which called the subagent again and it left out important info (not your fault). I knew because of your framing in "Defensible answer". You asserted claims with no factual referances, no tool calls to investigate, no web search to verify against source. To be clear I'm not highlighting this part for the doc, in fact I don't want this part in the doc. I'm simply replying the events here for provence. So moving on, said yes check the transcript, more info, then prodded you to use the mise skill which gave you referances for hk. And brought us to: check = "..." pattern documented but the gap as you stated "The docs don't prescribe where the custom check lives — inline check = "python -c '...'", external ./scripts/check-yaml.sh, or mise run check-yaml. All three are valid." So from the skill's hk.md reference we believe we have the answer and a gap. lets document it first, then I'll steer
+
+---
+
+Open questions - Ok this section is needed but the framing you have there is not neutral "likely depends" - it either does or does not "likely" is hedging. I reformatted the section a bit as well to seperate the actual questions you had from the prose supporting them. The final sentance is fine. I added two questions myself. Now take a look at what I added, then re-evaluate your 3 questions; are those questions relevant and actionable? No edits yet, just talking through
+
+---
+
+Open questions - Ok this section is needed but the framing you have there is not neutral "likely depends" - it either does or does not "likely" is hedging. I reformatted the section a bit as well to seperate the actual questions you had from the prose supporting them. The final sentance is fine. I added two questions myself. Now take a look at what I added, then re-evaluate your 3 questions; are those questions relevant and actionable? No edits yet, just talking through
+
+---
+
+I see "How often the check needs to be invoked outside the git hook context" as vaild decision criteria. "Whether the codebase already standardizes on mise tasks as the primary operational surface" - 100% verifiable right now. the last one though - not relavent. foundational claims in the doc that deserve verification questions - now those are vaild and should be added
+
+---
+
+Add them as questions only — we make sure we have all the questions we think we need to answer first, then we search docs
+
+---
+
+5 is worth adding; concur
+
+---
+
+5 is worth adding; concur
+
+---
+
+ready to apply. decision criterion -  separate section and then add your questions and tighen up the open questions
+
+---
+
+ready to apply. decision criterion -  separate section and then add your questions and tighen up the open questions
+
+---
+
+Reccomened search here is using MCPs: For external project research, use the two-pass pattern: `deepwiki` first for architecture and component relationships, then `context7` for concrete configs, API signatures, and copy-pasteable snippets. When building skills/plugins about external tools, `deepwiki` feeds knowledge sections; `context7` supplies examples.
+| Server | When to use |
+| ------ | ----------- |
+| `deepwiki` | Understand what a repo/tool does — architecture, features, component relationships. Use first when researching unfamiliar projects. |
+| `context7` | Concrete configs, API signatures, and copy-pasteable code snippets. Use second, after `deepwiki` gives the lay of the land. |
+
+---
+
+Reccomened search here is using MCPs: For external project research, use the two-pass pattern: `deepwiki` first for architecture and component relationships, then `context7` for concrete configs, API signatures, and copy-pasteable snippets. When building skills/plugins about external tools, `deepwiki` feeds knowledge sections; `context7` supplies examples.
+| Server | When to use |
+| ------ | ----------- |
+| `deepwiki` | Understand what a repo/tool does — architecture, features, component relationships. Use first when researching unfamiliar projects. |
+| `context7` | Concrete configs, API signatures, and copy-pasteable code snippets. Use second, after `deepwiki` gives the lay of the land. |
+
+---
+
+Ok here's the path; we explictly document the factual data we just got from the 5 open questions, mapped to the question, annotated with source ref (not just deepwiki, code/docs actual verifable refs),same for any contradictions. document the data, don't infer or assert yet. we do that later
+
+---
+
+Ok here's the path; we explictly document the factual data we just got from the 5 open questions, mapped to the question, annotated with source ref (not just deepwiki, code/docs actual verifable refs),same for any contradictions. document the data, don't infer or assert yet. we do that later
+
+---
+
+great, so initial 5 questions we had; which are closed, still open, and what new questions do we have
+
+---
+
+great, so initial 5 questions we had; which are closed, still open, and what new questions do we have
+
+---
+
+I prefer we update the doc with the new questions first, then we can verify. Its a loop; document - research and they depend on eachother. loops are cheap, losing context thats valuabe is not
+
+---
+
+send it
+
+---
+
+send it

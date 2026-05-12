@@ -1,0 +1,31 @@
+/lunar-prime
+
+---
+
+first up can you fix:  Invalid settings
+ /Users/basher8383/3I/workshop/lunar-claude/.claude/settings.local.json
+  └ Invalid or malformed JSON
+
+---
+
+can you investigate: 
+❯ first up can you fix:  Invalid settings
+   /Users/basher8383/3I/workshop/lunar-claude/.claude/settings.local.json
+    └ Invalid or malformed JSON
+Failed with non-blocking status code: failed to write state file: openat pre-prompt-4686225c-0781-44b9-84cd-a39381658eac.json: no such file or directory
+
+---
+
+can you investigate: 
+❯ first up can you fix:  Invalid settings
+   /Users/basher8383/3I/workshop/lunar-claude/.claude/settings.local.json
+    └ Invalid or malformed JSON
+Failed with non-blocking status code: failed to write state file: openat pre-prompt-4686225c-0781-44b9-84cd-a39381658eac.json: no such file or directory
+
+---
+
+got it, nah i'm good. We have some work to do on plugins/devops/git-workflow/skills/git-workflow/SKILL.md: Subject case — git-workflow line 61: "Capitalize first letter.". This is a big oversight as it conflicts with every repo I have pretty much, that needs to be lower case. 156–165: "Never force-push or directly commit to main/master… Always use pull requests for these branches." - this is just imperically wrong for how i work. 98% of the time I push straight to main; I'm a solo dev. The only time I PR stuff is when its an established project consisting of mainly code and I need the pr for myself to run through gates
+
+---
+
+got it, nah i'm good. We have some work to do on plugins/devops/git-workflow/skills/git-workflow/SKILL.md: Subject case — git-workflow line 61: "Capitalize first letter.". This is a big oversight as it conflicts with every repo I have pretty much, that needs to be lower case. 156–165: "Never force-push or directly commit to main/master… Always use pull requests for these branches." - this is just imperically wrong for how i work. 98% of the time I push straight to main; I'm a solo dev. The only time I PR stuff is when its an established project consisting of mainly code and I need the pr for myself to run through gates

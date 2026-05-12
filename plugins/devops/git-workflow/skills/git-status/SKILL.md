@@ -2,6 +2,7 @@
 name: git-status
 description: Summarize the current state of the git repository
 context: fork
+agent: general-purpose
 ---
 
 Summarize the current state of the git repository.

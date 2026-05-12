@@ -48,7 +48,7 @@ Interactive branch cleanup workflow.
 
 - Merged branches (safe to delete)
 - Branches with deleted remotes ([gone] status)
-- Protected branch exclusion (main, master, develop, staging, production, release/*)
+- Protected branch exclusion (main, master, develop, staging, production, release/*, renovate/*)
 - Optional remote cleanup
 
 ### generate-changelog

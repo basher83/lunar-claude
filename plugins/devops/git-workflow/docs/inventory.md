@@ -10,7 +10,7 @@ redesigning. Pair with `research.md` for reference-implementation comparisons.
 Declared at `.claude-plugin/plugin.json`.
 
 - **Name**: `git-workflow`
-- **Version**: `1.2.1`
+- **Version**: `1.2.2`
 - **Description**: Git workflow automation with fork-isolated skills for atomic
   commits, branch cleanup, conventional commit standards, and context-aware PR
   review
@@ -117,8 +117,9 @@ Eight-step process:
 5. Identify logical groupings (implementation + tests together, split infra vs
    app, isolate docs, keep lock files with manifests)
 6. Build commit plan with TodoWrite, target <100 lines per commit
-7. Draft conventional messages (50 char subject, imperative, 72-char body wrap,
-   `Fixes #N` footer, `BREAKING CHANGE:` footer where applicable)
+7. Draft conventional messages (72-char header line `type(scope): subject`,
+   subject imperative, 72-char body wrap, `Fixes #N` footer,
+   `BREAKING CHANGE:` footer where applicable)
 8. Execute with heredoc, handle hook re-modifications, verify with final
    `git status` + `git log --oneline -n`
 

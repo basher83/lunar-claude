@@ -1,12 +1,7 @@
 ---
 name: git-workflow
-description: >
-  Best practices for git workflow automation including atomic commits, branch naming,
-  conventional commit format, and changelog generation.
-when_to_use: >
-  Use when making commits, committing all changes, creating a branch, naming a branch,
-  organizing commits, working with conventional commits, generating a changelog,
-  releasing a version, or bumping a version.
+description: Best practices for git workflow automation including atomic commits, branch naming, conventional commit format, and changelog generation.
+when_to_use: Use when making commits, creating a branch, organizing commits, generating a changelog, releasing/bumping a version.
 ---
 
 # Git Workflow Best Practices
@@ -60,10 +55,10 @@ footer (optional)
 
 ### Subject Line Rules
 
-- Maximum 50 characters
-- Use imperative mood ("Add feature" not "Added feature")
+- Maximum 72 characters
+- Use imperative mood ("add feature" not "added feature")
 - No period at end
-- Capitalize first letter
+- Lowercase subject (e.g. `feat(auth): add oauth2 login` — match the casing of existing commits in the repo if a different convention is established)
 
 ### Body Guidelines
 
@@ -158,16 +153,17 @@ EOF
 )"
 ```
 
-## Protected Branches
+## Pushing to Main
 
-Never force-push or directly commit to:
+Default for solo work: commit and push directly to `main`. Branches and PRs add friction without review value when no one else is reviewing.
 
-- `main` / `master`
-- `develop`
-- `staging` / `production`
-- `release/*` branches
+Use a branch + PR only when:
 
-Always use pull requests for these branches.
+- The repo has CI gates (tests, lint, build checks) that run on PRs and the operator wants those gates enforced before merge.
+- Working with collaborators who review changes.
+- The change is risky enough that the operator wants an explicit checkpoint (revert-by-merge, staged rollout).
+
+Force-push to `main` is acceptable on solo repos to rewrite local mistakes (e.g. amending a just-pushed commit), but confirm with the operator first if the commit may already be referenced elsewhere.
 
 ## Quick Reference
 

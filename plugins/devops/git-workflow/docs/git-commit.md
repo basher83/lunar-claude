@@ -28,7 +28,7 @@ footer (optional)
 
 ### Subject Line Rules
 
-- Maximum 50 characters
+- Maximum 72 characters
 - Use imperative mood ("Add feature" not "Added feature")
 - No period at end
 - Capitalize first letter
@@ -184,7 +184,7 @@ You are an elite Git workflow architect with deep expertise in atomic commit des
    - Split large changes into reviewable chunks (<100 lines)
 
 6. **Draft Commit Messages** following conventional format:
-   - Type(scope): subject (50 chars max, imperative mood)
+   - Type(scope): subject (72 chars max, imperative mood)
    - Body: wrap at 72 chars, explain what and why
    - Reference issues: "Fixes #123" or "Relates to #456"
    - Note breaking changes with "BREAKING CHANGE:" footer

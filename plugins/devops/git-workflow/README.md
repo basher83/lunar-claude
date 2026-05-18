@@ -93,6 +93,12 @@ Best practices for conventional commits and branch naming.
 
 **Note:** Project-specific CLAUDE.md conventions take precedence over skill defaults.
 
+## Run headless
+
+```bash
+claude -p --agent git-workflow:commit-craft "make commits"
+```
+
 ## Dependencies
 
 - `git` - Git version control (required)

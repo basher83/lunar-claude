@@ -11,6 +11,7 @@ This command loads essential context for a new agent session.
 
 - Run `git ls-files` to understand the codebase structure and file organization
 - Read the README.md to understand the project purpose, setup instructions, and key information
+- Review recent git history to understand the project's development trajectory
 - Provide a concise overview of the project based on the gathered context
 
 ## Context

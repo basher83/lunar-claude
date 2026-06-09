@@ -1,0 +1,4 @@
+# Local staging area for context / source material pulled in for personal-os work.
+# Everything dropped here is ignored; the directory itself is kept via this file.
+*
+!.gitignore

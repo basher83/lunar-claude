@@ -1,0 +1,19 @@
+{
+  "name": "personal-os",
+  "version": "0.1.0",
+  "description": "Personal macOS workstation operations toolkit: structured root cause analysis and diagnostics for your own Macs",
+  "keywords": [
+    "macos",
+    "rca",
+    "root-cause-analysis",
+    "diagnostics",
+    "troubleshooting",
+    "workstation",
+    "unified-logging",
+    "launchd"
+  ],
+  "author": {
+    "name": "basher83"
+  },
+  "license": "MIT"
+}

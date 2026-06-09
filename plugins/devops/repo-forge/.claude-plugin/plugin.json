@@ -1,7 +1,7 @@
 {
   "name": "repo-forge",
-  "version": "0.2.1",
-  "description": "Project setup and validation toolkit for standardizing repos with mise, hk, and changelog tooling across Python, Rust, Terraform, and Ansible projects",
+  "version": "0.3.0",
+  "description": "Project setup and validation toolkit for standardizing repos with mise, hk, and changelog tooling across Python, Rust, Bun/TypeScript, Terraform, and Ansible projects",
   "author": {
     "name": "basher83",
     "email": "basher83@mail.spaceships.work"
@@ -16,6 +16,8 @@
     "validation",
     "python",
     "rust",
+    "bun",
+    "typescript",
     "terraform",
     "ansible"
   ]

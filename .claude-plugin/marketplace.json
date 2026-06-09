@@ -124,8 +124,8 @@
     {
       "name": "repo-forge",
       "source": "./plugins/devops/repo-forge",
-      "description": "Project setup and validation toolkit for standardizing repos with mise, hk, and changelog tooling across Python, Rust, Terraform, and Ansible projects",
-      "version": "0.2.1",
+      "description": "Project setup and validation toolkit for standardizing repos with mise, hk, and changelog tooling across Python, Rust, Bun/TypeScript, Terraform, and Ansible projects",
+      "version": "0.3.0",
       "category": "devops",
       "keywords": [
         "mise",
@@ -137,6 +137,8 @@
         "validation",
         "python",
         "rust",
+        "bun",
+        "typescript",
         "terraform",
         "ansible"
       ],

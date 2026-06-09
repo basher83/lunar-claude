@@ -1,0 +1,74 @@
+{
+  "cli_version": "0.7.5",
+  "checkpoint_id": "2f1ad4094697",
+  "session_id": "8a34e212-f271-4da2-9949-df05f9baa508",
+  "strategy": "manual-commit",
+  "created_at": "2026-06-09T15:57:27.738655Z",
+  "branch": "main",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "mise.toml",
+    "hk.pkl"
+  ],
+  "agent": "Claude Code",
+  "model": "claude-opus-4-8[1m]",
+  "turn_id": "c51b83f82e4b",
+  "checkpoint_transcript_start": 238,
+  "transcript_lines_at_start": 238,
+  "token_usage": {
+    "input_tokens": 1910,
+    "cache_creation_tokens": 50467,
+    "cache_read_tokens": 1434717,
+    "output_tokens": 24973,
+    "api_call_count": 13
+  },
+  "skill_events_version": 1,
+  "skill_events": [
+    {
+      "id": "prompt-skill-claude-code-lunar-prime-2026-06-09T15:36:15.132683Z",
+      "event_type": "prompt_invocation",
+      "skill": {
+        "name": "lunar-prime"
+      },
+      "source": {
+        "agent": "claude-code",
+        "signal": "prompt_slash_command",
+        "confidence": "explicit"
+      },
+      "turn_id": "62b5043385e1",
+      "timestamp": "2026-06-09T15:36:15.132683Z",
+      "native": {
+        "command": "/lunar-prime"
+      },
+      "collapse": {
+        "target": "user_message",
+        "label": "/lunar-prime",
+        "default_collapsed": true
+      }
+    }
+  ],
+  "session_metrics": {
+    "turn_count": 3
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-06-09T15:57:27.728261Z",
+    "agent_lines": 17,
+    "agent_removed": 11,
+    "human_added": 0,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 17,
+    "total_lines_changed": 28,
+    "agent_percentage": 100,
+    "metric_version": 2
+  },
+  "prompt_attributions": [
+    {
+      "checkpoint_number": 1,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 0,
+      "agent_lines_removed": 0
+    }
+  ]
+}

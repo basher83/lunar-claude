@@ -22,6 +22,7 @@ Scan for project type indicators using Glob:
 
 - `pyproject.toml`, `setup.py`, `setup.cfg` → Python
 - `Cargo.toml` → Rust
+- `package.json`, `bun.lock`, `bun.lockb`, `tsconfig.json` → Bun/TypeScript
 - `*.tf` files in the current or immediate subdirectories → Terraform
 - `ansible.cfg`, `playbooks/` directory, `roles/` directory → Ansible
 
@@ -58,6 +59,7 @@ Available presets and their commands:
 
 - **Python**: `mise preset:uv` (depends on preset:base, runs both)
 - **Rust**: `mise preset:rust` (depends on preset:base, runs both)
+- **Bun/TypeScript**: `mise preset:bun` (depends on preset:base, runs both)
 - **Terraform**: `mise preset:terraform` (depends on preset:base, runs both)
 - **Ansible**: `mise preset:ansible` (depends on preset:base, runs both)
 - **Base only**: `mise preset:base`
@@ -125,10 +127,12 @@ If renovate.json exists and a language type was applied, append the matching
 renovate preset to the extends array.
 
 Mapping:
+
 - Python → `local>basher83/renovate-config//presets/python.json`
 - Rust → `local>basher83/renovate-config//presets/rust.json`
 - Terraform → `local>basher83/renovate-config//presets/terraform-tofu.json`
 - Ansible → `local>basher83/renovate-config//presets/ansible.json`
+- Bun/TypeScript → no language preset exists in `basher83/renovate-config` yet; the base `renovate.json` still manages npm/bun deps. Skip this step for Bun until a `presets/javascript.json` (or similar) is added.
 
 Use this pattern to append if not already present:
 

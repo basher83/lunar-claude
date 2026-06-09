@@ -10,7 +10,7 @@ A preset is an executable bash script with MISE metadata comments:
 #!/usr/bin/env bash
 #MISE dir="{{cwd}}"
 
-mise use uv ruff
+mise use --pin uv ruff
 mise config set env._.python.venv.path .venv
 mise config set env._.python.venv.create true -t bool
 mise tasks add --description "Run linter" lint -- hk check
@@ -20,7 +20,7 @@ mise tasks add sync -- uv sync
 Key elements:
 
 - `#MISE dir="{{cwd}}"` — run in the caller's directory, not the script's location
-- `mise use <tool>` — resolves the current version from the registry and pins it in the local mise.toml. Never hardcodes versions.
+- `mise use --pin <tool>` — resolves the tool's current version and pins it **exactly** in the local mise.toml (e.g. `bun = "1.3.14"`). Bare `mise use <tool>` writes the unpinnable `"latest"` under mise's fuzzy default; always pass `--pin` (or rely on global `MISE_PIN=1`) so renovate's mise manager can bump the pin. "Resolve-then-pin" — never the bare `latest`/channel form.
 - `mise config set <path> <value>` — writes configuration to mise.toml programmatically
 - `mise tasks add <name> -- <command>` — adds a task definition to mise.toml
 
@@ -33,7 +33,7 @@ Chain presets using the `depends` directive:
 #MISE dir="{{cwd}}"
 #MISE depends=["preset:base"]
 
-mise use python uv ruff
+mise use --pin python uv ruff
 mise config set env._.python.venv.path .venv
 mise config set env._.python.venv.create true -t bool
 mise tasks add sync -- uv sync
@@ -110,8 +110,8 @@ Universal scaffolding applied to every new repo:
 #!/usr/bin/env bash
 #MISE dir="{{cwd}}"
 
-# Tools
-mise use hk git-cliff
+# Tools (resolve-then-pin: --pin saves the exact resolved version)
+mise use --pin hk git-cliff
 
 # hk git hooks
 hk init --mise
@@ -137,8 +137,8 @@ Python project scaffolding, depends on base:
 #MISE dir="{{cwd}}"
 #MISE depends=["preset:base"]
 
-# Tools (versions resolved live from registry)
-mise use python uv ruff
+# Tools (resolve-then-pin: --pin saves the exact resolved version)
+mise use --pin python uv ruff
 
 # Python environment
 mise config set env._.python.venv.path .venv
@@ -152,6 +152,33 @@ mise tasks add --description "Type check" typecheck -- uv run pyright
 
 # Postinstall hook: auto-setup after mise install
 mise config set hooks.postinstall "hk install --mise && uv sync"
+```
+
+## Example: preset:bun
+
+Bun + TypeScript project scaffolding, depends on base:
+
+```bash
+#!/usr/bin/env bash
+#MISE dir="{{cwd}}"
+#MISE depends=["preset:base"]
+
+# Tools (resolve-then-pin: --pin saves the exact resolved version; node@lts
+# resolves the current LTS, then --pin writes it as an exact version)
+mise use --pin bun node@lts biome shellcheck
+
+# Config: let biome generate a version-correct config; write tsconfig.json only
+# when absent so an existing project's compilation semantics are preserved
+biome init
+
+# Tasks
+mise tasks add --description "Install dependencies" install-deps -- bun install
+mise tasks add --description "Run tests" test -- bun test
+mise tasks add --description "Type-check (no emit)" typecheck -- bun x tsc --noEmit
+mise tasks add --description "Format code" format -- biome format --write .
+
+# Postinstall hook: auto-setup after mise install
+mise config set hooks.postinstall "hk install --mise && bun install"
 ```
 
 ## Preset Location

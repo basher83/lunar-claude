@@ -1,7 +1,8 @@
 # repo-forge
 
 Project setup and validation toolkit. Ensures repos are properly configured
-with standard tooling across Python, Rust, Terraform, and Ansible projects.
+with standard tooling across Python, Rust, Bun/TypeScript, Terraform, and
+Ansible projects.
 
 Uses mise presets as the delivery mechanism for scaffolding, with hk (jdx/hk)
 replacing pre-commit for git hook management.
@@ -15,6 +16,7 @@ replacing pre-commit for git hook management.
 | `preset:base` | Preset | Universal scaffolding (hk, cliff, gitignore, editorconfig, renovate) |
 | `preset:uv` | Preset | Python project setup (uv, ruff, venv, quality tooling) |
 | `preset:rust` | Preset | Rust project setup (cargo, clippy, taplo) |
+| `preset:bun` | Preset | Bun/TypeScript setup (bun, node, biome, tsc, shellcheck) |
 | `preset:terraform` | Preset | Terraform/OpenTofu setup (tflint, terraform-docs, yamllint) |
 | `preset:ansible` | Preset | Ansible setup (ansible-lint, yamllint) |
 
@@ -27,6 +29,7 @@ Presets live outside this plugin at the global mise tasks path:
 ├── base        # Universal — hk, cliff, gitignore, editorconfig, renovate, bootstrap
 ├── uv          # Python — depends on base
 ├── rust        # Rust — depends on base
+├── bun         # Bun/TypeScript — depends on base
 ├── terraform   # Terraform — depends on base
 └── ansible     # Ansible — depends on base
 ```

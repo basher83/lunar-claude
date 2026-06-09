@@ -183,9 +183,9 @@ Install additional Cargo tools through mise backends:
 
 ```toml
 [tools]
-"cargo:cargo-watch" = "latest"
-"cargo:cargo-nextest" = "latest"
-"cargo:cargo-audit" = "latest"
+"cargo:cargo-watch" = "8.5.3"
+"cargo:cargo-nextest" = "0.9.137"
+"cargo:cargo-audit" = "0.22.2"
 ```
 
 These install as mise-managed tools, separate from the project's `Cargo.toml` dependencies.

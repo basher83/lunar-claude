@@ -14,22 +14,28 @@ truncate = true
 [plugins]
 fnox-env = "https://github.com/jdx/mise-env-fnox"
 
+# Pin concrete semvers — never "latest". The renovate preset
+# (local>basher83/renovate-config // presets/mise.json) auto-merges mise tool
+# bumps, but only for semver-pinned entries; "latest" is invisible to it, so a
+# "latest" pin silently strands a tool at whatever was installed first (this is
+# how hk froze at 1.36.0 past the 1.40.0 cache-roundtrip fix). Semver pins get
+# the same currency as "latest" plus renovate visibility and rollback.
 [tools]
-python = "latest"
+python = "3.14.5"
 eza = "0.23.0"
 fd = "10.4.2"
 rg = "15.1.0"
-git-cliff = "latest"
-shellcheck = "latest"
-uv = "latest"
-ruff = "latest"
+git-cliff = "2.13.1"
+shellcheck = "0.11.0"
+uv = "0.11.19"
+ruff = "0.15.16"
 # "npm:pyright" = "1.1.407"  # Commented out due to npm registry timeout
 lychee = "0.24.2"
 "pipx:rumdl" = "0.1.91"
-fnox = "latest"
-age = "latest"
-hk = "latest"
-pkl = "latest"
+fnox = "1.25.1"
+age = "1.3.1"
+hk = "1.47.0"
+pkl = "0.31.1"
 
 [env]
 _.python.venv = { path = ".venv", create = true } # create the venv if it doesn't exist

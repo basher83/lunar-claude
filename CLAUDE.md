@@ -15,6 +15,7 @@ a structured plugin ecosystem.
 - `infrastructure/` - Infrastructure as Code tools (Terraform, Ansible, Proxmox)
 - `devops/` - Container orchestration and DevOps tools (Kubernetes, Docker)
 - `homelab/` - Homelab-specific utilities (NetBox, PowerDNS)
+- `personal/` - Personal workstation operations (macOS diagnostics, RCA)
 
 ## Commands
 

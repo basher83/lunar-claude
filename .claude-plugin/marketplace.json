@@ -236,6 +236,43 @@
       }
     },
     {
+      "name": "personal-os",
+      "source": "./plugins/personal/personal-os",
+      "description": "Personal macOS workstation operations toolkit: structured root cause analysis and diagnostics for your own Macs",
+      "version": "0.1.0",
+      "category": "personal",
+      "keywords": [
+        "macos",
+        "rca",
+        "root-cause-analysis",
+        "diagnostics",
+        "troubleshooting",
+        "workstation",
+        "unified-logging",
+        "launchd"
+      ],
+      "author": {
+        "name": "basher83"
+      }
+    },
+    {
+      "name": "blake-os",
+      "source": "./plugins/personal/blake-os",
+      "description": "Git workflow automation without the developer machinery",
+      "version": "0.1.0",
+      "category": "personal",
+      "keywords": [
+        "git",
+        "commits",
+        "workflow",
+        "automation",
+        "conventional-commits"
+      ],
+      "author": {
+        "name": "basher83"
+      }
+    },
+    {
       "name": "lunar-research",
       "source": {
         "source": "github",

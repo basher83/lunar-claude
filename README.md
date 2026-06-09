@@ -41,6 +41,13 @@ Personal Claude Code plugin marketplace for homelab and infrastructure automatio
 | [netbox-powerdns-integration](plugins/homelab/netbox-powerdns-integration/) | NetBox IPAM and PowerDNS automation |
 | [omni-scale](plugins/homelab/omni-scale/) | Sidero Omni + Talos Kubernetes on Proxmox |
 
+### personal
+
+| Plugin | Description |
+|--------|-------------|
+| [blake-os](plugins/personal/blake-os/) | Plain-language git workflow front door for non-developers |
+| [personal-os](plugins/personal/personal-os/) | macOS workstation root cause analysis and diagnostics |
+
 ### research
 
 | Plugin | Description |

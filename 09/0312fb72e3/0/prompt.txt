@@ -1,0 +1,17 @@
+no mirror here only. and yeah the cross repo sweep is the bigger task, lets get an idea of blast radius. I can tell you where and where not to look. ~/3I/* and exclude explictly ~/3I/workshop/upstream/* - thats a holding spot for upstream clones and its a deep hole to avoid
+
+---
+
+this is a triage item. Add narrative plus pointers for refs to ~/3I/workshop/TRIAGE.md
+
+---
+
+cool, so back to repo-forge plugin .... i'm pretty sure a bun preset was made on disk and i don't see it listed on the readme
+
+---
+
+I see the ACTUAL problem and its deeper; "versions resolved live by mise - never hard coded" - what I ACTUALLY meant by that is verify the current version vis mise cli before pinning but agents read that as just add latest
+
+---
+
+global mise pin - good with that, concur on all the proposed edits and sequencing. bun doc parity while your in the neighborhood

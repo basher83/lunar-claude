@@ -40,6 +40,8 @@ Use `min_version` to enforce a minimum mise version. Recognized top-level sectio
 
 ## Tool Version Management
 
+Pin every tool to a concrete semver (`"0.15.16"`), never `"latest"` or `"lts"`. Where a repo extends `basher83/renovate-config`, the mise preset auto-merges tool bumps — but only for semver-pinned entries. `"latest"` is invisible to renovate's mise manager, so it silently strands a tool at whatever version installed first; a semver pin gets the same currency plus renovate visibility and rollback. (`"latest"` once froze hk at 1.36.0, three minors past the 1.40.0 fix for its config-cache round-trip bug.) The format table below catalogs what mise accepts; this policy governs what to write.
+
 Specify tools in the `[tools]` section. mise installs and activates them automatically.
 
 ```toml
@@ -79,10 +81,10 @@ rust = { version = "stable", components = "clippy,rustfmt", profile = "default" 
 
 ```toml
 [tools]
-"ubi:astral-sh/ruff" = "latest"     # GitHub binary releases
-"cargo:cargo-watch" = "latest"       # Cargo crate
-"npm:prettier" = "3"                 # npm package
-"pipx:ansible-lint" = "latest"       # Python CLI tools via pipx
+"ubi:astral-sh/ruff" = "0.15.16"     # GitHub binary releases
+"cargo:cargo-watch" = "8.5.3"        # Cargo crate
+"npm:prettier" = "3.4.2"             # npm package
+"pipx:ansible-lint" = "25.1.3"       # Python CLI tools via pipx
 ```
 
 ### Custom plugins

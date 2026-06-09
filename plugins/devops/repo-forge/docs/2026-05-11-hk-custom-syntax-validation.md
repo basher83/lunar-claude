@@ -1,6 +1,6 @@
 ---
 date: 2026-05-11
-status: draft
+status: resolved
 tags:
   - hk
   - mise
@@ -350,4 +350,11 @@ Not exercised this round. Practically moot — the cache-serialization fix is in
 
 ---
 
-These findings are left for the steering discussion that follows this document. Implications for the doc body, the trade-off table, and the open-questions list have not yet been drawn.
+## Resolution (2026-06-09)
+
+The steering decision was made and the load-bearing conclusions (Q3, Q10) were actioned. The cache-serialization warning that motivated this research has two layers, both addressed:
+
+- **Root cause — the `"latest"` pin (Q10).** `hk = "latest"` defeated the renovate mise manager, stranding hk at 1.36.0 long past the 1.40.0 fix (Q3). Fixed in `lunar-claude/mise.toml` by pinning all eight `"latest"` tools to concrete semvers (`hk = "1.47.0"`, etc.); renovate now maintains them. The `repo-forge:mise` skill (`SKILL.md` Tool Version Management) and this doc's sibling `mise-hk-integration.md` now encode the semver-pin policy so scaffolded repos inherit it rather than re-introducing the anti-pattern.
+- **Trigger — the `Regex(...)` step field.** `lunar-claude/hk.pkl` was switched from `exclude = Regex(...)` to an equivalent `List(...)` of globs (version-independent; verified `check_yaml` matches the same 4 files), and `hk.pkl`'s schema bumped to 1.47.0. `references/hk.md` now warns that `hk migrate pre-commit` emits `Regex` excludes and recommends glob excludes plus hk ≥ 1.40.0.
+
+Q8 (whether `glob` vs `exclude` Regex was the trigger) remains the only open item and is moot — both round-trip cleanly on hk ≥ 1.40.0. The doc-body documentation gap (§Documentation gap: which placement `hk init --mise` should emit for custom JSON/YAML checks) is unrelated to the cache bug and is left as a separate future enhancement to the skill.

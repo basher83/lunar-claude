@@ -14,11 +14,11 @@ Set `HK_MISE=1` in your environment to enable mise integration by default.
 
 ## hk.pkl Structure
 
-hk uses Apple's PKL language for configuration. A minimal hk.pkl (update the version in `amends`/`import` to match your installed hk version):
+hk uses Apple's PKL language for configuration. Match the version in `amends`/`import` to the installed hk semver pinned in `mise.toml`, and use hk ≥ 1.40.0 — earlier releases (e.g. 1.36.0) have a config-cache round-trip bug that emits a persistent `failed to parse cache file: expected regex object, string, or array of strings` warning whenever a step uses a `Regex(...)` field. A minimal hk.pkl:
 
 ```pkl
-amends "package://github.com/jdx/hk/releases/download/v1.27.0/hk@1.27.0#/Config.pkl"
-import "package://github.com/jdx/hk/releases/download/v1.27.0/hk@1.27.0#/Builtins.pkl"
+amends "package://github.com/jdx/hk/releases/download/v1.47.0/hk@1.47.0#/Config.pkl"
+import "package://github.com/jdx/hk/releases/download/v1.47.0/hk@1.47.0#/Builtins.pkl"
 
 local linters = new Mapping<String, Step> {
     ["ruff"] = Builtins.ruff
@@ -162,6 +162,7 @@ Known migration mapping issues to review in the generated hk.pkl:
 - `Builtins.yamllint` is a style enforcer (line length, indentation rules), not a syntax validator. The original pre-commit `check-yaml` only validated YAML parses correctly. Replace with a custom syntax check if style enforcement is unwanted.
 - `Builtins.jq` reformats JSON files and diffs the output. The original `check-json` only validated JSON syntax. Replace with a custom syntax check to avoid unwanted reformatting.
 - Vendored steps from `.hk/vendors/` may lack glob filters. Replace with Builtins equivalents where available (e.g., `Builtins.ruff_format` instead of vendored ruff-format).
+- `hk migrate pre-commit` emits `exclude = Regex(#"..."#)` for converted hooks. On hk < 1.40.0 this triggers the config-cache round-trip warning above; the pinned hk should be ≥ 1.40.0, but prefer glob excludes regardless — `exclude = List("**/examples/**/*.yaml", "**/specs/**/*.yaml")` — which read back from the cache on any version and avoid the sharp edge entirely.
 
 ## Global Configuration
 

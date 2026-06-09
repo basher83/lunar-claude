@@ -75,8 +75,8 @@ By setting `HK_MISE=1` and using a `postinstall` hook, you can automate hook ins
 
 ```toml
 [tools]
-hk = "latest"
-pkl = "latest"
+hk = "1.47.0"
+pkl = "0.31.1"
 # ... other tools like prettier, actionlint, etc.
 
 [env]
@@ -86,3 +86,10 @@ HK_MISE = 1
 # Automatically install/update hooks when tools are installed
 postinstall = "hk install --mise"
 ```
+
+> **Pin semvers, not `"latest"`.** The upstream hk docs show `hk = "latest"`, but
+> in this scaffolding all `[tools]` entries are pinned to concrete semvers so the
+> `basher83/renovate-config` mise preset can auto-merge bumps — `"latest"` is
+> invisible to renovate and silently strands tools (it froze hk at 1.36.0 past the
+> 1.40.0 cache-roundtrip fix). Use hk ≥ 1.40.0. See the `repo-forge:mise` skill's
+> Tool Version Management policy.

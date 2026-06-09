@@ -1,0 +1,60 @@
+{
+  "cli_version": "0.7.5",
+  "checkpoint_id": "463c932079ce",
+  "session_id": "a24e5dc3-1528-47ce-9cdd-1b57a5dc89c0",
+  "strategy": "manual-commit",
+  "created_at": "2026-06-09T03:07:11.282757Z",
+  "branch": "main",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "plugins/personal/personal-os/README.md",
+    "plugins/personal/personal-os/skills/macos-rca/SKILL.md"
+  ],
+  "agent": "Claude Code",
+  "model": "",
+  "turn_id": "5dc78b041b5f",
+  "token_usage": {
+    "input_tokens": 20335,
+    "cache_creation_tokens": 217648,
+    "cache_read_tokens": 4825079,
+    "output_tokens": 50475,
+    "api_call_count": 50
+  },
+  "session_metrics": {
+    "turn_count": 3
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-06-09T03:07:11.269413Z",
+    "agent_lines": 35,
+    "agent_removed": 0,
+    "human_added": 4,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 39,
+    "total_lines_changed": 39,
+    "agent_percentage": 89.74358974358975,
+    "metric_version": 2
+  },
+  "prompt_attributions": [
+    {
+      "checkpoint_number": 1,
+      "user_lines_added": 19,
+      "user_lines_removed": 0,
+      "agent_lines_added": 0,
+      "agent_lines_removed": 0,
+      "user_added_per_file": {
+        "plugins/personal/personal-os/.claude-plugin/plugin.json": 19
+      }
+    },
+    {
+      "checkpoint_number": 2,
+      "user_lines_added": 4,
+      "user_lines_removed": 0,
+      "agent_lines_added": 82,
+      "agent_lines_removed": 0,
+      "user_added_per_file": {
+        "plugins/personal/personal-os/context/.gitignore": 4
+      }
+    }
+  ]
+}

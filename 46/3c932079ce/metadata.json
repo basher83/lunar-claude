@@ -1,0 +1,26 @@
+{
+  "cli_version": "0.7.5",
+  "checkpoint_id": "463c932079ce",
+  "strategy": "manual-commit",
+  "branch": "main",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "plugins/personal/personal-os/README.md",
+    "plugins/personal/personal-os/skills/macos-rca/SKILL.md"
+  ],
+  "sessions": [
+    {
+      "metadata": "/46/3c932079ce/0/metadata.json",
+      "transcript": "/46/3c932079ce/0/full.jsonl",
+      "content_hash": "/46/3c932079ce/0/content_hash.txt",
+      "prompt": "/46/3c932079ce/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 20335,
+    "cache_creation_tokens": 217648,
+    "cache_read_tokens": 4825079,
+    "output_tokens": 50475,
+    "api_call_count": 50
+  }
+}

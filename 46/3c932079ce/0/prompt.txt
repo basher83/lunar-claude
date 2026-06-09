@@ -1,0 +1,21 @@
+/lunar-prime
+
+---
+
+ok I need to add a new skill for root cause analysis. I need you to find the right spot for it. this is a RCA for this macos specifically
+
+---
+
+Ok you are incorrect, don't assert it not being reuseable. I have more than one mac. I asked for you to find a spotfor it and I meant IN a plugin that I have in here since this is the repo we are in and it's clearly a plugin marketplace
+
+---
+
+Ok so new plugin, I'm fine with that. Maybe name it "personal-os" or similar
+
+---
+
+you must also use claude-code-docs MCP to look at plugin settings to make sure we handle this right
+
+---
+
+you don't need to build the skill yet, just scaffold I already have a shape for the skill

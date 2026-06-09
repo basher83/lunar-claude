@@ -1,0 +1,5 @@
+and actually the secrets migration should land on lab triage too
+
+---
+
+plugins/devops/repo-forge/.claude-plugin/plugin.json needs a bump too for it to update the cache

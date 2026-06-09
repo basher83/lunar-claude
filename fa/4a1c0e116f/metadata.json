@@ -1,0 +1,26 @@
+{
+  "cli_version": "0.7.5",
+  "checkpoint_id": "fa4a1c0e116f",
+  "strategy": "manual-commit",
+  "branch": "main",
+  "checkpoints_count": 0,
+  "files_touched": [
+    ".claude-plugin/marketplace.json",
+    "plugins/devops/repo-forge/.claude-plugin/plugin.json"
+  ],
+  "sessions": [
+    {
+      "metadata": "/fa/4a1c0e116f/0/metadata.json",
+      "transcript": "/fa/4a1c0e116f/0/full.jsonl",
+      "content_hash": "/fa/4a1c0e116f/0/content_hash.txt",
+      "prompt": "/fa/4a1c0e116f/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 143,
+    "cache_creation_tokens": 9978,
+    "cache_read_tokens": 2102615,
+    "output_tokens": 9597,
+    "api_call_count": 7
+  }
+}

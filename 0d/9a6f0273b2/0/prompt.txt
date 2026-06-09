@@ -1,0 +1,9 @@
+run vault prime
+
+---
+
+/lunar-prime
+
+---
+
+pull latest pr merge, check dependabot flags

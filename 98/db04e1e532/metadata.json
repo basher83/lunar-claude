@@ -1,0 +1,28 @@
+{
+  "cli_version": "0.7.5",
+  "checkpoint_id": "98db04e1e532",
+  "strategy": "manual-commit",
+  "branch": "main",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "plugins/devops/repo-forge/docs/2026-05-11-hk-custom-syntax-validation.md",
+    "plugins/devops/repo-forge/docs/mise-hk-integration.md",
+    "plugins/devops/repo-forge/skills/mise/SKILL.md",
+    "plugins/devops/repo-forge/skills/mise/references/hk.md"
+  ],
+  "sessions": [
+    {
+      "metadata": "/98/db04e1e532/0/metadata.json",
+      "transcript": "/98/db04e1e532/0/full.jsonl",
+      "content_hash": "/98/db04e1e532/0/content_hash.txt",
+      "prompt": "/98/db04e1e532/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 6,
+    "cache_creation_tokens": 6027,
+    "cache_read_tokens": 489150,
+    "output_tokens": 6076,
+    "api_call_count": 3
+  }
+}

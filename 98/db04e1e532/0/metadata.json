@@ -1,0 +1,76 @@
+{
+  "cli_version": "0.7.5",
+  "checkpoint_id": "98db04e1e532",
+  "session_id": "8a34e212-f271-4da2-9949-df05f9baa508",
+  "strategy": "manual-commit",
+  "created_at": "2026-06-09T16:03:28.098171Z",
+  "branch": "main",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "plugins/devops/repo-forge/docs/2026-05-11-hk-custom-syntax-validation.md",
+    "plugins/devops/repo-forge/docs/mise-hk-integration.md",
+    "plugins/devops/repo-forge/skills/mise/SKILL.md",
+    "plugins/devops/repo-forge/skills/mise/references/hk.md"
+  ],
+  "agent": "Claude Code",
+  "model": "claude-opus-4-8[1m]",
+  "turn_id": "f69e3594330d",
+  "checkpoint_transcript_start": 423,
+  "transcript_lines_at_start": 423,
+  "token_usage": {
+    "input_tokens": 6,
+    "cache_creation_tokens": 6027,
+    "cache_read_tokens": 489150,
+    "output_tokens": 6076,
+    "api_call_count": 3
+  },
+  "skill_events_version": 1,
+  "skill_events": [
+    {
+      "id": "prompt-skill-claude-code-lunar-prime-2026-06-09T15:36:15.132683Z",
+      "event_type": "prompt_invocation",
+      "skill": {
+        "name": "lunar-prime"
+      },
+      "source": {
+        "agent": "claude-code",
+        "signal": "prompt_slash_command",
+        "confidence": "explicit"
+      },
+      "turn_id": "62b5043385e1",
+      "timestamp": "2026-06-09T15:36:15.132683Z",
+      "native": {
+        "command": "/lunar-prime"
+      },
+      "collapse": {
+        "target": "user_message",
+        "label": "/lunar-prime",
+        "default_collapsed": true
+      }
+    }
+  ],
+  "session_metrics": {
+    "turn_count": 4
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-06-09T16:03:28.083245Z",
+    "agent_lines": 28,
+    "agent_removed": 11,
+    "human_added": 0,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 28,
+    "total_lines_changed": 39,
+    "agent_percentage": 100,
+    "metric_version": 2
+  },
+  "prompt_attributions": [
+    {
+      "checkpoint_number": 1,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 0,
+      "agent_lines_removed": 0
+    }
+  ]
+}

@@ -21,7 +21,9 @@ local python_steps = new Mapping<String, Step> {
 local validation_steps = new Mapping<String, Step> {
     ["check_yaml"] {
         glob = "**/*.{yml,yaml}"
-        exclude = Regex(#"(examples/.*\.yaml$|specs/.*\.yaml$)"#)
+        // hk cannot round-trip a Pkl Regex through its config cache (it serializes as
+        // {"pattern":...} but the cache reader rejects that shape), so use glob excludes.
+        exclude = List("**/examples/**/*.yaml", "**/specs/**/*.yaml")
         check = "python -c \"import yaml, sys; [yaml.safe_load(open(f)) for f in sys.argv[1:]]\""
     }
     ["check_json"] {

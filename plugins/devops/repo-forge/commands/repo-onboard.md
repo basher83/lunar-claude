@@ -132,7 +132,7 @@ Mapping:
 - Rust → `local>basher83/renovate-config//presets/rust.json`
 - Terraform → `local>basher83/renovate-config//presets/terraform-tofu.json`
 - Ansible → `local>basher83/renovate-config//presets/ansible.json`
-- Bun/TypeScript → no language preset exists in `basher83/renovate-config` yet; the base `renovate.json` still manages npm/bun deps. Skip this step for Bun until a `presets/javascript.json` (or similar) is added.
+- Bun/TypeScript → `local>basher83/renovate-config//presets/javascript.json`
 
 Use this pattern to append if not already present:
 

@@ -1,6 +1,6 @@
 ---
 description: Onboard a repo with standardized tooling
-allowed-tools: Bash, Read, Glob, Grep, AskUserQuestion
+allowed-tools: Bash, Read, Glob, Grep
 ---
 
 # Repo Onboard
@@ -31,7 +31,7 @@ all matches. If nothing matches, the project is "base only".
 
 ## Phase 2: Confirm with User
 
-Use AskUserQuestion to confirm the detected configuration.
+Confirm the detected configuration.
 
 Build the question dynamically based on what was detected:
 
@@ -81,7 +81,7 @@ Run migration steps sequentially:
    hk.pkl. The `--force` flag is required because Phase 3 already created hk.pkl.
 2. Read the generated hk.pkl and show it to the user for review
 3. `hk install --mise` — set up git hooks with mise integration
-4. Ask user via AskUserQuestion whether to remove .pre-commit-config.yaml:
+4. Ask user whether to remove .pre-commit-config.yaml:
    - header: "Cleanup"
    - question: "Migration complete. Remove .pre-commit-config.yaml?"
    - options:

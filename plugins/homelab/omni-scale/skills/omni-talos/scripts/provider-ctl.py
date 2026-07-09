@@ -34,7 +34,8 @@ from typing import Any
 
 TAILSCALE_HOST = os.environ.get("OMNI_PROVIDER_HOST", "root@foxtrot")
 PROVIDER_CT = os.environ.get("OMNI_PROVIDER_CT", "200")
-CONTAINER = os.environ.get("OMNI_PROVIDER_CONTAINER", "omni-provider-proxmox-provider-1")
+PROVIDER_SERVICE = os.environ.get("OMNI_PROVIDER_SERVICE", "proxmox-provider")
+CONTAINER_OVERRIDE = os.environ.get("OMNI_PROVIDER_CONTAINER")
 DEFAULT_LOG_LINES = 25
 MAX_LOG_LINES = 100
 RESTART_TIMEOUT = 30
@@ -60,24 +61,48 @@ def provider_command(cmd: str, timeout: int) -> tuple[int, str, str]:
         return 127, "", "tailscale command not found"
 
 
-def restart_container() -> int:
-    """Restart the provider container idempotently."""
-    # Check if container exists
+def discover_container(timeout: int) -> tuple[int, str | None]:
+    """Resolve the provider container by override or Docker Compose service label."""
+    if CONTAINER_OVERRIDE:
+        return 0, CONTAINER_OVERRIDE
+
+    service_filter = shlex.quote(f"label=com.docker.compose.service={PROVIDER_SERVICE}")
     rc, out, err = provider_command(
-        f"docker ps -a --filter name={CONTAINER} --format '{{{{.Names}}}}'",
-        RESTART_TIMEOUT,
+        f"docker ps -a --filter {service_filter} --format '{{{{.Names}}}}'",
+        timeout,
     )
 
     if rc != 0:
-        print(f"Error: Failed to query Docker: {err}", file=sys.stderr)
+        print(f"Error: Failed to discover provider container: {err or out}", file=sys.stderr)
+        return 1, None
+
+    containers = [line.strip() for line in out.splitlines() if line.strip()]
+    if not containers:
+        print(
+            f"Error: No container found for Compose service '{PROVIDER_SERVICE}'",
+            file=sys.stderr,
+        )
+        return 1, None
+
+    if len(containers) > 1:
+        print(
+            f"Error: Multiple containers found for Compose service '{PROVIDER_SERVICE}': "
+            f"{', '.join(containers)}",
+            file=sys.stderr,
+        )
+        return 1, None
+
+    return 0, containers[0]
+
+
+def restart_container() -> int:
+    """Restart the provider container idempotently."""
+    rc, container = discover_container(RESTART_TIMEOUT)
+    if rc != 0 or container is None:
         return 1
 
-    if CONTAINER not in out:
-        print(f"Error: Container '{CONTAINER}' not found", file=sys.stderr)
-        return 1
-
-    # Restart container
-    rc, out, err = provider_command(f"docker restart {CONTAINER}", RESTART_TIMEOUT)
+    quoted_container = shlex.quote(container)
+    rc, out, err = provider_command(f"docker restart {quoted_container}", RESTART_TIMEOUT)
 
     if rc != 0:
         print(f"Error: Failed to restart container: {err}", file=sys.stderr)
@@ -85,7 +110,8 @@ def restart_container() -> int:
 
     # Verify container is running
     rc, out, err = provider_command(
-        f"docker ps --filter name={CONTAINER} --filter status=running --format '{{{{.Status}}}}'",
+        f"docker ps --filter name={quoted_container} --filter status=running "
+        "--format '{{.Status}}'",
         RESTART_TIMEOUT,
     )
 
@@ -93,7 +119,7 @@ def restart_container() -> int:
         print("Error: Container failed to start after restart", file=sys.stderr)
         return 1
 
-    print(f"Container '{CONTAINER}' restarted successfully")
+    print(f"Container '{container}' restarted successfully")
     return 0
 
 
@@ -114,9 +140,13 @@ def format_timestamp(ts: float | str) -> str:
 
 def get_container_inspect() -> tuple[int, dict[str, Any] | None]:
     """Fetch container inspect data."""
+    rc, container = discover_container(STATUS_TIMEOUT)
+    if rc != 0 or container is None:
+        return 1, None
+
     inspect_format = "{{json .}}"
     rc, out, err = provider_command(
-        f"docker inspect --format '{inspect_format}' {CONTAINER}",
+        f"docker inspect --format '{inspect_format}' {shlex.quote(container)}",
         STATUS_TIMEOUT,
     )
 
@@ -127,7 +157,7 @@ def get_container_inspect() -> tuple[int, dict[str, Any] | None]:
     if rc != 0:
         message = err or out
         if "No such object" in message or "No such container" in message:
-            print(f"Error: Container '{CONTAINER}' not found", file=sys.stderr)
+            print(f"Error: Container '{container}' not found", file=sys.stderr)
         else:
             print(f"Error: Failed to inspect container: {message}", file=sys.stderr)
         return 1, None
@@ -154,7 +184,7 @@ def get_status() -> int:
     exit_code = state.get("ExitCode")
 
     print(f"Host: {TAILSCALE_HOST} (CT {PROVIDER_CT})")
-    print(f"Container: {inspect_data.get('Name', '').lstrip('/') or CONTAINER}")
+    print(f"Container: {inspect_data.get('Name', '').lstrip('/')}")
     print(f"Status: {status}")
     if health:
         print(f"Health: {health}")
@@ -208,8 +238,13 @@ def format_log_entry(entry: dict) -> str:
 def get_logs(count: int, raw: bool) -> int:
     """Retrieve and display container logs."""
     count = min(count, MAX_LOG_LINES)
+    rc, container = discover_container(LOG_TIMEOUT)
+    if rc != 0 or container is None:
+        return 1
 
-    rc, out, err = provider_command(f"docker logs --tail {count} {CONTAINER} 2>&1", LOG_TIMEOUT)
+    rc, out, err = provider_command(
+        f"docker logs --tail {count} {shlex.quote(container)} 2>&1", LOG_TIMEOUT
+    )
 
     if rc == 124:
         print(f"Error: Log retrieval timed out after {LOG_TIMEOUT}s", file=sys.stderr)
@@ -217,7 +252,7 @@ def get_logs(count: int, raw: bool) -> int:
 
     if rc != 0:
         if "No such container" in err or "No such container" in out:
-            print(f"Error: Container '{CONTAINER}' not found", file=sys.stderr)
+            print(f"Error: Container '{container}' not found", file=sys.stderr)
         else:
             print(f"Error: Failed to retrieve logs: {err or out}", file=sys.stderr)
         return 1

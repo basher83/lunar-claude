@@ -28,7 +28,9 @@ Use `${CLAUDE_PLUGIN_ROOT}/skills/omni-talos/scripts/provider-ctl.py` for provid
 The provider runs in Foxtrot LXC CT 200. The script reaches Foxtrot with
 Tailscale SSH and executes provider commands through `pct exec`. Override its
 defaults with `OMNI_PROVIDER_HOST`, `OMNI_PROVIDER_CT`, or
-`OMNI_PROVIDER_CONTAINER` when the deployment topology changes.
+`OMNI_PROVIDER_SERVICE` when the deployment topology changes. The provider
+container is discovered from its Docker Compose service label;
+`OMNI_PROVIDER_CONTAINER` remains available as an explicit override.
 
 ## Current Deployment
 

@@ -163,7 +163,7 @@ omnictl get machine <machine-id> -o yaml
 omnictl cluster status <cluster-name>
 
 # Check cluster events
-omnictl get events --cluster <cluster-name>
+omnictl get events -l omni.sidero.dev/cluster=<cluster-name>
 ```
 
 **Common causes:**

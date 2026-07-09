@@ -4,7 +4,7 @@
 # dependencies = []
 # ///
 """
-Omni Proxmox Provider container management via SSH.
+Omni Proxmox Provider container management via Tailscale SSH and Proxmox pct.
 
 Purpose: provider-management
 Team: homelab
@@ -25,13 +25,16 @@ Examples:
 
 import argparse
 import json
+import os
+import shlex
 import subprocess
 import sys
 from datetime import datetime
 from typing import Any
 
-SSH_HOST = "omni-provider"
-CONTAINER = "omni-provider-proxmox-provider-1"
+TAILSCALE_HOST = os.environ.get("OMNI_PROVIDER_HOST", "root@foxtrot")
+PROVIDER_CT = os.environ.get("OMNI_PROVIDER_CT", "200")
+CONTAINER = os.environ.get("OMNI_PROVIDER_CONTAINER", "omni-provider-proxmox-provider-1")
 DEFAULT_LOG_LINES = 25
 MAX_LOG_LINES = 100
 RESTART_TIMEOUT = 30
@@ -39,11 +42,13 @@ LOG_TIMEOUT = 10
 STATUS_TIMEOUT = 10
 
 
-def ssh_command(cmd: str, timeout: int) -> tuple[int, str, str]:
-    """Execute command on remote host via SSH."""
+def provider_command(cmd: str, timeout: int) -> tuple[int, str, str]:
+    """Execute a command in the provider LXC through the Foxtrot Tailscale peer."""
+    remote_cmd = shlex.join(["pct", "exec", PROVIDER_CT, "--", "sh", "-lc", cmd])
+
     try:
         result = subprocess.run(
-            ["ssh", SSH_HOST, cmd],
+            ["tailscale", "ssh", TAILSCALE_HOST, remote_cmd],
             capture_output=True,
             text=True,
             timeout=timeout,
@@ -52,13 +57,13 @@ def ssh_command(cmd: str, timeout: int) -> tuple[int, str, str]:
     except subprocess.TimeoutExpired:
         return 124, "", f"Timeout after {timeout} seconds"
     except FileNotFoundError:
-        return 127, "", "ssh command not found"
+        return 127, "", "tailscale command not found"
 
 
 def restart_container() -> int:
     """Restart the provider container idempotently."""
     # Check if container exists
-    rc, out, err = ssh_command(
+    rc, out, err = provider_command(
         f"docker ps -a --filter name={CONTAINER} --format '{{{{.Names}}}}'",
         RESTART_TIMEOUT,
     )
@@ -72,14 +77,14 @@ def restart_container() -> int:
         return 1
 
     # Restart container
-    rc, out, err = ssh_command(f"docker restart {CONTAINER}", RESTART_TIMEOUT)
+    rc, out, err = provider_command(f"docker restart {CONTAINER}", RESTART_TIMEOUT)
 
     if rc != 0:
         print(f"Error: Failed to restart container: {err}", file=sys.stderr)
         return 1
 
     # Verify container is running
-    rc, out, err = ssh_command(
+    rc, out, err = provider_command(
         f"docker ps --filter name={CONTAINER} --filter status=running --format '{{{{.Status}}}}'",
         RESTART_TIMEOUT,
     )
@@ -110,7 +115,7 @@ def format_timestamp(ts: float | str) -> str:
 def get_container_inspect() -> tuple[int, dict[str, Any] | None]:
     """Fetch container inspect data."""
     inspect_format = "{{json .}}"
-    rc, out, err = ssh_command(
+    rc, out, err = provider_command(
         f"docker inspect --format '{inspect_format}' {CONTAINER}",
         STATUS_TIMEOUT,
     )
@@ -148,7 +153,7 @@ def get_status() -> int:
     finished_at = format_timestamp(state.get("FinishedAt", ""))
     exit_code = state.get("ExitCode")
 
-    print(f"Host: {SSH_HOST}")
+    print(f"Host: {TAILSCALE_HOST} (CT {PROVIDER_CT})")
     print(f"Container: {inspect_data.get('Name', '').lstrip('/') or CONTAINER}")
     print(f"Status: {status}")
     if health:
@@ -204,7 +209,7 @@ def get_logs(count: int, raw: bool) -> int:
     """Retrieve and display container logs."""
     count = min(count, MAX_LOG_LINES)
 
-    rc, out, err = ssh_command(f"docker logs --tail {count} {CONTAINER} 2>&1", LOG_TIMEOUT)
+    rc, out, err = provider_command(f"docker logs --tail {count} {CONTAINER} 2>&1", LOG_TIMEOUT)
 
     if rc == 124:
         print(f"Error: Log retrieval timed out after {LOG_TIMEOUT}s", file=sys.stderr)

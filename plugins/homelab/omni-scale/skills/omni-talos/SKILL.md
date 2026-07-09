@@ -25,7 +25,10 @@ Use `${CLAUDE_PLUGIN_ROOT}/skills/omni-talos/scripts/provider-ctl.py` for provid
 | Raw JSON logs | `${CLAUDE_PLUGIN_ROOT}/skills/omni-talos/scripts/provider-ctl.py --logs 50 --raw` |
 | Restart provider | `${CLAUDE_PLUGIN_ROOT}/skills/omni-talos/scripts/provider-ctl.py --restart` |
 
-The provider runs on Foxtrot LXC (CT 200) — script handles SSH automatically.
+The provider runs in Foxtrot LXC CT 200. The script reaches Foxtrot with
+Tailscale SSH and executes provider commands through `pct exec`. Override its
+defaults with `OMNI_PROVIDER_HOST`, `OMNI_PROVIDER_CT`, or
+`OMNI_PROVIDER_CONTAINER` when the deployment topology changes.
 
 ## Current Deployment
 

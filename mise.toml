@@ -22,7 +22,6 @@ fnox-env = "https://github.com/jdx/mise-env-fnox"
 # the same currency as "latest" plus renovate visibility and rollback.
 [tools]
 python = "3.14.6"
-eza = "0.23.5"
 fd = "10.4.2"
 rg = "15.1.0"
 git-cliff = "2.13.1"

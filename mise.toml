@@ -97,8 +97,8 @@ description = "Full CI gate"
 run = "echo 'CI passed'"
 
 [tasks.lint]
-description = "Run all checks"
-run = "hk check"
+description = "Run CI lint on PR/branch diff (same scope locally and in GitHub Actions)"
+run = "hk check --pr"
 
 [tasks.fix]
 description = "Auto-fix issues"

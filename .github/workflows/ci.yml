@@ -4,7 +4,6 @@ on:
   workflow_dispatch:
   pull_request:
   push:
-    tags: ["*"]
     branches: ["main"]
 
 concurrency:
@@ -20,5 +19,18 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          fetch-depth: 0
+
+      - uses: actions/cache@0057852bfaa89a7269c0988973f937453ddac751 # v4
+        with:
+          path: |
+            ~/.cache/uv
+            .venv
+          key: uv-${{ runner.os }}-${{ hashFiles('uv.lock') }}
+          restore-keys: |
+            uv-${{ runner.os }}-
+
       - uses: jdx/mise-action@c2a87611a18de5b3828c5652fe268e992400cb5c # v4
+
       - run: mise run ci

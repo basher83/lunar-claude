@@ -1,6 +1,6 @@
 ---
 name: commit-craft
-description: Creates clean, atomic git commits. Invoked through the git-commit skill with context: fork for delegation isolation.
+description: "Creates clean, atomic git commits. Invoked through the git-commit skill with context: fork for delegation isolation."
 model: haiku
 color: green
 tools: ["TodoWrite", "Read", "Grep", "Glob", "Bash"]

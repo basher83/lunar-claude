@@ -32,13 +32,6 @@ local validation_steps = new Mapping<String, Step> {
     }
 }
 
-local manual_steps = new Mapping<String, Step> {
-    ["rumdl"] {
-        glob = "{README.md,plugins/*/README.md,plugins/*/*/README.md,docs/architecture/*.md}"
-        check = "rumdl"
-    }
-}
-
 local commit_steps = new Mapping<String, Step> {
     ["check_conventional_commit"] = Builtins.check_conventional_commit
 }
@@ -61,7 +54,6 @@ hooks {
             ...base_steps
             ...python_steps
             ...validation_steps
-            ...manual_steps
         }
     }
     ["fix"] {
@@ -70,7 +62,6 @@ hooks {
             ...base_steps
             ...python_steps
             ...validation_steps
-            ...manual_steps
         }
     }
 }

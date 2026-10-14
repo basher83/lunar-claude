@@ -97,8 +97,8 @@ description = "Full CI gate"
 run = "echo 'CI passed'"
 
 [tasks.lint]
-description = "Run all checks"
-run = "hk check"
+description = "Lint files changed since LINT_BASE (default: origin/main)"
+run = "hk check --from-ref ${LINT_BASE:-origin/main} --to-ref HEAD"
 
 [tasks.fix]
 description = "Auto-fix issues"

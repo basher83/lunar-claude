@@ -19,7 +19,8 @@ jobs:
         uses: jdx/mise-action@c2a87611a18de5b3828c5652fe268e992400cb5c # v4
 
       - name: Run validation and tests
-        run: mise run ci
+        # Lint is diff-scoped and runs on PRs; a tag has no diff to lint.
+        run: "mise run test ::: validate"
 
   release:
     name: Create Release

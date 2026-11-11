@@ -4,7 +4,7 @@ min_version = "2024.9.5"
 [settings]
 auto_install = true
 not_found_auto_install = true
-task_run_auto_install = true
+task.run_auto_install = true
 
 [settings.status]
 show_tools = true
